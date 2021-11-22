@@ -1,0 +1,16 @@
+idle:BF idle dance
+singUP:BF NOTE UP0
+singLEFT:BF NOTE LEFT0
+singRIGHT:BF NOTE RIGHT0
+singDOWN:BF NOTE DOWN0
+singUPmiss:BF NOTE UP MISS
+singLEFTmiss:BF NOTE LEFT MISS
+singRIGHTmiss:BF NOTE RIGHT MISS
+singDOWNmiss:BF NOTE DOWN MISS
+hey:BF HEY
+singDODGE:boyfriend dodge
+hit:BF hit
+firstDeath:BF dies
+deathLoop:BF Dead Loop
+deathConfirm:BF Dead confirm
+scared:BF idle shaking

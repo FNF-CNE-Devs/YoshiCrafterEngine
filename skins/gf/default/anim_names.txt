@@ -1,0 +1,10 @@
+dance:GF Dancing Beat
+cheer:GF Cheer
+singLEFT:GF left note
+singRIGHT:GF Right Note
+singUP:GF Up Note
+singDOWN:GF Down Note
+sad:gf sad
+hairBlow:GF Dancing Beat Hair blowing
+hairFall:GF Dancing Beat Hair Landing
+scared:GF FEAR
