@@ -1,5 +1,6 @@
 package;
 
+import LoadSettings.Settings;
 import openfl.media.Sound;
 import sys.FileSystem;
 import sys.io.File;
@@ -112,22 +113,35 @@ class Paths
 
 	inline static public function modInst(song:String, mod:String)
 	{
-		return Sound.fromFile(Paths.getModsFolder() + '/$mod/assets/songs/$song/Inst.ogg');
+		var path = Paths.getModsFolder() + '/$mod/assets/songs/$song/Inst.ogg';
+		if (Settings.engineSettings.data.developerMode) {
+			if (!FileSystem.exists(path)) {
+				PlayState.showException('Inst for song $song at "$path" does not exist.');
+			}
+		}
+		return Sound.fromFile(path);
 	}
 
 	inline static public function modVoices(song:String, mod:String)
 	{
-		return Sound.fromFile(Paths.getModsFolder() + '/$mod/assets/songs/$song/Voices.ogg');
+		var path = Paths.getModsFolder() + '/$mod/assets/songs/$song/Voices.ogg';
+		if (Settings.engineSettings.data.developerMode) {
+			if (!FileSystem.exists(path)) {
+				PlayState.showException('Voices for song $song at "$path" does not exist.');
+			}
+		}
+		return Sound.fromFile(path);
 	}
 
 	inline static public function stageSound(file:String)
 	{
-		var p = ModSupport.song_stage_path;
-		#if web
-			return Sound.fromFile('$p/$file.mp3');
-		#else
-			return Sound.fromFile('$p/$file.ogg');
-		#end
+		var p = ModSupport.song_stage_path + #if web '/$file.mp3' #else '/$file.ogg' #end;
+		if (Settings.engineSettings.data.developerMode) {
+			if (!FileSystem.exists(p)) {
+				PlayState.showException('Sound at "$p" does not exist.');
+			}
+		}
+		return Sound.fromFile(p);
 	}
 	
 	inline static public function getSkinsPath() {
@@ -169,6 +183,12 @@ class Paths
 	}
 
 	inline static public function getTextOutsideAssets(path:String) {
+		
+		if (Settings.engineSettings.data.developerMode) {
+			if (!FileSystem.exists(path)) {
+				PlayState.showException('Text file at "$path" does not exist.');
+			}
+		}
 		if (Paths.cacheText[path] == null)
 			Paths.cacheText[path] = sys.io.File.getContent(path);
 		return Paths.cacheText[path];
@@ -177,6 +197,12 @@ class Paths
 	#end
 	inline static public function getBitmapOutsideAssets(path:String) {
 		// trace(path);
+		
+		if (Settings.engineSettings.data.developerMode) {
+			if (!FileSystem.exists(path)) {
+				PlayState.showException('Bitmap at "$path" does not exist.');
+			}
+		}
 		if (Paths.cacheBitmap[path] == null) {
 			Paths.cacheBitmap[path] = BitmapData.fromFile(path);
 		} else if (!Paths.cacheBitmap[path].readable) {

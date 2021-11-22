@@ -714,6 +714,18 @@ class OptionsMenu extends MusicBeatState
 			checkboxChecked: false,
 			value: ""
 		});
+		options.push({
+			text : "Developer Mode",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.developerMode = !Settings.engineSettings.data.developerMode;
+					o.setValue(Settings.engineSettings.data.developerMode);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: Settings.engineSettings.data.developerMode,
+			value: ""
+		});
 		#end
 		options.push({
 			text : "[]",

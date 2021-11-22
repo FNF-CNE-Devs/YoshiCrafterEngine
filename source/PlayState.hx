@@ -195,6 +195,41 @@ class PlayState extends MusicBeatState
 	// public var songEvents:SongEventsManager.SongEventsManager;
 	public static var bfList:Array<String> = ["bf", "bf-car", "bf-christmas", "bf-pixel", "bf-pixel-dead"];
 
+	public var numberOfExceptionsShown:Int = 0;
+	public static function showException(ex:String) {
+		if (PlayState.current != null) {
+			var warningSign = new FlxSprite(0, FlxG.height - (25 + (90 * PlayState.current.numberOfExceptionsShown))).loadGraphic(Paths.image("warning", "preload"));
+			warningSign.antialiasing = true;
+			warningSign.x = -warningSign.width;
+			warningSign.cameras = [PlayState.current.camHUD];
+			warningSign.y -= warningSign.height;
+
+			var text = new FlxText(-warningSign.width + 58, warningSign.y + 10);
+			text.text = ex;
+			text.antialiasing = true;
+			// text.y -= warningSign.height;
+			text.setFormat(Paths.font("vcr.ttf"), Std.int(16), FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			text.fieldWidth = text.width - 58 - 15;
+			text.cameras = [PlayState.current.camHUD];
+
+			// Offset : 58
+			PlayState.current.add(warningSign);
+			PlayState.current.add(text);
+			FlxTween.tween(warningSign, {x : 25}, 0.1, {ease : FlxEase.smoothStepInOut, onComplete: function(t) {
+				FlxTween.tween(warningSign, {x : -warningSign.width}, 0.1, {ease : FlxEase.smoothStepInOut, startDelay: 5});
+				FlxTween.tween(text, {x : -warningSign.width + 58}, 0.1, {ease : FlxEase.smoothStepInOut, startDelay: 5, onComplete: function(t) {
+					PlayState.current.remove(warningSign);
+					PlayState.current.remove(text);
+					warningSign.destroy();
+					text.destroy();
+				}});
+			}});
+
+			FlxTween.tween(text, {x : 25 + 58}, 0.1, {ease : FlxEase.smoothStepInOut});
+			PlayState.current.numberOfExceptionsShown++;
+		}
+		trace(ex);
+	}
 	override public function create()
 	{
 		PlayState.current = this;
