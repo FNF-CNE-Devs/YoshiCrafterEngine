@@ -65,6 +65,16 @@ class PlayState extends MusicBeatState
 	public var halloweenLevel:Bool = false;
 	
 	public var vocals:FlxSound;
+
+	public var songPercentPos(get, null):Float;
+
+	public function get_songPercentPos():Float {
+		if (FlxG.sound.music != null) {
+			return Conductor.songPosition / FlxG.sound.music.length;
+		} else {
+			return 0;
+		}
+	}
 	
 	public var dads:Array<Character> = [];
 	public var boyfriends:Array<Boyfriend> = [];
@@ -883,6 +893,30 @@ class PlayState extends MusicBeatState
 		if (!paused)
 			FlxG.sound.playMusic(Paths.modInst(PlayState.SONG.song, songMod), 1, false);
 			// FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
+
+		
+
+		if (Settings.engineSettings.data.showTimer) {
+			var timerBG = new FlxSprite(0, -25).makeGraphic(300, 25, 0xFF222222);
+			timerBG.alpha = 0;
+			timerBG.screenCenter(X);
+			timerBG.scrollFactor.set();
+			timerBG.cameras = [camHUD];
+			add(timerBG);
+
+			var timerBar = new FlxBar(timerBG.x + 4, timerBG.y + 4, LEFT_TO_RIGHT, Std.int(timerBG.width - 8)*5, Std.int(timerBG.height - 8), Conductor, 'songPosition', 0, FlxG.sound.music.length);
+			timerBar.scale.x = 0.2;
+			timerBar.alpha = 0;
+			timerBar.screenCenter(X);
+			timerBar.scrollFactor.set();
+			timerBar.cameras = [camHUD];
+			timerBar.createFilledBar(0xFF000000, 0xFFFFFFFF);
+			add(timerBar);
+
+			FlxTween.tween(timerBG, {y : 25, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
+			FlxTween.tween(timerBar, {y : 29, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
+		}
+
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 		ModSupport.executeFunc(stage, "musicstart");

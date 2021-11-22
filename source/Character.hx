@@ -130,7 +130,12 @@ class Character extends FlxSprite
 			];
 		});
 		var p = Paths.getCharacterFolderPath(curCharacter) + "/Character.hx";
-        characterScript.execute(ModSupport.getExpressionFromPath(p));
+		try {
+			characterScript.execute(ModSupport.getExpressionFromPath(p, true));
+		} catch(e) {
+			return;
+		}
+
 		ModSupport.setHaxeFileDefaultVars(characterScript);
 
 		try {

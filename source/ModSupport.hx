@@ -1,3 +1,8 @@
+import haxe.display.JsonModuleTypes.JsonTypeParameters;
+import flixel.addons.effects.chainable.FlxShakeEffect;
+import flixel.FlxBasic;
+import flixel.text.FlxText;
+import flixel.FlxState;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 import sys.io.File;
@@ -11,6 +16,31 @@ import flixel.math.FlxMath;
 import flixel.tweens.FlxTween;
 using StringTools;
 
+class ExceptionState extends FlxState {
+    var text:String;
+    var resumeTo = 0;
+    public function new<T>(text:String, resumeTo:Int) {
+        super();
+        this.text = text;
+        this.resumeTo = resumeTo;
+    }
+    public override function create() {
+        super.create();
+        var exceptionText = new FlxText(0,0,FlxG.width,text +"\r\n\r\nPress enter to retry.",8);
+        exceptionText.setFormat(Paths.font("vcr.ttf"), Std.int(16), FlxColor.WHITE, LEFT);
+        add(exceptionText);
+    }
+
+    public override function update(elapsed:Float) {
+        super.update(elapsed);
+        if (FlxG.keys.pressed.ENTER) {
+            switch(resumeTo) {
+                case 0:
+                    FlxG.switchState(new PlayState());
+            }
+        }
+    }
+}
 
 class ModSupport {
     public static var song_config_parser:hscript.Interp;
@@ -18,7 +48,7 @@ class ModSupport {
     public static var song_stage_path:String = "";
     public static var currentMod:String = "Friday Night Funkin'";
 
-    public static function getExpressionFromPath(path:String):hscript.Expr {
+    public static function getExpressionFromPath(path:String, critical:Bool = false):hscript.Expr {
         var parser = new hscript.Parser();
 		parser.allowTypes = true;
         var ast = null;
@@ -30,6 +60,11 @@ class ModSupport {
             #end
 		} catch(ex) {
 			trace(ex);
+            if (critical) {
+                var exThingy = Std.string(ex);
+                var line = parser.line;
+                FlxG.switchState(new ExceptionState('Failed to parse the file located at "$path".\r\n$exThingy at $line', 0));
+            }
 		}
         return ast;
     }

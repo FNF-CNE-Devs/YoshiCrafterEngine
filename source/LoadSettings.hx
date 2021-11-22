@@ -136,6 +136,7 @@ class Settings {
 	@:keep public static var customScrollSpeed:Bool = false;
 	@:keep public static var scrollSpeed:Float = 2.5;
 	@:keep public static var freeplayCooldown:Float = 2;
+	@:keep public static var showTimer:Bool = true;
 	@:keep public static var customArrowSkin:String = "default";
 	@:keep public static var emptySkinCache:Bool = false;
 	@:keep public static var rainbowNotes:Bool = false; //Unused

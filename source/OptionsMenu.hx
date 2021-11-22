@@ -307,7 +307,7 @@ class OptionsMenu extends MusicBeatState
 	function addHealthBarRatingCategory() {
 		options.push(
 			{
-				text : "[Health Bar and Rating]",
+				text : "[GUI Options]",
 				updateOnSelected: function(elapsed:Float, o:FNFOption) {
 					
 				},
@@ -315,34 +315,46 @@ class OptionsMenu extends MusicBeatState
 				checkboxChecked: false,
 				value: ""
 			});
-		
 			options.push(
-				{
-					text : "Text quality level",
-					updateOnSelected: function(elapsed:Float, o:FNFOption) {
-						if (controls.LEFT_P) {
-							Settings.engineSettings.data.textQualityLevel = round(Settings.engineSettings.data.textQualityLevel - 0.5, 2);
-							if (Settings.engineSettings.data.textQualityLevel < 1) Settings.engineSettings.data.textQualityLevel = 1;
-		
-							var str = Std.string(Settings.engineSettings.data.textQualityLevel);
-							if (str.indexOf(".") == -1) str += ".0";
-		
-							o.setValue(str);
-						}
-						if (controls.RIGHT_P) {
-							Settings.engineSettings.data.textQualityLevel = round(Settings.engineSettings.data.textQualityLevel + 0.5, 2);
-							if (Settings.engineSettings.data.textQualityLevel > 2.5) Settings.engineSettings.data.textQualityLevel = 2.5;
-		
-							var str = Std.string(Settings.engineSettings.data.textQualityLevel);
-							if (str.indexOf(".") == -1) str += ".0";
-		
-							o.setValue(str);
-						}
-					},
-					checkbox: false,
-					checkboxChecked: false,
-					value: Std.string(Settings.engineSettings.data.textQualityLevel).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.textQualityLevel) + ".0" : Std.string(Settings.engineSettings.data.textQualityLevel)
-				});
+			{
+				text : "Text quality level",
+				updateOnSelected: function(elapsed:Float, o:FNFOption) {
+					if (controls.LEFT_P) {
+						Settings.engineSettings.data.textQualityLevel = round(Settings.engineSettings.data.textQualityLevel - 0.5, 2);
+						if (Settings.engineSettings.data.textQualityLevel < 1) Settings.engineSettings.data.textQualityLevel = 1;
+	
+						var str = Std.string(Settings.engineSettings.data.textQualityLevel);
+						if (str.indexOf(".") == -1) str += ".0";
+	
+						o.setValue(str);
+					}
+					if (controls.RIGHT_P) {
+						Settings.engineSettings.data.textQualityLevel = round(Settings.engineSettings.data.textQualityLevel + 0.5, 2);
+						if (Settings.engineSettings.data.textQualityLevel > 2.5) Settings.engineSettings.data.textQualityLevel = 2.5;
+	
+						var str = Std.string(Settings.engineSettings.data.textQualityLevel);
+						if (str.indexOf(".") == -1) str += ".0";
+	
+						o.setValue(str);
+					}
+				},
+				checkbox: false,
+				checkboxChecked: false,
+				value: Std.string(Settings.engineSettings.data.textQualityLevel).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.textQualityLevel) + ".0" : Std.string(Settings.engineSettings.data.textQualityLevel)
+			});
+			options.push({
+				text : "Show timer",
+				updateOnSelected: function(elapsed:Float, o:FNFOption) {
+					if (controls.ACCEPT) {
+						Settings.engineSettings.data.showTimer = !Settings.engineSettings.data.showTimer;
+						o.checkboxChecked = Settings.engineSettings.data.showTimer;
+						o.check(Settings.engineSettings.data.showTimer);
+					}
+				},
+				checkbox: true,
+				checkboxChecked: Settings.engineSettings.data.showTimer,
+				value: ""
+			});
 		options.push({
 			text : "Show press delay",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
