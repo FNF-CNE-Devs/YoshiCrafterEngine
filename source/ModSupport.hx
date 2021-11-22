@@ -8,6 +8,7 @@ import flixel.FlxSprite;
 import openfl.display.BitmapData;
 import flixel.FlxG;
 import flixel.math.FlxMath;
+import flixel.tweens.FlxTween;
 using StringTools;
 
 
@@ -53,6 +54,7 @@ class ModSupport {
 		hscript.variables.set("Conductor", Conductor);
 		hscript.variables.set("StringTools", StringTools);
 		hscript.variables.set("FlxSound", FlxSound);
+		hscript.variables.set("FlxTween", FlxTween);
 		// hscript.variables.set("FlxColor", Int);
     }
     public static function executeFunc(hscript:hscript.Interp, funcName:String, ?args:Array<Dynamic>):Dynamic {

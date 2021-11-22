@@ -119,6 +119,7 @@ class Character extends FlxSprite
 		characterScript.variables.set("dance", function() {playAnim("idle");});
 		characterScript.variables.set("create", function() {});
 		characterScript.variables.set("update", function(elapsed:Float) {});
+		characterScript.variables.set("onAnim", function(animName:String) {});
 		characterScript.variables.set("getColors", function(altAnim:Bool) {
 			return [
 				(this.isPlayer ? new FlxColor(0xFF66FF33) : new FlxColor(0xFFFF0000)),
@@ -129,8 +130,6 @@ class Character extends FlxSprite
 			];
 		});
 		var p = Paths.getCharacterFolderPath(curCharacter) + "/Character.hx";
-		trace(p);
-		trace(FileSystem.exists(p));
         characterScript.execute(ModSupport.getExpressionFromPath(p));
 		ModSupport.setHaxeFileDefaultVars(characterScript);
 
@@ -290,6 +289,7 @@ class Character extends FlxSprite
 		if (singAnims.contains(AnimName)) {
 			lastNoteHitTime = Conductor.songPosition;
 		}
+		ModSupport.executeFunc(characterScript, "onAnim", [AnimName]);
 
 		if (animation.getByName(AnimName) == null) {
 			trace(AnimName + " doesn't exist on character " + curCharacter);
