@@ -16,10 +16,6 @@ import flixel.math.FlxMath;
 import flixel.tweens.FlxTween;
 using StringTools;
 
-class FlxColor_Mod extends FlxColor {
-
-}
-
 class ExceptionState extends FlxState {
     var text:String;
     var resumeTo = 0;

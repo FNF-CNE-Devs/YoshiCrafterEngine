@@ -2340,6 +2340,73 @@ class PlayState extends MusicBeatState
 			}
 		}
 	}
+	// function goodNoteHit(note:Note):Void
+	// {
+	// 	if (!note.wasGoodHit)
+	// 	{
+	// 		var rating = "";
+	// 		if (!note.isSustainNote)
+	// 		{
+	// 			rating = popUpScore(note.strumTime);
+	// 			combo += 1;
+	// 		}
+	// 		if (rating == "shit") {
+	// 			health -= 0.09375;
+	// 			noteMiss(note.noteData % SONG.keyNumber);
+	// 			note.kill();
+	// 			notes.remove(note, true);
+	// 			note.destroy();
+	// 			return;
+	// 		}
+	// 		switch(rating) {
+	// 			case "bad" :
+	// 			case "good" :
+	// 				health += 0.06;
+	// 			case "sick" :
+	// 				health += 0.10;
+	// 		}
+
+	// 		// if (note.noteData >= 0)
+	// 		// 	health += 0.023;
+	// 		// else
+	// 		// 	health += 0.004;
+
+			
+	// 		switch (Note.noteNumberScheme[note.noteData % Note.noteNumberScheme.length])
+	// 		{
+	// 			case Left:
+	// 				boyfriend.playAnim('singLEFT', true);
+	// 			case Down:
+	// 				boyfriend.playAnim('singDOWN', true);
+	// 			case Up:
+	// 				boyfriend.playAnim('singUP', true);
+	// 			case Right:
+	// 				boyfriend.playAnim('singRIGHT', true);
+	// 		}
+
+	// 		playerStrums.forEach(function(spr:FlxSprite)
+	// 		{
+	// 			if (Math.abs(note.noteData) == spr.ID)
+	// 			{
+	// 				spr.animation.play('confirm', true);
+	// 			}
+	// 		});
+
+	// 		note.wasGoodHit = true;
+	// 		vocals.volume = 1;
+
+	// 		if (!note.isSustainNote)
+	// 		{
+	// 			note.kill();
+	// 			notes.remove(note, true);
+	// 			note.destroy();
+	// 		}
+	// 		if (note.isSustainNote) {
+	// 			numberOfNotes += 0.25;
+	// 			accuracy += 0.25;
+	// 		}
+	// 	}
+	// }
 
 	override function stepHit()
 	{

@@ -41,6 +41,13 @@ class Note extends FlxSprite
 	public var noteScore:Float = 1;
 
 	public var noteType:Int = 0;
+	// #if secret
+	// 	var c:FlxColor = new FlxColor(0xFFFF0000);
+	// 	c.hue = (strumTime / 100) % 359;
+	// 	this.color = c;
+	// #else
+	// 	color = colors[(noteData % 4) + 1];
+	// #end
 
 	// public static var skinBitmap:FlxAtlasFrames = null;
 
@@ -58,6 +65,9 @@ class Note extends FlxSprite
 	public static var GREEN_NOTE:Int = 2;
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
+
+	public static var noteTypes:Array<hscript.Expr> = [];
+	public var script:hscript.Interp;
 
 	public static var noteNumberSchemes:Map<Int, Array<NoteDirection>> = [
 		1 => [Up],
@@ -131,13 +141,7 @@ class Note extends FlxSprite
 					if (Settings.engineSettings.data.customArrowColors) {
 						var colors:Array<FlxColor> = (mustPress || Settings.engineSettings.data.customArrowColors_allChars) ? PlayState.current.boyfriend.getColors(false) : PlayState.current.boyfriend.getColors(false);
 						frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored') : Paths.getSparrowAtlas_Custom((Paths.getSkinsPath() + "notes/" + Settings.engineSettings.data.customArrowSkin.toLowerCase()).replace("/", "\\").replace("\r", ""));
-						#if secret
-							var c:FlxColor = new FlxColor(0xFFFF0000);
-							c.hue = (strumTime / 100) % 359;
-							this.color = c;
-						#else
-							color = colors[(noteData % 4) + 1];
-						#end
+						
 					} else {
 						frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets') : Paths.getSparrowAtlas_Custom((Paths.getSkinsPath() + "notes/" + Settings.engineSettings.data.customArrowSkin.toLowerCase()).replace("/", "\\").replace("\r", ""));
 					}
@@ -174,6 +178,9 @@ class Note extends FlxSprite
 
 		var noteNumberScheme:Array<NoteDirection> = noteNumberSchemes[PlayState.SONG.keyNumber];
 		if (noteNumberScheme == null) noteNumberScheme = noteNumberSchemes[4];
+
+		script = new hscript.Interp();
+		ModSupport.setHaxeFileDefaultVars(script);
 
 		// if (prevNote == null)
 		// 	prevNote = this;
@@ -299,13 +306,7 @@ class Note extends FlxSprite
 		if (mustPress)
 		{
 			// The * 0.5 is so that it's easier to hit them too late, instead of too early
-			if (isSustainNote) {
-				canBeHit = (strumTime - (Conductor.stepCrochet * 0.6) < Conductor.songPosition) && (strumTime + (Conductor.stepCrochet) > Conductor.songPosition);
-			} else {
-				canBeHit = (strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5));
-			}
-			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
-				tooLate = true;
+			
 		}
 		else
 		{
