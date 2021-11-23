@@ -13,6 +13,15 @@ function create() {
     character.addOffset("singLEFT", -10, 10);
     character.addOffset("singDOWN", 0, -30);
 
-    character.camOffset.x = character.x - 400;
     character.playAnim('idle');
+}
+
+function getColors(altAnim) {
+    return [
+        new FlxColor(0xFFAF66CE),
+        new FlxColor(0xFFAF66CE),
+        new FlxColor(0xFFAF66CE),
+        new FlxColor(0xFFAF66CE),
+        new FlxColor(0xFFAF66CE)
+    ];
 }

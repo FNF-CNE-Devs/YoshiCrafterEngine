@@ -36,7 +36,7 @@ function create() {
 
     character.playAnim('idle');
 
-    character.flipX = true
+    character.flipX = true;
     // character.camOffset.y = character.x - 600;
 }
 

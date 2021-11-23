@@ -105,6 +105,7 @@ class ModSupport {
 		hscript.variables.set("File", File);
 		hscript.variables.set("FileSystem", FileSystem);
 		hscript.variables.set("FlxColor", FlxColor_Helper);
+		hscript.variables.set("Boyfriend", Boyfriend);
 		// hscript.variables.set("FlxColor", Int);
     }
     public static function executeFunc(hscript:hscript.Interp, funcName:String, ?args:Array<Dynamic>):Dynamic {

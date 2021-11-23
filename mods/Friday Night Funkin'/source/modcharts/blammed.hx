@@ -71,12 +71,13 @@ function create() {
         gfDark.visible = false;
         PlayState.add(gfDark);
 
-        bfDark = new Boyfriend(770, 100, PlayState.SONG.player1, EngineSettings.customBFSkin == "default" ? "BF_blammed" : "blammed");
+        // bfDark = new Boyfriend(770, 100, PlayState.SONG.player1, EngineSettings.customBFSkin == "default" ? "BF_blammed" : "blammed");
+        bfDark = new Boyfriend(770, 100, "BF_blammed");
         bfDark.visible = false;
         PlayState.add(bfDark);
         PlayState.boyfriends.push(bfDark);
 
-        dadDark = new Character(100, 100, "pico", false, "PICO_blammed");
+        dadDark = new Character(100, 100, "pico-blammed");
         dadDark.visible = false;
         PlayState.dads.push(dadDark);
         PlayState.add(dadDark);
