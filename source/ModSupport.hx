@@ -42,6 +42,17 @@ class ExceptionState extends FlxState {
     }
 }
 
+class FlxColor_Helper {
+    var color(get, null):Int;
+    function get_color() {
+        return cast(fc, Int);
+    }
+    var fc:FlxColor;
+    public function new(color:Int) {
+        fc = new FlxColor(color);
+    }
+}
+
 class ModSupport {
     public static var song_config_parser:hscript.Interp;
     public static var song_modchart_path:String = "";
@@ -92,7 +103,7 @@ class ModSupport {
 		hscript.variables.set("FlxTween", FlxTween);
 		hscript.variables.set("File", File);
 		hscript.variables.set("FileSystem", FileSystem);
-		hscript.variables.set("FlxColor", FlxColor_Mod);
+		hscript.variables.set("FlxColor", FlxColor_Helper);
 		// hscript.variables.set("FlxColor", Int);
     }
     public static function executeFunc(hscript:hscript.Interp, funcName:String, ?args:Array<Dynamic>):Dynamic {
