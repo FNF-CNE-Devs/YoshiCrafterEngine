@@ -13,11 +13,11 @@ var dadDark:Character;
 var gfDark:Character;
 
 function create() {
-    stage = cast(PlayState.songEvents.stage, Stage.Philly);
+    stage = PlayState.stage;
     
     if (EngineSettings.blammedEffect) {
         var cBF = EngineSettings.customBFSkin;
-        if (!sys.FileSystem.exists(Paths.getSkinsPath() + '/bf/$cBF/blammed.png')) {
+        if (!FileSystem.exists(Paths.getSkinsPath() + '/bf/$cBF/blammed.png')) {
             bfDarkMode = new BitmapData(PlayState.boyfriend.pixels.image.width, PlayState.boyfriend.pixels.image.height, true, 0xFF000000);
             bfDarkMode.lock();
             var bfBitmap:BitmapData = PlayState.boyfriend.pixels;
@@ -26,24 +26,27 @@ function create() {
                     var color = new FlxColor(bfBitmap.getPixel32(x, y));
                     var average = (color.red + color.green + color.blue) / 3;
                     if (average < 50) {
-                        var newColor:Float = (1 - (average / 50)) * color.alphaFloat;
-                        var c = new FlxColor(0xFFFFFFFF);
-                        c.alphaFloat = newColor;
-                        bfDarkMode.setPixel32(x, y, c);
+                        var newColor:Float = (1 - (average / 50));
+                        var c = 0xFFFFFFFF;
+                        c.redFloat = newColor;
+                        c.blueFloat = newColor;
+                        c.greenFloat = newColor;
+                        c.alphaFloat = color.alphaFloat;
+                        bfDarkMode.setPixel32(x, y, c.color);
                     }
                 }
             }
             bfDarkMode.unlock();
-            sys.io.File.saveBytes(Paths.getSkinsPath() + '/bf/$cBF/blammed.png', bfDarkMode.encode(bfDarkMode.rect, new PNGEncoderOptions(true)));
+            File.saveBytes(Paths.getSkinsPath() + '/bf/$cBF/blammed.png', bfDarkMode.encode(bfDarkMode.rect, new PNGEncoderOptions(true)));
         }
 
-        if (!sys.FileSystem.exists(Paths.getSkinsPath() + '/bf/$cBF/blammed.xml')) sys.io.File.copy(Paths.getSkinsPath() + '/bf/$cBF/spritesheet.xml', Paths.getSkinsPath() + '/bf/$cBF/blammed.xml');
+        if (!FileSystem.exists(Paths.getSkinsPath() + '/bf/$cBF/blammed.xml')) File.copy(Paths.getSkinsPath() + '/bf/$cBF/spritesheet.xml', Paths.getSkinsPath() + '/bf/$cBF/blammed.xml');
         
         
 
 
         var cGF = EngineSettings.customGFSkin;
-        if (!sys.FileSystem.exists(Paths.getSkinsPath() + '/gf/$cGF/blammed.png')) {
+        if (!FileSystem.exists(Paths.getSkinsPath() + '/gf/$cGF/blammed.png')) {
             gfDarkMode = new BitmapData(PlayState.gf.pixels.image.width, PlayState.gf.pixels.image.height, true, 0xFF000000);
             gfDarkMode.lock();
             var gfBitmap:BitmapData = PlayState.gf.pixels;
@@ -55,14 +58,14 @@ function create() {
                         var newColor:Float = (1 - (average / 50)) * color.alphaFloat;
                         var c = new FlxColor(0xFFFFFFFF);
                         c.alphaFloat = newColor;
-                        gfDarkMode.setPixel32(x, y, c);
+                        gfDarkMode.setPixel32(x, y, c.color);
                     }
                 }
             }
             gfDarkMode.unlock();
-            sys.io.File.saveBytes(Paths.getSkinsPath() + '/gf/$cGF/blammed.png', gfDarkMode.encode(gfDarkMode.rect, new PNGEncoderOptions(true)));
+            File.saveBytes(Paths.getSkinsPath() + '/gf/$cGF/blammed.png', gfDarkMode.encode(gfDarkMode.rect, new PNGEncoderOptions(true)));
         }
-        if (!sys.FileSystem.exists(Paths.getSkinsPath() + '/gf/$cGF/blammed.xml')) sys.io.File.copy(Paths.getSkinsPath() + '/gf/$cGF/spritesheet.xml', Paths.getSkinsPath() + '/gf/$cGF/blammed.xml');
+        if (!FileSystem.exists(Paths.getSkinsPath() + '/gf/$cGF/blammed.xml')) File.copy(Paths.getSkinsPath() + '/gf/$cGF/spritesheet.xml', Paths.getSkinsPath() + '/gf/$cGF/blammed.xml');
 
         gfDark = new Character(400, 130, PlayState.gf.curCharacter, false, "blammed");
         gfDark.visible = false;

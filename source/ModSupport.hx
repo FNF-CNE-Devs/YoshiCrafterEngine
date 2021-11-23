@@ -16,6 +16,10 @@ import flixel.math.FlxMath;
 import flixel.tweens.FlxTween;
 using StringTools;
 
+class FlxColor_Mod extends FlxColor {
+
+}
+
 class ExceptionState extends FlxState {
     var text:String;
     var resumeTo = 0;
@@ -90,6 +94,9 @@ class ModSupport {
 		hscript.variables.set("StringTools", StringTools);
 		hscript.variables.set("FlxSound", FlxSound);
 		hscript.variables.set("FlxTween", FlxTween);
+		hscript.variables.set("File", File);
+		hscript.variables.set("FileSystem", FileSystem);
+		hscript.variables.set("FlxColor", FlxColor_Mod);
 		// hscript.variables.set("FlxColor", Int);
     }
     public static function executeFunc(hscript:hscript.Interp, funcName:String, ?args:Array<Dynamic>):Dynamic {
