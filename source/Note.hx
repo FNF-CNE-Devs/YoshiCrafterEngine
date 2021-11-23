@@ -18,11 +18,11 @@ enum NoteType {
 	Normal;
 }
 
-enum NoteDirection {
-	Left;
-	Down;
-	Up;
-	Right;
+enum abstract NoteDirection(Int) {
+	var Left = 0;
+	var Down = 1;
+	var Up = 2;
+	var Right = 3;
 }
 class Note extends FlxSprite
 {
@@ -85,93 +85,94 @@ class Note extends FlxSprite
 	}
 
 	public function createNote() {
-		switch(noteType) {
-			default:
-				if (PlayState.curStage.startsWith('school')) {
-					if (Settings.engineSettings.data.customArrowColors) {
-						var colors:Array<FlxColor> = (mustPress || Settings.engineSettings.data.customArrowColors_allChars) ? PlayState.current.boyfriend.getColors(false) : PlayState.current.boyfriend.getColors(false);
-						loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels-colored', 'week6'), true, 17, 17);
-						#if secret
-							var c:FlxColor = new FlxColor(0xFFFF0000);
-							c.hue = (strumTime / 100) % 359;
-							this.color = c;
-						#else
-							color = colors[(noteData % 4) + 1];
-						#end
-					} else {
-						loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
-					}
+		// switch(noteType) {
+		// 	default:
+		// 		if (PlayState.curStage.startsWith('school')) {
+		// 			if (Settings.engineSettings.data.customArrowColors) {
+		// 				var colors:Array<FlxColor> = (mustPress || Settings.engineSettings.data.customArrowColors_allChars) ? PlayState.current.boyfriend.getColors(false) : PlayState.current.boyfriend.getColors(false);
+		// 				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels-colored', 'week6'), true, 17, 17);
+		// 				#if secret
+		// 					var c:FlxColor = new FlxColor(0xFFFF0000);
+		// 					c.hue = (strumTime / 100) % 359;
+		// 					this.color = c;
+		// 				#else
+		// 					color = colors[(noteData % 4) + 1];
+		// 				#end
+		// 			} else {
+		// 				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
+		// 			}
 	
-					animation.add('greenScroll', [6]);
-					animation.add('redScroll', [7]);
-					animation.add('blueScroll', [5]);
-					animation.add('purpleScroll', [4]);
+		// 			animation.add('greenScroll', [6]);
+		// 			animation.add('redScroll', [7]);
+		// 			animation.add('blueScroll', [5]);
+		// 			animation.add('purpleScroll', [4]);
 	
-					if (isSustainNote)
-					{
-						if (Settings.engineSettings.data.customArrowColors) {
-							var colors:Array<FlxColor> = (mustPress || Settings.engineSettings.data.customArrowColors_allChars) ? PlayState.current.boyfriend.getColors(false) : PlayState.current.boyfriend.getColors(false);
-							// loadGraphic(Paths.image('weeb/pixelUI/arrowEnds-colored', 'week6'), true, 17, 17);
-							loadGraphic(Paths.image('weeb/pixelUI/arrowEnds-colored', 'week6'), true, 7, 6);
-							#if secret
-								var c:FlxColor = new FlxColor(0xFFFF0000);
-								c.hue = (strumTime / 100) % 359;
-								this.color = c;
-							#else
-								color = colors[noteData % 4];
-							#end
-						} else {
-							loadGraphic(Paths.image('weeb/pixelUI/arrowEnds', 'week6'), true, 7, 6);
-						}
+		// 			if (isSustainNote)
+		// 			{
+		// 				if (Settings.engineSettings.data.customArrowColors) {
+		// 					var colors:Array<FlxColor> = (mustPress || Settings.engineSettings.data.customArrowColors_allChars) ? PlayState.current.boyfriend.getColors(false) : PlayState.current.boyfriend.getColors(false);
+		// 					// loadGraphic(Paths.image('weeb/pixelUI/arrowEnds-colored', 'week6'), true, 17, 17);
+		// 					loadGraphic(Paths.image('weeb/pixelUI/arrowEnds-colored', 'week6'), true, 7, 6);
+		// 					#if secret
+		// 						var c:FlxColor = new FlxColor(0xFFFF0000);
+		// 						c.hue = (strumTime / 100) % 359;
+		// 						this.color = c;
+		// 					#else
+		// 						color = colors[noteData % 4];
+		// 					#end
+		// 				} else {
+		// 					loadGraphic(Paths.image('weeb/pixelUI/arrowEnds', 'week6'), true, 7, 6);
+		// 				}
 	
-						animation.add('purpleholdend', [4]);
-						animation.add('greenholdend', [6]);
-						animation.add('redholdend', [7]);
-						animation.add('blueholdend', [5]);
+		// 				animation.add('purpleholdend', [4]);
+		// 				animation.add('greenholdend', [6]);
+		// 				animation.add('redholdend', [7]);
+		// 				animation.add('blueholdend', [5]);
 	
-						animation.add('purplehold', [0]);
-						animation.add('greenhold', [2]);
-						animation.add('redhold', [3]);
-						animation.add('bluehold', [1]);
-					}
+		// 				animation.add('purplehold', [0]);
+		// 				animation.add('greenhold', [2]);
+		// 				animation.add('redhold', [3]);
+		// 				animation.add('bluehold', [1]);
+		// 			}
 	
-					setGraphicSize(Std.int(width * PlayState.daPixelZoom));
-					updateHitbox();
-				} else {
-					if (Settings.engineSettings.data.customArrowColors) {
-						var colors:Array<FlxColor> = (mustPress || Settings.engineSettings.data.customArrowColors_allChars) ? PlayState.current.boyfriend.getColors(false) : PlayState.current.boyfriend.getColors(false);
-						frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored') : Paths.getSparrowAtlas_Custom((Paths.getSkinsPath() + "notes/" + Settings.engineSettings.data.customArrowSkin.toLowerCase()).replace("/", "\\").replace("\r", ""));
+		// 			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+		// 			updateHitbox();
+		// 		} else {
+		// 			if (Settings.engineSettings.data.customArrowColors) {
+		// 				var colors:Array<FlxColor> = (mustPress || Settings.engineSettings.data.customArrowColors_allChars) ? PlayState.current.boyfriend.getColors(false) : PlayState.current.boyfriend.getColors(false);
+		// 				frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored') : Paths.getSparrowAtlas_Custom((Paths.getSkinsPath() + "notes/" + Settings.engineSettings.data.customArrowSkin.toLowerCase()).replace("/", "\\").replace("\r", ""));
 						
-					} else {
-						frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets') : Paths.getSparrowAtlas_Custom((Paths.getSkinsPath() + "notes/" + Settings.engineSettings.data.customArrowSkin.toLowerCase()).replace("/", "\\").replace("\r", ""));
-					}
+		// 			} else {
+		// 				frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets') : Paths.getSparrowAtlas_Custom((Paths.getSkinsPath() + "notes/" + Settings.engineSettings.data.customArrowSkin.toLowerCase()).replace("/", "\\").replace("\r", ""));
+		// 			}
 	
-					animation.addByPrefix('greenScroll', 'green0');
-					animation.addByPrefix('redScroll', 'red0');
-					animation.addByPrefix('blueScroll', 'blue0');
-					animation.addByPrefix('purpleScroll', 'purple0');
+		// 			animation.addByPrefix('greenScroll', 'green0');
+		// 			animation.addByPrefix('redScroll', 'red0');
+		// 			animation.addByPrefix('blueScroll', 'blue0');
+		// 			animation.addByPrefix('purpleScroll', 'purple0');
 	
-					animation.addByPrefix('purpleholdend', 'pruple end hold');
-					animation.addByPrefix('greenholdend', 'green hold end');
-					animation.addByPrefix('redholdend', 'red hold end');
-					animation.addByPrefix('blueholdend', 'blue hold end');
+		// 			animation.addByPrefix('purpleholdend', 'pruple end hold');
+		// 			animation.addByPrefix('greenholdend', 'green hold end');
+		// 			animation.addByPrefix('redholdend', 'red hold end');
+		// 			animation.addByPrefix('blueholdend', 'blue hold end');
 	
-					animation.addByPrefix('purplehold', 'purple hold piece');
-					animation.addByPrefix('greenhold', 'green hold piece');
-					animation.addByPrefix('redhold', 'red hold piece');
-					animation.addByPrefix('bluehold', 'blue hold piece');
+		// 			animation.addByPrefix('purplehold', 'purple hold piece');
+		// 			animation.addByPrefix('greenhold', 'green hold piece');
+		// 			animation.addByPrefix('redhold', 'red hold piece');
+		// 			animation.addByPrefix('bluehold', 'blue hold piece');
 	
-					setGraphicSize(Std.int(width * 0.7));
-					updateHitbox();
-					antialiasing = true;
-				}
-		}
+		// 			setGraphicSize(Std.int(width * 0.7));
+		// 			updateHitbox();
+		// 			antialiasing = true;
+		// 		}
+		// }
 		scale.x *= swagWidth / _swagWidth;
 		if (!isSustainNote) {
 			scale.y *= swagWidth / _swagWidth;
 		}
 	}
 	public var noteOffset:FlxPoint = new FlxPoint(0,0);
+	public var enableRating:Bool = true;
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?mustHit = true)
 	{
 		super();
@@ -180,6 +181,21 @@ class Note extends FlxSprite
 		if (noteNumberScheme == null) noteNumberScheme = noteNumberSchemes[4];
 
 		script = new hscript.Interp();
+		script.variables.set("enableRating", function(enable:Bool) {enableRating = enable;});
+		script.variables.set("note", this);
+		var noteScriptName = "DefaultNote";
+		var noteScriptMod = "Friday Night Funkin'";
+		var noteType:Int = Math.floor(noteData / PlayState.SONG.keyNumber);
+		if (PlayState.SONG.noteTypes.length < noteType) {
+			var splittedThingy = PlayState.SONG.noteTypes[noteType].split(":");
+			if (splittedThingy.length < 2) {
+				noteScriptName = splittedThingy[0];
+			} else {
+				noteScriptName = splittedThingy[1];
+				noteScriptMod = splittedThingy[0];
+			}
+		}
+		script.execute(ModSupport.getExpressionFromPath(Paths.getModsFolder() + '/$noteScriptMod/source/notes/$noteScriptName.hx'));
 		ModSupport.setHaxeFileDefaultVars(script);
 
 		// if (prevNote == null)
@@ -203,7 +219,13 @@ class Note extends FlxSprite
 
 		var daStage:String = PlayState.curStage;
 
-		createNote();
+		// createNote();
+		ModSupport.executeFunc(script, "create");
+
+		scale.x *= swagWidth / _swagWidth;
+		if (!isSustainNote) {
+			scale.y *= swagWidth / _swagWidth;
+		}
 
 		x += swagWidth * (noteData % PlayState.SONG.keyNumber);
 		// switch (noteData % 4)
@@ -302,7 +324,7 @@ class Note extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-
+		ModSupport.executeFunc(script, "update", [elapsed]);
 		if (mustPress)
 		{
 			// The * 0.5 is so that it's easier to hit them too late, instead of too early

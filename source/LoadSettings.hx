@@ -149,6 +149,7 @@ class Settings {
 	@:keep public static var botplay:Bool = false;
 	@:keep public static var blammedEffect:Bool = true;
 	@:keep public static var yoshiEngineCharter:Bool = true;
+	@:keep public static var developerMode:Bool = false;
 
 	@:keep public static var control_LEFT:FlxKey = FlxKey.LEFT;
 	@:keep public static var control_LEFT_alt:FlxKey = FlxKey.A;

@@ -1,5 +1,6 @@
 package;
 
+import sys.FileSystem;
 import Conductor.BPMChangeEvent;
 import Section.SwagSection;
 import Song.SwagSong;
@@ -103,7 +104,8 @@ class ChartingState_New extends MusicBeatState
 				player2: 'dad',
 				speed: 1,
 				validScore: false,
-				keyNumber: 4
+				keyNumber: 4,
+				noteTypes : ["Friday Night Funkin':DefaultNote"]
 			};
 		}
 
@@ -232,18 +234,28 @@ class ChartingState_New extends MusicBeatState
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
 
-		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		// var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		var characters:Array<String> = [];
+		var m = Paths.getModsFolder();
+		for(folder in FileSystem.readDirectory(m)) {
+			if (FileSystem.isDirectory('$m/$folder') && FileSystem.exists('$m/$folder/assets/characters/')) {
+				for(char in FileSystem.readDirectory('$m/$folder/assets/characters/')) {
+					characters.push('$folder:$char');
+				}
+			}
+		}
 
 		var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
 			_song.player1 = characters[Std.parseInt(character)];
-		});
+		}, new FlxUIDropDownHeader(280));
+		player1DropDown.width = player1DropDown.width * 2;
 		player1DropDown.selectedLabel = _song.player1;
 
-		var player2DropDown = new FlxUIDropDownMenu(140, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		var player2DropDown = new FlxUIDropDownMenu(10, 125, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
 			_song.player2 = characters[Std.parseInt(character)];
-		});
+		}, new FlxUIDropDownHeader(280));
 
 		player2DropDown.selectedLabel = _song.player2;
 

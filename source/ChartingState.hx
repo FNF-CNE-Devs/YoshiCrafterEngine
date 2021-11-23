@@ -126,7 +126,8 @@ class ChartingState extends MusicBeatState
 				player2: 'dad',
 				speed: 1,
 				validScore: false,
-				keyNumber: 4
+				keyNumber: 4,
+				noteTypes : ["Friday Night Funkin':DefaultNote"]
 			};
 		}
 

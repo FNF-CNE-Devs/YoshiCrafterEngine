@@ -1,5 +1,7 @@
 package;
 
+import flixel.addons.transition.TransitionData;
+import LoadSettings.Settings;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
 import flixel.addons.transition.FlxTransitionableState;
@@ -15,6 +17,16 @@ class MusicBeatState extends FlxUIState
 	private var curStep:Int = 0;
 	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
+
+	public function new(?transIn:TransitionData, ?transOut:TransitionData) {
+		
+		if (Settings.engineSettings != null) {
+			if (Settings.engineSettings.data.developerMode) {
+				Paths.clearCache();
+			}
+		}
+		super(transIn, transOut);
+	}
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;

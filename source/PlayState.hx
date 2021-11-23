@@ -274,6 +274,10 @@ class PlayState extends MusicBeatState
 		if (SONG == null)
 			SONG = Song.loadModFromJson('tutorial', 'Friday Night Funkin\'');
 
+		if (SONG.keyNumber == null)
+			SONG.keyNumber = 4;
+		if (SONG.noteTypes == null)
+			SONG.noteTypes = ["Friday Night Funkin':DefaultNote"];
 		if (Settings.engineSettings.data.botplay)
 			SONG.validScore = false;
 		Conductor.mapBPMChanges(SONG);
@@ -1652,9 +1656,8 @@ class PlayState extends MusicBeatState
 				{
 					if ((daNote.tooLate || !daNote.wasGoodHit) && daNote.mustPress)
 					{
-						noteMiss(daNote.noteData % SONG.keyNumber);
-						health -= daNote.isSustainNote ? 0.03125 : 0.125;
-						vocals.volume = 0;
+						ModSupport.executeFunc(daNote.script, "onMiss", [Note.noteNumberScheme[daNote.noteData % PlayState.SONG.keyNumber]]);
+						// noteMiss(daNote.noteData % SONG.keyNumber);
 					}
 					
 					daNote.active = false;
@@ -2205,6 +2208,7 @@ class PlayState extends MusicBeatState
 
 	function noteMiss(direction:Int = 1):Void
 	{
+		vocals.volume = 0;
 		if (!boyfriend.stunned)
 		{
 			// health -= 0.04;
@@ -2248,6 +2252,8 @@ class PlayState extends MusicBeatState
 	{
 		// just double pasting this shit cuz fuk u
 		// REDO THIS SYSTEM!
+		// ok then -Y
+
 		var upP = controls.UP_P;
 		var rightP = controls.RIGHT_P;
 		var downP = controls.DOWN_P;
@@ -2277,26 +2283,25 @@ class PlayState extends MusicBeatState
 	{
 		if (!note.wasGoodHit)
 		{
-			var rating = "";
-			if (!note.isSustainNote)
-			{
-				rating = popUpScore(note.strumTime);
-				combo += 1;
-			}
-			if (rating == "shit") {
-				health -= 0.09375;
-				noteMiss(note.noteData % SONG.keyNumber);
-				note.kill();
-				notes.remove(note, true);
-				note.destroy();
-				return;
-			}
-			switch(rating) {
-				case "bad" :
-				case "good" :
-					health += 0.06;
-				case "sick" :
-					health += 0.10;
+			if (note.enableRating) {
+				var rating = "";
+				if (!note.isSustainNote)
+				{
+					rating = popUpScore(note.strumTime);
+					combo += 1;
+				}
+				if (rating == "shit") {
+					health -= 0.09375;
+					noteMiss(note.noteData % SONG.keyNumber);
+					return;
+				}
+				switch(rating) {
+					case "bad" :
+					case "good" :
+						health += 0.06;
+					case "sick" :
+						health += 0.10;
+				}
 			}
 
 			// if (note.noteData >= 0)
@@ -2304,18 +2309,7 @@ class PlayState extends MusicBeatState
 			// else
 			// 	health += 0.004;
 
-			
-			switch (Note.noteNumberScheme[note.noteData % Note.noteNumberScheme.length])
-			{
-				case Left:
-					boyfriend.playAnim('singLEFT', true);
-				case Down:
-					boyfriend.playAnim('singDOWN', true);
-				case Up:
-					boyfriend.playAnim('singUP', true);
-				case Right:
-					boyfriend.playAnim('singRIGHT', true);
-			}
+			ModSupport.executeFunc(note.script, "onPlayerHit", [Note.noteNumberScheme[note.noteData % PlayState.SONG.keyNumber]]);
 
 			playerStrums.forEach(function(spr:FlxSprite)
 			{
@@ -2334,7 +2328,7 @@ class PlayState extends MusicBeatState
 				notes.remove(note, true);
 				note.destroy();
 			}
-			if (note.isSustainNote) {
+			if (note.isSustainNote && note.enableRating) {
 				numberOfNotes += 0.25;
 				accuracy += 0.25;
 			}

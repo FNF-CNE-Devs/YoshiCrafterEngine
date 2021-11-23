@@ -1,3 +1,4 @@
+import sys.FileSystem;
 import haxe.display.JsonModuleTypes.JsonTypeParameters;
 import flixel.addons.effects.chainable.FlxShakeEffect;
 import flixel.FlxBasic;
