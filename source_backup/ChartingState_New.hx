@@ -238,8 +238,8 @@ class ChartingState_New extends MusicBeatState
 		var characters:Array<String> = [];
 		var m = Paths.getModsFolder();
 		for(folder in FileSystem.readDirectory(m)) {
-			if (FileSystem.isDirectory('$m/$folder') && FileSystem.exists('$m/$folder/characters/')) {
-				for(char in FileSystem.readDirectory('$m/$folder/characters/')) {
+			if (FileSystem.isDirectory('$m/$folder') && FileSystem.exists('$m/$folder/assets/characters/')) {
+				for(char in FileSystem.readDirectory('$m/$folder/assets/characters/')) {
 					characters.push('$folder:$char');
 				}
 			}

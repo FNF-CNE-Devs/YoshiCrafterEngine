@@ -32,7 +32,7 @@ class Paths
 		#end
 		
 	}
-	static public function getPath(file:String, type:AssetType, library:Null<String>)
+	static function getPath(file:String, type:AssetType, library:Null<String>)
 	{
 		if (library != null)
 			return getLibraryPath(file, library);
@@ -113,7 +113,7 @@ class Paths
 
 	inline static public function modInst(song:String, mod:String)
 	{
-		var path = Paths.getModsFolder() + '/$mod/songs/$song/Inst.ogg';
+		var path = Paths.getModsFolder() + '/$mod/assets/songs/$song/Inst.ogg';
 		if (Settings.engineSettings.data.developerMode) {
 			if (!FileSystem.exists(path)) {
 				PlayState.showException('Inst for song $song at "$path" does not exist.');
@@ -124,7 +124,7 @@ class Paths
 
 	inline static public function modVoices(song:String, mod:String)
 	{
-		var path = Paths.getModsFolder() + '/$mod/songs/$song/Voices.ogg';
+		var path = Paths.getModsFolder() + '/$mod/assets/songs/$song/Voices.ogg';
 		if (Settings.engineSettings.data.developerMode) {
 			if (!FileSystem.exists(path)) {
 				PlayState.showException('Voices for song $song at "$path" does not exist.');
@@ -150,7 +150,7 @@ class Paths
 
 	inline static public function image(key:String, ?library:String)
 	{
-		return getPath('$key.png', IMAGE, library);
+		return getPath('images/$key.png', IMAGE, library);
 	}
 
 	inline static public function stageImage(key:String)
@@ -166,7 +166,7 @@ class Paths
 
 	inline static public function getSparrowAtlas(key:String, ?library:String)
 	{
-		return FlxAtlasFrames.fromSparrow(image(key, library), file('$key.xml', library));
+		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
 	}
 
 	public static var cacheText:Map<String, String> = new Map<String, String>();
@@ -248,16 +248,16 @@ class Paths
 			charName = splittedCharacterID[1];
 			charMod = splittedCharacterID[0];
 		}
-		var folder = Paths.getModsFolder() + '$charMod/characters/$charName';
+		var folder = Paths.getModsFolder() + '/$charMod/assets/characters/$charName';
 		if (!FileSystem.exists(folder)) {
-			folder = 'Friday Night Funkin\'/characters/unknown';
+			folder = Paths.getModsFolder() + '/Friday Night Funkin\'/assets/characters/unknown';
 		}
 		return folder;
 	}
 	inline static public function getModCharacter(characterId:String)
 	{
 		var folder = getCharacterFolderPath(characterId);
-		return Paths.getSparrowAtlas('$folder/spritesheet');
+		return FlxAtlasFrames.fromSparrow(Paths.getBitmapOutsideAssets('$folder/spritesheet.png'), Paths.getTextOutsideAssets('$folder/spritesheet.xml'));
 	}
 
 	inline static public function getCharacterIcon(key:String)

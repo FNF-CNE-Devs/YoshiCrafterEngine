@@ -383,7 +383,7 @@ class PlayState extends MusicBeatState
 		ModSupport.setHaxeFileDefaultVars(stage);
 		ModSupport.setHaxeFileDefaultVars(modchart);
 		try {
-			var ex = ModSupport.getExpressionFromPath(ModSupport.song_stage_path + ".hx");
+			var ex = ModSupport.getExpressionFromPath(ModSupport.song_stage_path + "/stage.hx");
 			trace(ex);
 			stage.execute(ex);
 		} catch(e) {

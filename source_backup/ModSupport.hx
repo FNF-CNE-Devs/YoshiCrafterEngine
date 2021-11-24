@@ -1,5 +1,3 @@
-import flixel.graphics.frames.FlxAtlasFrames;
-import lime.tools.AssetType;
 import sys.FileSystem;
 import haxe.display.JsonModuleTypes.JsonTypeParameters;
 import flixel.addons.effects.chainable.FlxShakeEffect;
@@ -56,50 +54,6 @@ class FlxColor_Helper {
     }
 }
 
-class Paths_Mod {
-    private var mod:String = "Friday Night Funkin'";
-    public function new(mod:String = "Friday Night Funkin'") {
-        this.mod = mod;
-    }
-    public function file(file:String, type:openfl.utils.AssetType = TEXT) {
-        return Paths.file('$mod/$file', type, 'mods');
-    }
-    public function txt(key:String) {
-        return Paths.txt('$mod/data/$key', 'mods');
-    }
-    public function xml(key:String) {
-        return Paths.xml('$mod/data/$key', 'mods');
-    }
-    public function json(key:String) {
-        return Paths.json('$mod/data/$key', 'mods');
-    }
-    public function image(key:String) {
-        return Paths.image('$mod/images/$key', 'mods');
-    }
-    public function sound(key:String) {
-        var ext = Paths.SOUND_EXT;
-        return Paths.sound('$mod/sounds/$key.$ext', 'mods');
-    }
-    public function soundRandom(key:String, min:Int, max:Int) {
-        var ext = Paths.SOUND_EXT;
-        return Paths.soundRandom('$mod/sounds/$key', min, max, 'mods');
-    }
-    public function getSparrowAtlas(key:String) {
-        return FlxAtlasFrames.fromSparrow(image(key), file('images/$key.xml'));
-    }
-    public function getCharacter(key:String) {
-        return FlxAtlasFrames.fromSparrow(Paths.image('$mod/characters/$key/spritesheet'), file('characters/$key/spritesheet.xml'));
-    }
-    public function getCharacterPackerAtlas(key:String) {
-        return FlxAtlasFrames.fromSpriteSheetPacker(Paths.image('$mod/characters/$key/spritesheet', 'mods'), file('characters/$key/spritesheet.xml'));
-    }
-
-	public function getPackerAtlas(key:String)
-	{
-		return FlxAtlasFrames.fromSpriteSheetPacker(image(key), file('images/$key.txt'));
-	}
-}
-
 class ModSupport {
     public static var song_config_parser:hscript.Interp;
     public static var song_modchart_path:String = "";
@@ -127,7 +81,7 @@ class ModSupport {
         return ast;
     }
 
-    public static function setHaxeFileDefaultVars(hscript:hscript.Interp, mod:String = "Friday Night Funkin'") {
+    public static function setHaxeFileDefaultVars(hscript:hscript.Interp) {
 		hscript.variables.set("PlayState", PlayState.current);
 		hscript.variables.set("EngineSettings", Settings.engineSettings.data);
 
@@ -135,7 +89,7 @@ class ModSupport {
 		hscript.variables.set("FlxSprite", FlxSprite);
 		hscript.variables.set("BitmapData", BitmapData);
 		hscript.variables.set("FlxG", FlxG);
-		hscript.variables.set("Paths", new Paths_Mod(mod));
+		hscript.variables.set("Paths", Paths);
 		hscript.variables.set("Std", Std);
 		hscript.variables.set("Math", Math);
 		hscript.variables.set("FlxMath", FlxMath);
@@ -200,9 +154,9 @@ class ModSupport {
         var modchart = interp.variables.get("modchart");
         trace(stage);
         if (stage == "default_stage")
-            song_stage_path = Paths.getModsFolder() + '/Friday Night Funkin\'/source/stages/$stage'; // fallback
+            song_stage_path = Paths.getModsFolder() + '/Friday Night Funkin\'/source/stages/$stage/'; // fallback
         else
-            song_stage_path = Paths.getModsFolder() + '/$currentMod/source/stages/$stage';
+            song_stage_path = Paths.getModsFolder() + '/$currentMod/source/stages/$stage/';
 
         if (modchart != "")
             song_modchart_path = Paths.getModsFolder() + '/$currentMod/source/modcharts/$modchart.hx';

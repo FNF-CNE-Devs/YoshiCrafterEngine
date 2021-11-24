@@ -5,7 +5,7 @@ var lightningOffset:Int = 8;
 
 function create()
 {
-    var hallowTex = Paths.getSparrowAtlas_Stage('halloween_bg');
+    var hallowTex = Paths.Paths.getSparrowAtlas('default_stage/halloween_bg');
 
     halloweenBG = new FlxSprite(-200, -100);
     halloweenBG.frames = hallowTex;
@@ -26,7 +26,7 @@ function beatHit(curBeat)
 function lightningStrikeShit()
 {
     var random = Std.string(FlxG.random.int(1, 2));
-    FlxG.sound.play(Paths.stageSound('thunder_$random'));
+    FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2));
     halloweenBG.animation.play('lightning');
 
     lightningStrikeBeat = PlayState.curBeat;
