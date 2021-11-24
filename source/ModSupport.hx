@@ -64,6 +64,9 @@ class Paths_Mod {
     public function file(file:String, type:openfl.utils.AssetType = TEXT) {
         return Paths.file('$mod/$file', type, 'mods');
     }
+    public function file_global(file:String, type:openfl.utils.AssetType = TEXT) {
+        return Paths.file('$file', type, 'mods');
+    }
     public function txt(key:String) {
         return Paths.txt('$mod/data/$key', 'mods');
     }
@@ -74,7 +77,7 @@ class Paths_Mod {
         return Paths.json('$mod/data/$key', 'mods');
     }
     public function image(key:String) {
-        return Paths.image('$mod/images/$key', 'mods');
+        return Paths.image_('$mod/images/$key', 'mods');
     }
     public function sound(key:String) {
         var ext = Paths.SOUND_EXT;
@@ -87,11 +90,29 @@ class Paths_Mod {
     public function getSparrowAtlas(key:String) {
         return FlxAtlasFrames.fromSparrow(image(key), file('images/$key.xml'));
     }
-    public function getCharacter(key:String) {
-        return FlxAtlasFrames.fromSparrow(Paths.image('$mod/characters/$key/spritesheet'), file('characters/$key/spritesheet.xml'));
+    public function getCharacter(key:String, ?charMod:String) {
+        var cMod = mod;
+        var charName = key;
+        var sKey = key.split(":");
+        if (sKey.length > 1) {
+            charMod = sKey[0];
+            charName = sKey[1];
+        } else {
+            if (charMod != null) cMod = charMod;
+        }
+        return FlxAtlasFrames.fromSparrow(Paths.image('$cMod/characters/$charName/spritesheet'), file_global('$cMod/characters/$charName/spritesheet.xml'));
     }
-    public function getCharacterPackerAtlas(key:String) {
-        return FlxAtlasFrames.fromSpriteSheetPacker(Paths.image('$mod/characters/$key/spritesheet', 'mods'), file('characters/$key/spritesheet.xml'));
+    public function getCharacterPackerAtlas(key:String, ?charMod:String) {
+        var cMod = mod;
+        var charName = key;
+        var sKey = key.split(":");
+        if (sKey.length > 1) {
+            charMod = sKey[0];
+            charName = sKey[1];
+        } else {
+            if (charMod != null) cMod = charMod;
+        }
+        return FlxAtlasFrames.fromSpriteSheetPacker(Paths.image('$cMod/characters/$charName/spritesheet'), file_global('$cMod/characters/$charName/spritesheet.txt'));
     }
 
 	public function getPackerAtlas(key:String)
@@ -224,7 +245,11 @@ class ModSupport {
             var freeplayList:String = "";
             #if sys
                 try {
-                    freeplayList = sys.io.File.getContent(Paths.getModsFolder() + "/" + mod + "/assets/data/freeplaySonglist.txt");
+                    // freeplayList = sys.io.File.getContent(Paths.getModsFolder() + "/" + mod + "/assets/data/freeplaySonglist.txt");
+                    // freeplayList = Paths.getPath('$mod/data/freeplaySonglist.txt', TEXT, 'mods');
+                    var p = 'mods:mods/$mod/data/freeplaySonglist.txt';
+                    trace(p);
+                    freeplayList = Assets.getText(p);
                 } catch(e) {
                     freeplayList = "";
                 }

@@ -150,6 +150,11 @@ class Paths
 
 	inline static public function image(key:String, ?library:String)
 	{
+		return getPath('images/$key.png', IMAGE, library);
+	}
+
+	inline static public function image_(key:String, ?library:String)
+	{
 		return getPath('$key.png', IMAGE, library);
 	}
 
@@ -166,7 +171,7 @@ class Paths
 
 	inline static public function getSparrowAtlas(key:String, ?library:String)
 	{
-		return FlxAtlasFrames.fromSparrow(image(key, library), file('$key.xml', library));
+		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
 	}
 
 	public static var cacheText:Map<String, String> = new Map<String, String>();
