@@ -1,16 +1,16 @@
-var stage:Stage.Philly;
+var stage = null;
 
-var bfDarkMode:BitmapData;
-var picoDarkMode:BitmapData;
-var gfDarkMode:BitmapData;
-var ogBF:BitmapData;
-var ogPico:BitmapData;
-var ogGF:BitmapData;
-var blackScreen:FlxSprite;
+var bfDarkMode:BitmapData = null;
+var picoDarkMode:BitmapData = null;
+var gfDarkMode:BitmapData = null;
+var ogBF:BitmapData = null;
+var ogPico:BitmapData = null;
+var ogGF:BitmapData = null;
+var blackScreen:FlxSprite = null;
 
-var bfDark:Boyfriend;
-var dadDark:Character;
-var gfDark:Character;
+var bfDark:Boyfriend = null;
+var dadDark:Character = null;
+var gfDark:Character = null;
 
 function create() {
     stage = PlayState.stage;
@@ -67,21 +67,26 @@ function create() {
         }
         if (!FileSystem.exists(Paths.getSkinsPath() + '/gf/$cGF/blammed.xml')) File.copy(Paths.getSkinsPath() + '/gf/$cGF/spritesheet.xml', Paths.getSkinsPath() + '/gf/$cGF/blammed.xml');
 
-        gfDark = new Character(400, 130, PlayState.gf.curCharacter, false, "blammed");
+        trace("creating gf");
+        gfDark = new Character(400, 130, "GF_blammed");
         gfDark.visible = false;
         PlayState.add(gfDark);
 
         // bfDark = new Boyfriend(770, 100, PlayState.SONG.player1, EngineSettings.customBFSkin == "default" ? "BF_blammed" : "blammed");
+        
+        trace("creating bf");
         bfDark = new Boyfriend(770, 100, "BF_blammed");
         bfDark.visible = false;
         PlayState.add(bfDark);
         PlayState.boyfriends.push(bfDark);
 
+        trace("creating pico");
         dadDark = new Character(100, 100, "pico-blammed");
         dadDark.visible = false;
         PlayState.dads.push(dadDark);
         PlayState.add(dadDark);
         
+        trace("done ");
 
         // picoDarkMode = Paths.getBitmapOutsideAssets('assets/characters/PICO_blammed.png');
         // ogPico = PlayState.dad.pixels.clone();
@@ -112,14 +117,12 @@ function beatHit(curBeat:Int) {
             PlayState.gf.visible = false;
             gfDark.visible = true;
 
-            blackScreen.alpha = 1;
-            blackScreen.color = 0xFFFFFFFF;
-            FlxTween.tween(blackScreen, {alpha : 0}, 2);
-            stage.phillyTrain.visible = false;
-            stage.bg.visible = false;
-            stage.city.visible = false;
-            stage.streetBehind.visible = false;
-            stage.street.visible = false;
+
+            stage.variables["phillyTrain"].visible = false;
+            stage.variables["bg"].visible = false;
+            stage.variables["city"].visible = false;
+            stage.variables["streetBehind"].visible = false;
+            stage.variables["street"].visible = false;
         }
         if (curBeat == 192) {
             // switchBF(ogBF);
@@ -134,14 +137,11 @@ function beatHit(curBeat:Int) {
             PlayState.gf.visible = true;
             gfDark.visible = false;
             
-            blackScreen.alpha = 1;
-            blackScreen.color = 0xFF000000;
-            FlxTween.tween(blackScreen, {alpha : 0}, 2);
-            stage.phillyTrain.visible = true;
-            stage.bg.visible = true;
-            stage.city.visible = true;
-            stage.streetBehind.visible = true;
-            stage.street.visible = true;
+            stage.variables["phillyTrain"].visible = false;
+            stage.variables["bg"].visible = false;
+            stage.variables["city"].visible = false;
+            stage.variables["streetBehind"].visible = false;
+            stage.variables["street"].visible = false;
             PlayState.boyfriend.color = 0xFFFFFFFF;
             PlayState.dad.color = 0xFFFFFFFF;
             PlayState.gf.color = 0xFFFFFFFF;
