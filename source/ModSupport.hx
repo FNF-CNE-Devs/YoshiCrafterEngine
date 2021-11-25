@@ -1,3 +1,5 @@
+import flixel.graphics.frames.FlxAtlasFrames;
+import openfl.media.Sound;
 import sys.FileSystem;
 import haxe.display.JsonModuleTypes.JsonTypeParameters;
 import flixel.addons.effects.chainable.FlxShakeEffect;
@@ -44,7 +46,94 @@ class ExceptionState extends FlxState {
 }
 
 class Paths_Mod {
-    
+    private var mod:String;
+    public function new(mod:String) {
+        this.mod = mod;
+    }
+
+    public function getModsFolder() {
+        return Paths.getModsFolder();
+    }
+
+    private function readTextFile(path:String) {
+        if (FileSystem.exists(path)) {
+            return File.getContent(path);
+        } else {
+            trace('File at "$path" does not exist');
+            return "";
+        }
+    }
+
+    public function file(file:String) {
+        var mFolder = Paths.getModsFolder();
+        var path = '$mFolder/$mod/$file';
+        if (!FileSystem.exists(path)) {
+            trace('File at "$path" does not exist');
+        }
+    }
+
+    public function txt(file:String):String {
+        var mFolder = Paths.getModsFolder();
+        return readTextFile('$mFolder/$mod/data/$file.txt');
+    }
+
+    public function xml(file:String):String {
+        var mFolder = Paths.getModsFolder();
+        return readTextFile('$mFolder/$mod/data/$file.xml');
+    }
+
+    public function json(file:String):String {
+        var mFolder = Paths.getModsFolder();
+        return readTextFile('$mFolder/$mod/data/$file.json');
+    }
+
+    public function sound(file:String):Sound {
+        var mFolder = Paths.getModsFolder();
+        #if web
+            return Sound.fromFile('$mFolder/$mod/sounds/$file.mp3');
+        #else
+            return Sound.fromFile('$mFolder/$mod/sounds/$file.ogg');
+        #end
+    }
+
+    public function image(key:String):BitmapData {
+        var mFolder = Paths.getModsFolder();
+        var p = '$mFolder/$mod/images/$key.png';
+        if (FileSystem.exists(p)) {
+            return Paths.getBitmapOutsideAssets(p);
+        } else {
+            trace('Image at "$p" does not exist');
+            return null;
+        }
+    }
+
+    public function getSparrowAtlas(key:String):FlxAtlasFrames {
+        var mFolder = Paths.getModsFolder();
+        var png = '$mFolder/$mod/images/$key.png';
+        var xml = '$mFolder/$mod/images/$key.xml';
+        if (FileSystem.exists(png) && FileSystem.exists(xml)) {
+            return FlxAtlasFrames.fromSparrow(Paths.getBitmapOutsideAssets(png), Paths.getTextOutsideAssets(xml));
+        } else {
+            trace('Sparrow Atlas at "$mFolder/$mod/images/$key" does not exist. Make sure there is an XML and a PNG file');
+            return null;
+        }
+    }
+
+    public function getCharacter(char:String) {
+        return Paths.getModCharacter(char);
+    }
+
+    public function getPackerAtlas(key:String) {
+        var mFolder = Paths.getModsFolder();
+        var png = '$mFolder/$mod/images/$key.png';
+        var txt = '$mFolder/$mod/images/$key.txt';
+        if (FileSystem.exists(png) && FileSystem.exists(txt)) {
+            return FlxAtlasFrames.fromSpriteSheetPacker(Paths.getBitmapOutsideAssets(png), Paths.getTextOutsideAssets(txt));
+        } else {
+            trace('Packer Atlas at "$mFolder/$mod/images/$key" does not exist. Make sure there is an XML and a PNG file');
+            return null;
+        }
+    }
 }
 class FlxColor_Helper {
     var color(get, null):Int;
