@@ -111,8 +111,8 @@ class StoryMenuState extends MusicBeatState
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 		for (mod in FileSystem.readDirectory(Paths.getModsFolder() + "/")) {
-			if (FileSystem.exists(Paths.getModsFolder() + '/$mod/source/weeks.json')) {
-				var json:WeeksJson = Json.parse(sys.io.File.getContent(Paths.getModsFolder() + '/$mod/source/weeks.json'));
+			if (FileSystem.exists(Paths.getModsFolder() + '/$mod/weeks.json')) {
+				var json:WeeksJson = Json.parse(sys.io.File.getContent(Paths.getModsFolder() + '/$mod/weeks.json'));
 				for(week in json.weeks) {
 					week.mod = mod;
 					weekData.push(week);
@@ -124,7 +124,7 @@ class StoryMenuState extends MusicBeatState
 			var w:FNFWeek = weekData[i];
 			var sprite:String = w.buttonSprite;
 			var m:String = w.mod;
-			var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, Paths.getBitmapOutsideAssets(Paths.getModsFolder() + '/$m/assets/$sprite'));
+			var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, Paths.getBitmapOutsideAssets(Paths.getModsFolder() + '/$m/$sprite'));
 			weekThing.y += ((weekThing.height + 20) * i);
 			weekThing.targetY = i;
 			grpWeekText.add(weekThing);
@@ -143,7 +143,7 @@ class StoryMenuState extends MusicBeatState
 			var mod = week.mod;
 			var file = week.dad.file;
 			var menuCharacter = new FlxSprite((FlxG.width * 0.25) - 150);
-			var sparrowPath = Paths.getModsFolder() + '/$mod/assets/$file';
+			var sparrowPath = Paths.getModsFolder() + '/$mod/$file';
 			#if debug
 				trace(sparrowPath);
 			#end

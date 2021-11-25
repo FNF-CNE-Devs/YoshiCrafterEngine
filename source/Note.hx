@@ -195,7 +195,7 @@ class Note extends FlxSprite
 				noteScriptMod = splittedThingy[0];
 			}
 		}
-		script.execute(ModSupport.getExpressionFromPath(Paths.getModsFolder() + '/$noteScriptMod/source/notes/$noteScriptName.hx'));
+		script.execute(ModSupport.getExpressionFromPath(Paths.getModsFolder() + '/$noteScriptMod/notes/$noteScriptName.hx'));
 		ModSupport.setHaxeFileDefaultVars(script);
 
 		// if (prevNote == null)

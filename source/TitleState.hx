@@ -49,9 +49,9 @@ class TitleState extends MusicBeatState
 	{
 		#if polymod
 			#if sourceCode
-			polymod.Polymod.init({modRoot : "", dirs: ['mods'], frameworkParams: {assetLibraryPaths : ["mods" => ""]}}); //poggers
+			// Polymod.init({modRoot: "./", dirs: ['mods']}); //poggers
 			#else
-			polymod.Polymod.init({modRoot : "", dirs: ['mods'], frameworkParams: {assetLibraryPaths : ["mods" => ""]}}); //poggers
+			// Polymod.init({modRoot: "./", dirs: ['mods']}); //poggers
 			#end
 		#end
 

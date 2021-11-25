@@ -1,5 +1,3 @@
-import flixel.graphics.frames.FlxAtlasFrames;
-import lime.tools.AssetType;
 import sys.FileSystem;
 import haxe.display.JsonModuleTypes.JsonTypeParameters;
 import flixel.addons.effects.chainable.FlxShakeEffect;
@@ -45,6 +43,9 @@ class ExceptionState extends FlxState {
     }
 }
 
+class Paths_Mod {
+    
+}
 class FlxColor_Helper {
     var color(get, null):Int;
     function get_color() {
@@ -54,71 +55,6 @@ class FlxColor_Helper {
     public function new(color:Int) {
         fc = new FlxColor(color);
     }
-}
-
-class Paths_Mod {
-    private var mod:String = "Friday Night Funkin'";
-    public function new(mod:String = "Friday Night Funkin'") {
-        this.mod = mod;
-    }
-    public function file(file:String, type:openfl.utils.AssetType = TEXT) {
-        return Paths.file('$mod/$file', type, 'mods');
-    }
-    public function file_global(file:String, type:openfl.utils.AssetType = TEXT) {
-        return Paths.file('$file', type, 'mods');
-    }
-    public function txt(key:String) {
-        return Paths.txt('$mod/data/$key', 'mods');
-    }
-    public function xml(key:String) {
-        return Paths.xml('$mod/data/$key', 'mods');
-    }
-    public function json(key:String) {
-        return Paths.json('$mod/data/$key', 'mods');
-    }
-    public function image(key:String) {
-        return Paths.image_('$mod/images/$key', 'mods');
-    }
-    public function sound(key:String) {
-        var ext = Paths.SOUND_EXT;
-        return Paths.sound('$mod/sounds/$key.$ext', 'mods');
-    }
-    public function soundRandom(key:String, min:Int, max:Int) {
-        var ext = Paths.SOUND_EXT;
-        return Paths.soundRandom('$mod/sounds/$key', min, max, 'mods');
-    }
-    public function getSparrowAtlas(key:String) {
-        return FlxAtlasFrames.fromSparrow(image(key), file('images/$key.xml'));
-    }
-    public function getCharacter(key:String, ?charMod:String) {
-        var cMod = mod;
-        var charName = key;
-        var sKey = key.split(":");
-        if (sKey.length > 1) {
-            charMod = sKey[0];
-            charName = sKey[1];
-        } else {
-            if (charMod != null) cMod = charMod;
-        }
-        return FlxAtlasFrames.fromSparrow(Paths.image('$cMod/characters/$charName/spritesheet'), file_global('$cMod/characters/$charName/spritesheet.xml'));
-    }
-    public function getCharacterPackerAtlas(key:String, ?charMod:String) {
-        var cMod = mod;
-        var charName = key;
-        var sKey = key.split(":");
-        if (sKey.length > 1) {
-            charMod = sKey[0];
-            charName = sKey[1];
-        } else {
-            if (charMod != null) cMod = charMod;
-        }
-        return FlxAtlasFrames.fromSpriteSheetPacker(Paths.image('$cMod/characters/$charName/spritesheet'), file_global('$cMod/characters/$charName/spritesheet.txt'));
-    }
-
-	public function getPackerAtlas(key:String)
-	{
-		return FlxAtlasFrames.fromSpriteSheetPacker(image(key), file('images/$key.txt'));
-	}
 }
 
 class ModSupport {
@@ -148,7 +84,7 @@ class ModSupport {
         return ast;
     }
 
-    public static function setHaxeFileDefaultVars(hscript:hscript.Interp, mod:String = "Friday Night Funkin'") {
+    public static function setHaxeFileDefaultVars(hscript:hscript.Interp) {
 		hscript.variables.set("PlayState", PlayState.current);
 		hscript.variables.set("EngineSettings", Settings.engineSettings.data);
 
@@ -156,7 +92,8 @@ class ModSupport {
 		hscript.variables.set("FlxSprite", FlxSprite);
 		hscript.variables.set("BitmapData", BitmapData);
 		hscript.variables.set("FlxG", FlxG);
-		hscript.variables.set("Paths", new Paths_Mod(mod));
+		hscript.variables.set("Paths", Paths_Mod);
+		hscript.variables.set("Paths_", Paths);
 		hscript.variables.set("Std", Std);
 		hscript.variables.set("Math", Math);
 		hscript.variables.set("FlxMath", FlxMath);
@@ -202,7 +139,7 @@ class ModSupport {
     }
     public static function parseSongConfig() {
         var songName = PlayState.SONG.song.toLowerCase();
-        var songCodePath = Paths.getModsFolder() + '/$currentMod/source/song_conf.hx';
+        var songCodePath = Paths.getModsFolder() + '/$currentMod/song_conf.hx';
         var parser = new hscript.Parser();
         parser.allowTypes = true;
         var ast = null;
@@ -221,12 +158,12 @@ class ModSupport {
         var modchart = interp.variables.get("modchart");
         trace(stage);
         if (stage == "default_stage")
-            song_stage_path = Paths.getModsFolder() + '/Friday Night Funkin\'/source/stages/$stage'; // fallback
+            song_stage_path = Paths.getModsFolder() + '/Friday Night Funkin\'/stages/$stage/'; // fallback
         else
-            song_stage_path = Paths.getModsFolder() + '/$currentMod/source/stages/$stage';
+            song_stage_path = Paths.getModsFolder() + '/$currentMod/stages/$stage';
 
         if (modchart != "")
-            song_modchart_path = Paths.getModsFolder() + '/$currentMod/source/modcharts/$modchart.hx';
+            song_modchart_path = Paths.getModsFolder() + '/$currentMod/modcharts/$modchart.hx';
         else
             song_modchart_path = "";
         trace(song_stage_path);
@@ -245,11 +182,7 @@ class ModSupport {
             var freeplayList:String = "";
             #if sys
                 try {
-                    // freeplayList = sys.io.File.getContent(Paths.getModsFolder() + "/" + mod + "/assets/data/freeplaySonglist.txt");
-                    // freeplayList = Paths.getPath('$mod/data/freeplaySonglist.txt', TEXT, 'mods');
-                    var p = 'mods:mods/$mod/data/freeplaySonglist.txt';
-                    trace(p);
-                    freeplayList = Assets.getText(p);
+                    freeplayList = sys.io.File.getContent(Paths.getModsFolder() + "/" + mod + "/data/freeplaySonglist.txt");
                 } catch(e) {
                     freeplayList = "";
                 }

@@ -32,7 +32,7 @@ class Paths
 		#end
 		
 	}
-	static public function getPath(file:String, type:AssetType, library:Null<String>)
+	static function getPath(file:String, type:AssetType, library:Null<String>)
 	{
 		if (library != null)
 			return getLibraryPath(file, library);
@@ -153,11 +153,6 @@ class Paths
 		return getPath('images/$key.png', IMAGE, library);
 	}
 
-	inline static public function image_(key:String, ?library:String)
-	{
-		return getPath('$key.png', IMAGE, library);
-	}
-
 	inline static public function stageImage(key:String)
 	{
 		var p = ModSupport.song_stage_path;
@@ -253,16 +248,16 @@ class Paths
 			charName = splittedCharacterID[1];
 			charMod = splittedCharacterID[0];
 		}
-		var folder = Paths.getModsFolder() + '$charMod/characters/$charName';
+		var folder = Paths.getModsFolder() + '/$charMod/characters/$charName';
 		if (!FileSystem.exists(folder)) {
-			folder = 'Friday Night Funkin\'/characters/unknown';
+			folder = Paths.getModsFolder() + '/Friday Night Funkin\'/characters/unknown';
 		}
 		return folder;
 	}
 	inline static public function getModCharacter(characterId:String)
 	{
 		var folder = getCharacterFolderPath(characterId);
-		return Paths.getSparrowAtlas('$folder/spritesheet');
+		return FlxAtlasFrames.fromSparrow(Paths.getBitmapOutsideAssets('$folder/spritesheet.png'), Paths.getTextOutsideAssets('$folder/spritesheet.xml'));
 	}
 
 	inline static public function getCharacterIcon(key:String)

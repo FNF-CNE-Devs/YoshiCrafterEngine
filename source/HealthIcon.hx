@@ -47,14 +47,8 @@ class HealthIcon extends FlxSprite
 		} else if (character == "gf" && cGF != "default") {
 			loadGraphic(Paths.getBitmapOutsideAssets(Paths.getSkinsPath() + '/gf/$cGF/icon.png'), true, 150, 150);
 		} else {
-			var path = Paths.getPath('$mod/characters/$char/icon.png', IMAGE, 'mods');
-			if (Assets.exists(path)) {
-				loadGraphic(path, true, 150, 150);
-			} else {
-				loadGraphic(path, true, 150, 150);
-			}
-			// loadGraphic(FileSystem.exists(path) ? Paths.getBitmapOutsideAssets(path) : Paths.getBitmapOutsideAssets(Paths.getModsFolder() + "/Friday Night Funkin'/assets/characters/unknown/icon.png"), true, 150, 150);
-			
+			var path = Paths.getCharacterFolderPath(character) + "/icon.png";
+			loadGraphic(FileSystem.exists(path) ? Paths.getBitmapOutsideAssets(path) : Paths.getBitmapOutsideAssets(Paths.getModsFolder() + "/Friday Night Funkin'/characters/unknown/icon.png"), true, 150, 150);
 		}
 		animation.add('char', [0, 1], 0, false, isPlayer);
 		animation.play('char');
