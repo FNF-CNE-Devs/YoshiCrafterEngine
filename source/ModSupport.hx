@@ -164,11 +164,10 @@ class ModSupport {
             #end
 		} catch(ex) {
 			trace(ex);
-            if (critical) {
-                var exThingy = Std.string(ex);
-                var line = parser.line;
-                FlxG.switchState(new ExceptionState('Failed to parse the file located at "$path".\r\n$exThingy at $line', 0));
-            }
+            var exThingy = Std.string(ex);
+            var line = parser.line;
+            if (critical) FlxG.switchState(new ExceptionState('Failed to parse the file located at "$path".\r\n$exThingy at $line', 0));
+            trace('Failed to parse the file located at "$path".\r\n$exThingy at $line');
 		}
         return ast;
     }
