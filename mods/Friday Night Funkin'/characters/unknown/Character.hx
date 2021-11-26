@@ -1,5 +1,5 @@
 function create() {
-    var tex = Paths.getModCharacter(textureOverride != "" ? textureOverride : "Friday Night Funkin':unknown");
+    var tex = Paths.getCharacter(textureOverride != "" ? textureOverride : "Friday Night Funkin':unknown");
     character.frames = tex;
     character.animation.addByPrefix('idle', 'Dad idle dance', 24, false);
     character.animation.addByPrefix('singUP', 'Dad Sing note UP', 24);

@@ -1,5 +1,5 @@
 function create() {
-    character.frames = Paths.getModCharacter('bf-pixel');
+    character.frames = Paths.getCharacter('bf-pixel');
     character.animation.addByPrefix('idle', 'BF IDLE instance 1', 24, false);
     character.animation.addByPrefix('singUP', 'BF UP NOTE instance 1', 24, false);
     character.animation.addByPrefix('singLEFT', 'BF LEFT NOTE instance 1', 24, false);

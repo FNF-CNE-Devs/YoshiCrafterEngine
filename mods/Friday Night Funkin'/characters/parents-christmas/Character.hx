@@ -1,6 +1,6 @@
 function create() {
     // GOTTA FIX OFFSET PROBLEMS
-    var tex = Paths.getModCharacter(textureOverride != "" ? textureOverride : "mom");
+    var tex = Paths.getCharacter(textureOverride != "" ? textureOverride : "mom");
     character.frames = tex;
     character.animation.addByPrefix('idle', 'Parent Christmas Idle', 24, false);
     character.animation.addByPrefix('singUP', 'Parent Up Note Dad', 24, false);

@@ -1,5 +1,5 @@
 function create() {
-    var tex = Paths.getModCharacter(textureOverride != "" ? textureOverride : 'spooky');
+    var tex = Paths.getCharacter(textureOverride != "" ? textureOverride : 'spooky');
     character.frames = tex;
     character.animation.addByPrefix('singUP', 'spooky UP NOTE', 24, false);
     character.animation.addByPrefix('singDOWN', 'spooky DOWN note', 24, false);

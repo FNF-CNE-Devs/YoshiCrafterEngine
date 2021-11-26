@@ -196,7 +196,7 @@ class Note extends FlxSprite
 			}
 		}
 		script.execute(ModSupport.getExpressionFromPath(Paths.getModsFolder() + '/$noteScriptMod/notes/$noteScriptName.hx'));
-		ModSupport.setHaxeFileDefaultVars(script);
+		ModSupport.setHaxeFileDefaultVars(script, noteScriptMod);
 
 		// if (prevNote == null)
 		// 	prevNote = this;

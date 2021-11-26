@@ -1,5 +1,5 @@
 function create() {
-    tex = Paths.getModCharacter(textureOverride != "" ? textureOverride : 'gf-pixel');
+    tex = Paths.getCharacter(textureOverride != "" ? textureOverride : 'gf-pixel');
     character.frames = tex;
     character.animation.addByIndices('singUP', 'GF IDLE', [2], "", 24, false);
     character.animation.addByIndices('danceLeft', 'GF IDLE', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);

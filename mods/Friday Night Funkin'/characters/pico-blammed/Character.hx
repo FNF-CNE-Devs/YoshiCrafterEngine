@@ -1,6 +1,6 @@
 function create() {
     var isPlayer = false; // NEED TO BE FIXED !!!!
-    var tex = Paths.getModCharacter(textureOverride != "" ? textureOverride : 'pico');
+    var tex = Paths.getCharacter(textureOverride != "" ? textureOverride : 'pico');
     character.frames = tex;
     character.animation.addByPrefix('idle', "Pico Idle Dance", 24);
     character.animation.addByPrefix('singUP', 'pico Up note0', 24, false);

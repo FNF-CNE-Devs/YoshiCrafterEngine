@@ -23,6 +23,9 @@ var trainCooldown:Int = 0;
 var startedMoving:Bool = false;
 var triggeredAlready:Bool = false;
 
+function setSharedVars() {
+    return ["phillyTrain", "bg", "city", "street", "streetBehind", "light"]; // These variables will be set to null, and will be accessible from modcharts
+}
 function beatHit(curBeat) {
     if (curBeat % 4 == 0)
     {
@@ -41,36 +44,36 @@ function beatHit(curBeat) {
 }
 function create()
 {
-    bg = new FlxSprite(-100).loadGraphic(Paths.stageImage('sky.png'));
+    bg = new FlxSprite(-100).loadGraphic(Paths.image('philly/sky'));
     bg.scrollFactor.set(0.1, 0.1);
     PlayState.add(bg);
 
-    city = new FlxSprite(-10).loadGraphic(Paths.stageImage('city.png'));
+    city = new FlxSprite(-10).loadGraphic(Paths.image('philly/city'));
     city.scrollFactor.set(0.3, 0.3);
     city.setGraphicSize(Std.int(city.width * 0.85));
     city.updateHitbox();
     PlayState.add(city);
 
-    light = new FlxSprite(city.x).loadGraphic(Paths.stageImage('win.png'));
+    light = new FlxSprite(city.x).loadGraphic(Paths.image('philly/win'));
     light.scrollFactor.set(0.3, 0.3);
     light.setGraphicSize(Std.int(light.width * 0.85));
     light.updateHitbox();
     light.antialiasing = true;
     PlayState.add(light);
 
-    streetBehind = new FlxSprite(-40, 50).loadGraphic(Paths.stageImage('behindTrain.png'));
+    streetBehind = new FlxSprite(-40, 50).loadGraphic(Paths.image('philly/behindTrain'));
     PlayState.add(streetBehind);
 
-    phillyTrain = new FlxSprite(2000, 360).loadGraphic(Paths.stageImage('train.png'));
+    phillyTrain = new FlxSprite(2000, 360).loadGraphic(Paths.image('philly/train'));
     PlayState.add(phillyTrain);
 
-    trainSound = new FlxSound().loadEmbedded(Paths.stageSound('train_passes'));
+    trainSound = new FlxSound().loadEmbedded(Paths.sound('train_passes'));
     FlxG.sound.list.add(trainSound);
     // trainSound.play();
 
-    // var cityLights:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.win0.png);
+    // var cityLights:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.win0);
 
-    street = new FlxSprite(-40, streetBehind.y).loadGraphic(Paths.stageImage('street.png'));
+    street = new FlxSprite(-40, streetBehind.y).loadGraphic(Paths.image('philly/street'));
     PlayState.add(street);
 }
 
@@ -87,12 +90,12 @@ function update(elapsed) {
     }
 
     // General duration of the song
-    if (curBeat < 250)
+    if (PlayState.curBeat < 250)
     {
         // Beats to skip or to stop GF from cheering
-        if (curBeat != 184 && curBeat != 216)
+        if (PlayState.curBeat != 184 && PlayState.curBeat != 216)
         {
-            if (curBeat % 16 == 8)
+            if (PlayState.curBeat % 16 == 8)
             {
                 // Just a garantee that it'll trigger just once
                 if (!triggeredAlready)

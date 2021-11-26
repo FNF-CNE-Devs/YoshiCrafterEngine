@@ -2,11 +2,11 @@ function create() {
 
     // Loads the custom default GF skin
     var cGF = EngineSettings.customGFSkin;
-    var tex =  Paths.getSparrowAtlas_Custom(textureOverride != "" ? Paths.getSkinsPath() + '/gf/' + cGF + '/' + textureOverride + '' : Paths.getSkinsPath() + '/gf/' + cGF + '/spritesheet');
+    var tex =  Paths_.getSparrowAtlas_Custom(textureOverride != "" ? Paths_.getSkinsPath() + '/gf/' + cGF + '/' + textureOverride + '' : Paths_.getSkinsPath() + '/gf/' + cGF + '/blammed');
     character.frames = tex;
-    Character.customGFOffsets = StringTools.ltrim(Paths.getTextOutsideAssets(Paths.getSkinsPath() + '/gf/' + cGF + '/offsets.txt')).split("\n");
-    Character.customGFAnims = StringTools.ltrim(Paths.getTextOutsideAssets(Paths.getSkinsPath() + '/gf/' + cGF + '/anim_names.txt')).split("\n");
-    // var color:Array<String> = Paths.getTextOutsideAssets(Paths.getSkinsPath() + '/gf/' + cGF + '/color.txt').trim().split("\r");	//May come in use later
+    Character.customGFOffsets = StringTools.ltrim(Paths_.getTextOutsideAssets(Paths_.getSkinsPath() + '/gf/' + cGF + '/offsets.txt')).split("\n");
+    Character.customGFAnims = StringTools.ltrim(Paths_.getTextOutsideAssets(Paths_.getSkinsPath() + '/gf/' + cGF + '/anim_names.txt')).split("\n");
+    // var color:Array<String> = Paths_.getTextOutsideAssets(Paths_.getSkinsPath() + '/gf/' + cGF + '/color.txt').trim().split("\r");	//May come in use later
     character.configureAnims();
     for(offset in Character.customGFOffsets) {
         var data:Array<String> = StringTools.ltrim(offset).split(" ");

@@ -257,6 +257,9 @@ class Paths
 	inline static public function getModCharacter(characterId:String)
 	{
 		var folder = getCharacterFolderPath(characterId);
+		#if debug
+			trace(folder);
+		#end
 		return FlxAtlasFrames.fromSparrow(Paths.getBitmapOutsideAssets('$folder/spritesheet.png'), Paths.getTextOutsideAssets('$folder/spritesheet.xml'));
 	}
 

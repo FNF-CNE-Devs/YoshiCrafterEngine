@@ -130,13 +130,14 @@ class Character extends FlxSprite
 			];
 		});
 		var p = Paths.getCharacterFolderPath(curCharacter) + "/Character.hx";
+		var sName = curCharacter.split(":");
 		try {
 			characterScript.execute(ModSupport.getExpressionFromPath(p, true));
 		} catch(e) {
 			return;
 		}
 
-		ModSupport.setHaxeFileDefaultVars(characterScript);
+		ModSupport.setHaxeFileDefaultVars(characterScript, sName.length > 1 ? sName[0] : "Friday Night Funkin'");
 
 		try {
 			ModSupport.executeFunc(characterScript, "create");

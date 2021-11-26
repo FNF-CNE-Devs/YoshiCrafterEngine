@@ -124,13 +124,17 @@ class StoryMenuState extends MusicBeatState
 			var w:FNFWeek = weekData[i];
 			var sprite:String = w.buttonSprite;
 			var m:String = w.mod;
-			var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, Paths.getBitmapOutsideAssets(Paths.getModsFolder() + '/$m/$sprite'));
-			weekThing.y += ((weekThing.height + 20) * i);
-			weekThing.targetY = i;
-			grpWeekText.add(weekThing);
-
-			weekThing.screenCenter(X);
-			weekThing.antialiasing = true;
+			var p = Paths.getModsFolder() + '/$m/$sprite';
+			if (FileSystem.exists(p)) {
+				var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, Paths.getBitmapOutsideAssets(Paths.getModsFolder() + '/$m/$sprite'));
+				weekThing.y += ((weekThing.height + 20) * i);
+				weekThing.targetY = i;
+				grpWeekText.add(weekThing);
+	
+				weekThing.screenCenter(X);
+				weekThing.antialiasing = true;
+			}
+			
 			// weekThing.updateHitbox();
 
 			// Needs an offset thingie

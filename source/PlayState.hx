@@ -364,8 +364,28 @@ class PlayState extends MusicBeatState
 			script.variables.set("musicstart", function() {});
 			script.variables.set("beatHit", function(curBeat:Int) {});
 			script.variables.set("stepHit", function(curStep:Int) {});
+			script.variables.set("setSharedVars", function() {return [];});
 		}
 		stage.variables.set("gfVersion", "gf");
+		modchart.variables.set("getStageVar", function(v:String) {
+			var fVar = null;
+			try {
+				fVar = stage.variables.get(v);
+			} catch(e) {
+				trace('Variable $v does not exist on stage.');
+			}
+			return fVar;
+		});
+		stage.variables.set("getModchartVar", function(v:String) {
+			trace(stage.variables);
+			var fVar = null;
+			try {
+				fVar = stage.variables.get(v);
+			} catch(e) {
+				trace('Variable $v does not exist on modchart.');
+			}
+			return fVar;
+		});
 		modchart.variables.set("getCameraZoom", function(curBeat) {
 			if (curBeat % 4 == 0) {
 				return {
@@ -380,11 +400,11 @@ class PlayState extends MusicBeatState
 			}
 		});
 
-		ModSupport.setHaxeFileDefaultVars(stage);
-		ModSupport.setHaxeFileDefaultVars(modchart);
+		ModSupport.setHaxeFileDefaultVars(stage, songMod);
+		ModSupport.setHaxeFileDefaultVars(modchart, songMod);
 		try {
 			var ex = ModSupport.getExpressionFromPath(ModSupport.song_stage_path + ".hx");
-			trace(ex);
+			// trace(ex);
 			stage.execute(ex);
 		} catch(e) {
 			trace("Stage : " + e);
@@ -395,6 +415,15 @@ class PlayState extends MusicBeatState
 			}
 		} catch(e) {
 			trace("Modchart : " + e);
+		}
+
+		var sVars:Array<String> = ModSupport.executeFunc(stage, "setSharedVars");
+		var mVars:Array<String> = ModSupport.executeFunc(modchart, "setSharedVars");
+		for(s in sVars) {
+			stage.variables.set(s, null);
+		}
+		for(s in mVars) {
+			modchart.variables.set(s, null);
 		}
 
 		
@@ -515,6 +544,8 @@ class PlayState extends MusicBeatState
 
 		add(dad);
 		add(boyfriend);
+		
+		if (modchart != null) ModSupport.executeFunc(modchart, "create");
 		// songEvents.createInFront();
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);

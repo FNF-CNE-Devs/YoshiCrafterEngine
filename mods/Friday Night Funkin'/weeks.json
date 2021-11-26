@@ -3,10 +3,10 @@
         {
             "name" : "",
             "songs" : ["Tutorial"],
-            "buttonSprite" : "weeks/week0.png",
+            "buttonSprite" : "images/storymenu/week0.png",
             "dad" :
             {
-                "file" : "weeks/campaign_menu_UI_characters",
+                "file" : "images/storymenu/campaign_menu_UI_characters",
                 "animation" : "Dad idle dance BLACK LINE",
                 "scale" : 0.5,
                 "flipX" : false,
@@ -16,10 +16,10 @@
         {
             "name" : "DADDY DEAREST",
             "songs" : ["Bopeebo", "Fresh", "Dadbattle"],
-            "buttonSprite" : "weeks/week1.png",
+            "buttonSprite" : "images/storymenu/week1.png",
             "dad" :
             {
-                "file" : "weeks/campaign_menu_UI_characters",
+                "file" : "images/storymenu/campaign_menu_UI_characters",
                 "animation" : "Dad idle dance BLACK LINE",
                 "scale" : 0.5,
                 "flipX" : false,
@@ -29,10 +29,10 @@
         {
             "name" : "SPOOKY MONTH",
             "songs" : ["Spookeez", "South", "Monster"],
-            "buttonSprite" : "weeks/week2.png",
+            "buttonSprite" : "images/storymenu/week2.png",
             "dad" :
             {
-                "file" : "weeks/campaign_menu_UI_characters",
+                "file" : "images/storymenu/campaign_menu_UI_characters",
                 "animation" : "spooky dance idle BLACK LINES",
                 "scale" : 0.75,
                 "flipX" : false,
@@ -42,10 +42,10 @@
         {
             "name" : "PICO",
             "songs" : ["Pico", "Philly", "Blammed"],
-            "buttonSprite" : "weeks/week3.png",
+            "buttonSprite" : "images/storymenu/week3.png",
             "dad" :
             {
-                "file" : "weeks/campaign_menu_UI_characters",
+                "file" : "images/storymenu/campaign_menu_UI_characters",
                 "animation" : "Pico Idle Dance",
                 "scale" : 0.75,
                 "flipX" : true,
@@ -55,10 +55,10 @@
         {
             "name" : "MOMMY MUST MURDER",
             "songs" : ["Satin-Panties", "High", "MILF"],
-            "buttonSprite" : "weeks/week4.png",
+            "buttonSprite" : "images/storymenu/week4.png",
             "dad" :
             {
-                "file" : "weeks/campaign_menu_UI_characters",
+                "file" : "images/storymenu/campaign_menu_UI_characters",
                 "animation" : "Mom Idle BLACK LINES",
                 "scale" : 0.5,
                 "flipX" : false,
@@ -68,10 +68,10 @@
         {
             "name" : "RED SNOW",
             "songs" : ["Cocoa", "Eggnog", "Winter-Horrorland"],
-            "buttonSprite" : "weeks/week5.png",
+            "buttonSprite" : "images/storymenu/week5.png",
             "dad" :
             {
-                "file" : "weeks/campaign_menu_UI_characters",
+                "file" : "images/storymenu/campaign_menu_UI_characters",
                 "animation" : "Parent Christmas Idle",
                 "scale" : 0.9,
                 "flipX" : false,
@@ -81,10 +81,10 @@
         {
             "name" : "HATING SIMULATOR ft. MOAWLING",
             "songs" : ["Senpai", "Roses", "Thorns"],
-            "buttonSprite" : "weeks/week6.png",
+            "buttonSprite" : "images/storymenu/week6.png",
             "dad" :
             {
-                "file" : "weeks/campaign_menu_UI_characters",
+                "file" : "images/storymenu/campaign_menu_UI_characters",
                 "animation" : "SENPAI idle Black Lines",
                 "scale" : 0.85,
                 "flipX" : false,

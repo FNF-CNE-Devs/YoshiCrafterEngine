@@ -1,5 +1,5 @@
 function create() {
-    var tex = Paths.getModCharacter(textureOverride != "" ? textureOverride : "Friday Night Funkin':senpai");
+    var tex = Paths.getCharacter(textureOverride != "" ? textureOverride : "Friday Night Funkin':senpai");
     character.frames = tex;
     character.animation.addByPrefix('idle', 'Senpai Idle', 24, false);
 	character.animation.addByPrefix('singUP', 'SENPAI UP NOTE', 24, false);

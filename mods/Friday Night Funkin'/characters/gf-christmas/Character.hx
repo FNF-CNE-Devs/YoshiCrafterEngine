@@ -2,7 +2,7 @@ function create() {
     var gfSprite = "gf-christmas";
 
     if (EngineSettings.customGFSkin == "default") {
-        var tex = Paths.getModCharacter(textureOverride != "" ? textureOverride : gfSprite);
+        var tex = Paths.getCharacter(textureOverride != "" ? textureOverride : gfSprite);
         character.frames = tex;
         character.animation.addByIndices('danceLeft', 'GF Dancing Beat', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
         character.animation.addByIndices('danceRight', 'GF Dancing Beat', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
@@ -32,11 +32,11 @@ function create() {
     } else {
         // Loads the custom default GF skin
         var cGF = EngineSettings.customGFSkin;
-        var tex =  Paths.getSparrowAtlas_Custom(textureOverride != "" ? Paths.getSkinsPath() + '/gf/' + cGF + '/' + textureOverride + '' : Paths.getSkinsPath() + '/gf/' + cGF + '/spritesheet');
+        var tex =  Paths_.getSparrowAtlas_Custom(textureOverride != "" ? Paths_.getSkinsPath() + '/gf/' + cGF + '/' + textureOverride + '' : Paths_.getSkinsPath() + '/gf/' + cGF + '/spritesheet');
         character.frames = tex;
-        Character.customGFOffsets = StringTools.ltrim(Paths.getTextOutsideAssets(Paths.getSkinsPath() + '/gf/' + cGF + '/offsets.txt')).split("\n");
-        Character.customGFAnims = StringTools.ltrim(Paths.getTextOutsideAssets(Paths.getSkinsPath() + '/gf/' + cGF + '/anim_names.txt')).split("\n");
-        // var color:Array<String> = Paths.getTextOutsideAssets(Paths.getSkinsPath() + '/gf/' + cGF + '/color.txt').trim().split("\r");	//May come in use later
+        Character.customGFOffsets = StringTools.ltrim(Paths_.getTextOutsideAssets(Paths_.getSkinsPath() + '/gf/' + cGF + '/offsets.txt')).split("\n");
+        Character.customGFAnims = StringTools.ltrim(Paths_.getTextOutsideAssets(Paths_.getSkinsPath() + '/gf/' + cGF + '/anim_names.txt')).split("\n");
+        // var color:Array<String> = Paths_.getTextOutsideAssets(Paths_.getSkinsPath() + '/gf/' + cGF + '/color.txt').trim().split("\r");	//May come in use later
         character.configureAnims();
         for(offset in Character.customGFOffsets) {
             var data:Array<String> = StringTools.ltrim(offset).split(" ");

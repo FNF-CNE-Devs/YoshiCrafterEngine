@@ -10,13 +10,15 @@ function create() {
         bfSprite = textureOverride;
     }
     var cBF = EngineSettings.customBFSkin;
-    var tex = (bfSprite == "BOYFRIEND" || EngineSettings.customBFSkin != "default") ? Paths.getSparrowAtlas_Custom(textureOverride == "" ? Paths.getSkinsPath() + '/bf/' + cBF + '/blammed' : Paths.getSkinsPath() + '/bf/' + cBF + '/' + textureOverride) : Paths.getModCharacter('Friday Night Funkin\':' + bfSprite);
+    var tex = (bfSprite == "BOYFRIEND" || EngineSettings.customBFSkin != "default") ? Paths_.getSparrowAtlas_Custom(textureOverride == "" ? Paths_.getSkinsPath() + '/bf/' + cBF + '/blammed' : Paths_.getSkinsPath() + '/bf/' + cBF + '/' + textureOverride) : Paths.getCharacter('Friday Night Funkin\':' + bfSprite);
     character.frames = tex;
     if (bfSprite != "BOYFRIEND" && EngineSettings.customBFSkin == "default") {
         character.animation.addByPrefix('idle', 'BF idle dance', 24, false);
         character.animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
-        character.animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
-        character.animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+        // character.animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
+        // character.animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+        character.animation.addByPrefix('singLEFT', 'BF NOTE RIGHT0', 24, false);
+        character.animation.addByPrefix('singRIGHT', 'BF NOTE LEFT0', 24, false);
         character.animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
         character.animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
         character.animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
@@ -48,10 +50,10 @@ function create() {
         character.addOffset('scared', -4);
     } else {
         
-        var offsets = StringTools.ltrim(Paths.getTextOutsideAssets(Paths.getSkinsPath() + '/bf/' + cBF + '/offsets.txt')).split("\n");
-        Character.customBFAnims = StringTools.ltrim(Paths.getTextOutsideAssets(Paths.getSkinsPath() + '/bf/' + cBF + '/anim_names.txt')).split("\n");
+        var offsets = StringTools.ltrim(Paths_.getTextOutsideAssets(Paths_.getSkinsPath() + '/bf/' + cBF + '/offsets.txt')).split("\n");
+        Character.customBFAnims = StringTools.ltrim(Paths_.getTextOutsideAssets(Paths_.getSkinsPath() + '/bf/' + cBF + '/anim_names.txt')).split("\n");
         // trace(anim_names);
-        // var color:Array<String> = Paths.getTextOutsideAssets(Paths.getSkinsPath() + '/bf/' + cBF + '/color.txt').trim().split("\r");	//May come in use later
+        // var color:Array<String> = Paths_.getTextOutsideAssets(Paths_.getSkinsPath() + '/bf/' + cBF + '/color.txt').trim().split("\r");	//May come in use later
         character.configureAnims();
         for(offset in offsets) {
             var data = StringTools.ltrim(offset).split(" ");
