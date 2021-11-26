@@ -62,6 +62,7 @@ function create() {
 
     character.playAnim('idle');
     character.charGlobalOffset.y = 350;
+    character.camOffset.x = -150;
     character.flipX = true;
 }
 

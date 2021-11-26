@@ -67,7 +67,11 @@ class Note extends FlxSprite
 	public static var RED_NOTE:Int = 3;
 
 	public static var noteTypes:Array<hscript.Expr> = [];
-	public var script:hscript.Interp;
+	// public var script:hscript.Interp;
+	public var script(get, null):hscript.Interp;
+	public function get_script():hscript.Interp {
+		return PlayState.current.noteScripts[noteType % PlayState.current.noteScripts.length];
+	}
 
 	public static var noteNumberSchemes:Map<Int, Array<NoteDirection>> = [
 		1 => [Up],
@@ -180,23 +184,7 @@ class Note extends FlxSprite
 		var noteNumberScheme:Array<NoteDirection> = noteNumberSchemes[PlayState.SONG.keyNumber];
 		if (noteNumberScheme == null) noteNumberScheme = noteNumberSchemes[4];
 
-		script = new hscript.Interp();
-		script.variables.set("enableRating", function(enable:Bool) {enableRating = enable;});
-		script.variables.set("note", this);
-		var noteScriptName = "DefaultNote";
-		var noteScriptMod = "Friday Night Funkin'";
-		var noteType:Int = Math.floor(noteData / PlayState.SONG.keyNumber);
-		if (PlayState.SONG.noteTypes.length < noteType) {
-			var splittedThingy = PlayState.SONG.noteTypes[noteType].split(":");
-			if (splittedThingy.length < 2) {
-				noteScriptName = splittedThingy[0];
-			} else {
-				noteScriptName = splittedThingy[1];
-				noteScriptMod = splittedThingy[0];
-			}
-		}
-		script.execute(ModSupport.getExpressionFromPath(Paths.getModsFolder() + '/$noteScriptMod/notes/$noteScriptName.hx'));
-		ModSupport.setHaxeFileDefaultVars(script, noteScriptMod);
+		
 
 		// if (prevNote == null)
 		// 	prevNote = this;
@@ -220,6 +208,7 @@ class Note extends FlxSprite
 		var daStage:String = PlayState.curStage;
 
 		// createNote();
+		script.variables.set("note", this);
 		ModSupport.executeFunc(script, "create");
 
 		scale.x *= swagWidth / _swagWidth;
@@ -325,6 +314,7 @@ class Note extends FlxSprite
 	{
 		super.update(elapsed);
 		ModSupport.executeFunc(script, "update", [elapsed]);
+		script.variables.set("note", this);
 		if (mustPress)
 		{
 			// The * 0.5 is so that it's easier to hit them too late, instead of too early

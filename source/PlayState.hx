@@ -199,6 +199,7 @@ class PlayState extends MusicBeatState
 
 	public static var modchart:hscript.Interp;
 	public static var stage:hscript.Interp;
+	public var noteScripts:Array<hscript.Interp> = [];
 
 	public var stage_persistent_vars:Map<String, Dynamic> = [];
 	
@@ -525,10 +526,10 @@ class PlayState extends MusicBeatState
 		// dad.y += songEvents.stage.dadOffset.y;
 		// gf.x += songEvents.stage.gfOffset.x;
 		// gf.y += songEvents.stage.gfOffset.y;
-		// songEvents.createAfterChars();
+		ModSupport.executeFunc(stage, "createAfterChars");
 		add(gf);
 
-		// songEvents.createAfterGf();
+		ModSupport.executeFunc(stage, "createAfterGf");
 
 		add(dad);
 		add(boyfriend);
@@ -986,6 +987,22 @@ class PlayState extends MusicBeatState
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
 		
 		if (PlayState.SONG.keyNumber == 0 || PlayState.SONG.keyNumber == null) PlayState.SONG.keyNumber = 4;
+		for(t in PlayState.SONG.noteTypes) {
+			var script = new hscript.Interp();
+			script.variables.set("enableRating", true);
+			var noteScriptName = "DefaultNote";
+			var noteScriptMod = "Friday Night Funkin'";
+			var splittedThingy = t.split(":");
+			if (splittedThingy.length < 2) {
+				noteScriptName = splittedThingy[0];
+			} else {
+				noteScriptName = splittedThingy[1];
+				noteScriptMod = splittedThingy[0];
+			}
+			script.execute(ModSupport.getExpressionFromPath(Paths.getModsFolder() + '/$noteScriptMod/notes/$noteScriptName.hx'));
+			ModSupport.setHaxeFileDefaultVars(script, noteScriptMod);
+			noteScripts.push(script);
+		}
 
 		for (section in noteData)
 		{
@@ -1675,6 +1692,7 @@ class PlayState extends MusicBeatState
 				{
 					if ((daNote.tooLate || !daNote.wasGoodHit) && daNote.mustPress)
 					{
+						daNote.script.variables.set("note", daNote);
 						ModSupport.executeFunc(daNote.script, "onMiss", [Note.noteNumberScheme[daNote.noteData % PlayState.SONG.keyNumber]]);
 						// noteMiss(daNote.noteData % SONG.keyNumber);
 					}
@@ -2328,6 +2346,7 @@ class PlayState extends MusicBeatState
 			// else
 			// 	health += 0.004;
 
+			note.script.variables.set("note", note);
 			ModSupport.executeFunc(note.script, "onPlayerHit", [Note.noteNumberScheme[note.noteData % PlayState.SONG.keyNumber]]);
 
 			playerStrums.forEach(function(spr:FlxSprite)

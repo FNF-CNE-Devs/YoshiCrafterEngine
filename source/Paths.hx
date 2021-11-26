@@ -239,6 +239,7 @@ class Paths
 		var splittedCharacterID = characterId.split(":");
 		var charName = "";
 		var charMod = "";
+		trace(splittedCharacterID);
 		if (splittedCharacterID.length < 2) {
 			 // For default FNF characters
 			charName = splittedCharacterID[0];
@@ -249,7 +250,8 @@ class Paths
 			charMod = splittedCharacterID[0];
 		}
 		var folder = Paths.getModsFolder() + '/$charMod/characters/$charName';
-		if (!FileSystem.exists(folder)) {
+		trace(folder);
+		if (!FileSystem.exists(folder + "/Character.hx")) {
 			folder = Paths.getModsFolder() + '/Friday Night Funkin\'/characters/unknown';
 		}
 		return folder;

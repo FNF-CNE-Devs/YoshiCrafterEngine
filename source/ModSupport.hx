@@ -1,3 +1,5 @@
+import flixel.util.FlxTimer;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.media.Sound;
 import sys.FileSystem;
@@ -299,6 +301,10 @@ class ModSupport {
 		hscript.variables.set("FileSystem", FileSystem);
 		hscript.variables.set("FlxColor", FlxColor_Helper);
 		hscript.variables.set("Boyfriend", Boyfriend);
+		hscript.variables.set("FlxTypedGroup", FlxTypedGroup);
+		hscript.variables.set("BackgroundDancer", BackgroundDancer);
+		hscript.variables.set("BackgroundGirls", BackgroundGirls);
+		hscript.variables.set("FlxTimer", FlxTimer);
 		// hscript.variables.set("FlxColor", Int);
     }
     public static function executeFunc(hscript:hscript.Interp, funcName:String, ?args:Array<Dynamic>):Dynamic {

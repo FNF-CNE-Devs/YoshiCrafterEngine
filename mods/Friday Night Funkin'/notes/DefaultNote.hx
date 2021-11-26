@@ -1,4 +1,4 @@
-enableRating(true);
+enableRating = true;
 // enableMiss(true);
 
 function create() {
