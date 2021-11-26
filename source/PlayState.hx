@@ -365,26 +365,14 @@ class PlayState extends MusicBeatState
 			script.variables.set("beatHit", function(curBeat:Int) {});
 			script.variables.set("stepHit", function(curStep:Int) {});
 			script.variables.set("setSharedVars", function() {return [];});
+			script.variables.set("getVar", function(v) {return null;});
 		}
 		stage.variables.set("gfVersion", "gf");
 		modchart.variables.set("getStageVar", function(v:String) {
-			var fVar = null;
-			try {
-				fVar = stage.variables.get(v);
-			} catch(e) {
-				trace('Variable $v does not exist on stage.');
-			}
-			return fVar;
+			return ModSupport.executeFunc(stage, "getVar", [v]);
 		});
 		stage.variables.set("getModchartVar", function(v:String) {
-			trace(stage.variables);
-			var fVar = null;
-			try {
-				fVar = stage.variables.get(v);
-			} catch(e) {
-				trace('Variable $v does not exist on modchart.');
-			}
-			return fVar;
+			return ModSupport.executeFunc(modchart, "getVar", [v]);
 		});
 		modchart.variables.set("getCameraZoom", function(curBeat) {
 			if (curBeat % 4 == 0) {

@@ -66,28 +66,27 @@ class Character extends FlxSprite
 	 * Reconfigures animations for custom BF and GF.
 	 */
 	public function configureAnims() {
-		switch(curCharacter) {
-			case "gf" | "gf-christmas" | "gf-car":
-				for(anim in Character.customGFAnims) {
-					var data:Array<String> = anim.trim().split(":");
-					if (data[0] == "dance") {
-						animation.addByIndices('danceLeft', data[1], [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
-						animation.addByIndices('danceRight', data[1], [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
-					} else if (data[0] == "sad") {
-						animation.addByIndices('sad', data[1], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "", 24, false);
-					} else if (data[0] == "hairBlow") {
-						animation.addByIndices('hairBlow', data[1], [0, 1, 2, 3], "", 24);
-					} else if (data[0] == "hairFall") {
-						animation.addByIndices('hairFall', data[1], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "", 24, false);
-					} else {
-						animation.addByPrefix(data[0], data[1], 24, false);
-					}
+		if (curCharacter.toLowerCase().startsWith("gf")) {
+			for(anim in Character.customGFAnims) {
+				var data:Array<String> = anim.trim().split(":");
+				if (data[0] == "dance") {
+					animation.addByIndices('danceLeft', data[1], [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
+					animation.addByIndices('danceRight', data[1], [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
+				} else if (data[0] == "sad") {
+					animation.addByIndices('sad', data[1], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "", 24, false);
+				} else if (data[0] == "hairBlow") {
+					animation.addByIndices('hairBlow', data[1], [0, 1, 2, 3], "", 24);
+				} else if (data[0] == "hairFall") {
+					animation.addByIndices('hairFall', data[1], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "", 24, false);
+				} else {
+					animation.addByPrefix(data[0], data[1], 24, false);
 				}
-			case "bf" | "bf-christmas" | "bf-car":
-				for(anim in Character.customBFAnims) {
-					var data:Array<String> = anim.trim().split(":");
-					animation.addByPrefix(data[0], data[1], 24, data[0] == "deathLoop");
-				}
+			}
+		} else if (curCharacter.toLowerCase().startsWith("bf")) {
+			for(anim in Character.customBFAnims) {
+				var data:Array<String> = anim.trim().split(":");
+				animation.addByPrefix(data[0], data[1], 24, data[0] == "deathLoop");
+			}
 		}
 	}
 

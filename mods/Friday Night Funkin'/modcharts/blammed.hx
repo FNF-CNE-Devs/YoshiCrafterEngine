@@ -126,6 +126,7 @@ function beatHit(curBeat:Int) {
             // switchBF(bfDarkMode);
             // switchGF(gfDarkMode);
             // switchPico(picoDarkMode);
+            FlxG.camera.flash(0xFFFFFFFF, 2);
             PlayState.currentBoyfriend = 1;
             PlayState.boyfriends[0].visible = false;
             PlayState.boyfriends[1].visible = true;
@@ -146,6 +147,7 @@ function beatHit(curBeat:Int) {
             // switchBF(ogBF);
             // switchGF(ogGF);
             // switchPico(ogPico);
+            FlxG.camera.flash(0xFF000000, 2);
             PlayState.currentBoyfriend = 0;
             PlayState.boyfriends[1].visible = false;
             PlayState.boyfriends[0].visible = true;
@@ -155,11 +157,11 @@ function beatHit(curBeat:Int) {
             PlayState.gf.visible = true;
             gfDark.visible = false;
             
-            phillyTrain.visible = false;
-            bg.visible = false;
-            city.visible = false;
-            streetBehind.visible = false;
-            street.visible = false;
+            phillyTrain.visible = true;
+            bg.visible = true;
+            city.visible = true;
+            streetBehind.visible = true;
+            street.visible = true;
             PlayState.boyfriend.color = 0xFFFFFFFF;
             PlayState.dad.color = 0xFFFFFFFF;
             PlayState.gf.color = 0xFFFFFFFF;

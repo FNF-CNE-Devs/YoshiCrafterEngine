@@ -23,8 +23,21 @@ var trainCooldown:Int = 0;
 var startedMoving:Bool = false;
 var triggeredAlready:Bool = false;
 
-function setSharedVars() {
-    return ["phillyTrain", "bg", "city", "street", "streetBehind", "light"]; // These variables will be set to null, and will be accessible from modcharts
+function getVar(v) {
+    switch(v) {
+        case "phillyTrain":
+            return phillyTrain;
+        case "bg":
+            return bg;
+        case "city":
+            return city;
+        case "street":
+            return street;
+        case "streetBehind":
+            return streetBehind;
+        case "light":
+            return light;
+    }
 }
 function beatHit(curBeat) {
     if (curBeat % 4 == 0)

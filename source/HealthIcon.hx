@@ -19,7 +19,7 @@ class HealthIcon extends FlxSprite
 		super();
 		
 		if (char.indexOf(":") == -1 && mod != null) {
-			if (FileSystem.exists(Paths.getModsFolder() + '/$mod/assets/characters/$char/icon.png'))
+			if (FileSystem.exists(Paths.getModsFolder() + '/$mod/characters/$char/icon.png'))
 				char = '$mod:$char';
 		}
 		// if (HealthIcon.redirects == null) {
