@@ -1,5 +1,6 @@
 package;
 
+import flixel.graphics.frames.FlxAtlasFrames;
 import ControlsSettingsSubState.ControlsSettingsSub;
 import openfl.display.Preloader.DefaultPreloader;
 import Controls.Control;
@@ -845,7 +846,14 @@ class OptionsMenu extends MusicBeatState
 		addPerformanceCategory();
 		addMiscCategory();
 
-		if (FlxG.sound.music != null) if (!FlxG.sound.music.playing) FlxG.sound.music.play();
+		if (FlxG.sound.music != null) {
+			if (!FlxG.sound.music.playing) {
+				FlxG.sound.music.play();
+				FlxG.sound.music.looped = true;
+			}
+		}
+
+		FlxAtlasFrames.fromTexturePackerJson()
 		
 		for (i in 0...options.length) {
 			var o:Option = options[i];

@@ -534,6 +534,7 @@ class PlayState extends MusicBeatState
 		add(dad);
 		add(boyfriend);
 		
+		ModSupport.executeFunc(stage, "createInFront");
 		if (modchart != null) ModSupport.executeFunc(modchart, "create");
 		// songEvents.createInFront();
 

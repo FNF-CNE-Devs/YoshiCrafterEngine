@@ -290,8 +290,7 @@ class Character extends FlxSprite
 	public var lastNoteHitTime:Float = -500;
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
-		var singAnims = ["singLEFT", "singRIGHT", "singUP", "singDOWN"];
-		if (singAnims.contains(AnimName)) {
+		if (AnimName.startsWith("sing")) {
 			lastNoteHitTime = Conductor.songPosition;
 		}
 		ModSupport.executeFunc(characterScript, "onAnim", [AnimName]);
