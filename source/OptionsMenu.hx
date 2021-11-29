@@ -853,7 +853,7 @@ class OptionsMenu extends MusicBeatState
 			}
 		}
 
-		FlxAtlasFrames.fromTexturePackerJson()
+		// FlxAtlasFrames.fromTexturePackerJson()
 		
 		for (i in 0...options.length) {
 			var o:Option = options[i];

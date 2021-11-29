@@ -1,3 +1,8 @@
+
+var tankAngle:Float = FlxG.random.int(-90, 45);
+var tankSpeed:Float = FlxG.random.float(5, 7);
+var tankRolling:FlxSprite = null;
+
 function createAfterChars() {
     PlayState.boyfriend.x += 40;
     PlayState.dad.y += 60;
@@ -14,6 +19,7 @@ function createAfterChars() {
 }
 
 function create() {
+    gfVersion = "gf-tankmen";
     PlayState.defaultCamZoom = 0.90;
 
     var tankBg:FlxSprite = new FlxSprite(-500, 0).loadGraphic(Paths.image('tank/tankBg'));
@@ -126,6 +132,13 @@ function create() {
     PlayState.add(tankGround);
 }
 
+function update(elapsed) {
+    //updates the background tank
+    tankAngle += elapsed * tankSpeed;
+    tankRolling.angle = tankAngle - 90 + 15;
+    tankRolling.x = 400 + (1000 * Math.cos(Math.PI / 180 * (1 * tankAngle + 180)));
+    tankRolling.y = 700 + (500 * Math.sin(Math.PI / 180 * (1 * tankAngle + 180)));
+}
 function createInFront() {
     var tank0Tex = Paths.getSparrowAtlas('tank/tank0');
     var tank0 = new FlxSprite(-500, 650);
