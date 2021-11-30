@@ -1,3 +1,4 @@
+import haxe.Json;
 import flixel.util.FlxTimer;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -305,6 +306,7 @@ class ModSupport {
 		hscript.variables.set("BackgroundDancer", BackgroundDancer);
 		hscript.variables.set("BackgroundGirls", BackgroundGirls);
 		hscript.variables.set("FlxTimer", FlxTimer);
+		hscript.variables.set("Json", Json);
 		// hscript.variables.set("FlxColor", Int);
     }
     public static function executeFunc(hscript:hscript.Interp, funcName:String, ?args:Array<Dynamic>):Dynamic {

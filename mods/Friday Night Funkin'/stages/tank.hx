@@ -19,7 +19,11 @@ function createAfterChars() {
 }
 
 function create() {
-    gfVersion = "gf-tankmen";
+    if (PlayState_.SONG.song == "stress") {
+        gfVersion = "pico-speakers";
+    } else {
+        gfVersion = "gf-tankmen";
+    }
     PlayState.defaultCamZoom = 0.90;
 
     var tankBg:FlxSprite = new FlxSprite(-500, 0).loadGraphic(Paths.image('tank/tankBg'));

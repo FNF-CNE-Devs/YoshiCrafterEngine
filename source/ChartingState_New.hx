@@ -105,7 +105,7 @@ class ChartingState_New extends MusicBeatState
 				speed: 1,
 				validScore: false,
 				keyNumber: 4,
-				noteTypes : ["Friday Night Funkin':DefaultNote"]
+				noteTypes : ["Friday Night Funkin':Default Note"]
 			};
 		}
 

@@ -31,7 +31,7 @@ class Song
 	public var needsVoices:Bool = true;
 	public var speed:Float = 1;
 	public var keyNumber:Int = 4;
-	public var noteTypes:Array<String> = ["Friday Night Funkin':DefaultNote"];
+	public var noteTypes:Array<String> = ["Friday Night Funkin':Default Note"];
 
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';

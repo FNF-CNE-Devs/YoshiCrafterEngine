@@ -278,7 +278,7 @@ class PlayState extends MusicBeatState
 		if (SONG.keyNumber == null)
 			SONG.keyNumber = 4;
 		if (SONG.noteTypes == null)
-			SONG.noteTypes = ["Friday Night Funkin':DefaultNote"];
+			SONG.noteTypes = ["Friday Night Funkin':Default Note"];
 		if (Settings.engineSettings.data.botplay)
 			SONG.validScore = false;
 		Conductor.mapBPMChanges(SONG);
@@ -991,7 +991,7 @@ class PlayState extends MusicBeatState
 		for(t in PlayState.SONG.noteTypes) {
 			var script = new hscript.Interp();
 			script.variables.set("enableRating", true);
-			var noteScriptName = "DefaultNote";
+			var noteScriptName = "Default Note";
 			var noteScriptMod = "Friday Night Funkin'";
 			var splittedThingy = t.split(":");
 			if (splittedThingy.length < 2) {
