@@ -98,6 +98,7 @@
 	<assets path='mods' library="mods" embed='false'/>
 	<assets path='skins' rename='skins' embed='false'/>
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
+	<assets path="documentation" rename="docs"/>
 	<!-- <template path='mods' /> -->
 	
 	<assets path="CHANGELOG.md" rename='changelog.txt'/>
@@ -122,6 +123,7 @@
 	<haxelib name="newgrounds"/>
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="polymod"/>
+	<haxelib name="flixel-animate"/>
 	<haxelib name="discord_rpc" if="desktop"/>
 
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
@@ -176,6 +178,4 @@
 
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
 	<haxedef name="NG_LOGIN" if="newgrounds" />
-	
-	<haxelib name="ModExtension" path="Game_Mod_Data/ModExtension/ndll/Windows64/modextension-19.ndll" />
 </project>

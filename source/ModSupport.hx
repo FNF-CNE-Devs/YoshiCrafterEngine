@@ -1,3 +1,6 @@
+import animateAtlasPlayer.assets.AssetManager;
+import animateAtlasPlayer.core.Animation;
+import animateAtlasPlayer.core.AnimationAtlas;
 import haxe.Json;
 import flixel.util.FlxTimer;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -88,6 +91,18 @@ class Paths_Mod {
     public function json(file:String):String {
         var mFolder = Paths.getModsFolder();
         return readTextFile('$mFolder/$mod/data/$file.json');
+    }
+
+    public function getAnimateManager(path:String, onFinish:AssetManager->Void) {
+        var mFolder = Paths.getModsFolder();
+        var path = '$mFolder/$mod/images/$path/';
+        var assets:AssetManager = new AssetManager();
+        assets.enqueue(path);
+        assets.loadQueue(onFinish);
+    }
+
+    public function parseJson(file:String) {
+        return Json.parse(json(file));
     }
 
     public function sound(file:String):Sound {
@@ -318,7 +333,8 @@ class ModSupport {
                 try {
                     result = f();
                 } catch(e) {
-                    trace('$e for $funcName');
+                    var s = e.stack;
+                    trace('$e for $funcName at \r\n$s');
                 }
                 return result;
             } else {

@@ -19,7 +19,7 @@ function createAfterChars() {
 }
 
 function create() {
-    if (PlayState_.SONG.song == "stress") {
+    if (PlayState_.SONG.song.toLowerCase() == "stress") {
         gfVersion = "pico-speakers";
     } else {
         gfVersion = "gf-tankmen";

@@ -1,5 +1,6 @@
 package;
 
+import haxe.io.Bytes;
 import LoadSettings.Settings;
 import openfl.media.Sound;
 import sys.FileSystem;
@@ -171,6 +172,7 @@ class Paths
 
 	public static var cacheText:Map<String, String> = new Map<String, String>();
 	public static var cacheBitmap:Map<String, BitmapData> = new Map<String, BitmapData>();
+	public static var cacheBytes:Map<String, Bytes> = new Map<String, Bytes>();
 	#if sys	
 
 	inline static public function clearCache() {
@@ -209,6 +211,19 @@ class Paths
 			Paths.cacheBitmap[path] = BitmapData.fromFile(path);
 		}
 		return Paths.cacheBitmap[path];
+	}
+	inline static public function getBytesOutsideAssets(path:String) {
+		// trace(path);
+		
+		if (Settings.engineSettings.data.developerMode) {
+			if (!FileSystem.exists(path)) {
+				PlayState.showException('Byte file at "$path" does not exist.');
+			}
+		}
+		if (Paths.cacheBytes[path] == null) {
+			Paths.cacheBytes[path] = File.getBytes(path);
+		}
+		return Paths.cacheBytes[path];
 	}
 	inline static public function getSparrowAtlas_Custom(key:String)
 	{

@@ -8,28 +8,37 @@ function create() {
     character.animation.addByPrefix("shoot2", "Pico shoot 2", 24, false);
     character.animation.addByPrefix("shoot3", "Pico shoot 3", 24, false);
     character.animation.addByPrefix("shoot4", "Pico shoot 4", 24, false);
+    character.animation.addByIndices("idle", "Pico shoot 1", [for (i in 4...25) i], "", 24, true);
 
     character.addOffset("shoot1", 0, 0);
-    character.addOffset("shoot2", 0, 0);
-    character.addOffset("shoot3", 0, 0);
-    character.addOffset("shoot4", 0, 0);
-    character.animation.addByIndices();
+    character.addOffset("shoot2", -1, -128);
+    character.addOffset("shoot3", 412, -64);
+    character.addOffset("shoot4", 439, -19);
 
-    var chart = Json.parse(Paths.json("stress/picospeaker"));
+    character.playAnim("shoot1");
+
+    chart = Paths.parseJson("stress/picospeaker");
 }
 
+var h = -1;
+var e = -1;
 function update(elapsed) {
-    for (note in chart.song.notes[Math.floor(Conductor.songPosition / Conductor.crochet)].sectionNotes) {
-        if (note[0] - (elapsed / 1000) < Conductor.songPosition && note[0] > Conductor.songPosition) {
+    var e = Math.floor(Conductor.songPosition / (Conductor.crochet * 4));
+    if (e < 0) return;
+    trace(e);
+    for (note in chart.song.notes[e].sectionNotes) {
+        if (note[0] < Conductor.songPosition && !(note[0] <= h || note[1] == e)) {
             switch(note[1]) {
                 case 0:
                     var r = FlxG.random.int(0, 1);
-                    character.playAnim("shoot" + Std.string(r));
+                    character.playAnim("shoot" + Std.string(r), true);
                 case 3:
                     var r = FlxG.random.int(2, 3);
-                    character.playAnim("shoot" + Std.string(r));
+                    character.playAnim("shoot" + Std.string(r), true);
             }
-            lastNoteHitTime = Conductor.songPosition;
+            character.lastNoteHitTime = Conductor.songPosition;
+            h = Conductor.songPosition;
+            e = note[1];
         }
     }
 }

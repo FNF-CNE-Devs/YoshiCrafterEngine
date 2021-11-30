@@ -72,6 +72,9 @@ class Main extends Sprite
 		#if mod_test
 		initialState = ModTest;
 		#end
+		#if animate_test
+		initialState = AnimateTest;
+		#end
 
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
