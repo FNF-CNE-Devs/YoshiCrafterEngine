@@ -93,13 +93,14 @@ class Paths_Mod {
         return readTextFile('$mFolder/$mod/data/$file.json');
     }
 
-    public function getAnimateManager(path:String, onFinish:AssetManager->Void) {
-        var mFolder = Paths.getModsFolder();
-        var path = '$mFolder/$mod/images/$path/';
-        var assets:AssetManager = new AssetManager();
-        assets.enqueue(path);
-        assets.loadQueue(onFinish);
-    }
+    // No support for it yet, sorry
+    // public function getAnimateManager(path:String, onFinish:AssetManager->Void) {
+    //     var mFolder = Paths.getModsFolder();
+    //     var path = '$mFolder/$mod/images/$path/';
+    //     var assets:AssetManager = new AssetManager();
+    //     assets.enqueue(path);
+    //     assets.loadQueue(onFinish);
+    // }
 
     public function parseJson(file:String) {
         return Json.parse(json(file));
