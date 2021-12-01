@@ -847,6 +847,7 @@ class OptionsMenu extends MusicBeatState
 		addMiscCategory();
 
 		if (FlxG.sound.music != null) {
+			FlxG.sound.music.onComplete = null;
 			if (!FlxG.sound.music.playing) {
 				FlxG.sound.music.play();
 				FlxG.sound.music.looped = true;

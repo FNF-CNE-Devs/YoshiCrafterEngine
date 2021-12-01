@@ -25,15 +25,14 @@ var e = -1;
 function update(elapsed) {
     var e = Math.floor(Conductor.songPosition / (Conductor.crochet * 4));
     if (e < 0) return;
-    trace(e);
     for (note in chart.song.notes[e].sectionNotes) {
         if (note[0] < Conductor.songPosition && !(note[0] <= h || note[1] == e)) {
             switch(note[1]) {
                 case 0:
-                    var r = FlxG.random.int(0, 1);
+                    var r = FlxG.random.int(1, 2);
                     character.playAnim("shoot" + Std.string(r), true);
                 case 3:
-                    var r = FlxG.random.int(2, 3);
+                    var r = FlxG.random.int(3, 4);
                     character.playAnim("shoot" + Std.string(r), true);
             }
             character.lastNoteHitTime = Conductor.songPosition;

@@ -21,6 +21,15 @@ function create() {
     character.flipX = true;
 }
 
+danced = false;
+function dance() {
+    if (character.animation.curAnim.name == "singDOWN-alt" && !character.animation.curAnim.finished) return;
+    if (!danced) {
+        character.playAnim("idle", true);
+    }
+    danced = !danced;
+}
+
 function getColors(altAnim) {
     return [
         new FlxColor(0xFFAF66CE),
