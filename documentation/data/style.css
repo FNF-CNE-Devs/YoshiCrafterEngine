@@ -1,0 +1,63 @@
+body {
+    margin : 0px;
+    background-image : url("skin-funkin-cardbordtoast.jpg");
+    background-position: center;
+    background-size: cover;
+    height : 100%;
+    overflow : hidden;
+    padding : 0px;
+    background-repeat: no-repeat;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color : white;
+}
+
+.container {
+    margin-left : 2.5vw;
+    margin-right : 2.5vw;
+    margin-top : 35px;
+    margin-bottom : 35px;
+    box-sizing: border-box;
+    overflow : scroll;
+    padding : 5px;
+    background-color : #000B;
+    border : 1px solid black;
+    border-radius : 15px;
+    
+    padding: 15px;
+    height : 100%;
+}
+
+.container .container {
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top : 5px;
+    margin-bottom : 5px;
+    
+    height : auto;
+}
+
+.tree a {
+    border : 1px solid transparent;
+    overflow : hidden;
+    border-radius : 15px;
+    font-style: normal;
+    text-decoration: none;
+    padding : 5px;
+    display : block;
+    color : rgb(41, 194, 255);
+}
+
+.tree .tree {
+    padding-top : 0px;
+    padding-bottom : 0px;
+    margin-top : 0px;
+    margin-bottom : 0px;
+}
+
+.tree a:hover {
+    background-color: #FFF2;
+}
+
+h1, h2 {
+    color :rgb(255, 41, 130);
+}
