@@ -1,6 +1,3 @@
-import animateAtlasPlayer.assets.AssetManager;
-import animateAtlasPlayer.core.Animation;
-import animateAtlasPlayer.core.AnimationAtlas;
 import haxe.Json;
 import flixel.util.FlxTimer;
 import flixel.group.FlxGroup.FlxTypedGroup;
