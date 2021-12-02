@@ -206,8 +206,11 @@ class FreeplayState extends MusicBeatState
 			instCooldown += elapsed;
 			if (instCooldown > Settings.engineSettings.data.freeplayCooldown) {
 				instPlaying = true;
-				FlxG.sound.playMusic(Paths.modInst(songs[curSelected].songName, songs[curSelected].mod), 0);
-				FlxG.sound.music.persist = false;
+				var ost = Paths.modInst(songs[curSelected].songName, songs[curSelected].mod);
+				if (ost != null) {
+					FlxG.sound.playMusic(ost, 0);
+					FlxG.sound.music.persist = false;
+				}
 			}
 		}
 		if (instPlaying) {

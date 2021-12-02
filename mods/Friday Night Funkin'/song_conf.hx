@@ -1,27 +1,3 @@
-//stage shit
-var perSongConfiguration:Map<String, Array<String>> = [
-    "fresh" => ["default_stage", "fresh", ""],
-
-    "spookeez" => ["halloween", "", ""],
-    "south" => ["halloween", "", ""],
-    "monster" => ["halloween", "", ""],
-
-    "pico" => ["halloween", "", ""],
-    "philly" => ["halloween", "", ""],
-    "blammed" => ["halloween", "blammed", ""],
-
-    "satin-panties" => ["limo", "", ""],
-    "high" => ["limo", "", ""],
-    "milf" => ["limo", "milf", ""],
-
-    "cocoa" => ["mall", "", ""],
-    "eggnog" => ["mall", "", ""],
-    "winter-horrorland" => ["mallEvil", "milf", "monster-week5-cutscene"],
-];
-if (song == "fresh") {
-    modchart = "fresh";
-}
-
 switch(song) {
     // WEEK 1
     case "fresh":
@@ -72,15 +48,4 @@ switch(song) {
     case "thorns":
         stage = "school-evil";
         cutscene = "evil-dialogue";
-
-    // WEEK 7
-    case "ugh":
-        stage = "tank";
-        cutscene = "ugh";
-    case "guns":
-        stage = "tank";
-        cutscene = "guns";
-    case "stress":
-        stage = "tank";
-        cutscene = "stress";
 }

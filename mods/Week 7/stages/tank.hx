@@ -9,7 +9,7 @@ function createAfterChars() {
     PlayState.dad.x -= 80;
     //gf.x -= 30 + Std.int(gf.width / 4);
     //gf.y += 10;
-    if (PlayState.gf.curCharacter == "pico-speakers") {
+    if (PlayState.gf.curCharacter == "Week 7:pico-speakers") {
         PlayState.gf.x -= 30;
         PlayState.gf.y -= 200;
     } else {
@@ -20,9 +20,9 @@ function createAfterChars() {
 
 function create() {
     if (PlayState_.SONG.song.toLowerCase() == "stress") {
-        gfVersion = "pico-speakers";
+        gfVersion = "Week 7:pico-speakers";
     } else {
-        gfVersion = "gf-tankmen";
+        gfVersion = "Week 7:gf-tankmen";
     }
     PlayState.defaultCamZoom = 0.90;
 

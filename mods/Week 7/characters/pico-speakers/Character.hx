@@ -2,7 +2,7 @@ var danced = false;
 var chart = null;
 
 function create() {
-    character.frames = Paths.getCharacter("pico-speakers");
+    character.frames = Paths.getCharacter("Week 7:pico-speakers");
 
     character.animation.addByPrefix("shoot1", "Pico shoot 1", 24, false);
     character.animation.addByPrefix("shoot2", "Pico shoot 2", 24, false);

@@ -1,5 +1,5 @@
 function create() {
-    tex = Paths.getCharacter("tankman");
+    tex = Paths.getCharacter("Week 7:tankman");
     character.frames = tex;
     character.animation.addByPrefix('idle', 'Tankman Idle Dance instance 1', 24, false);
     character.animation.addByPrefix('singUP', 'Tankman UP note instance 1', 24);

@@ -17,6 +17,3 @@ Winter-Horrorland:monster
 Senpai:senpai
 Roses:senpai
 Thorns:spirit
-Ugh:tankman
-Guns:tankman
-Stress:tankman

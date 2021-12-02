@@ -1,5 +1,5 @@
 function create() {
-    var gfSprite = "gf-tankmen";
+    var gfSprite = "Week 7:gf-tankmen";
 
     if (EngineSettings.customGFSkin == "default") {
         var tex = Paths.getCharacter(textureOverride != "" ? textureOverride : gfSprite);
