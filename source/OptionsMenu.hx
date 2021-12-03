@@ -727,18 +727,6 @@ class OptionsMenu extends MusicBeatState
 			checkboxChecked: false,
 			value: ""
 		});
-		options.push({
-			text : "Developer Mode",
-			updateOnSelected: function(elapsed:Float, o:FNFOption) {
-				if (controls.ACCEPT) {
-					Settings.engineSettings.data.developerMode = !Settings.engineSettings.data.developerMode;
-					o.setValue(Settings.engineSettings.data.developerMode);
-				}
-			},
-			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.developerMode,
-			value: ""
-		});
 		#end
 		options.push({
 			text : "[]",
@@ -811,6 +799,39 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: Settings.engineSettings.data.yoshiEngineCharter,
+			value: ""
+		});
+		options.push({
+			text : "[]",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				
+			},
+			checkbox: false,
+			checkboxChecked: false,
+			value: ""
+		});
+	}
+
+	function addDeveloperCategory() {
+		options.push({
+			text : "[Developer Mode]",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				
+			},
+			checkbox: false,
+			checkboxChecked: false,
+			value: ""
+		});
+		options.push({
+			text : "Developer Mode",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.developerMode = !Settings.engineSettings.data.developerMode;
+					o.setValue(Settings.engineSettings.data.developerMode);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: Settings.engineSettings.data.developerMode,
 			value: ""
 		});
 		options.push({

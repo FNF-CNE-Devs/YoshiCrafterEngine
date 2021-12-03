@@ -135,6 +135,25 @@ class Paths_Mod {
         }
     }
 
+    public function getCharacterPacker(char:String):FlxAtlasFrames {
+        var mFolder = Paths.getModsFolder();
+        var m = mod;
+        var c = char;
+        var splitChar = char.split(":");
+        if (splitChar.length > 1) {
+            m = splitChar[0];
+            c = splitChar[1];
+        }
+        var png = '$mFolder/$m/characters/$c/spritesheet.png';
+        var txt = '$mFolder/$m/characters/$c/spritesheet.txt';
+        if (FileSystem.exists(png) && FileSystem.exists(txt)) {
+            return FlxAtlasFrames.fromSpriteSheetPacker(Paths.getBitmapOutsideAssets(png), Paths.getTextOutsideAssets(txt));
+        } else {
+            trace('Sprite Sheet Packer at "$mFolder/$m/characters/$c/spritesheet" does not exist. Make sure there is an TXT and a PNG file');
+            return null;
+        }
+    }
+
     public function getCharacter(char:String) {
         return Paths.getModCharacter(char);
     }

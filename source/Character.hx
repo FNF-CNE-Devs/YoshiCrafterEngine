@@ -187,7 +187,7 @@ class Character extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
-		if (!debugMode) {
+		if (!debugMode && animation.curAnim != null) {
 			if (isPlayer && (lastHit <= Conductor.songPosition - 500 || lastHit == 0) && animation.curAnim.name != "idle" && !isaBF)
 				playAnim('idle');
 			// if (!curCharacter.startsWith('bf')) // Ok, what the fuck ?
