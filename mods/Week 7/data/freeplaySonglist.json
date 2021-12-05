@@ -1,0 +1,16 @@
+{
+    "songs" : [
+        {
+            "name" : "Ugh",
+            "char" : "tankman"
+        },
+        {
+            "name" : "Guns",
+            "char" : "tankman"
+        },
+        {
+            "name" : "Stress",
+            "char" : "tankman"
+        }
+    ]
+}
