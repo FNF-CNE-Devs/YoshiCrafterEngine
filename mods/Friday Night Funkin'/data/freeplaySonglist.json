@@ -106,8 +106,7 @@
         },
         {
             "name" : "Thorns",
-            "char" : "spirit",
-            "difficulties" : ["too hard for you"]
+            "char" : "spirit"
         }
     ]
 }
