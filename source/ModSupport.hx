@@ -1,3 +1,5 @@
+import openfl.display.PNGEncoderOptions;
+import flixel.tweens.FlxEase;
 import haxe.Json;
 import flixel.util.FlxTimer;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -45,6 +47,26 @@ class ExceptionState extends FlxState {
                     FlxG.switchState(new PlayState());
             }
         }
+    }
+}
+
+class MP4Video {
+    // public var video:MP4Handler = new MP4Handler();
+    // public var sprite:FlxSprite;
+    // public var finishCallback:Void->Void = function() {
+    //     PlayState.current.startCountdown();
+    // };
+    // public function new() {
+    //     sprite = new FlxSprite(0, 0);
+    // }
+
+    public static function playMP4(path:String, callback:Void->Void, repeat:Bool = false):FlxSprite {
+        var video = new MP4Handler();
+        video.finishCallback = callback;
+        var sprite = new FlxSprite(0,0);
+        sprite.antialiasing = Settings.engineSettings.data.videoAntialiasing;
+        video.playMP4(path, repeat, sprite, null, null, true);
+        return sprite;
     }
 }
 
@@ -101,6 +123,10 @@ class Paths_Mod {
 
     public function parseJson(file:String) {
         return Json.parse(json(file));
+    }
+
+    public function video(key:String) {
+        return 'mods/$mod/videos/$key.mp4';
     }
 
     public function sound(file:String):Sound {
@@ -330,6 +356,7 @@ class ModSupport {
 		hscript.variables.set("Conductor", Conductor);
 		hscript.variables.set("StringTools", StringTools);
 		hscript.variables.set("FlxSound", FlxSound);
+		hscript.variables.set("FlxEase", FlxEase);
 		hscript.variables.set("FlxTween", FlxTween);
 		hscript.variables.set("File", File);
 		hscript.variables.set("FileSystem", FileSystem);
@@ -340,6 +367,8 @@ class ModSupport {
 		hscript.variables.set("BackgroundGirls", BackgroundGirls);
 		hscript.variables.set("FlxTimer", FlxTimer);
 		hscript.variables.set("Json", Json);
+		hscript.variables.set("MP4Video", MP4Video);
+		hscript.variables.set("PNGEncoderOptions", PNGEncoderOptions);
 		// hscript.variables.set("FlxColor", Int);
     }
     public static function executeFunc(hscript:hscript.Interp, funcName:String, ?args:Array<Dynamic>):Dynamic {

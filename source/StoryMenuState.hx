@@ -465,6 +465,7 @@ class StoryMenuState extends MusicBeatState
 
 	function changeWeek(change:Int = 0):Void
 	{
+		var diffName = weekData[curWeek].difficulties[curDifficulty].name;
 		curWeek += change;
 
 		if (curWeek >= weekData.length)
@@ -474,6 +475,15 @@ class StoryMenuState extends MusicBeatState
 
 		var bullShit:Int = 0;
 
+		var diffIndex = 0;
+		for(i in 0...weekData[curWeek].difficulties.length) {
+			if (weekData[curWeek].difficulties[i].name == diffName) {
+				diffIndex = i;
+				break;
+			}
+		}
+		curDifficulty = diffIndex;
+		changeDifficulty();
 		for (item in grpWeekText.members)
 		{
 			item.targetY = bullShit - curWeek;

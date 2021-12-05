@@ -689,6 +689,19 @@ class OptionsMenu extends MusicBeatState
 				value: Std.string(Settings.engineSettings.data.freeplayCooldown).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.freeplayCooldown) + ".0" : Std.string(Settings.engineSettings.data.freeplayCooldown)
 			});
 		options.push({
+			text : "Enable antialiasing on videos",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.videoAntialiasing = !Settings.engineSettings.data.videoAntialiasing;
+					o.checkboxChecked = Settings.engineSettings.data.videoAntialiasing;
+					o.check(Settings.engineSettings.data.videoAntialiasing);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: Settings.engineSettings.data.videoAntialiasing,
+			value: ""
+		});
+		options.push({
 			text : "Memory Optimisation",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {

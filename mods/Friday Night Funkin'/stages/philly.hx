@@ -44,6 +44,7 @@ function beatHit(curBeat) {
     {
         var c = phillyCityLights[FlxG.random.int(0, phillyCityLights.length - 1)];
         light.color = c;
+        light.alpha = 1;
     }
 
     if (!trainMoving)
@@ -101,6 +102,8 @@ function update(elapsed) {
             trainFrameTiming = 0;
         }
     }
+
+    light.alpha = light.alpha - (elapsed /   (Conductor.crochet / 1000 * 4));
 
     // General duration of the song
     if (PlayState.curBeat < 250)

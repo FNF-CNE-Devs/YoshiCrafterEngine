@@ -105,7 +105,7 @@ class MP4Handler
 
 		// Clean player, just in case! Actually no.
 
-		FlxG.camera.fade(FlxColor.BLACK, 0, false);
+		// FlxG.camera.fade(FlxColor.BLACK, 0, false);
 
 		trace("Big, Big Chungus, Big Chungus!");
 

@@ -9,16 +9,20 @@ function create() {
     PlayState.camFollow.x = 200;
     FlxG.camera.focusOn(PlayState.camFollow.getPosition());
     FlxG.camera.zoom = 1.5;
-    FlxG.sound.play(Paths.sound('Lights_Turn_On'));
 }
 function update(elapsed) {
     t += elapsed;
 
     if (phase == 0 && t > 0.8) {
+        FlxG.sound.play(Paths.sound('Lights_Turn_On'));
         PlayState.remove(blackScreen);
         phase = 1;
-    }
-    if (phase == 1 && t > 0.8 + 2.5) {
-        startCountdown();
+        FlxTween.tween(FlxG.camera, {zoom: PlayState.defaultCamZoom}, 2.5, {
+                        ease: FlxEase.quadInOut,
+                        onComplete: function(twn:FlxTween)
+                        {
+                            startCountdown();
+                        }
+                    });
     }
 }

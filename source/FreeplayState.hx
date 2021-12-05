@@ -135,7 +135,9 @@ class FreeplayState extends MusicBeatState
 
 		for (i in 0...songs.length)
 		{
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false);
+			var songName = songs[i].songName;
+			if (songs[i].displayName != null) songName = songs[i].displayName;
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songName, true, false);
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			grpSongs.add(songText);
@@ -406,6 +408,7 @@ class FreeplayState extends MusicBeatState
 class SongMetadata
 {
 	public var songName:String = "";
+	public var displayName:String = null;
 	public var mod:String = "";
 	public var songCharacter:String = "";
 
@@ -426,6 +429,7 @@ class SongMetadata
 		if (song.color != null) {
 			m.color = song.color;
 		}
+		if (song.displayName != null) m.displayName = song.displayName;
 
 		return m;
 	}

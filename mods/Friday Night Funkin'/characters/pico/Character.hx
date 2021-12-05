@@ -2,7 +2,7 @@ function create() {
     var isPlayer = false; // NEED TO BE FIXED !!!!
     var tex = Paths.getCharacter(textureOverride != "" ? textureOverride : 'pico');
     character.frames = tex;
-    character.animation.addByPrefix('idle', "Pico Idle Dance", 24);
+    character.animation.addByPrefix('idle', "Pico Idle Dance", 24, false);
     character.animation.addByPrefix('singUP', 'pico Up note0', 24, false);
     character.animation.addByPrefix('singDOWN', 'Pico Down Note0', 24, false);
     if (isPlayer)
@@ -41,6 +41,13 @@ function create() {
     character.charGlobalOffset.y = 300;
 }
 
+var danced = false;
+function dance() {
+    if (!danced) {
+        character.playAnim("idle");
+    }
+    danced = !danced;
+}
 function getColors(altAnim) {
     return [
         new FlxColor(0xFFFD6922),
