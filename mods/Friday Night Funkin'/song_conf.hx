@@ -34,6 +34,7 @@ switch(song) {
         stage = "mall";
     case "eggnog":
         stage = "mall";
+        cutscene = "week5-eggnog";
     case "winter-horrorland":
         stage = "mall-evil";
         cutscene = "week5-monster";

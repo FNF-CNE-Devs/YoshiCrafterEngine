@@ -248,7 +248,7 @@ class OptionsMenu extends MusicBeatState
 					}
 				},
 				checkbox: true,
-				checkboxChecked: Settings.engineSettings.data.scrollSpeed,
+				checkboxChecked: Settings.engineSettings.data.customScrollSpeed,
 				value: Std.string(Settings.engineSettings.data.scrollSpeed).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.scrollSpeed) + ".0" : Std.string(Settings.engineSettings.data.scrollSpeed)
 			});
 		options.push(
@@ -827,7 +827,7 @@ class OptionsMenu extends MusicBeatState
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.developerMode = !Settings.engineSettings.data.developerMode;
-					o.setValue(Settings.engineSettings.data.developerMode);
+					o.check(Settings.engineSettings.data.developerMode);
 				}
 			},
 			checkbox: true,
@@ -866,6 +866,7 @@ class OptionsMenu extends MusicBeatState
 		addCustomNotesCategory();
 		addPerformanceCategory();
 		addMiscCategory();
+		addDeveloperCategory();
 
 		if (FlxG.sound.music != null) {
 			FlxG.sound.music.onComplete = null;

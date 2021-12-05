@@ -1,0 +1,113 @@
+{
+    "songs" : [
+        {
+            "name" : "Tutorial",
+            "char" : "gf",
+            "difficulties" : ["Easy", "Normal", "Hard"]
+        },
+
+
+        {
+            "name" : "Bopeebo",
+            "char" : "dad",
+            "difficulties" : ["Easy", "Normal", "Hard"]
+        },
+        {
+            "name" : "Fresh",
+            "char" : "dad",
+            "difficulties" : ["Easy", "Normal", "Hard"]
+        },
+        {
+            "name" : "Dadbattle",
+            "displayName" : "Dad Battle",
+            "char" : "dad",
+            "difficulties" : ["Easy", "Normal", "Hard"]
+        },
+
+
+        {
+            "name" : "Spookeez",
+            "char" : "spooky",
+            "difficulties" : ["Easy", "Normal", "Hard"]
+        },
+        {
+            "name" : "South",
+            "char" : "spooky",
+            "difficulties" : ["Easy", "Normal", "Hard"]
+        },
+        {
+            "name" : "Monster",
+            "char" : "monster",
+            "difficulties" : ["Easy", "Normal", "Hard"]
+        },
+
+
+        {
+            "name" : "Pico",
+            "char" : "pico",
+            "difficulties" : ["Easy", "Normal", "Hard"]
+        },
+        {
+            "name" : "Philly",
+            "displayName" : "Philly Nice",
+            "char" : "pico",
+            "difficulties" : ["Easy", "Normal", "Hard"]
+        },
+        {
+            "name" : "Blammed",
+            "char" : "pico",
+            "difficulties" : ["Easy", "Normal", "Hard"]
+        },
+
+
+        {
+            "name" : "Satin-Panties",
+            "char" : "mom",
+            "difficulties" : ["Easy", "Normal", "Hard"]
+        },
+        {
+            "name" : "High",
+            "char" : "mom",
+            "difficulties" : ["Easy", "Normal", "Hard"]
+        },
+        {
+            "name" : "MILF",
+            "char" : "mom",
+            "difficulties" : ["Easy", "Normal", "Hard"]
+        },
+
+        
+        {
+            "name" : "Cocoa",
+            "char" : "parents-christmas",
+            "difficulties" : ["Easy", "Normal", "Hard"]
+        },
+        {
+            "name" : "Eggnog",
+            "char" : "parents-christmas",
+            "difficulties" : ["Easy", "Normal", "Hard"]
+        },
+        {
+            "name" : "Winter-Horrorland",
+            "char" : "monster",
+            "difficulties" : ["Easy", "Normal", "Hard"]
+        },
+
+        
+        {
+            "name" : "Senpai",
+            "char" : "senpai",
+            "difficulties" : ["Easy", "Normal", "Hard"]
+        },
+        {
+            "name" : "Roses",
+            "char" : "senpai",
+            "difficulties" : ["Easy", "Normal", "Hard"]
+        },
+        {
+            "name" : "Thorns",
+            "char" : "spirit",
+            "difficulties" : ["too hard for you"]
+        }
+    ]
+}

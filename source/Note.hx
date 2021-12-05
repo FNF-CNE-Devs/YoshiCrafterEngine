@@ -246,7 +246,7 @@ class Note extends FlxSprite
 		if (isSustainNote)
 		{
 			noteScore * 0.2;
-			alpha = Settings.engineSettings.data.transparentSubstains ? 1 : 0.6;
+			alpha = Settings.engineSettings.data.transparentSubstains ? 0.6 : 1;
 
 			noteOffset.x += width / 2;
 

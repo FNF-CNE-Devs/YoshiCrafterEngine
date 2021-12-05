@@ -39,7 +39,8 @@ class CoolUtil
 	*/
 	public static function difficultyString():String
 	{
-		return difficultyArray[PlayState.storyDifficulty];
+		// return difficultyArray[PlayState.storyDifficulty];
+		return PlayState.storyDifficulty.toUpperCase();
 	}
 
 	/**

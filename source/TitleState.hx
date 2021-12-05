@@ -71,25 +71,6 @@ class TitleState extends MusicBeatState
 		#end
 
 
-		// ╔═══════════════════════════════════════════════════╗
-		// ║ /!\ WARNING !                                     ║
-		// ╟───────────────────────────────────────────────────╢
-		// ║ I bet you guys have enough of having to redo your ║
-		// ║ keybinds everytime you load a new mod. The line   ║
-		// ║ below assure synchronisation between EVERY mods   ║
-		// ║ that uses Yoshi Engine. For god's sake, DO NOT    ║
-		// ║ edit the function, or remove this line. People    ║
-		// ║ have enough of having to do their keybinds        ║
-		// ║ everytime they download a new mod. If you wanna   ║
-		// ║ set your own bind path, uses the fields :         ║
-		// ║   - Settings.save_bind_name                       ║
-		// ║   - Settings.save_bind_path                       ║
-		// ║ In the LoadSettings.hx file.                      ║
-		// ╚═══════════════════════════════════════════════════╝
-		   FlxG.save.bind(Settings.save_bind_name, Settings.save_bind_path); // Binds to your mod data
-		   Settings.loadDefault();  // Binds another instance of FlxSave to the engine's settings, allowing synchronisation between mods
-		// -------------------------------------------
-
 
 		// Copy default files
 
@@ -152,17 +133,7 @@ class TitleState extends MusicBeatState
 	{
 		if (!initialized)
 		{
-			var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
-			diamond.persist = true;
-			diamond.destroyOnNoUse = false;
-
-			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
-				new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
-			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
-				{asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
-
-			transIn = FlxTransitionableState.defaultTransIn;
-			transOut = FlxTransitionableState.defaultTransOut;
+			
 
 			// HAD TO MODIFY SOME BACKEND SHIT
 			// IF THIS PR IS HERE IF ITS ACCEPTED UR GOOD TO GO
@@ -186,12 +157,13 @@ class TitleState extends MusicBeatState
 		// bg.updateHitbox();
 		add(bg);
 
-		logoBl = new FlxSprite(-150, -100);
+		logoBl = new FlxSprite(-100, -100);
 		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
 		logoBl.antialiasing = true;
 		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
 		logoBl.animation.play('bump');
 		logoBl.updateHitbox();
+		logoBl.scale.x = logoBl.scale.y = 0.95;
 		// logoBl.screenCenter();
 		// logoBl.color = FlxColor.BLACK;
 
@@ -205,12 +177,17 @@ class TitleState extends MusicBeatState
 
 		titleText = new FlxSprite(100, FlxG.height * 0.8);
 		titleText.frames = Paths.getSparrowAtlas('titleEnter');
-		titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
-		titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
+		#if android
+			titleText.animation.addByPrefix('idle', "Android_Idle", 24);
+			titleText.animation.addByPrefix('press', "Android_Press", 24);
+		#else
+			titleText.animation.addByPrefix('idle', "Windows_Idle", 24);
+			titleText.animation.addByPrefix('press', "Windows_Press", 24);
+		#end
 		titleText.antialiasing = true;
 		titleText.animation.play('idle');
 		titleText.updateHitbox();
-		// titleText.screenCenter(X);
+		titleText.screenCenter(X);
 		add(titleText);
 
 		var logo:FlxSprite = new FlxSprite().loadGraphic(Paths.image('logo'));

@@ -4,16 +4,24 @@ var chart = null;
 function create() {
     character.frames = Paths.getCharacter("Week 7:pico-speakers");
 
-    character.animation.addByPrefix("shoot1", "Pico shoot 1", 24, false);
-    character.animation.addByPrefix("shoot2", "Pico shoot 2", 24, false);
-    character.animation.addByPrefix("shoot3", "Pico shoot 3", 24, false);
-    character.animation.addByPrefix("shoot4", "Pico shoot 4", 24, false);
-    character.animation.addByIndices("idle", "Pico shoot 1", [for (i in 4...25) i], "", 24, true);
+    character.animation.addByIndices("shoot1", "Pico shoot 1", [for (i in 0...4) i], "", 24, false);
+    character.animation.addByIndices("shoot2", "Pico shoot 2", [for (i in 0...4) i], "", 24, false);
+    character.animation.addByIndices("shoot3", "Pico shoot 3", [for (i in 0...4) i], "", 24, false);
+    character.animation.addByIndices("shoot4", "Pico shoot 4", [for (i in 0...4) i], "", 24, false);
+    character.animation.addByIndices("shoot1-idle", "Pico shoot 1", [for (i in 4...25) i], "", 24, true);
+    character.animation.addByIndices("shoot2-idle", "Pico shoot 2", [for (i in 4...25) i], "", 24, true);
+    character.animation.addByIndices("shoot3-idle", "Pico shoot 3", [for (i in 4...25) i], "", 24, true);
+    character.animation.addByIndices("shoot4-idle", "Pico shoot 4", [for (i in 4...25) i], "", 24, true);
 
     character.addOffset("shoot1", 0, 0);
     character.addOffset("shoot2", -1, -128);
     character.addOffset("shoot3", 412, -64);
     character.addOffset("shoot4", 439, -19);
+
+    character.addOffset("shoot1-idle", 0, 0);
+    character.addOffset("shoot2-idle", -1, -128);
+    character.addOffset("shoot3-idle", 412, -64);
+    character.addOffset("shoot4-idle", 439, -19);
 
     character.playAnim("shoot1");
 
@@ -23,6 +31,10 @@ function create() {
 var h = -1;
 var e = -1;
 function update(elapsed) {
+    if (StringTools.startsWith(character.animation.curAnim.name, "shoot") && !StringTools.endsWith(character.animation.curAnim.name, "-idle") && character.animation.curAnim.finished) {
+        character.playAnim(character.animation.curAnim.name + "-idle");
+    }
+
     var e = Math.floor(Conductor.songPosition / (Conductor.crochet * 4));
     if (e < 0) return;
     for (note in chart.song.notes[e].sectionNotes) {
@@ -43,7 +55,7 @@ function update(elapsed) {
 }
 
 function dance() {
-    character.playAnim("idle");
+    // character.playAnim("idle");
 }
 
 function onAnim(animName) {

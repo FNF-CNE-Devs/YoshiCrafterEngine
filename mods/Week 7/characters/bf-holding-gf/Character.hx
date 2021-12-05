@@ -22,14 +22,14 @@ function create() {
     character.animation.addByPrefix('scared', 'BF idle shaking', 24);
 
     character.addOffset('idle', -5);
-    character.addOffset("singUP", -29, 27);
-    character.addOffset("singRIGHT", -38, -7);
-    character.addOffset("singLEFT", 12, -6);
-    character.addOffset("singDOWN", -10, -50);
-    character.addOffset("singUPmiss", -29, 27);
-    character.addOffset("singRIGHTmiss", -30, 21);
-    character.addOffset("singLEFTmiss", 12, 24);
-    character.addOffset("singDOWNmiss", -11, -19);
+    character.addOffset("singUP", -29, 10);
+    character.addOffset("singRIGHT", -41, 23);
+    character.addOffset("singLEFT", 12, 7);
+    character.addOffset("singDOWN", -10, -10);
+    character.addOffset("singUPmiss", -29, 10);
+    character.addOffset("singRIGHTmiss", -41, 23);
+    character.addOffset("singLEFTmiss", 12, 7);
+    character.addOffset("singDOWNmiss", -10, -10);
     character.addOffset("hey", 7, 4);
     character.addOffset('firstDeath', 37, 11);
     character.addOffset('deathLoop', 37, 5);

@@ -1,0 +1,11 @@
+[x] Fixed Options Menu crash
+[ ] Update charter to allow custom notes
+[ ] Custom rating support (not important)
+[ ] Cutscene support (IMPORTANT !!!!!!!!)
+[ ] Custom Inst / Voices support
+[ ] Story Menu and Freeplay Optimization (outside Developer Mode)
+[ ] Freeplay Menu Colors
+[ ] freeplaySonglist.txt -> freeplaySonglist.json
+[x] Story Menu Week custom color
+[ ] MP4 Cutscene support (https://github.com/brightfyregit/Friday-Night-Funkin-Mp4-Video-Support)
+[x] Tap to Begin for Android devices

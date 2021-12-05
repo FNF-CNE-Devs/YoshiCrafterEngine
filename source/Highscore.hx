@@ -11,7 +11,7 @@ class Highscore
 	#end
 
 
-	public static function saveScore(mod:String, song:String, score:Int = 0, ?diff:Int = 0):Void
+	public static function saveScore(mod:String, song:String, score:Int = 0, ?diff:String = "Normal"):Void
 	{
 		var daSong:String = formatSong('$mod:$song', diff);
 
@@ -30,7 +30,7 @@ class Highscore
 			setScore(daSong, score);
 	}
 
-	public static function saveWeekScore(week:Int = 1, score:Int = 0, ?diff:Int = 0):Void
+	public static function saveWeekScore(week:Int = 1, score:Int = 0, ?diff:String = "Normal"):Void
 	{
 
 		#if !switch
@@ -49,7 +49,7 @@ class Highscore
 			setScore(daWeek, score);
 	}
 
-	public static function saveModWeekScore(mod:String, week:String, score:Int = 0, ?diff:Int = 0):Void
+	public static function saveModWeekScore(mod:String, week:String, score:Int = 0, ?diff:String = "Normal"):Void
 	{
 
 		#if !switch
@@ -79,19 +79,18 @@ class Highscore
 		FlxG.save.flush();
 	}
 
-	public static function formatSong(song:String, diff:Int):String
+	public static function formatSong(song:String, diff:String):String
 	{
 		var daSong:String = song;
 
-		if (diff == 0)
-			daSong += '-easy';
-		else if (diff == 2)
-			daSong += '-hard';
+		if (diff.toLowerCase() != "normal") {
+			daSong += "-" + diff.toLowerCase();
+		}
 
 		return daSong;
 	}
 
-	public static function getScore(song:String, diff:Int):Int
+	public static function getScore(song:String, diff:String):Int
 	{
 		if (!songScores.exists(formatSong(song, diff)))
 			setScore(formatSong(song, diff), 0);
@@ -99,7 +98,7 @@ class Highscore
 		return songScores.get(formatSong(song, diff));
 	}
 
-	public static function getWeekScore(week:Int, diff:Int):Int
+	public static function getWeekScore(week:Int, diff:String):Int
 	{
 		if (!songScores.exists(formatSong('week' + week, diff)))
 			setScore(formatSong('week' + week, diff), 0);
@@ -107,7 +106,7 @@ class Highscore
 		return songScores.get(formatSong('week' + week, diff));
 	}
 
-	public static function getModWeekScore(mod:String, week:String, diff:Int):Int
+	public static function getModWeekScore(mod:String, week:String, diff:String):Int
 	{
 		if (!songScores.exists(formatSong('$mod:$week', diff)))
 			setScore(formatSong('$mod:$week', diff), 0);

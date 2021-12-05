@@ -1,5 +1,8 @@
 package;
 
+import haxe.Json;
+import sys.io.File;
+import sys.FileSystem;
 import openfl.geom.ColorTransform;
 import LoadSettings.Settings;
 import flixel.system.FlxAssets.FlxSoundAsset;
@@ -22,9 +25,20 @@ using StringTools;
 /**
 * Freeplay menu
 */
+typedef FreeplaySongList = {
+	public var songs:Array<FreeplaySong>;
+}
+
+typedef FreeplaySong = {
+	public var name:String;
+	public var char:String;
+	public var displayName:String;
+	public var difficulties:Array<String>;
+	public var color:Null<FlxColor>;
+}
 class FreeplayState extends MusicBeatState
 {
-	var songs:Array<SongMetadata> = [];
+	public static var songs:Array<SongMetadata> = null;
 
 	var selector:FlxText;
 	var curSelected:Int = 0;
@@ -45,17 +59,32 @@ class FreeplayState extends MusicBeatState
 	var instPlaying:Bool = false;
 	var instCooldown:Float = 0;
 
+	public static function loadFreeplaySongs() {
+		var mPath = Paths.getModsFolder();
+		songs = [];
+		for(mod in FileSystem.readDirectory('$mPath/')) {
+			if (FileSystem.exists('$mPath/$mod/data/freeplaySonglist.json')) {
+				var jsonContent:FreeplaySongList = Json.parse(Paths.getTextOutsideAssets('$mPath/$mod/data/freeplaySonglist.json'));
+				if (jsonContent.songs != null) {
+					for(song in jsonContent.songs) {
+						songs.push(SongMetadata.fromFreeplaySong(song, mod));
+					}
+				}
+			}
+		}
+	}
 	override function create()
 	{
 		Assets.loadLibrary("songs");
 		
-		var initSonglist = ModSupport.getFreeplaySongs();
+		if (songs == null || Settings.engineSettings.data.developerMode) loadFreeplaySongs();
+		// var initSonglist = ModSupport.getFreeplaySongs();
 
-		for (i in 0...initSonglist.length)
-		{
-			var splittedThingy:Array<String> = initSonglist[i].trim().split(":");
-			songs.push(new SongMetadata(splittedThingy[1], splittedThingy[0], splittedThingy[2]));
-		}
+		// for (i in 0...initSonglist.length)
+		// {
+		// 	var splittedThingy:Array<String> = initSonglist[i].trim().split(":");
+		// 	songs.push(new SongMetadata(splittedThingy[1], splittedThingy[0], splittedThingy[2]));
+		// }
 
 		/* 
 			if (FlxG.sound.music != null)
@@ -264,7 +293,7 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 		{
-			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
+			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), songs[curSelected].difficulties[curDifficulty]);
 
 			trace(poop);
 
@@ -272,7 +301,7 @@ class FreeplayState extends MusicBeatState
 			PlayState.SONG = Song.loadModFromJson(poop, songs[curSelected].mod, songs[curSelected].songName.toLowerCase());
 			PlayState.isStoryMode = false;
 			PlayState.songMod = songs[curSelected].mod;
-			PlayState.storyDifficulty = curDifficulty;
+			PlayState.storyDifficulty = songs[curSelected].difficulties[curDifficulty];
 
 			// PlayState.storyWeek = songs[curSelected].week;
 			trace('CUR WEEK' + PlayState.storyWeek);
@@ -286,22 +315,23 @@ class FreeplayState extends MusicBeatState
 
 		if (curDifficulty < 0)
 			curDifficulty = 2;
-		if (curDifficulty > 2)
+		if (curDifficulty >= songs[curSelected].difficulties.length)
 			curDifficulty = 0;
 
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+		intendedScore = Highscore.getScore(songs[curSelected].songName, songs[curSelected].difficulties[curDifficulty]);
 		#end
 
-		switch (curDifficulty)
-		{
-			case 0:
-				diffText.text = "EASY";
-			case 1:
-				diffText.text = 'NORMAL';
-			case 2:
-				diffText.text = "HARD";
-		}
+		// switch (curDifficulty)
+		// {
+		// 	case 0:
+		// 		diffText.text = "EASY";
+		// 	case 1:
+		// 		diffText.text = 'NORMAL';
+		// 	case 2:
+		// 		diffText.text = "HARD";
+		// }
+		diffText.text = songs[curSelected].difficulties[curDifficulty].toUpperCase();
 	}
 
 	function changeSelection(change:Int = 0)
@@ -310,6 +340,7 @@ class FreeplayState extends MusicBeatState
 		// // NGio .logEvent('Fresh');
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
+		var diff = songs[curSelected].difficulties[curDifficulty];
 		curSelected += change;
 
 		if (curSelected < 0)
@@ -317,10 +348,18 @@ class FreeplayState extends MusicBeatState
 		if (curSelected >= songs.length)
 			curSelected = 0;
 
+		var difficultyShit = songs[curSelected].difficulties.indexOf(diff);
+		if (difficultyShit != -1) {
+			curDifficulty = difficultyShit;
+		} else {
+			curDifficulty = 0;
+		}
+		changeDiff(0);
+
 		// selector.y = (70 * curSelected) + 30;
 
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+		intendedScore = Highscore.getScore(songs[curSelected].songName, songs[curSelected].difficulties[curDifficulty]);
 		// lerpScore = 0;
 		#end
 
@@ -370,6 +409,26 @@ class SongMetadata
 	public var mod:String = "";
 	public var songCharacter:String = "";
 
+	public var difficulties:Array<String> = ["Easy", "Normal", "Hard"];
+	public var color:FlxColor = FlxColor.fromRGB(165, 128, 255);
+
+	public static function fromFreeplaySong(song:FreeplaySong, mod:String) {
+		var songName = song.name;
+		var songCharacter = song.char;
+		if (songCharacter == null) {
+			songCharacter == "gf";
+		}
+
+		var m = new SongMetadata(songName, mod, songCharacter);
+		if (song.difficulties != null) {
+			m.difficulties = song.difficulties;
+		}
+		if (song.color != null) {
+			m.color = song.color;
+		}
+
+		return m;
+	}
 	public function new(song:String, mod:String, songCharacter:String)
 	{
 		this.songName = song;

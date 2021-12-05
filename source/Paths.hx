@@ -250,6 +250,12 @@ class Paths
 		return FlxAtlasFrames.fromSparrow(getPath('$key.png', IMAGE, "characters"), file('$key.xml', "characters"));
 	}
 
+	inline static public function video(key:String, ?library:String)
+	{
+		trace('assets/videos/$key.mp4');
+		return getPath('videos/$key.mp4', BINARY, library);
+	}
+
 	inline static public function getCharacterFolderPath(characterId:String):String {
 		var splittedCharacterID = characterId.split(":");
 		var charName = "";

@@ -1,5 +1,6 @@
 package;
 
+import flixel.system.debug.interaction.Interaction;
 import StoryMenuState.FNFWeek;
 import StoryMenuState.WeeksJson;
 import flixel.input.keyboard.FlxKey;
@@ -59,7 +60,7 @@ class PlayState extends MusicBeatState
 	static public var isStoryMode:Bool = false;
 	static public var storyWeek:Int = 0;
 	static public var storyPlaylist:Array<String> = [];
-	static public var storyDifficulty:Int = 1;
+	static public var storyDifficulty:String = "Normal";
 	public static var actualModWeek:FNFWeek;
 	
 	public var halloweenLevel:Bool = false;
@@ -199,6 +200,8 @@ class PlayState extends MusicBeatState
 
 	public static var modchart:hscript.Interp;
 	public static var stage:hscript.Interp;
+	public static var cutscene:hscript.Interp;
+
 	public var noteScripts:Array<hscript.Interp> = [];
 
 	public var stage_persistent_vars:Map<String, Dynamic> = [];
@@ -313,15 +316,16 @@ class PlayState extends MusicBeatState
 
 		#if desktop
 		// Making difficulty text for Discord Rich Presence.
-		switch (storyDifficulty)
-		{
-			case 0:
-				storyDifficultyText = "Easy";
-			case 1:
-				storyDifficultyText = "Normal";
-			case 2:
-				storyDifficultyText = "Hard";
-		}
+		storyDifficultyText = storyDifficulty;
+		// switch (storyDifficulty)
+		// {
+		// 	case 0:
+		// 		storyDifficultyText = "Easy";
+		// 	case 1:
+		// 		storyDifficultyText = "Normal";
+		// 	case 2:
+		// 		storyDifficultyText = "Hard";
+		// }
 
 		iconRPC = SONG.player2;
 
@@ -359,6 +363,7 @@ class PlayState extends MusicBeatState
 
         stage = new hscript.Interp();
 		modchart = new hscript.Interp();
+		cutscene = new hscript.Interp();
 		for(script in [stage, modchart]) {
 			script.variables.set("update", function(elapsed:Float) {});
 			script.variables.set("create", function() {});
@@ -391,6 +396,22 @@ class PlayState extends MusicBeatState
 
 		ModSupport.setHaxeFileDefaultVars(stage, songMod);
 		ModSupport.setHaxeFileDefaultVars(modchart, songMod);
+		ModSupport.setHaxeFileDefaultVars(cutscene, songMod);
+
+		var endCutsceneFunc = function() {
+
+		};
+
+		cutscene.variables.set("update", function(elapsed) {
+
+		});
+		cutscene.variables.set("onSongEnd", function() {
+
+		});
+		cutscene.variables.set("create", function() {
+			startCountdown(); //Only execute when cutscene ended
+		});
+		cutscene.variables.set("startCountdown", startCountdown);
 		try {
 			var ex = ModSupport.getExpressionFromPath(ModSupport.song_stage_path + ".hx");
 			// trace(ex);
@@ -405,15 +426,23 @@ class PlayState extends MusicBeatState
 		} catch(e) {
 			trace("Modchart : " + e);
 		}
+		try {
+			if (ModSupport.song_cutscene_path != "") {
+				cutscene.execute(ModSupport.getExpressionFromPath(ModSupport.song_cutscene_path));
+			}
+		} catch(e) {
+			trace("Cutscene : " + e);
+		}
 
-		var sVars:Array<String> = ModSupport.executeFunc(stage, "setSharedVars");
-		var mVars:Array<String> = ModSupport.executeFunc(modchart, "setSharedVars");
-		for(s in sVars) {
-			stage.variables.set(s, null);
-		}
-		for(s in mVars) {
-			modchart.variables.set(s, null);
-		}
+		// var sVars:Array<String> = ModSupport.executeFunc(stage, "setSharedVars");
+		// var mVars:Array<String> = ModSupport.executeFunc(modchart, "setSharedVars");
+		// var mVars:Array<String> = ModSupport.executeFunc(cutscene, "setSharedVars");
+		// for(s in sVars) {
+		// 	stage.variables.set(s, null);
+		// }
+		// for(s in mVars) {
+		// 	modchart.variables.set(s, null);
+		// }
 
 		
 		ModSupport.executeFunc(stage, "create");
@@ -630,45 +659,51 @@ class PlayState extends MusicBeatState
 
 		if (isStoryMode)
 		{
-			switch (curSong.toLowerCase())
-			{
-				case "winter-horrorland":
-					var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
-					add(blackScreen);
-					blackScreen.scrollFactor.set();
-					camHUD.visible = false;
+			// switch (curSong.toLowerCase())
+			// {
+			// 	case "winter-horrorland":
+			// 		var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
+			// 		add(blackScreen);
+			// 		blackScreen.scrollFactor.set();
+			// 		camHUD.visible = false;
 
-					new FlxTimer().start(0.1, function(tmr:FlxTimer)
-					{
-						remove(blackScreen);
-						FlxG.sound.play(Paths.sound('Lights_Turn_On'));
-						camFollow.y = -2050;
-						camFollow.x += 200;
-						FlxG.camera.focusOn(camFollow.getPosition());
-						FlxG.camera.zoom = 1.5;
+			// 		new FlxTimer().start(0.1, function(tmr:FlxTimer)
+			// 		{
+			// 			remove(blackScreen);
+			// 			FlxG.sound.play(Paths.sound('Lights_Turn_On'));
+			// 			camFollow.y = -2050;
+			// 			camFollow.x += 200;
+			// 			FlxG.camera.focusOn(camFollow.getPosition());
+			// 			FlxG.camera.zoom = 1.5;
 
-						new FlxTimer().start(0.8, function(tmr:FlxTimer)
-						{
-							camHUD.visible = true;
-							remove(blackScreen);
-							FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 2.5, {
-								ease: FlxEase.quadInOut,
-								onComplete: function(twn:FlxTween)
-								{
-									startCountdown();
-								}
-							});
-						});
-					});
-				case 'senpai':
-					schoolIntro(doof);
-				case 'roses':
-					FlxG.sound.play(Paths.sound('ANGRY'));
-					schoolIntro(doof);
-				case 'thorns':
-					schoolIntro(doof);
-				default:
-					startCountdown();
+			// 			new FlxTimer().start(0.8, function(tmr:FlxTimer)
+			// 			{
+			// 				camHUD.visible = true;
+			// 				remove(blackScreen);
+			// 				FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 2.5, {
+			// 					ease: FlxEase.quadInOut,
+			// 					onComplete: function(twn:FlxTween)
+			// 					{
+			// 						startCountdown();
+			// 					}
+			// 				});
+			// 			});
+			// 		});
+			// 	case 'senpai':
+			// 		schoolIntro(doof);
+			// 	case 'roses':
+			// 		FlxG.sound.play(Paths.sound('ANGRY'));
+			// 		schoolIntro(doof);
+			// 	case 'thorns':
+			// 		schoolIntro(doof);
+			// 	default:
+			// 		startCountdown();
+			// }
+			if (cutscene != null) {
+				inCutscene = true;
+				ModSupport.executeFunc(cutscene, "create");
+			} else {
+				startCountdown();
 			}
 		}
 		else
@@ -681,10 +716,10 @@ class PlayState extends MusicBeatState
 		}
 
 		songAltName = SONG.song;
-		switch(SONG.song.toLowerCase()) {
-			case "why-do-you-hate-me":
-				songAltName = "No nene i'm not playing a camellia song";
-		}
+		// switch(SONG.song.toLowerCase()) {
+		// 	case "why-do-you-hate-me":
+		// 		songAltName = "No nene i'm not playing a camellia song";
+		// }
 
 		super.create();
 	}
@@ -773,7 +808,21 @@ class PlayState extends MusicBeatState
 		});
 	}
 
-	function startCountdown():Void
+	public function popUpGUIelements() {
+		for (elem in [healthBar, iconP1, iconP2, scoreTxt, msScoreLabel, healthBarBG]) {
+			var oldElemY = elem.y;
+			var oldAlpha = elem.alpha;
+			elem.alpha = 0;
+			if (elem.y < FlxG.height / 2) {
+				elem.y = -elem.height;
+				FlxTween.tween(elem, {y : oldElemY, alpha : oldAlpha}, 0.75, {ease : FlxEase.quartInOut});
+			} else {
+				elem.y = FlxG.height + elem.height;
+				FlxTween.tween(elem, {y : oldElemY, alpha : oldAlpha}, 0.75, {ease : FlxEase.quartInOut});
+			}
+		}
+	}
+	public function startCountdown():Void
 	{
 		inCutscene = false;
 
@@ -905,6 +954,7 @@ class PlayState extends MusicBeatState
 			// generateSong('fresh');
 		}, 5);
 		// songEvents.start();
+		popUpGUIelements();
 	}
 
 	function startSong():Void
@@ -1211,8 +1261,9 @@ class PlayState extends MusicBeatState
 				vocals.pause();
 			}
 
-			if (!startTimer.finished)
-				startTimer.active = false;
+			if (startTimer != null)
+				if (!startTimer.finished)
+					startTimer.active = false;
 		}
 
 		super.openSubState(SubState);
@@ -1559,8 +1610,12 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		ModSupport.executeFunc(stage, "update", [elapsed]);
-		ModSupport.executeFunc(modchart, "update", [elapsed]);
+		if (inCutscene) {
+			ModSupport.executeFunc(cutscene, "update", [elapsed]);
+		} else {
+			ModSupport.executeFunc(stage, "update", [elapsed]);
+			ModSupport.executeFunc(modchart, "update", [elapsed]);
+		}
 
 		if (generatedMusic)
 		{
@@ -1762,25 +1817,30 @@ class PlayState extends MusicBeatState
 			{
 				var difficulty:String = "";
 
-				if (storyDifficulty == 0)
-					difficulty = '-easy';
+				if (storyDifficulty.toLowerCase() != "normal") {
+					difficulty = "-" + storyDifficulty.toLowerCase();
+				}
+				// if (storyDifficulty == 0)
+				// 	difficulty = '-easy';
 
-				if (storyDifficulty == 2)
-					difficulty = '-hard';
+				// if (storyDifficulty == 2)
+				// 	difficulty = '-hard';
 
 				trace('LOADING NEXT SONG');
 				trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
 
-				if (SONG.song.toLowerCase() == 'eggnog')
-				{
-					var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
-						-FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
-					blackShit.scrollFactor.set();
-					add(blackShit);
-					camHUD.visible = false;
+				// if (SONG.song.toLowerCase() == 'eggnog')
+				// {
+				// 	var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
+				// 		-FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
+				// 	blackShit.scrollFactor.set();
+				// 	add(blackShit);
+				// 	camHUD.visible = false;
 
-					FlxG.sound.play(Paths.sound('Lights_Shut_off'));
-				}
+				// 	FlxG.sound.play(Paths.sound('Lights_Shut_off'));
+				// }
+
+				if (cutscene != null) ModSupport.executeFunc(cutscene, "onSongEnd");
 
 				FlxTransitionableState.skipNextTransIn = true;
 				FlxTransitionableState.skipNextTransOut = true;

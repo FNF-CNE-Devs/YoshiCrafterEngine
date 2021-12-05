@@ -94,6 +94,12 @@
 	<assets path="assets/week5"    		library="week5"    exclude="*.mp3" unless="web"/>
 	<assets path="assets/week6"    		library="week6"    exclude="*.ogg" if="web"/>
 	<assets path="assets/week6"    		library="week6"    exclude="*.mp3" unless="web"/>
+	<assets path="assets/videos" 						   exclude="*.mp3" if="web"/>
+	<assets path="assets/videos" 						   exclude="*.ogg" unless="web"/>
+
+	<!-- Videos will only work on Windows builds, sorry Android and Linux users -->
+	<assets path="plugins/" rename='' if="windows"/>
+	<assets path="dlls/" rename='' if="windows"/>
 	
 	<assets path='mods' library="mods" embed='false'/>
 	<assets path='skins' rename='skins' embed='false'/>

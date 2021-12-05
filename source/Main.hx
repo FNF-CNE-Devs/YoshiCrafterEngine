@@ -64,8 +64,9 @@ class Main extends Sprite
 		}
 
 		#if !debug
-		initialState = TitleState;
+			initialState = TitleState;
 		#end
+		initialState = LoadingScreen;
 		#if clipRectTest
 		initialState = ClipRectTest;
 		#end

@@ -286,6 +286,7 @@ class ModSupport {
     public static var song_config_parser:hscript.Interp;
     public static var song_modchart_path:String = "";
     public static var song_stage_path:String = "";
+    public static var song_cutscene_path:String = "";
     public static var currentMod:String = "Friday Night Funkin'";
 
     public static function getExpressionFromPath(path:String, critical:Bool = false):hscript.Expr {
@@ -386,6 +387,7 @@ class ModSupport {
 
         var stage = interp.variables.get("stage");
         var modchart = interp.variables.get("modchart");
+        var cutscene = interp.variables.get("cutscene");
         trace(stage);
         if (stage == "default_stage")
             song_stage_path = Paths.getModsFolder() + '/Friday Night Funkin\'/stages/$stage'; // fallback
@@ -396,10 +398,16 @@ class ModSupport {
             song_modchart_path = Paths.getModsFolder() + '/$currentMod/modcharts/$modchart.hx';
         else
             song_modchart_path = "";
+
+        if (cutscene != "")
+            song_cutscene_path = Paths.getModsFolder() + '/$currentMod/cutscenes/$cutscene.hx';
+        else
+            song_cutscene_path = "";
         trace(song_stage_path);
         trace(song_modchart_path);
     }
 
+    // UNUSED
     public static function getFreeplaySongs():Array<String> {
         var folders:Array<String> = [];
         var songs:Array<String> = [];
