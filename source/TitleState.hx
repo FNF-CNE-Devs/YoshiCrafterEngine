@@ -47,6 +47,7 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+		FlxG.scaleMode = new WideScreenScale();
 		#if polymod
 			#if sourceCode
 			// Polymod.init({modRoot: "./", dirs: ['mods']}); //poggers
@@ -107,7 +108,7 @@ class TitleState extends MusicBeatState
 		#if FREEPLAY
 		FlxG.switchState(new FreeplayState());
 		#elseif CHARTING
-		FlxG.switchState(new ChartingState());
+		FlxG.switchState(new ChartingState_New());
 		#else
 		new FlxTimer().start(1, function(tmr:FlxTimer)
 		{
@@ -121,6 +122,8 @@ class TitleState extends MusicBeatState
 		Application.current.onExit.add (function (exitCode) {
 			DiscordClient.shutdown();
 		 });
+
+		 
 		#end
 	}
 

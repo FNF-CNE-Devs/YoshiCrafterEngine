@@ -98,15 +98,13 @@ class ChartingState_New extends MusicBeatState
 	];
 
 	public static var zoom:Float = 1;
+
 	override function create()
 	{
-		#if charter
-		LoadSettings.Settings.loadDefault();		
-		#end
 		curSection = lastSection;
 
-		if (_song != null)
-			_song = _song;
+		if (PlayState.SONG != null)
+			_song = PlayState.SONG;
 		else
 		{
 			_song = {
@@ -122,6 +120,9 @@ class ChartingState_New extends MusicBeatState
 				noteTypes : ["Friday Night Funkin':Default Note"]
 			};
 		}
+		
+		Assets.loadLibrary("shared");
+		Assets.loadLibrary("characters");
 
 		if (_song.keyNumber == null)
 			_song.keyNumber = 4;
@@ -586,7 +587,7 @@ class ChartingState_New extends MusicBeatState
 		{
 			lastSection = curSection;
 
-			_song = _song;
+			PlayState.SONG = _song;
 			FlxG.sound.music.stop();
 			vocals.stop();
 			FlxG.switchState(new PlayState());

@@ -82,7 +82,7 @@ class CharterNote extends FlxSprite
 	public function createNote() {
 		switch(noteType) {
 			default:
-                frames = Paths.getSparrowAtlas('NOTE_assets_colored');
+                frames = Paths.getSparrowAtlas('NOTE_assets_colored', 'shared');
 
                 animation.addByPrefix('greenScroll', 'green0');
                 animation.addByPrefix('redScroll', 'red0');

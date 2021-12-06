@@ -1,5 +1,7 @@
 package;
 
+using FlxSpriteCenterFix;
+
 import flixel.system.debug.interaction.Interaction;
 import StoryMenuState.FNFWeek;
 import StoryMenuState.WeeksJson;
@@ -260,6 +262,7 @@ class PlayState extends MusicBeatState
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
+		WideScreenScale.updatePlayStateHUD();
 		if (Settings.engineSettings.data.greenScreenMode) {
 			camHUD.bgColor = new FlxColor(0xFF00FF00);
 		} else {
@@ -612,24 +615,27 @@ class PlayState extends MusicBeatState
 		FlxG.fixedTimestep = false;
 
 		healthBarBG = new FlxSprite(0, FlxG.height * (Settings.engineSettings.data.downscroll ? 0.075 : 0.9) * (1 / Settings.engineSettings.data.noteScale) + (guiOffset.y / 2)).loadGraphic(Paths.image('healthBar'));
-		healthBarBG.screenCenter(X);
+		healthBarBG.cameras = [camHUD];
+		healthBarBG.cameraCenter(X);
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
 
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 			'health', 0, 2);
 		healthBar.scrollFactor.set();
+		healthBar.cameras = [camHUD];
 		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
 		// healthBar
 		add(healthBar);
 
 		// scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
-		scoreTxt = new FlxText(0, healthBarBG.y + 30, FlxG.width * Settings.engineSettings.data.textQualityLevel, "", 20);
+		scoreTxt = new FlxText(0, healthBarBG.y + 30, 1280 * Settings.engineSettings.data.textQualityLevel, "", 20);
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), Std.int(16 * Settings.engineSettings.data.textQualityLevel), FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.scale.x = 1 / Settings.engineSettings.data.textQualityLevel;
 		scoreTxt.scale.y = 1 / Settings.engineSettings.data.textQualityLevel;
 		scoreTxt.antialiasing = true;
-		scoreTxt.screenCenter(X);
+		scoreTxt.cameras = [camHUD];
+		scoreTxt.cameraCenter(X);
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
@@ -643,7 +649,6 @@ class PlayState extends MusicBeatState
 
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
-		healthBar.cameras = [camHUD];
 		healthBarBG.cameras = [camHUD];
 		iconP1.cameras = [camHUD];
 		iconP2.cameras = [camHUD];
@@ -974,17 +979,17 @@ class PlayState extends MusicBeatState
 		if (Settings.engineSettings.data.showTimer) {
 			var timerBG = new FlxSprite(0, -25).makeGraphic(300, 25, 0xFF222222);
 			timerBG.alpha = 0;
-			timerBG.screenCenter(X);
-			timerBG.scrollFactor.set();
 			timerBG.cameras = [camHUD];
+			timerBG.cameraCenter(X);
+			timerBG.scrollFactor.set();
 			add(timerBG);
 
 			var timerBar = new FlxBar(timerBG.x + 4, timerBG.y + 4, LEFT_TO_RIGHT, Std.int(timerBG.width - 8)*5, Std.int(timerBG.height - 8), Conductor, 'songPosition', 0, FlxG.sound.music.length);
 			timerBar.scale.x = 0.2;
 			timerBar.alpha = 0;
-			timerBar.screenCenter(X);
-			timerBar.scrollFactor.set();
 			timerBar.cameras = [camHUD];
+			timerBar.cameraCenter(X);
+			timerBar.scrollFactor.set();
 			timerBar.createFilledBar(0xFF000000, 0xFFFFFFFF);
 			add(timerBar);
 
@@ -1098,7 +1103,7 @@ class PlayState extends MusicBeatState
 
 					if (sustainNote.mustPress)
 					{
-						sustainNote.x += FlxG.width / 2; // general offset
+						sustainNote.x += 1280 / 2; // general offset
 					}
 				}
 
@@ -1108,7 +1113,7 @@ class PlayState extends MusicBeatState
 
 				if (swagNote.mustPress)
 				{
-					swagNote.x += FlxG.width / 2; // general offset
+					swagNote.x += 1280 / 2; // general offset
 				}
 				else {}
 
@@ -1237,7 +1242,7 @@ class PlayState extends MusicBeatState
 			} else if (PlayState.SONG.keyNumber >= 6) {
 				babyArrow.x += 10;
 			}
-			babyArrow.x += ((FlxG.width / 2) * player);
+			babyArrow.x += ((1280 / 2) * player);
 			
 			babyArrow.scale.x *= Math.min(1, 5 / (PlayState.SONG.keyNumber == null ? 5 : PlayState.SONG.keyNumber));
 			babyArrow.scale.y *= Math.min(1, 5 / (PlayState.SONG.keyNumber == null ? 5 : PlayState.SONG.keyNumber));
@@ -2290,17 +2295,24 @@ class PlayState extends MusicBeatState
 			// 			spr.animation.play('static');
 			// }
 
-			if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
-			{
-				spr.centerOffsets();
-				// spr.offset.x -= 13;
-				// spr.offset.y -= 13;
-				spr.centerOrigin();
+			if (spr != null) {
+				if (spr.animation != null) {
+					if (spr.animation.curAnim != null) {
+						if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+						{
+							spr.centerOffsets();
+							// spr.offset.x -= 13;
+							// spr.offset.y -= 13;
+							spr.centerOrigin();
+						}
+						else {
+							spr.centerOffsets();
+							spr.centerOrigin();
+						}
+					}
+				}
 			}
-			else {
-				spr.centerOffsets();
-				spr.centerOrigin();
-			}
+			
 		});
 	}
 
