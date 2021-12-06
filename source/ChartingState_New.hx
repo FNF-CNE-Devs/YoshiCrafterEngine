@@ -72,7 +72,7 @@ class ChartingState_New extends MusicBeatState
 
 	var gridBG:FlxSprite;
 
-	var _song:SwagSong;
+	public static var _song:SwagSong;
 
 	var typingShit:FlxInputText;
 	/*
@@ -100,10 +100,13 @@ class ChartingState_New extends MusicBeatState
 	public static var zoom:Float = 1;
 	override function create()
 	{
+		#if charter
+		LoadSettings.Settings.loadDefault();		
+		#end
 		curSection = lastSection;
 
-		if (PlayState.SONG != null)
-			_song = PlayState.SONG;
+		if (_song != null)
+			_song = _song;
 		else
 		{
 			_song = {
@@ -583,7 +586,7 @@ class ChartingState_New extends MusicBeatState
 		{
 			lastSection = curSection;
 
-			PlayState.SONG = _song;
+			_song = _song;
 			FlxG.sound.music.stop();
 			vocals.stop();
 			FlxG.switchState(new PlayState());
@@ -903,10 +906,10 @@ class ChartingState_New extends MusicBeatState
 
 			var note:CharterNote = new CharterNote(daStrumTime, daNoteInfo);
 			note.sustainLength = daSus;
-			if (daNoteInfo < PlayState.SONG.keyNumber * 2) {
+			if (daNoteInfo < _song.keyNumber * 2) {
 				note.color = FlxColor.WHITE;
 			} else {
-				note.color = noteColors[(Math.floor(daNoteInfo / PlayState.SONG.keyNumber * 2) + 1) % noteColors.length];
+				note.color = noteColors[(Math.floor(daNoteInfo / _song.keyNumber * 2) + 1) % noteColors.length];
 			}
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();
@@ -1072,13 +1075,13 @@ class ChartingState_New extends MusicBeatState
 
 	function loadJson(song:String):Void
 	{
-		PlayState.SONG = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
+		_song = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
 		FlxG.resetState();
 	}
 
 	function loadAutosave():Void
 	{
-		PlayState.SONG = Song.parseJSONshit(FlxG.save.data.autosave);
+		_song = Song.parseJSONshit(FlxG.save.data.autosave);
 		FlxG.resetState();
 	}
 

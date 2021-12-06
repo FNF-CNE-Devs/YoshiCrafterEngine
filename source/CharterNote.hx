@@ -45,11 +45,11 @@ class CharterNote extends FlxSprite
 	public static var swagWidth(get, null):Float;
 	public static function get_swagWidth():Float {
 		return _swagWidth * widthRatio;
-		// return _swagWidth * (4 / (PlayState.SONG.keyNumber == null ? 4 : PlayState.SONG.keyNumber));
+		// return _swagWidth * (4 / (ChartingState_New._song.keyNumber == null ? 4 : ChartingState_New._song.keyNumber));
 	}
 	public static var widthRatio(get, null):Float;
 	static function get_widthRatio():Float {
-		return Math.min(1, 5 / (PlayState.SONG.keyNumber == null ? 5 : PlayState.SONG.keyNumber));
+		return Math.min(1, 5 / (ChartingState_New._song.keyNumber == null ? 5 : ChartingState_New._song.keyNumber));
 	}
 	public static var _swagWidth:Float = 160 * 0.7;
 	public static var PURP_NOTE:Int = 0;
@@ -74,7 +74,7 @@ class CharterNote extends FlxSprite
 
 	public static var noteNumberScheme(get, null):Array<NoteDirection>;
 	public static function get_noteNumberScheme():Array<NoteDirection> {
-		var noteNumberScheme:Array<NoteDirection> = noteNumberSchemes[PlayState.SONG.keyNumber];
+		var noteNumberScheme:Array<NoteDirection> = noteNumberSchemes[ChartingState_New._song.keyNumber];
 		if (noteNumberScheme == null) noteNumberScheme = noteNumberSchemes[4];
 		return noteNumberScheme;
 	}
@@ -114,7 +114,7 @@ class CharterNote extends FlxSprite
 	{
 		super();
 
-		var noteNumberScheme:Array<NoteDirection> = noteNumberSchemes[PlayState.SONG.keyNumber];
+		var noteNumberScheme:Array<NoteDirection> = noteNumberSchemes[ChartingState_New._song.keyNumber];
 		if (noteNumberScheme == null) noteNumberScheme = noteNumberSchemes[4];
 
 		
@@ -207,7 +207,7 @@ class CharterNote extends FlxSprite
 							prevNote.animation.play('redhold');
 					}
 
-					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * (Settings.engineSettings.data.customScrollSpeed ? Settings.engineSettings.data.scrollSpeed : PlayState.SONG.speed);
+					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * (Settings.engineSettings.data.customScrollSpeed ? Settings.engineSettings.data.scrollSpeed : ChartingState_New._song.speed);
 					prevNote.updateHitbox();
 			
 					if (Settings.engineSettings.data.downscroll) {
