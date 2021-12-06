@@ -67,7 +67,7 @@ class ChartingState_New extends MusicBeatState
 
 	var dummyArrow:FlxSprite;
 
-	var curRenderedNotes:FlxTypedGroup<Note>;
+	var curRenderedNotes:FlxTypedGroup<CharterNote>;
 	var curRenderedSustains:FlxTypedGroup<FlxSprite>;
 
 	var gridBG:FlxSprite;
@@ -87,6 +87,17 @@ class ChartingState_New extends MusicBeatState
 	var p1:HealthIcon;
 	var p2:HealthIcon;
 
+	var noteColors:Array<FlxColor> = [
+		FlxColor.fromRGB(255,111,111),
+		FlxColor.fromRGB(125,255,111),
+		FlxColor.fromRGB(111,201,255),
+		FlxColor.fromRGB(255,255,111),
+		FlxColor.fromRGB(219,111,255),
+		FlxColor.fromRGB(111,248,255),
+		FlxColor.fromRGB(111,111,255),
+	];
+
+	public static var zoom:Float = 1;
 	override function create()
 	{
 		curSection = lastSection;
@@ -132,7 +143,7 @@ class ChartingState_New extends MusicBeatState
 		var gridBlackLine:FlxSprite = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
 		add(gridBlackLine);
 
-		curRenderedNotes = new FlxTypedGroup<Note>();
+		curRenderedNotes = new FlxTypedGroup<CharterNote>();
 		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
 
 		FlxG.mouse.visible = true;
@@ -435,6 +446,7 @@ class ChartingState_New extends MusicBeatState
 			FlxG.log.add(wname);
 			if (wname == 'section_length')
 			{
+				if (nums.value < 1) nums.value = 1;
 				_song.notes[curSection].lengthInSteps = Std.int(nums.value);
 				updateGrid();
 			}
@@ -450,8 +462,10 @@ class ChartingState_New extends MusicBeatState
 			}
 			else if (wname == 'note_susLength')
 			{
-				curSelectedNote[2] = nums.value;
-				updateGrid();
+				if (curSelectedNote != null) {
+					curSelectedNote[2] = nums.value;
+					updateGrid();
+				}
 			}
 			else if (wname == 'section_bpm')
 			{
@@ -497,6 +511,11 @@ class ChartingState_New extends MusicBeatState
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
 
+		if (FlxG.keys.pressed.CONTROL && FlxG.mouse.wheel != 0) {
+			zoom += FlxG.mouse.wheel;
+			if (zoom < 1) zoom = 1;
+			updateGrid();
+		}
 		if (curBeat % 4 == 0 && curStep >= 16 * (curSection + 1))
 		{
 			trace(curStep);
@@ -514,11 +533,12 @@ class ChartingState_New extends MusicBeatState
 		FlxG.watch.addQuick('daBeat', curBeat);
 		FlxG.watch.addQuick('daStep', curStep);
 
+		
 		if (FlxG.mouse.justPressed)
 		{
 			if (FlxG.mouse.overlaps(curRenderedNotes))
 			{
-				curRenderedNotes.forEach(function(note:Note)
+				curRenderedNotes.forEach(function(note:CharterNote)
 				{
 					if (FlxG.mouse.overlaps(note))
 					{
@@ -881,8 +901,13 @@ class ChartingState_New extends MusicBeatState
 			var daStrumTime = i[0];
 			var daSus = i[2];
 
-			var note:Note = new Note(daStrumTime, daNoteInfo);
+			var note:CharterNote = new CharterNote(daStrumTime, daNoteInfo);
 			note.sustainLength = daSus;
+			if (daNoteInfo < PlayState.SONG.keyNumber * 2) {
+				note.color = FlxColor.WHITE;
+			} else {
+				note.color = noteColors[(Math.floor(daNoteInfo / PlayState.SONG.keyNumber * 2) + 1) % noteColors.length];
+			}
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();
 			note.x = Math.floor((daNoteInfo % (_song.keyNumber * 2)) * GRID_SIZE);
@@ -893,7 +918,7 @@ class ChartingState_New extends MusicBeatState
 			if (daSus > 0)
 			{
 				var sustainVis:FlxSprite = new FlxSprite(note.x + (GRID_SIZE / 2),
-					note.y + GRID_SIZE).makeGraphic(8, Math.floor(FlxMath.remapToRange(daSus, 0, Conductor.stepCrochet * 16, 0, gridBG.height)));
+					note.y + GRID_SIZE).makeGraphic(8, Math.floor(FlxMath.remapToRange(daSus, 0, Conductor.stepCrochet * 16, 0, gridBG.height * zoom)));
 				curRenderedSustains.add(sustainVis);
 			}
 		}
@@ -914,7 +939,7 @@ class ChartingState_New extends MusicBeatState
 		_song.notes.push(sec);
 	}
 
-	function selectNote(note:Note):Void
+	function selectNote(note:CharterNote):Void
 	{
 		var swagNum:Int = 0;
 
@@ -932,7 +957,7 @@ class ChartingState_New extends MusicBeatState
 		updateNoteUI();
 	}
 
-	function deleteNote(note:Note):Void
+	function deleteNote(note:CharterNote):Void
 	{
 		for (i in _song.notes[curSection].sectionNotes)
 		{
@@ -989,12 +1014,12 @@ class ChartingState_New extends MusicBeatState
 
 	function getStrumTime(yPos:Float):Float
 	{
-		return FlxMath.remapToRange(yPos, gridBG.y, gridBG.y + gridBG.height, 0, 16 * Conductor.stepCrochet);
+		return FlxMath.remapToRange(yPos, gridBG.y, gridBG.y + (gridBG.height * zoom), 0, 16 * Conductor.stepCrochet);
 	}
 
 	function getYfromStrum(strumTime:Float):Float
 	{
-		return FlxMath.remapToRange(strumTime, 0, 16 * Conductor.stepCrochet, gridBG.y, gridBG.y + gridBG.height);
+		return FlxMath.remapToRange(strumTime, 0, 16 * Conductor.stepCrochet, gridBG.y, gridBG.y + (gridBG.height * zoom));
 	}
 
 	/*

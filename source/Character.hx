@@ -66,7 +66,10 @@ class Character extends FlxSprite
 	 * Reconfigures animations for custom BF and GF.
 	 */
 	public function configureAnims() {
-		if (curCharacter.toLowerCase().startsWith("gf")) {
+		var charName = curCharacter;
+		var charSplit = curCharacter.split(":");
+		if (charSplit.length > 1) charName = charSplit[1];
+		if (charName.toLowerCase().startsWith("gf")) {
 			for(anim in Character.customGFAnims) {
 				var data:Array<String> = anim.trim().split(":");
 				if (data[0] == "dance") {
@@ -82,7 +85,7 @@ class Character extends FlxSprite
 					animation.addByPrefix(data[0], data[1], 24, false);
 				}
 			}
-		} else if (curCharacter.toLowerCase().startsWith("bf")) {
+		} else if (charName.toLowerCase().startsWith("bf")) {
 			for(anim in Character.customBFAnims) {
 				var data:Array<String> = anim.trim().split(":");
 				animation.addByPrefix(data[0], data[1], 24, data[0] == "deathLoop");
@@ -152,21 +155,21 @@ class Character extends FlxSprite
 			flipX = !flipX;
 
 			// Doesn't flip for BF, since his are already in the right place???
-			if (!curCharacter.startsWith('bf'))
-			{
-				// var animArray
-				var oldRight = animation.getByName('singRIGHT').frames;
-				animation.getByName('singRIGHT').frames = animation.getByName('singLEFT').frames;
-				animation.getByName('singLEFT').frames = oldRight;
+			// if (!curCharacter.startsWith('bf'))
+			// {
+			// 	// var animArray
+			// 	var oldRight = animation.getByName('singRIGHT').frames;
+			// 	animation.getByName('singRIGHT').frames = animation.getByName('singLEFT').frames;
+			// 	animation.getByName('singLEFT').frames = oldRight;
 
-				// IF THEY HAVE MISS ANIMATIONS??
-				if (animation.getByName('singRIGHTmiss') != null)
-				{
-					var oldMiss = animation.getByName('singRIGHTmiss').frames;
-					animation.getByName('singRIGHTmiss').frames = animation.getByName('singLEFTmiss').frames;
-					animation.getByName('singLEFTmiss').frames = oldMiss;
-				}
-			}
+			// 	// IF THEY HAVE MISS ANIMATIONS??
+			// 	if (animation.getByName('singRIGHTmiss') != null)
+			// 	{
+			// 		var oldMiss = animation.getByName('singRIGHTmiss').frames;
+			// 		animation.getByName('singRIGHTmiss').frames = animation.getByName('singLEFTmiss').frames;
+			// 		animation.getByName('singLEFTmiss').frames = oldMiss;
+			// 	}
+			// }
 		}
 	}
 

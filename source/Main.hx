@@ -76,6 +76,9 @@ class Main extends Sprite
 		#if animate_test
 		initialState = AnimateTest;
 		#end
+		#if charter
+		initialState = ChartingState_New;
+		#end
 
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 

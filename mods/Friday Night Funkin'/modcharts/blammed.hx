@@ -43,7 +43,7 @@ function create() {
         //             if (average < 50) {
         //                 var newColor:Float = (1 - (average / 50));
         //                 var c = new FlxColor(0xFFFFFFFF);
-        //                 c.redFloat = newColor;
+        //                 c.redF loat = newColor;
         //                 c.blueFloat = newColor;
         //                 c.greenFloat = newColor;
         //                 c.alphaFloat = color.alphaFloat;

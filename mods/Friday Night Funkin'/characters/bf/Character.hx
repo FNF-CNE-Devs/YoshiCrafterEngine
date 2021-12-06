@@ -10,7 +10,7 @@ function create() {
         bfSprite = textureOverride;
     }
     var cBF = EngineSettings.customBFSkin;
-    var tex = (bfSprite == "BOYFRIEND" || EngineSettings.customBFSkin != "default") ? Paths_.getSparrowAtlas_Custom(textureOverride == "" ? Paths_.getSkinsPath() + '/bf/' + cBF + '/spritesheet' : Paths_.getSkinsPath() + '/bf/' + cBF + '/' + textureOverride) : Paths.getCharacter('Friday Night Funkin\':' + bfSprite);
+    var tex = (bfSprite == "BOYFRIEND" || EngineSettings.customBFSkin != "default") ? Paths_.getSparrowAtlas_Custom(textureOverride == "" ? Paths_.getSkinsPath() + '/bf/' + cBF + '/spritesheet' : Paths_.getSkinsPath() + '/bf/' + cBF + '/' + textureOverride) : Paths.getCharacter('Friday Night Funkin\':bf');
     character.frames = tex;
     if (bfSprite != "BOYFRIEND" && EngineSettings.customBFSkin == "default") {
         character.animation.addByPrefix('idle', 'BF idle dance', 24, false);
@@ -52,7 +52,7 @@ function create() {
         Character.customBFAnims = StringTools.ltrim(Paths_.getTextOutsideAssets(Paths_.getSkinsPath() + '/bf/' + cBF + '/anim_names.txt')).split("\n");
         // trace(anim_names);
         // var color:Array<String> = Paths_.getTextOutsideAssets(Paths_.getSkinsPath() + '/bf/' + cBF + '/color.txt').trim().split("\r");	//May come in use later
-        character.configureAnims();
+        character.configureAnims("bf");
         for(offset in offsets) {
             var data = StringTools.ltrim(offset).split(" ");
             character.addOffset(data[0], Std.parseInt(data[1]), Std.parseInt(data[2]));
