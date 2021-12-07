@@ -34,7 +34,7 @@ class PauseSubState extends MusicBeatSubstate
 
 		FlxG.sound.list.add(pauseMusic);
 
-		var bg:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		var bg:FlxSprite = new FlxSprite(0, 0).makeGraphic(1280, 720, FlxColor.BLACK);
 		bg.alpha = 0;
 		bg.scrollFactor.set();
 		bg.scale.x = bg.scale.y = 1 / Settings.engineSettings.data.noteScale;
@@ -57,8 +57,8 @@ class PauseSubState extends MusicBeatSubstate
 		levelDifficulty.alpha = 0;
 		levelInfo.alpha = 0;
 
-		levelInfo.x = FlxG.width - (levelInfo.width + 20);
-		levelDifficulty.x = FlxG.width - (levelDifficulty.width + 20);
+		levelInfo.x = 1280 - (levelInfo.width + 20);
+		levelDifficulty.x = 1280 - (levelDifficulty.width + 20);
 
 		FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
 		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});

@@ -179,6 +179,23 @@ class PlayState extends MusicBeatState
 		return accuracy / numberOfNotes;
 	}
 
+	public var isWidescreen(get, set):Bool;
+	public function get_isWidescreen():Bool {
+		return Std.is(FlxG.scaleMode, WideScreenScale);
+	}
+	public function set_isWidescreen(enable:Bool):Bool {
+		if (enable) {
+			FlxG.scaleMode = new WideScreenScale();
+			camHUD.x = (FlxG.width / 2) - 640;
+		} else {
+			FlxG.scaleMode = new RatioScaleMode();
+			FlxG.camera.width = 1280;
+			FlxG.camera.height = 720;
+			FlxG.camera.follow(camFollow, LOCKON, 0.04);
+			camHUD.x = 0;
+		}
+		return enable;
+	}
 	public var delayTotal:Float = 0;
 
 	public var msScoreLabel:FlxText;
