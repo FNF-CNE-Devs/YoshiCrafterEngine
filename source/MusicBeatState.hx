@@ -1,5 +1,6 @@
 package;
 
+import flixel.system.scaleModes.RatioScaleMode;
 import flixel.addons.transition.TransitionData;
 import LoadSettings.Settings;
 import Conductor.BPMChangeEvent;
@@ -7,7 +8,6 @@ import flixel.FlxG;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
 import flixel.math.FlxRect;
-import flixel.util.FlxTimer;
 
 class MusicBeatState extends FlxUIState
 {
@@ -25,6 +25,13 @@ class MusicBeatState extends FlxUIState
 				Paths.clearCache();
 			}
 		}
+		
+		@:privateAccess
+		FlxG.width = 1280;
+		@:privateAccess
+		FlxG.height = 720;
+		
+		FlxG.scaleMode = new RatioScaleMode();
 		super(transIn, transOut);
 	}
 

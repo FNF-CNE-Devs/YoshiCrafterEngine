@@ -47,7 +47,6 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		FlxG.scaleMode = new WideScreenScale();
 		#if polymod
 			#if sourceCode
 			// Polymod.init({modRoot: "./", dirs: ['mods']}); //poggers

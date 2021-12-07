@@ -2,6 +2,7 @@ package;
 
 using FlxSpriteCenterFix;
 
+import flixel.system.scaleModes.RatioScaleMode;
 import flixel.system.debug.interaction.Interaction;
 import StoryMenuState.FNFWeek;
 import StoryMenuState.WeeksJson;
@@ -249,6 +250,8 @@ class PlayState extends MusicBeatState
 	override public function create()
 	{
 		PlayState.current = this;
+		
+		FlxG.scaleMode = new WideScreenScale();
 		// Assets.loadLibrary("songs");
 		#if sys
 		if (Settings.engineSettings.data.emptySkinCache) {
