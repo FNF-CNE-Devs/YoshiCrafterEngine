@@ -3,110 +3,111 @@
         {
             "name" : "Tutorial",
             "char" : "gf",
-            "difficulties" : ["Easy", "Normal", "Hard"]
+            "color" : "#460021"
         },
 
 
         {
             "name" : "Bopeebo",
             "char" : "dad",
-            "difficulties" : ["Easy", "Normal", "Hard"]
+            "color" : "#522167"
         },
         {
             "name" : "Fresh",
             "char" : "dad",
-            "difficulties" : ["Easy", "Normal", "Hard"]
+            "color" : "#522167"
         },
         {
             "name" : "Dadbattle",
             "displayName" : "Dad Battle",
             "char" : "dad",
-            "difficulties" : ["Easy", "Normal", "Hard"]
+            "color" : "#522167"
         },
 
 
         {
             "name" : "Spookeez",
             "char" : "spooky",
-            "difficulties" : ["Easy", "Normal", "Hard"]
+            "color" : "#6A4000"
         },
         {
             "name" : "South",
             "char" : "spooky",
-            "difficulties" : ["Easy", "Normal", "Hard"]
+            "color" : "#6A4000"
         },
         {
             "name" : "Monster",
             "char" : "monster",
-            "difficulties" : ["Easy", "Normal", "Hard"]
+            "color" : "#6A4000"
         },
 
 
         {
             "name" : "Pico",
             "char" : "pico",
-            "difficulties" : ["Easy", "Normal", "Hard"]
+            "color" : "#6F8820"
         },
         {
             "name" : "Philly",
             "displayName" : "Philly Nice",
             "char" : "pico",
-            "difficulties" : ["Easy", "Normal", "Hard"]
+            "color" : "#6F8820"
         },
         {
             "name" : "Blammed",
             "char" : "pico",
-            "difficulties" : ["Easy", "Normal", "Hard"]
+            "color" : "#6F8820"
         },
 
 
         {
             "name" : "Satin-Panties",
             "char" : "mom",
-            "difficulties" : ["Easy", "Normal", "Hard"]
+            "color" : "#801E47"
         },
         {
             "name" : "High",
             "char" : "mom",
-            "difficulties" : ["Easy", "Normal", "Hard"]
+            "color" : "#801E47"
         },
         {
             "name" : "MILF",
             "char" : "mom",
-            "difficulties" : ["Easy", "Normal", "Hard"]
+            "color" : "#801E47"
         },
 
         
         {
             "name" : "Cocoa",
             "char" : "parents-christmas",
-            "difficulties" : ["Easy", "Normal", "Hard"]
+            "color" : "#1A4D37"
         },
         {
             "name" : "Eggnog",
             "char" : "parents-christmas",
-            "difficulties" : ["Easy", "Normal", "Hard"]
+            "color" : "#1A4D37"
         },
         {
             "name" : "Winter-Horrorland",
             "char" : "monster",
-            "difficulties" : ["Easy", "Normal", "Hard"]
+            "color" : "#1A4D37"
         },
 
         
         {
             "name" : "Senpai",
             "char" : "senpai",
-            "difficulties" : ["Easy", "Normal", "Hard"]
+            "color" : "#953C00"
         },
         {
             "name" : "Roses",
             "char" : "senpai",
-            "difficulties" : ["Easy", "Normal", "Hard"]
+            "color" : "#953C00"
         },
         {
             "name" : "Thorns",
-            "char" : "spirit"
+            "char" : "spirit",
+            "color" : "#953C00"
         }
     ]
 }

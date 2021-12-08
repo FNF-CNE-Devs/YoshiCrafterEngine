@@ -12,8 +12,18 @@ import flixel.FlxState;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 
+typedef LoadingShit = {
+    var name:String;
+    var func:Void->Void; 
+}
+
 class LoadingScreen extends FlxState {
-    var isLoading = false;
+    var loadSections:Array<LoadingShit> = [
+    ];
+    var step:Int = 0;
+    var loadingText:FlxText;
+    var switchin:Bool = false;
+
     public override function create() {
         super.create();
         var loadingThingy = new FlxSprite(0, 0).makeGraphic(1280, 720, FlxColor.BLACK);
@@ -32,7 +42,7 @@ class LoadingScreen extends FlxState {
         loadingThingy.pixels.unlock();
         add(loadingThingy);
 
-        var loadingText = new FlxText(0, 0, 0, "Loading...", 48);
+        loadingText = new FlxText(0, 0, 0, "Loading...", 48);
         loadingText.setFormat(Paths.font("vcr.ttf"), Std.int(48), FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
         loadingText.y = FlxG.height - (loadingText.height * 1.5);
         loadingText.screenCenter(X);
@@ -46,17 +56,57 @@ class LoadingScreen extends FlxState {
 		logoBl.updateHitbox();
         logoBl.screenCenter(X);
         add(logoBl);
+
+        loadSections.push({
+                "name" : "Save Data",
+                "func" : saveData
+            });
+        loadSections.push({
+                "name" : "Story Weeks",
+                "func" : storyModeShit
+            });
+        loadSections.push({
+                "name" : "Freeplay Songs",
+                "func" : freeplayShit
+            });
+
+        FlxG.autoPause = false;
     }
 
     public override function update(elapsed:Float) {
         super.update(elapsed);
-        if (!isLoading) {
-            isLoading = true;
-            load();
+
+        if (step < 0) {
+            loadingText.text = "Loading " + loadSections[0].name + "... (0%)";
+            step = 0;
+            return;
         }
+        if (step >= loadSections.length) {
+            if (!switchin) {
+                switchin = true;
+                FlxG.switchState(new TitleState());
+                FlxG.autoPause = true;
+            }
+        } else {
+            loadSections[step].func();
+            step++;
+            if (step >= loadSections.length) {
+                loadingText.text = "Loading Complete ! (100%)";
+            } else {
+                loadingText.text = "Loading " + loadSections[step].name + "... (" + Std.string(Math.round((step / loadSections.length) * 100)) + "%)";
+            }
+            loadingText.screenCenter(X);
+        }
+
     }
 
-    function load() {
+    public function storyModeShit() {
+        StoryMenuState.loadWeeks();
+    }
+    public function freeplayShit() {
+        FreeplayState.loadFreeplaySongs();
+    }
+    public function saveData() {
 		// ╔═══════════════════════════════════════════════════╗
 		// ║ /!\ WARNING !                                     ║
 		// ╟───────────────────────────────────────────────────╢
@@ -77,11 +127,10 @@ class LoadingScreen extends FlxState {
 		// -------------------------------------------
 
         
-        StoryMenuState.loadWeeks();
-
         var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
         diamond.persist = true;
         diamond.destroyOnNoUse = false;
+
 
         FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
             new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
@@ -91,6 +140,5 @@ class LoadingScreen extends FlxState {
         // transIn = FlxTransitionableState.defaultTransIn;
         // transOut = FlxTransitionableState.defaultTransOut;
 
-        FlxG.switchState(new TitleState());
     }
 }

@@ -17,7 +17,19 @@ class ScoreText {
     }
 
     public static function generateAccuracy(ps:PlayState) {
-        return Settings.engineSettings.data.showAccuracy ? (" | Accuracy:" + (ps.numberOfNotes == 0 ? "0%" : Std.string((Math.round(ps.accuracy * 10000 / ps.numberOfNotes) / 10000) * 100) + "%") + " (" + accuracyTypesText[Settings.engineSettings.data.accuracyMode].charAt(0) + ")") : "";
+        switch(Settings.engineSettings.data.accuracyMode) {
+            default:
+                return Settings.engineSettings.data.showAccuracy ? (" | Accuracy:" + (ps.numberOfNotes == 0 ? "0%" : Std.string((Math.round(ps.accuracy * 10000 / ps.numberOfNotes) / 10000) * 100) + "%") + " (" + accuracyTypesText[Settings.engineSettings.data.accuracyMode].charAt(0) + ")") : "";
+            case 1:
+                var accuracyFloat:Float = 0;
+
+                for(rat in PlayState.current.ratings) {
+                    accuracyFloat += PlayState.current.hits[rat.name] * rat.accuracy;
+                }
+
+                return Settings.engineSettings.data.showAccuracy ? (" | Accuracy:" + (ps.numberOfNotes == 0 ? "0%" : Std.string((Math.round(accuracyFloat * 10000 / ps.numberOfNotes) / 10000) * 100) + "%") + " (" + accuracyTypesText[Settings.engineSettings.data.accuracyMode].charAt(0) + ")") : "";
+        }
+        
     }
 
     public static function generateAverageDelay(ps:PlayState) {
@@ -26,16 +38,7 @@ class ScoreText {
 
     public static function generateRating(ps:PlayState) {
         if (Settings.engineSettings.data.showRating && ps.numberOfNotes != 0) {
-            var accuracy:Float = (ps.accuracy / ps.numberOfNotes) * 100;
-            var rating:String = "None";
-            if (accuracy == 100) rating = "S+"
-            else if (accuracy >= 90) rating = "S"
-            else if (accuracy >= 80) rating = "A"
-            else if (accuracy >= 70) rating = "B"
-            else if (accuracy >= 60) rating = "C"
-            else if (accuracy >= 50) rating = "D"
-            else if (accuracy >= 40) rating = "E"
-            else rating = "F";
+            var rating = getRating(ps.accuracy / ps.numberOfNotes);
 
             var advancedRating = "";
             if (ps.numberOfArrowNotes > 0) {
@@ -48,5 +51,18 @@ class ScoreText {
         } else {
             return "";
         }
+    }
+
+    public static function getRating(accuracy:Float) {
+        var rating:String = "None";
+        if (accuracy == 1) rating = "Perfect"
+        else if (accuracy >= 0.9) rating = "S"
+        else if (accuracy >= 0.8) rating = "A"
+        else if (accuracy >= 0.7) rating = "B"
+        else if (accuracy >= 0.6) rating = "C"
+        else if (accuracy >= 0.5) rating = "D"
+        else if (accuracy >= 0.4) rating = "E"
+        else rating = "F";
+        return rating;
     }
 }

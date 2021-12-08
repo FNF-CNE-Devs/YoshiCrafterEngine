@@ -13,3 +13,4 @@
 
 stage = "tank";
 cutscene = "video";
+modchart = "test";

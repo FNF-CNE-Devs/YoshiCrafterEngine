@@ -2,15 +2,18 @@
     "songs" : [
         {
             "name" : "Ugh",
-            "char" : "tankman"
+            "char" : "tankman",
+            "color" : "#444444"
         },
         {
             "name" : "Guns",
-            "char" : "tankman"
+            "char" : "tankman",
+            "color" : "#444444"
         },
         {
             "name" : "Stress",
-            "char" : "tankman"
+            "char" : "tankman",
+            "color" : "#444444"
         }
     ]
 }

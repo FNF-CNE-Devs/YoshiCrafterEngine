@@ -184,15 +184,17 @@ class Paths
 		cacheBitmap.clear();
 	}
 
-	inline static public function getTextOutsideAssets(path:String) {
+	inline static public function getTextOutsideAssets(path:String, log:Bool = false) {
 		
 		if (Settings.engineSettings.data.developerMode) {
 			if (!FileSystem.exists(path)) {
 				PlayState.showException('Text file at "$path" does not exist.');
 			}
 		}
-		if (Paths.cacheText[path] == null)
+		if (Paths.cacheText[path] == null) {
+			if (log) trace('Getting file content at "$path"');
 			Paths.cacheText[path] = sys.io.File.getContent(path);
+		}
 		return Paths.cacheText[path];
 	}
 

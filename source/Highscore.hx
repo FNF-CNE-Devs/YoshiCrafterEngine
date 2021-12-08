@@ -1,7 +1,23 @@
 package;
 
+import flixel.util.FlxColor;
+using StringTools;
+
 import flixel.FlxG;
 
+typedef SaveDataRating = {
+	var name:String;
+	var accuracyVal:Float;
+	var color:FlxColor;
+	var amount:Int;
+}
+typedef AdvancedSaveData = {
+	var accuracy:Float;
+	var rating:String; // CUSTOM RATINGS !!!???!!!!!???!!?!!
+	var averageDelay:Float;
+	var misses:Int;
+	var hits:Array<SaveDataRating>;
+}
 class Highscore
 {
 	#if (haxe >= "4.0.0")
@@ -10,6 +26,20 @@ class Highscore
 	public static var songScores:Map<String, Int> = new Map<String, Int>();
 	#end
 
+	public static function saveAdvancedScore(mod:String, song:String, data:AdvancedSaveData, ?diff:String = "Normal") {
+		var daSong:String = formatSong('$mod:$song', diff);
+		diff = diff.toLowerCase();
+
+		if (Reflect.hasField(FlxG.save.data, 'advanced/$daSong'))
+		{
+			var score:AdvancedSaveData = Reflect.field(FlxG.save.data, 'advanced/$daSong');
+			if (score.accuracy < data.accuracy) {
+				Reflect.setField(FlxG.save.data, 'advanced/$daSong', data);
+			}
+		}
+		else
+			Reflect.setField(FlxG.save.data, 'advanced/$daSong', data);
+	}
 
 	public static function saveScore(mod:String, song:String, score:Int = 0, ?diff:String = "Normal"):Void
 	{
@@ -84,7 +114,7 @@ class Highscore
 		var daSong:String = song;
 
 		if (diff.toLowerCase() != "normal") {
-			daSong += "-" + diff.toLowerCase();
+			daSong += "-" + diff.toLowerCase().replace(" ", "-");
 		}
 
 		return daSong;

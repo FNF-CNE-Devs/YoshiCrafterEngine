@@ -40,6 +40,10 @@ using StringTools;
 /**
 * In-Game charter (When you press 7)
 */
+typedef ModChars = {
+	public var modName:String;
+	public var chars:Array<String>;
+}
 class ChartingState_New extends MusicBeatState
 {
 	var _file:FileReference;
@@ -250,31 +254,76 @@ class ChartingState_New extends MusicBeatState
 		stepperBPM.name = 'song_bpm';
 
 		// var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
-		var characters:Array<String> = [];
+
+		var mods:Array<String> = [];
+		var modCharacters:Array<Array<String>> = [];
 		var m = Paths.getModsFolder();
 		for(folder in FileSystem.readDirectory(m)) {
 			if (FileSystem.isDirectory('$m/$folder') && FileSystem.exists('$m/$folder/characters/')) {
+				var chars = [];
 				for(char in FileSystem.readDirectory('$m/$folder/characters/')) {
-					characters.push('$folder:$char');
+					chars.push(char);
 				}
+				mods.push(folder);
+				modCharacters.push(chars);
 			}
 		}
 
-		var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
-		{
-			_song.player1 = characters[Std.parseInt(character)];
-		}, new FlxUIDropDownHeader(280));
-		player1DropDown.width = player1DropDown.width * 2;
-		player1DropDown.selectedLabel = _song.player1;
-
-		var player2DropDown = new FlxUIDropDownMenu(10, 125, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
-		{
-			_song.player2 = characters[Std.parseInt(character)];
-		}, new FlxUIDropDownHeader(280));
-
-		player2DropDown.selectedLabel = _song.player2;
-
 		var tab_group_song = new FlxUI(null, UI_box);
+
+
+		// PLAYER 1 SHIT
+		var player1:Array<String> = _song.player1.split(":");
+        if (player1.length < 2) player1.insert(0, "Friday Night Funkin'");
+
+		var player1ModDropDown:FlxUIDropDownMenu = null;
+		var player1CharDropDown:FlxUIDropDownMenu = null;
+		player1CharDropDown = new FlxUIDropDownMenu(160, 100, FlxUIDropDownMenu.makeStrIdLabelArray(modCharacters[mods.indexOf(player1[0])], true), function(character:String)
+				{
+					_song.player1 = player1ModDropDown.selectedLabel + ":" + modCharacters[mods.indexOf(player1ModDropDown.selectedLabel)][Std.parseInt(character)];
+					trace(_song.player1);
+				}, new FlxUIDropDownHeader(140));
+				player1CharDropDown.selectedLabel = player1[1];
+
+		player1ModDropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(mods, true), function(character:String)
+		{
+			_song.player1 = player1ModDropDown.selectedLabel + ":" + modCharacters[mods.indexOf(player1ModDropDown.selectedLabel)][0];
+			player1CharDropDown.setData(FlxUIDropDownMenu.makeStrIdLabelArray(modCharacters[mods.indexOf(player1ModDropDown.selectedLabel)], true));
+			trace(_song.player1);
+		}, new FlxUIDropDownHeader(140));
+		player1ModDropDown.selectedLabel = player1[0];
+		player1CharDropDown.selectedLabel = player1[1];
+
+
+
+
+		// PLAYER 2 SHIT
+		var player2:Array<String> = _song.player2.split(":");
+        if (player2.length < 2) player2.insert(0, "Friday Night Funkin'");
+
+		var player2ModDropDown:FlxUIDropDownMenu = null;
+		var player2CharDropDown:FlxUIDropDownMenu = null;
+		player2CharDropDown = new FlxUIDropDownMenu(160, 125, FlxUIDropDownMenu.makeStrIdLabelArray(modCharacters[mods.indexOf(player2[0])], true), function(character:String)
+				{
+					_song.player2 = player2ModDropDown.selectedLabel + ":" + modCharacters[mods.indexOf(player2ModDropDown.selectedLabel)][Std.parseInt(character)];
+					trace(_song.player2);
+				}, new FlxUIDropDownHeader(140));
+				player2CharDropDown.selectedLabel = player2[1];
+
+		player2ModDropDown = new FlxUIDropDownMenu(10, 125, FlxUIDropDownMenu.makeStrIdLabelArray(mods, true), function(character:String)
+		{
+			_song.player2 = player2ModDropDown.selectedLabel + ":" + modCharacters[mods.indexOf(player2ModDropDown.selectedLabel)][0];
+			player2CharDropDown.setData(FlxUIDropDownMenu.makeStrIdLabelArray(modCharacters[mods.indexOf(player2ModDropDown.selectedLabel)], true));
+			trace(_song.player2);
+		}, new FlxUIDropDownHeader(140));
+		player2ModDropDown.selectedLabel = player2[0];
+		player2CharDropDown.selectedLabel = player2[1];
+
+
+
+
+
+
 		tab_group_song.name = "Song";
 		tab_group_song.add(UI_songTitle);
 
@@ -286,8 +335,10 @@ class ChartingState_New extends MusicBeatState
 		tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
-		tab_group_song.add(player1DropDown);
-		tab_group_song.add(player2DropDown);
+		tab_group_song.add(player2CharDropDown);
+		tab_group_song.add(player2ModDropDown);
+		tab_group_song.add(player1CharDropDown);
+		tab_group_song.add(player1ModDropDown);
 
 		UI_box.addGroup(tab_group_song);
 		UI_box.scrollFactor.set();

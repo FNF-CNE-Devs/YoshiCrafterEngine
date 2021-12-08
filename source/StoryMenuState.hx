@@ -170,7 +170,14 @@ class StoryMenuState extends MusicBeatState
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
-		if (weekData == null || Settings.engineSettings.data.developerMode) { // If it never was loaded before OR if in developer mode
+		var invalid = false;
+		for(bitmap in weekButtons) {
+			if (!bitmap.readable) {
+				invalid = true;
+				break;
+			}
+		}
+		if (weekData == null || Settings.engineSettings.data.developerMode || invalid) { // If it never was loaded before OR if in developer mode
 			loadWeeks();
 		}
 
@@ -202,7 +209,7 @@ class StoryMenuState extends MusicBeatState
 			var mod = week.mod;
 			var file = week.dad.file;
 			var sparrowPath = Paths.getModsFolder() + '/$mod/$file';
-			menuCharacter.frames = FlxAtlasFrames.fromSparrow(weekCharacters[week.mod + ":" + week.dad.file].clone(), Paths.getTextOutsideAssets(sparrowPath + ".xml"));
+			menuCharacter.frames = FlxAtlasFrames.fromSparrow(weekCharacters[week.mod + ":" + week.dad.file].clone(), Paths.getTextOutsideAssets(sparrowPath + ".xml", true));
 			menuCharacter.y += 70;
 			menuCharacter.antialiasing = true;
 			menuCharacter.animation.addByPrefix("char", week.dad.animation, 24);

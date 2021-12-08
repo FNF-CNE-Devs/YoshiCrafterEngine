@@ -1,5 +1,9 @@
 package;
 
+import Highscore.AdvancedSaveData;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.tweens.misc.ColorTween;
 import haxe.Json;
 import sys.io.File;
 import sys.FileSystem;
@@ -34,7 +38,7 @@ typedef FreeplaySong = {
 	public var char:String;
 	public var displayName:String;
 	public var difficulties:Array<String>;
-	public var color:Null<FlxColor>;
+	public var color:String;
 }
 class FreeplayState extends MusicBeatState
 {
@@ -50,6 +54,16 @@ class FreeplayState extends MusicBeatState
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
 	var songPlaying:FlxSound = null;
+
+	
+	var advancedBG:FlxSprite;
+	var moreInfoText:FlxText;
+	var accuracyText:FlxText;
+	var missesText:FlxText;
+	var graph:FlxSprite;
+	var ratingTexts:Array<FlxText> = [];
+
+	var bg:FlxSprite = null;
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
@@ -127,7 +141,9 @@ class FreeplayState extends MusicBeatState
 
 		// LOAD CHARACTERS
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
+		// var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
+		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		bg.color = FlxColor.fromRGB(129, 99, 223);
 		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
@@ -160,7 +176,7 @@ class FreeplayState extends MusicBeatState
 		scoreText.antialiasing = true;
 		// scoreText.alignment = RIGHT;
 
-		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 99, 0xFF000000);
+		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 126, 0xFF000000);
 		scoreBG.alpha = 0.6;
 		add(scoreBG);
 
@@ -173,6 +189,29 @@ class FreeplayState extends MusicBeatState
 		modSourceText.font = scoreText.font;
 		modSourceText.antialiasing = true;
 		add(modSourceText);
+
+		moreInfoText = new FlxText(scoreText.x, modSourceText.y + 27, 0, "[Ctrl] for more info", 24);
+		moreInfoText.font = scoreText.font;
+		moreInfoText.antialiasing = true;
+		add(moreInfoText);
+
+		advancedBG = new FlxSprite(scoreText.x - 6, 126).makeGraphic(Std.int(FlxG.width * 0.35), 720 - 126, 0xFF000000);
+		advancedBG.alpha = 0.4;
+		add(advancedBG);
+
+		accuracyText = new FlxText(scoreText.x, moreInfoText.y + 32, 0, "Accuracy : ???% (N/A)\r\n??? Misses", 24);
+		accuracyText.font = scoreText.font;
+		accuracyText.antialiasing = true;
+		add(accuracyText);
+
+		missesText = new FlxText(scoreText.x, accuracyText.y + 27, 0, "Accuracy : ???% (N/A)", 24);
+		missesText.font = scoreText.font;
+		missesText.antialiasing = true;
+		add(missesText);
+
+		graph = new FlxSprite(scoreText.x, missesText.y + 27).makeGraphic(235, 105, FlxColor.TRANSPARENT);
+		graph.antialiasing = true;
+		add(graph);
 
 		add(scoreText);
 
@@ -228,6 +267,25 @@ class FreeplayState extends MusicBeatState
 	// 			num++;
 	// 	}
 	// }
+
+	function updateAdvancedData() {
+		var mod = songs[curSelected].mod;
+		var song = songs[curSelected].songName;
+		var diff = songs[curSelected].difficulties[curDifficulty];
+		var advancedData:AdvancedSaveData = Reflect.field(FlxG.save.data, 'advanced/' + Highscore.formatSong('$mod:$song', diff));
+
+		var acc = "???";
+		var rating = "N/A";
+		var misses = "???";
+		if (advancedData != null) {
+			acc = Std.string((Math.round(advancedData.accuracy * 10000) / 100));
+			rating = advancedData.rating;
+			misses = Std.string(advancedData.misses);
+		}
+		// var acc = 
+		accuracyText.text = 'Accuracy: $acc% ($rating)';
+		missesText.text = '$misses Misses';
+	}
 
 	override function update(elapsed:Float)
 	{
@@ -309,6 +367,27 @@ class FreeplayState extends MusicBeatState
 			trace('CUR WEEK' + PlayState.storyWeek);
 			LoadingState.loadAndSwitchState(new PlayState());
 		}
+
+		if (FlxG.keys.justReleased.CONTROL) {
+			if (advancedBG.visible) {
+				advancedBG.visible = false;
+				accuracyText.visible = false;
+				missesText.visible = false;
+				graph.visible = false;
+				for(t in ratingTexts) {
+					t.visible = false;
+				}
+			} else {
+				advancedBG.visible = true;
+				accuracyText.visible = true;
+				missesText.visible = true;
+				graph.visible = true;
+				for(t in ratingTexts) {
+					t.visible = true;
+				}
+				updateAdvancedData();
+			}
+		}
 	}
 
 	function changeDiff(change:Int = 0)
@@ -334,15 +413,21 @@ class FreeplayState extends MusicBeatState
 		// 		diffText.text = "HARD";
 		// }
 		diffText.text = songs[curSelected].difficulties[curDifficulty].toUpperCase();
+
+		if (advancedBG.visible) {
+			updateAdvancedData();
+		}
 	}
+
+	var colorTween:ColorTween;
 
 	function changeSelection(change:Int = 0)
 	{
-
 		// // NGio .logEvent('Fresh');
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
 		var diff = songs[curSelected].difficulties[curDifficulty];
+		var oldNumDiff = songs[curSelected].difficulties.length;
 		curSelected += change;
 
 		if (curSelected < 0)
@@ -350,11 +435,17 @@ class FreeplayState extends MusicBeatState
 		if (curSelected >= songs.length)
 			curSelected = 0;
 
+		
+		if (colorTween != null) {
+			colorTween.cancel();
+		}
+		colorTween = FlxTween.color(bg, 0.25, bg.color, songs[curSelected].color, {ease: FlxEase.quintInOut});
+
 		var difficultyShit = songs[curSelected].difficulties.indexOf(diff);
 		if (difficultyShit != -1) {
 			curDifficulty = difficultyShit;
 		} else {
-			curDifficulty = 0;
+			curDifficulty = Math.floor(curDifficulty / oldNumDiff * songs[curSelected].difficulties.length);
 		}
 		changeDiff(0);
 
@@ -396,6 +487,10 @@ class FreeplayState extends MusicBeatState
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
+
+		if (advancedBG.visible) {
+			updateAdvancedData();
+		}
 	}
 
 	public override function destroy() {
@@ -426,9 +521,9 @@ class SongMetadata
 		if (song.difficulties != null) {
 			m.difficulties = song.difficulties;
 		}
-		if (song.color != null) {
-			m.color = song.color;
-		}
+		var parsedColor = FlxColor.fromString(song.color);
+		m.color = (parsedColor == null) ? FlxColor.fromRGB(129, 99, 223) : parsedColor;
+
 		if (song.displayName != null) m.displayName = song.displayName;
 
 		return m;
