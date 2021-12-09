@@ -5,7 +5,7 @@ import openfl.display.BitmapData;
 
 class BitmapDataPlus extends BitmapData {
     public function drawLine(beginPos:FlxPoint, endPos:FlxPoint, color:FlxColor, thickness:Float = 2) {
-        var loopLength = Math.ceil(Math.sqrt(Math.pow(beginPos.x - endPos.x, 2) + Math.pow(beginPos.y - endPos.y, 2)));
+        var loopLength = Math.ceil(Math.sqrt(Math.pow(beginPos.x - endPos.x, 2) + Math.pow(beginPos.y - endPos.y, 2)) * 1.5);
         if (thickness <= 0) return;
         for (i in 0...loopLength) {
             fillRect(new Rectangle(
@@ -26,8 +26,8 @@ class BitmapDataPlus extends BitmapData {
         if (step <= 0) return;
         for (i in 0...step) {
             fillRect(new Rectangle(
-                (Math.sin(i / step * circleVal) * (width / 2)) - Math.floor(thickness / 2),
-                (Math.cos(i / step * circleVal) * (height / 2)) - Math.floor(thickness / 2),
+                centerPoint.x + (Math.sin(i / step * circleVal) * (width / 2)) - Math.floor(thickness / 2),
+                centerPoint.y + (Math.cos(i / step * circleVal) * (height / 2)) - Math.floor(thickness / 2),
                 Math.ceil(thickness / 2),
                 Math.ceil(thickness / 2)
             ), color);
