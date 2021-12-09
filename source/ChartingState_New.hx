@@ -335,6 +335,7 @@ class ChartingState_New extends MusicBeatState
 		tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
+		// Adding the P2 dropdown first so that the list doesn't get under the P1 characters list
 		tab_group_song.add(player2CharDropDown);
 		tab_group_song.add(player2ModDropDown);
 		tab_group_song.add(player1CharDropDown);

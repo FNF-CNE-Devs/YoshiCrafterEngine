@@ -1,5 +1,6 @@
 package;
 
+import FreeplayGraph.GraphData;
 import Highscore.AdvancedSaveData;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -277,10 +278,21 @@ class FreeplayState extends MusicBeatState
 		var acc = "???";
 		var rating = "N/A";
 		var misses = "???";
+		
 		if (advancedData != null) {
 			acc = Std.string((Math.round(advancedData.accuracy * 10000) / 100));
 			rating = advancedData.rating;
 			misses = Std.string(advancedData.misses);
+			
+			var shit:Array<GraphData> = [];
+			for(h in advancedData.hits) {
+				shit.push({color : h.color, number : h.amount});
+			}
+			shit.push({color : 0xFF222222, number : advancedData.misses});
+			graph.alpha = 1;
+			graph.pixels = FreeplayGraph.generate(shit);
+		} else {
+			graph.alpha = 0;
 		}
 		// var acc = 
 		accuracyText.text = 'Accuracy: $acc% ($rating)';
