@@ -1,5 +1,11 @@
 switch(song) {
+    // TUTORIAL
+    case "tutorial":
+        modchart = "tutorial";
+
     // WEEK 1
+    case "bopeebo":
+        modchart = "bopeebo";
     case "fresh":
         modchart = "fresh";
 
