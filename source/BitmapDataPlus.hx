@@ -16,6 +16,22 @@ class BitmapDataPlus extends BitmapData {
             ), color);
         }
     }
+    public function drawLineReplacing(beginPos:FlxPoint, endPos:FlxPoint, color:FlxColor, replaces:FlxColor, thickness:Float = 2) {
+        var loopLength = Math.ceil(Math.sqrt(Math.pow(beginPos.x - endPos.x, 2) + Math.pow(beginPos.y - endPos.y, 2)) * 1.5);
+        if (thickness <= 0) return;
+        for (i in 0...loopLength) {
+            var pos = new FlxPoint(
+                beginPos.x + ((beginPos.x - endPos.x) * (i / loopLength)) - Math.floor(thickness / 2),
+                beginPos.y + ((beginPos.y - endPos.y) * (i / loopLength)) - Math.floor(thickness / 2)
+            );
+            if (getPixel32(Std.int(pos.x), Std.int(pos.y)) != replaces) continue;
+            fillRect(new Rectangle(
+                pos.x, pos.y,
+                Math.ceil(thickness / 2),
+                Math.ceil(thickness / 2)
+            ), color);
+        }
+    }
 
     public function drawCircle(centerPoint:FlxPoint, radius:Float, color:FlxColor, fill:Bool = false, thickness:Float = 2, step:Int = 360) {
         drawEllipse(centerPoint, radius * 2, radius * 2, color, fill, thickness, step);

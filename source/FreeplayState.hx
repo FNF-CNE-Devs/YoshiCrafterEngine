@@ -200,18 +200,21 @@ class FreeplayState extends MusicBeatState
 		advancedBG.alpha = 0.4;
 		add(advancedBG);
 
-		accuracyText = new FlxText(scoreText.x, moreInfoText.y + 32, 0, "Accuracy : ???% (N/A)\r\n??? Misses", 24);
+		accuracyText = new FlxText(scoreText.x, moreInfoText.y + 32, 0, "Accuracy : ???% (N/A)", 24);
 		accuracyText.font = scoreText.font;
 		accuracyText.antialiasing = true;
 		add(accuracyText);
 
-		missesText = new FlxText(scoreText.x, accuracyText.y + 27, 0, "Accuracy : ???% (N/A)", 24);
+		missesText = new FlxText(scoreText.x, accuracyText.y + 27, 0, "??? Misses", 24);
 		missesText.font = scoreText.font;
 		missesText.antialiasing = true;
 		add(missesText);
 
-		graph = new FlxSprite(scoreText.x, missesText.y + 27).makeGraphic(235, 105, FlxColor.TRANSPARENT);
+		graph = new FlxSprite(scoreText.x, missesText.y + 27 - 40).makeGraphic(350, 150, FlxColor.TRANSPARENT);
 		graph.antialiasing = true;
+		graph.x = advancedBG.x + 20;
+		graph.flipX = true;
+		graph.scale.x = graph.scale.y = 0.5;
 		add(graph);
 
 		add(scoreText);
@@ -279,18 +282,36 @@ class FreeplayState extends MusicBeatState
 		var rating = "N/A";
 		var misses = "???";
 		
+		for (t in ratingTexts) {
+			remove(t);
+			t.destroy();
+		}
+		
 		if (advancedData != null) {
 			acc = Std.string((Math.round(advancedData.accuracy * 10000) / 100));
 			rating = advancedData.rating;
 			misses = Std.string(advancedData.misses);
 			
 			var shit:Array<GraphData> = [];
+			var tAm = 0;
 			for(h in advancedData.hits) {
+				var t = h.name;
+				var am = h.amount;
 				shit.push({color : h.color, number : h.amount});
+				var r = new FlxText(scoreText.x, graph.y + (graph.height * 0.75) + (37 * tAm), 0, '$t: $am', 24);
+				r.font = scoreText.font;
+				r.borderStyle = FlxTextBorderStyle.OUTLINE;
+				r.borderSize = 1;
+				r.borderColor = FlxColor.BLACK;
+				r.color = h.color;
+				r.antialiasing = true;
+				add(r);
+				ratingTexts.push(r);
+				tAm++;
 			}
 			shit.push({color : 0xFF222222, number : advancedData.misses});
 			graph.alpha = 1;
-			graph.pixels = FreeplayGraph.generate(shit);
+			graph.pixels = FreeplayGraph.generate(shit, 350, 150);
 		} else {
 			graph.alpha = 0;
 		}
