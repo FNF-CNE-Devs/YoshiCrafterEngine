@@ -29,7 +29,7 @@ class FreeplayGraph {
             if (newColor == g.color)
                 newColor = FlxColor.WHITE;
 
-            var pos = new FlxPoint(center.x + (Math.sin(current / total * maxAngle) * width), center.y + (Math.cos(current / total * maxAngle) * height));
+            var pos = new FlxPoint(center.x + (Math.sin(current / total * maxAngle) * (width + 2 / 2)), center.y + (Math.cos(current / total * maxAngle) * (height + 2 / 2)));
             // if (Math.abs(pos.x - center.x ) / (width / 2) < 2) continue;
             bData.drawLine(center, pos, newColor, 2);
             
@@ -44,7 +44,7 @@ class FreeplayGraph {
             
         }
         for (x in 0...bData.width) {
-            for (y in Std.int(bData.height / 2)...bData.height) {
+            for (y in Std.int(bData.height / 3)...bData.height) {
                 if (bData.getPixel32(x, y) == FlxColor.TRANSPARENT && bData.getPixel32(x, y - 1) != FlxColor.TRANSPARENT) {
                     var newColor:FlxColor = bData.getPixel32(x, y - 1);
                     newColor.redFloat = newColor.redFloat * 0.8;

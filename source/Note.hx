@@ -276,10 +276,9 @@ class Note extends FlxSprite
 
 			updateHitbox();
 
-			x -= width / 2;
+			// x -= width / 2;
 
-			if (PlayState.curStage.startsWith('school'))
-				x += 30;
+			
 			flipY = Settings.engineSettings.data.downscroll;
 			if (prevNote != null) {
 				if (prevNote.isSustainNote)

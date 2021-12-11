@@ -13,7 +13,6 @@ function create() {
     character.addOffset("singLEFT", 40);
     character.addOffset("singDOWN", 14);
 
-    character.playAnim('idle');
 
     character.setGraphicSize(Std.int(character.width * 6));
     character.updateHitbox();
@@ -21,7 +20,8 @@ function create() {
     character.charGlobalOffset.y = 360;
     // character.charGlobalOffset.y = 180;
     character.camOffset.x = -150;
-    character.camOffset.y = -character.height / 4;
+    character.camOffset.y = -character.height / 3.5;
 
     character.antialiasing = false;
+    character.playAnim('idle');
 }

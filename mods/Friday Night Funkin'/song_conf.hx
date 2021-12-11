@@ -48,11 +48,14 @@ switch(song) {
     // WEEK 6
     case "senpai":
         stage = "school";
-        cutscene = "dialogue";
+        cutscene = "weeb-dialogue";
+        modchart = "week6";
     case "roses":
         stage = "school";
-        cutscene = "angry-dialogue";
+        cutscene = "weeb-dialogue";
+        modchart = "week6";
     case "thorns":
         stage = "school-evil";
-        cutscene = "evil-dialogue";
+        cutscene = "weeb-dialogue";
+        modchart = "week6";
 }

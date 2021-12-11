@@ -1,3 +1,5 @@
+import flixel.util.FlxAxes;
+import flixel.addons.text.FlxTypeText;
 import openfl.display.PNGEncoderOptions;
 import flixel.tweens.FlxEase;
 import haxe.Json;
@@ -135,6 +137,15 @@ class Paths_Mod {
             return Sound.fromFile('$mFolder/$mod/sounds/$file.mp3');
         #else
             return Sound.fromFile('$mFolder/$mod/sounds/$file.ogg');
+        #end
+    }
+
+    public function music(file:String):Sound {
+        var mFolder = Paths.getModsFolder();
+        #if web
+            return Sound.fromFile('$mFolder/$mod/music/$file.mp3');
+        #else
+            return Sound.fromFile('$mFolder/$mod/music/$file.ogg');
         #end
     }
 
@@ -338,6 +349,16 @@ class ModSupport {
     public static function setHaxeFileDefaultVars(hscript:hscript.Interp, mod:String) {
 		hscript.variables.set("PlayState", PlayState.current);
 		hscript.variables.set("EngineSettings", Settings.engineSettings.data);
+        hscript.variables.set("include", function(path:String) {
+            var splittedPath = path.split(":");
+            if (splittedPath.length < 2) splittedPath.insert(0, mod);
+            var joinedPath = splittedPath.join("/");
+            var mFolder = Paths.getModsFolder();
+            var expr = getExpressionFromPath('$mFolder/$joinedPath.hx');
+            if (expr != null) {
+                hscript.execute(expr);
+            }
+        });
 
 		hscript.variables.set("PlayState_", PlayState);
 		hscript.variables.set("FlxSprite", FlxSprite);
@@ -369,6 +390,10 @@ class ModSupport {
 		hscript.variables.set("Json", Json);
 		hscript.variables.set("MP4Video", MP4Video);
 		hscript.variables.set("PNGEncoderOptions", PNGEncoderOptions);
+		hscript.variables.set("CoolUtil", CoolUtil);
+		hscript.variables.set("FlxTypeText", FlxTypeText);
+		hscript.variables.set("FlxText", FlxText);
+		hscript.variables.set("FlxAxes", FlxAxes);
 		// hscript.variables.set("FlxColor", Int);
     }
     public static function executeFunc(hscript:hscript.Interp, funcName:String, ?args:Array<Dynamic>):Dynamic {

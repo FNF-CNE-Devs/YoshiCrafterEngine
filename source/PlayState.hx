@@ -97,6 +97,14 @@ class PlayState extends MusicBeatState
 
 	static public var curStage:String = '';
 	static public var SONG:SwagSong;
+	public var song(get, set):SwagSong;
+	public function set_song(s:SwagSong):SwagSong {
+		PlayState.SONG = s;
+		return s;
+	}
+	public function get_song():SwagSong {
+		return PlayState.SONG;
+	}
 	static public var isStoryMode:Bool = false;
 	static public var storyWeek:Int = 0;
 	static public var storyPlaylist:Array<String> = [];
@@ -442,41 +450,41 @@ class PlayState extends MusicBeatState
 		});
 		modchart.variables.set("ratings", [
 			{
-				"name" : "Sick",
-				"image" : "Friday Night Funkin':ratings/sick",
-				"accuracy" : 1,
-				"health" : 0.10,
-				"maxDiff" : 35,
-				"score" : 350,
-				"color" : "#24DEFF"                                                                                                                                                                        
+				name : "Sick",
+				image : "Friday Night Funkin':ratings/sick",
+				accuracy : 1,
+				health : 0.10,
+				maxDiff : 35,
+				score : 350,
+				color : "#24DEFF"                                                                                                                                                                        
 			},
 			{
-				"name" : "Good",
-				"image" : "Friday Night Funkin':ratings/good",
-				"accuracy" : 2 / 3,
-				"health" : 0.06,
-				"maxDiff" : 65,
-				"score" : 200,
-				"color" : "#3FD200"
+				name : "Good",
+				image : "Friday Night Funkin':ratings/good",
+				accuracy : 2 / 3,
+				health : 0.06,
+				maxDiff : 65,
+				score : 200,
+				color : "#3FD200"
 			},
 			{
-				"name" : "Bad",
-				"image" : "Friday Night Funkin':ratings/bad",
-				"accuracy" : 1 / 3,
-				"health" : 0.0,
-				"maxDiff" : 100,
-				"score" : 50,
-				"color" : "#D70000"
+				name : "Bad",
+				image : "Friday Night Funkin':ratings/bad",
+				accuracy : 1 / 3,
+				health : 0.0,
+				maxDiff : 100,
+				score : 50,
+				color : "#D70000"
 			},
 			{
-				"name" : "Shit",
-				"image" : "Friday Night Funkin':ratings/shit",
-				"accuracy" : 1 / 3,
-				"health" : 0.0,
-				"maxDiff" : 1000,
-				"score" : -150,
-				"color" : "#804913",
-				"miss" : true
+				name : "Shit",
+				image : "Friday Night Funkin':ratings/shit",
+				accuracy : 1 / 6,
+				health : 0.0,
+				maxDiff : 1000,
+				score : -150,
+				color : "#804913",
+				miss : true
 			}
 		]);
 		stage.variables.set("getModchartVar", function(v:String) {
@@ -769,15 +777,16 @@ class PlayState extends MusicBeatState
 		scoreTxt.cameras = [camHUD];
 		scoreTxt.cameraCenter(X);
 		scoreTxt.scrollFactor.set();
-		add(scoreTxt);
 
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
-		add(iconP1);
 
 		iconP2 = new HealthIcon(SONG.player2, false);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
+		
+		add(iconP1);
 		add(iconP2);
+		add(scoreTxt);
 
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
@@ -898,48 +907,6 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				if (dialogueBox != null)
-				{
-					inCutscene = true;
-
-					if (SONG.song.toLowerCase() == 'thorns')
-					{
-						add(senpaiEvil);
-						senpaiEvil.alpha = 0;
-						new FlxTimer().start(0.3, function(swagTimer:FlxTimer)
-						{
-							senpaiEvil.alpha += 0.15;
-							if (senpaiEvil.alpha < 1)
-							{
-								swagTimer.reset();
-							}
-							else
-							{
-								senpaiEvil.animation.play('idle');
-								FlxG.sound.play(Paths.sound('Senpai_Dies'), 1, false, null, true, function()
-								{
-									remove(senpaiEvil);
-									remove(red);
-									FlxG.camera.fade(FlxColor.WHITE, 0.01, true, function()
-									{
-										add(dialogueBox);
-									}, true);
-								});
-								new FlxTimer().start(3.2, function(deadTime:FlxTimer)
-								{
-									FlxG.camera.fade(FlxColor.WHITE, 1.6, false);
-								});
-							}
-						});
-					}
-					else
-					{
-						add(dialogueBox);
-					}
-				}
-				else
-					startCountdown();
-
 				remove(black);
 			}
 		});
@@ -1189,6 +1156,39 @@ class PlayState extends MusicBeatState
 				noteScriptName = splittedThingy[1];
 				noteScriptMod = splittedThingy[0];
 			}
+			script.variables.set("generateStaticArrow", function(babyArrow:FlxSprite, i:Int) {
+				babyArrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getSparrowAtlas(Settings.engineSettings.data.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets') : Paths.getSparrowAtlas_Custom("skins/notes/" + Settings.engineSettings.data.customArrowSkin.toLowerCase());
+					
+					babyArrow.animation.addByPrefix('green', 'arrowUP');
+					babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
+					babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
+					babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
+
+					babyArrow.antialiasing = true;
+					babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
+					
+					var noteNumberScheme:Array<NoteDirection> = Note.noteNumberSchemes[PlayState.SONG.keyNumber];
+					if (noteNumberScheme == null) noteNumberScheme = Note.noteNumberSchemes[4];
+					switch (noteNumberScheme[i % noteNumberScheme.length])
+					{
+						case Left:
+							babyArrow.animation.addByPrefix('static', 'arrowLEFT');
+							babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
+							babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
+						case Down:
+							babyArrow.animation.addByPrefix('static', 'arrowDOWN');
+							babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
+							babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
+						case Up:
+							babyArrow.animation.addByPrefix('static', 'arrowUP');
+							babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
+							babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
+						case Right:
+							babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
+							babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
+							babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
+					}
+			});
 			script.execute(ModSupport.getExpressionFromPath(Paths.getModsFolder() + '/$noteScriptMod/notes/$noteScriptName.hx'));
 			ModSupport.setHaxeFileDefaultVars(script, noteScriptMod);
 			noteScripts.push(script);
@@ -1276,78 +1276,17 @@ class PlayState extends MusicBeatState
 			// FlxG.log.add(i);
 			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
 
-			switch (curStage)
-			{
-				case 'school' | 'schoolEvil':
-					babyArrow.loadGraphic(Paths.image(Settings.engineSettings.data.customArrowColors ? 'weeb/pixelUI/arrows-pixels-colored' : 'weeb/pixelUI/arrows-pixels'), true, 17, 17);
-					babyArrow.animation.add('green', [6]);
-					babyArrow.animation.add('red', [7]);
-					babyArrow.animation.add('blue', [5]);
-					babyArrow.animation.add('purplel', [4]);
-
-					babyArrow.setGraphicSize(Std.int(babyArrow.width * daPixelZoom));
-					babyArrow.updateHitbox();
-					babyArrow.antialiasing = false;
-
-					babyArrow.x += Note.swagWidth * i;
+			// switch (curStage)
+			// {
+			// 	case 'school' | 'schoolEvil':
 					
-					var noteNumberScheme:Array<NoteDirection> = Note.noteNumberSchemes[PlayState.SONG.keyNumber];
-					if (noteNumberScheme == null) noteNumberScheme = Note.noteNumberSchemes[4];
-					switch (noteNumberScheme[i % noteNumberScheme.length])
-					{
-						case Left:
-							babyArrow.animation.add('static', [0]);
-							babyArrow.animation.add('pressed', [4, 8], 12, false);
-							babyArrow.animation.add('confirm', [12, 16], 24, false);
-						case Down:
-							babyArrow.animation.add('static', [1]);
-							babyArrow.animation.add('pressed', [5, 9], 12, false);
-							babyArrow.animation.add('confirm', [13, 17], 24, false);
-						case Up:
-							babyArrow.animation.add('static', [2]);
-							babyArrow.animation.add('pressed', [6, 10], 12, false);
-							babyArrow.animation.add('confirm', [14, 18], 12, false);
-						case Right:
-							babyArrow.animation.add('static', [3]);
-							babyArrow.animation.add('pressed', [7, 11], 12, false);
-							babyArrow.animation.add('confirm', [15, 19], 24, false);
-					}
 
-				default:
-					babyArrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getSparrowAtlas(Settings.engineSettings.data.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets') : Paths.getSparrowAtlas_Custom("skins/notes/" + Settings.engineSettings.data.customArrowSkin.toLowerCase());
+			// 	default:
 					
-					babyArrow.animation.addByPrefix('green', 'arrowUP');
-					babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
-					babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
-					babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
-
-					babyArrow.antialiasing = true;
-					babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
-
-					babyArrow.x += Note.swagWidth * i;
-					
-					var noteNumberScheme:Array<NoteDirection> = Note.noteNumberSchemes[PlayState.SONG.keyNumber];
-					if (noteNumberScheme == null) noteNumberScheme = Note.noteNumberSchemes[4];
-					switch (noteNumberScheme[i % noteNumberScheme.length])
-					{
-						case Left:
-							babyArrow.animation.addByPrefix('static', 'arrowLEFT');
-							babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
-							babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
-						case Down:
-							babyArrow.animation.addByPrefix('static', 'arrowDOWN');
-							babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
-							babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
-						case Up:
-							babyArrow.animation.addByPrefix('static', 'arrowUP');
-							babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
-							babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
-						case Right:
-							babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
-							babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
-							babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
-					}
-			}
+				
+			// }
+			ModSupport.executeFunc(noteScripts[0], "generateStaticArrow", [babyArrow, i]);
+			babyArrow.x += Note.swagWidth * i;
 
 			babyArrow.updateHitbox();
 			babyArrow.scrollFactor.set();
@@ -1733,6 +1672,7 @@ class PlayState extends MusicBeatState
 			// Game Over doesn't get his own variable because it's only used here
 			DiscordClient.changePresence("Game Over - " + detailsText, songAltName + " (" + storyDifficultyText + ")", iconRPC);
 			#end
+			return;
 		}
 
 		if (unspawnNotes[0] != null)
@@ -1911,6 +1851,7 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
+		if (FlxG.sound.music == null) return;
 		canPause = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
@@ -1938,7 +1879,7 @@ class PlayState extends MusicBeatState
 				#if debug
 					trace(data);
 				#end
-				Highscore.saveAdvancedScore(songMod, SONG.song, data, storyDifficulty);
+				Highscore.saveAdvancedScore(songMod, SONG.song, songScore, data, storyDifficulty);
 			#end
 		}
 

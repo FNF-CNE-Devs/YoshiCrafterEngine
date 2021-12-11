@@ -20,8 +20,6 @@ function create() {
     character.addOffset("singLEFTmiss");
     character.addOffset("singDOWNmiss");
 
-    character.playAnim('idle');
-
     character.setGraphicSize(Std.int(character.width * 6));
     character.updateHitbox();
 
@@ -35,6 +33,8 @@ function create() {
     character.antialiasing = false;
 
     character.flipX = true;
+
+    character.playAnim('idle');
 }
 
 function dance() {

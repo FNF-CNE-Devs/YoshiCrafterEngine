@@ -26,16 +26,20 @@ class Highscore
 	public static var songScores:Map<String, Int> = new Map<String, Int>();
 	#end
 
-	public static function saveAdvancedScore(mod:String, song:String, data:AdvancedSaveData, ?diff:String = "Normal") {
+	public static function saveAdvancedScore(mod:String, song:String, score:Int, data:AdvancedSaveData, ?diff:String = "Normal") {
 		var daSong:String = formatSong('$mod:$song', diff);
 		diff = diff.toLowerCase();
 
 		if (Reflect.hasField(FlxG.save.data, 'advanced/$daSong'))
 		{
-			var score:AdvancedSaveData = Reflect.field(FlxG.save.data, 'advanced/$daSong');
-			if (score.accuracy < data.accuracy) {
-				Reflect.setField(FlxG.save.data, 'advanced/$daSong', data);
+			// var score:AdvancedSaveData = Reflect.field(FlxG.save.data, 'advanced/$daSong');
+			// if (score.accuracy < data.accuracy)
+			if (songScores.exists(daSong)) {
+				if (songScores.get(daSong) < score)
+					Reflect.setField(FlxG.save.data, 'advanced/$daSong', data);
 			}
+			else
+				Reflect.setField(FlxG.save.data, 'advanced/$daSong', data);
 		}
 		else
 			Reflect.setField(FlxG.save.data, 'advanced/$daSong', data);

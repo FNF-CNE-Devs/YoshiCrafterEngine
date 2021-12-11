@@ -14,8 +14,8 @@ function create() {
     character.addOffset('danceLeft', -character.width / 2, -character.height / 2);
     character.addOffset('danceRight', -character.width / 2, -character.height / 2);
     
-    character.playAnim('danceRight');
     character.antialiasing = false;
+    character.playAnim('danceRight');
 }
 
 danced = false;

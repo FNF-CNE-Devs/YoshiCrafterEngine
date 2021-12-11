@@ -210,7 +210,7 @@ class FreeplayState extends MusicBeatState
 		missesText.antialiasing = true;
 		add(missesText);
 
-		graph = new FlxSprite(scoreText.x, missesText.y + 27 - 40).makeGraphic(350, 150, FlxColor.TRANSPARENT);
+		graph = new FlxSprite(scoreText.x, missesText.y + 27 - 40).makeGraphic(350, 175, FlxColor.TRANSPARENT);
 		graph.antialiasing = true;
 		graph.x = advancedBG.x + 20;
 		graph.flipX = true;
@@ -311,7 +311,7 @@ class FreeplayState extends MusicBeatState
 			}
 			shit.push({color : 0xFF222222, number : advancedData.misses});
 			graph.alpha = 1;
-			graph.pixels = FreeplayGraph.generate(shit, 350, 150);
+			graph.pixels = FreeplayGraph.generate(shit, 350, 150, 30);
 		} else {
 			graph.alpha = 0;
 		}
