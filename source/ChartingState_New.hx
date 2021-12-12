@@ -105,6 +105,12 @@ class ChartingState_New extends MusicBeatState
 
 	override function create()
 	{
+		var bg = new FlxSprite().loadGraphic(Paths.image("menuBGYoshi", "preload"));
+		bg.scale.x = bg.scale.y = 1.25;
+		bg.antialiasing = true;
+		bg.screenCenter();
+		add(bg);
+
 		curSection = lastSection;
 
 		if (PlayState.SONG != null)
@@ -437,10 +443,10 @@ class ChartingState_New extends MusicBeatState
 			// vocals.stop();
 		}
 
-		FlxG.sound.playMusic(Paths.inst(daSong), 0.6);
+		FlxG.sound.playMusic(Paths.modInst(daSong, PlayState.songMod), 0.6);
 
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
-		vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
+		vocals = new FlxSound().loadEmbedded(Paths.modVoices(daSong, PlayState.songMod));
 		FlxG.sound.list.add(vocals);
 
 		FlxG.sound.music.pause();
@@ -570,7 +576,7 @@ class ChartingState_New extends MusicBeatState
 		if (FlxG.keys.pressed.CONTROL && FlxG.mouse.wheel != 0) {
 			zoom += FlxG.mouse.wheel;
 			if (zoom < 1) zoom = 1;
-			updateGrid();
+			updateGrid(true);
 		}
 		if (curBeat % 4 == 0 && curStep >= 16 * (curSection + 1))
 		{
@@ -908,8 +914,15 @@ class ChartingState_New extends MusicBeatState
 			stepperSusLength.value = curSelectedNote[2];
 	}
 
-	function updateGrid():Void
+	function updateGrid(updateSprite:Bool = false):Void
 	{
+		if (updateSprite) {
+			var oldPos = members.indexOf(gridBG);
+			remove(gridBG);
+			gridBG.destroy();
+			gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * _song.keyNumber * 2, Std.int(GRID_SIZE * 16 * zoom));
+			insert(oldPos, gridBG);
+		}
 		while (curRenderedNotes.members.length > 0)
 		{
 			curRenderedNotes.remove(curRenderedNotes.members[0], true);

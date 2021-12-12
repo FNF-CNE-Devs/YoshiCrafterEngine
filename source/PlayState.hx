@@ -2482,7 +2482,7 @@ class PlayState extends MusicBeatState
 					if (justPressedArray[daNote.noteData % SONG.keyNumber]) {
 						var can = false;
 						if (notesToHit[daNote.noteData % SONG.keyNumber] != null) {
-							if (Math.abs(Conductor.songPosition - notesToHit[daNote.noteData % SONG.keyNumber].strumTime) < Math.abs(Conductor.songPosition - daNote.strumTime) && daNote.isSustainNote)
+							if (notesToHit[daNote.noteData % SONG.keyNumber].strumTime > daNote.strumTime)
 								can = true;
 						} else {
 							can = true;
