@@ -27,28 +27,34 @@ class Highscore
 	#end
 
 	public static function saveAdvancedScore(mod:String, song:String, score:Int, data:AdvancedSaveData, ?diff:String = "Normal") {
-		var daSong:String = formatSong('$mod:$song', diff);
+		var daSong:String = "advanced/" + formatSong('$mod:$song', diff);
+		#if debug
+			trace(daSong);
+		#end
 		diff = diff.toLowerCase();
 
-		if (Reflect.hasField(FlxG.save.data, 'advanced/$daSong'))
+		if (Reflect.hasField(FlxG.save.data, daSong))
 		{
 			// var score:AdvancedSaveData = Reflect.field(FlxG.save.data, 'advanced/$daSong');
 			// if (score.accuracy < data.accuracy)
 			if (songScores.exists(daSong)) {
 				if (songScores.get(daSong) < score)
-					Reflect.setField(FlxG.save.data, 'advanced/$daSong', data);
+					Reflect.setField(FlxG.save.data, daSong, data);
 			}
 			else
-				Reflect.setField(FlxG.save.data, 'advanced/$daSong', data);
+				Reflect.setField(FlxG.save.data, daSong, data);
 		}
 		else
-			Reflect.setField(FlxG.save.data, 'advanced/$daSong', data);
+			Reflect.setField(FlxG.save.data, daSong, data);
 	}
 
 	public static function saveScore(mod:String, song:String, score:Int = 0, ?diff:String = "Normal"):Void
 	{
 		var daSong:String = formatSong('$mod:$song', diff);
 
+		#if debug
+			trace(daSong);
+		#end
 
 		#if !switch
 		// // NGio .postScore(score, song);
@@ -115,7 +121,7 @@ class Highscore
 
 	public static function formatSong(song:String, diff:String):String
 	{
-		var daSong:String = song;
+		var daSong:String = song.toLowerCase();
 
 		if (diff.toLowerCase() != "normal") {
 			daSong += "-" + diff.toLowerCase().replace(" ", "-");

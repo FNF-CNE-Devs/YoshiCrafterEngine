@@ -22,7 +22,11 @@ class MusicBeatState extends FlxUIState
 		
 		if (Settings.engineSettings != null) {
 			if (Settings.engineSettings.data.developerMode) {
-				Paths.clearCache();
+				try {
+					Paths.clearCache();
+				} catch(e) {
+
+				}
 			}
 		}
 		
@@ -54,7 +58,7 @@ class MusicBeatState extends FlxUIState
 		updateCurStep();
 		updateBeat();
 
-		if (oldStep != curStep && curStep > 0)
+		if (oldStep < curStep && curStep > 0)
 			stepHit();
 
 		super.update(elapsed);

@@ -276,7 +276,11 @@ class FreeplayState extends MusicBeatState
 		var mod = songs[curSelected].mod;
 		var song = songs[curSelected].songName;
 		var diff = songs[curSelected].difficulties[curDifficulty];
-		var advancedData:AdvancedSaveData = Reflect.field(FlxG.save.data, 'advanced/' + Highscore.formatSong('$mod:$song', diff));
+		var daSong = 'advanced/' + Highscore.formatSong('$mod:$song', diff);
+		#if debug
+			trace(daSong);
+		#end
+		var advancedData:AdvancedSaveData = Reflect.field(FlxG.save.data, daSong);
 
 		var acc = "???";
 		var rating = "N/A";
@@ -352,7 +356,31 @@ class FreeplayState extends MusicBeatState
 
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
-		var accepted = controls.ACCEPT || FlxG.mouse.justReleased;
+		var accepted = controls.ACCEPT;
+		if (FlxG.mouse.justPressed) {
+			var posY = FlxG.mouse.getScreenPosition().y;
+			var posX = FlxG.mouse.getScreenPosition().x;
+			if (posX < advancedBG.x) {
+				var i = Math.floor(posY / 720 * 5) - 2;
+				if (i == 0) {
+					accepted = true;
+				} else {
+					changeSelection(i);
+				}
+			} else {
+				if (posY < moreInfoText.y + moreInfoText.height && posY > moreInfoText.y)
+					showAdvancedData();
+				else {
+					if (posY < diffText.y + diffText.height && posY > diffText.y) {
+						if (posX < diffText.x + (diffText.width / 2))
+							changeDiff(-1);
+						else
+							changeDiff(1);
+					}
+				}
+
+			}
+		}
 
 		if (FlxG.mouse.wheel != 0) changeSelection(-FlxG.mouse.wheel);
 		if (upP || (controls.UP && FlxG.keys.pressed.SHIFT))
@@ -402,24 +430,28 @@ class FreeplayState extends MusicBeatState
 		}
 
 		if (FlxG.keys.justReleased.CONTROL) {
-			if (advancedBG.visible) {
-				advancedBG.visible = false;
-				accuracyText.visible = false;
-				missesText.visible = false;
-				graph.visible = false;
-				for(t in ratingTexts) {
-					t.visible = false;
-				}
-			} else {
-				advancedBG.visible = true;
-				accuracyText.visible = true;
-				missesText.visible = true;
-				graph.visible = true;
-				for(t in ratingTexts) {
-					t.visible = true;
-				}
-				updateAdvancedData();
+			showAdvancedData();
+		}
+	}
+
+	function showAdvancedData() {
+		if (advancedBG.visible) {
+			advancedBG.visible = false;
+			accuracyText.visible = false;
+			missesText.visible = false;
+			graph.visible = false;
+			for(t in ratingTexts) {
+				t.visible = false;
 			}
+		} else {
+			advancedBG.visible = true;
+			accuracyText.visible = true;
+			missesText.visible = true;
+			graph.visible = true;
+			for(t in ratingTexts) {
+				t.visible = true;
+			}
+			updateAdvancedData();
 		}
 	}
 
@@ -445,7 +477,9 @@ class FreeplayState extends MusicBeatState
 		// 	case 2:
 		// 		diffText.text = "HARD";
 		// }
-		diffText.text = songs[curSelected].difficulties[curDifficulty].toUpperCase();
+		var dText = songs[curSelected].difficulties[curDifficulty].toUpperCase();
+		if (songs[curSelected].difficulties.length > 1) dText = '< $dText >';
+		diffText.text = dText;
 
 		if (advancedBG.visible) {
 			updateAdvancedData();

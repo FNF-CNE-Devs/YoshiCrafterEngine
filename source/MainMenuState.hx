@@ -126,7 +126,6 @@ class MainMenuState extends MusicBeatState
 	{
 		if (FlxG.mouse.getScreenPosition().x != oldPos.x && FlxG.mouse.getScreenPosition().y != oldPos.y && !selectedSomethin) {
 			oldPos = FlxG.mouse.getScreenPosition();
-			trace(oldPos);
 			for (i in 0...menuItems.length) {
 				// if (FlxG.mouse.overlaps(menuItems.members[i])) {
 				var pos = FlxG.mouse.getPositionInCameraView(FlxG.camera);

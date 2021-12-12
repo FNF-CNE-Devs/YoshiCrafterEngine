@@ -112,6 +112,7 @@ class PlayState extends MusicBeatState
 	public static var actualModWeek:FNFWeek;
 	
 	public var halloweenLevel:Bool = false;
+	public var validScore:Bool = true;
 	
 	public var vocals:FlxSound;
 
@@ -353,8 +354,8 @@ class PlayState extends MusicBeatState
 			SONG.keyNumber = 4;
 		if (SONG.noteTypes == null)
 			SONG.noteTypes = ["Friday Night Funkin':Default Note"];
-		if (Settings.engineSettings.data.botplay)
-			SONG.validScore = false;
+		if (Settings.engineSettings.data.botplay || !SONG.validScore)
+			validScore = false;
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
 
@@ -443,6 +444,7 @@ class PlayState extends MusicBeatState
 			script.variables.set("stepHit", function(curStep:Int) {});
 			script.variables.set("setSharedVars", function() {return [];});
 			script.variables.set("getVar", function(v) {return null;});
+			script.variables.set("botplay", Settings.engineSettings.data.botplay);
 		}
 		stage.variables.set("gfVersion", "gf");
 		modchart.variables.set("getStageVar", function(v:String) {
@@ -1855,7 +1857,7 @@ class PlayState extends MusicBeatState
 		canPause = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
-		if (SONG.validScore)
+		if (validScore)
 		{
 			#if !switch
 				Highscore.saveScore(songMod, SONG.song, songScore, storyDifficulty);
@@ -1902,7 +1904,7 @@ class PlayState extends MusicBeatState
 				// if ()
 				// StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
 
-				if (SONG.validScore)
+				if (validScore)
 				{
 					// NGio .unlockMedal(60961);
 					Highscore.saveModWeekScore(actualModWeek.mod, actualModWeek.name, campaignScore, storyDifficulty);
@@ -2475,15 +2477,16 @@ class PlayState extends MusicBeatState
 			for (i in 0...SONG.keyNumber) notesToHit.push(null);
 			notes.forEachAlive(function(daNote:Note)
 			{
-				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
+				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote)
 				{
 					if (justPressedArray[daNote.noteData % SONG.keyNumber]) {
-						var can = true;
-						if (notesToHit[daNote.noteData % SONG.keyNumber] != null)
-							if (Math.abs(Conductor.songPosition - notesToHit[daNote.noteData % SONG.keyNumber].strumTime) < Math.abs(Conductor.songPosition - daNote.strumTime) )
-								can = false;
-						if (daNote.isSustainNote)
-							can = false;
+						var can = false;
+						if (notesToHit[daNote.noteData % SONG.keyNumber] != null) {
+							if (Math.abs(Conductor.songPosition - notesToHit[daNote.noteData % SONG.keyNumber].strumTime) < Math.abs(Conductor.songPosition - daNote.strumTime) && daNote.isSustainNote)
+								can = true;
+						} else {
+							can = true;
+						}
 						if (can) notesToHit[daNote.noteData % SONG.keyNumber] = daNote;
 					}
 				}
@@ -2789,8 +2792,8 @@ class PlayState extends MusicBeatState
 
 	override function stepHit()
 	{
-		ModSupport.executeFunc(stage, "stepHit", [curBeat]);
-		ModSupport.executeFunc(modchart, "stepHit", [curBeat]);
+		ModSupport.executeFunc(stage, "stepHit", [curStep]);
+		ModSupport.executeFunc(modchart, "stepHit", [curStep]);
 		
 		super.stepHit();
 		// songEvents.stepHit(curStep);

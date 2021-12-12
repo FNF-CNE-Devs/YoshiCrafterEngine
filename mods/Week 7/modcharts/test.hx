@@ -1,4 +1,4 @@
-ratings = [
+/* ratings = [
     {
         name : "Sexy",
         image : "Week 7:storymenu/sex",
@@ -9,4 +9,4 @@ ratings = [
         color : "#FF33DB",
         scale : 7.5
     }
-]
+] */
