@@ -1191,6 +1191,9 @@ class PlayState extends MusicBeatState
 							babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
 					}
 			});
+			script.variables.set("onDadHit", function(e) {
+				
+			});
 			script.execute(ModSupport.getExpressionFromPath(Paths.getModsFolder() + '/$noteScriptMod/notes/$noteScriptName.hx'));
 			ModSupport.setHaxeFileDefaultVars(script, noteScriptMod);
 			noteScripts.push(script);
@@ -1790,25 +1793,8 @@ class PlayState extends MusicBeatState
 					if (SONG.song != 'Tutorial')
 						camZooming = true;
 
-					var altAnim:String = "";
-
-					if (SONG.notes[Math.floor(curStep / 16)] != null)
-					{
-						if (SONG.notes[Math.floor(curStep / 16)].altAnim)
-							altAnim = '-alt';
-					}
-
-					switch (Note.noteNumberScheme[daNote.noteData % Note.noteNumberScheme.length])
-					{
-						case Left:
-							dad.playAnim('singLEFT' + altAnim, true);
-						case Down:
-							dad.playAnim('singDOWN' + altAnim, true);
-						case Up:
-							dad.playAnim('singUP' + altAnim, true);
-						case Right:
-							dad.playAnim('singRIGHT' + altAnim, true);
-					}
+					daNote.script.variables.set("note", daNote);
+					ModSupport.executeFunc(daNote.script, "onDadHit", [Note.noteNumberScheme[daNote.noteData % PlayState.SONG.keyNumber]]);
 
 					dad.holdTimer = 0;
 

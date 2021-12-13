@@ -1,4 +1,28 @@
 enableRating = true;
+var noteSchemes:Array<Array<Array<String>>> = [
+    [
+        [
+        ],
+        [
+            ["arrowUP", "green0", "singUP"]
+        ],
+        [
+            ["arrowLEFT", "purple0", "singLEFT"],
+            ["arrowRIGHT", "red0", "singRIGHT"]
+        ],
+        [
+            ["arrowLEFT", "purple0", "singLEFT"],
+            ["arrowUP", "green0", "singUP"],
+            ["arrowRIGHT", "red0", "singRIGHT"]
+        ],
+        [
+            ["arrowLEFT", "purple0", "singLEFT"],
+            ["arrowDOWN", "blue0", "singDOWN"],
+            ["arrowUP", "green0", "singUP"],
+            ["arrowRIGHT", "red0", "singRIGHT"],
+        ]
+    ]
+];
 // enableMiss(true);
 
 function create() {
@@ -40,8 +64,8 @@ function update(elapsed) {
         note.tooLate = true;
 }
 
-function onPlayerHit(direction) {
-    switch(direction) {
+function onPlayerHit(noteData) {
+    switch(noteData) {
         case 0: //SING LEFT
             PlayState.boyfriend.playAnim("singLEFT", true);
         case 1: //SING DOWN
@@ -53,8 +77,8 @@ function onPlayerHit(direction) {
     }
 }
 
-function onMiss(direction) {
-    switch(direction) {
+function onMiss(noteData) {
+    switch(noteData) {
         case 0: //SING LEFT
             PlayState.boyfriend.playAnim("singLEFTmiss", true);
         case 1: //SING DOWN
@@ -68,6 +92,18 @@ function onMiss(direction) {
     PlayState.health -= note.isSustainNote ? 0.03125 : 0.125;
 }
 
+function onDadHit(noteData) {
+    switch(noteData) {
+        case 0: //SING LEFT
+            PlayState.boyfriend.playAnim("singLEFT", true);
+        case 1: //SING DOWN
+            PlayState.boyfriend.playAnim("singDOWN", true);
+        case 2: //SING UP
+            PlayState.boyfriend.playAnim("singUP", true);
+        case 3: //SING RIGHT
+            PlayState.boyfriend.playAnim("singRIGHT", true);
+    }
+}
 // function onDadHit(direction) {
 //     switch(direction) {
 //         case 0: //SING LEFT
