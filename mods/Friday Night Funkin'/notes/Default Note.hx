@@ -95,13 +95,13 @@ function onMiss(noteData) {
 function onDadHit(noteData) {
     switch(noteData) {
         case 0: //SING LEFT
-            PlayState.boyfriend.playAnim("singLEFT", true);
+            PlayState.dad.playAnim("singLEFT", true);
         case 1: //SING DOWN
-            PlayState.boyfriend.playAnim("singDOWN", true);
+            PlayState.dad.playAnim("singDOWN", true);
         case 2: //SING UP
-            PlayState.boyfriend.playAnim("singUP", true);
+            PlayState.dad.playAnim("singUP", true);
         case 3: //SING RIGHT
-            PlayState.boyfriend.playAnim("singRIGHT", true);
+            PlayState.dad.playAnim("singRIGHT", true);
     }
 }
 // function onDadHit(direction) {
