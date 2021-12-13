@@ -109,6 +109,7 @@ class ChartingState_New extends MusicBeatState
 		bg.scale.x = bg.scale.y = 1.25;
 		bg.antialiasing = true;
 		bg.screenCenter();
+		bg.scrollFactor.set();
 		add(bg);
 
 		curSection = lastSection;
@@ -215,6 +216,12 @@ class ChartingState_New extends MusicBeatState
 
 		var check_voices = new FlxUICheckBox(10, 25, null, null, "Has voice track", 100);
 		check_voices.checked = _song.needsVoices;
+
+		
+		noteNumber = new FlxUINumericStepper(10, 10, 1, _song.keyNumber, 1);
+		noteNumber.value = 0;
+		noteNumber.name = 'note amount';
+
 		// _song.needsVoices = check_voices.checked;
 		check_voices.callback = function()
 		{
@@ -242,6 +249,11 @@ class ChartingState_New extends MusicBeatState
 		var reloadSong:FlxButton = new FlxButton(saveButton.x + saveButton.width + 10, saveButton.y, "Reload Audio", function()
 		{
 			loadSong(_song.song);
+		});
+
+		var refresh:FlxButton = new FlxButton(saveButton.x, saveButton.y + 30, "Refresh", function()
+		{
+			FlxG.resetState();
 		});
 
 		var reloadSongJson:FlxButton = new FlxButton(reloadSong.x, saveButton.y + 30, "Reload JSON", function()
@@ -336,11 +348,13 @@ class ChartingState_New extends MusicBeatState
 		tab_group_song.add(check_voices);
 		tab_group_song.add(check_mute_inst);
 		tab_group_song.add(saveButton);
+		tab_group_song.add(refresh);
 		tab_group_song.add(reloadSong);
 		tab_group_song.add(reloadSongJson);
 		tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
+		tab_group_song.add(noteNumber);
 		// Adding the P2 dropdown first so that the list doesn't get under the P1 characters list
 		tab_group_song.add(player2CharDropDown);
 		tab_group_song.add(player2ModDropDown);
@@ -357,6 +371,7 @@ class ChartingState_New extends MusicBeatState
 	var check_mustHitSection:FlxUICheckBox;
 	var check_changeBPM:FlxUICheckBox;
 	var stepperSectionBPM:FlxUINumericStepper;
+	var noteNumber:FlxUINumericStepper;
 	var check_altAnim:FlxUICheckBox;
 
 	function addSectionUI():Void
@@ -533,6 +548,10 @@ class ChartingState_New extends MusicBeatState
 			{
 				_song.notes[curSection].bpm = Std.int(nums.value);
 				updateGrid();
+			}
+			else if (wname == 'note amount')
+			{
+				_song.keyNumber = Std.int(nums.value);
 			}
 		}
 
