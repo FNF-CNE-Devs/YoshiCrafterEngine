@@ -63,7 +63,8 @@ class YoshiEngineCharter extends MusicBeatState {
         player2: 'dad',
         speed: 1,
         validScore: false,
-        keyNumber: 4
+        keyNumber: 4,
+        noteTypes: ["Friday Night Funkin':Default Note"]
     };
 	var swagWidth(get, null):Float;
 	function get_swagWidth():Float {
