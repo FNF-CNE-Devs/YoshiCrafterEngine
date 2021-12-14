@@ -21,11 +21,86 @@ var noteSchemes:Array<Array<Array<String>>> = [
         ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN", "blue hold end", "blue hold piece"],
         ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
         ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
+    ],
+    [
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
+    ],
+    [
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN", "blue hold end", "blue hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
+    ],
+    [
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN", "blue hold end", "blue hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
+    ],
+    [
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN", "blue hold end", "blue hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
+        
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN", "blue hold end", "blue hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
+    ],
+    [
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN", "blue hold end", "blue hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
+        
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN", "blue hold end", "blue hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
+    ],
+    [
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN", "blue hold end", "blue hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
+        
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
+        
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN", "blue hold end", "blue hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
     ]
 ];
 // enableMiss(true);
 
 var schemeShit:Array<String> = null;
+
+function generateStaticArrow(babyArrow:FlxSprite, i:Int) {
+    var s = noteSchemes[PlayState.song.keyNumber][i % PlayState.song.keyNumber];
+    babyArrow.frames = (EngineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas(EngineSettings.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets') : Paths_.getSparrowAtlas_Custom(Paths_.getSkinsPath() + "/skins/notes/" + EngineSettings.customArrowSkin.toLowerCase());
+    babyArrow.antialiasing = true;
+    babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
+    
+    if (s == null) s = ["arrowUP", "up press", "up confirm"];
+
+    babyArrow.animation.addByPrefix('static', s[0]);
+    babyArrow.animation.addByPrefix('pressed', s[1], 24, false);
+    babyArrow.animation.addByPrefix('confirm', s[2], 24, false);
+}
 
 function create() {
     if (EngineSettings.customArrowColors) {
@@ -37,21 +112,6 @@ function create() {
     }
 
     schemeShit = noteSchemes[PlayState.song.keyNumber][note.noteData % PlayState.song.keyNumber];
-
-    // note.animation.addByPrefix('greenScroll', 'green0');
-    // note.animation.addByPrefix('redScroll', 'red0');
-    // note.animation.addByPrefix('blueScroll', 'blue0');
-    // note.animation.addByPrefix('purpleScroll', 'purple0');
-
-    // note.animation.addByPrefix('purpleholdend', 'pruple end hold');
-    // note.animation.addByPrefix('greenholdend', 'green hold end');
-    // note.animation.addByPrefix('redholdend', 'red hold end');
-    // note.animation.addByPrefix('blueholdend', 'blue hold end');
-
-    // note.animation.addByPrefix('purplehold', 'purple hold piece');
-    // note.animation.addByPrefix('greenhold', 'green hold piece');
-    // note.animation.addByPrefix('redhold', 'red hold piece');
-    // note.animation.addByPrefix('bluehold', 'blue hold piece');
 
     note.animation.addByPrefix('scroll', schemeShit[3]);
     note.animation.addByPrefix('holdend', schemeShit[5]);
