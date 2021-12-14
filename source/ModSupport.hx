@@ -406,7 +406,8 @@ class ModSupport {
                     result = f();
                 } catch(e) {
                     var s = e.stack;
-                    trace('$e for $funcName at \r\n$s');
+                    var details = e.details();
+                    trace('$e for $funcName at \r\n$s\r\n$details');
                 }
                 return result;
             } else {

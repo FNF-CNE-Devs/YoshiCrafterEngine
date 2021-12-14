@@ -229,17 +229,17 @@ class Note extends FlxSprite
 		// 		animation.play('redScroll');
 		// }
 		
-		switch (noteNumberScheme[noteData % noteNumberScheme.length])
-		{
-			case Left:
-				animation.play('purpleScroll');
-			case Down:
-				animation.play('blueScroll');
-			case Up:
-				animation.play('greenScroll');
-			case Right:
-				animation.play('redScroll');
-		}
+		// switch (noteNumberScheme[noteData % noteNumberScheme.length])
+		// {
+		// 	case Left:
+		// 		animation.play('purpleScroll');
+		// 	case Down:
+		// 		animation.play('blueScroll');
+		// 	case Up:
+		// 		animation.play('greenScroll');
+		// 	case Right:
+		// 		animation.play('redScroll');
+		// }
 
 		// trace(prevNote);
 
@@ -262,17 +262,17 @@ class Note extends FlxSprite
 			// 	case 0:
 			// 		animation.play('purpleholdend');
 			// }
-			switch (noteNumberScheme[noteData % noteNumberScheme.length])
-			{
-				case Left:
-					animation.play('purpleholdend');
-				case Down:
-					animation.play('blueholdend');
-				case Up:
-					animation.play('greenholdend');
-				case Right:
-					animation.play('redholdend');
-			}
+			// switch (noteNumberScheme[noteData % noteNumberScheme.length])
+			// {
+			// 	case Left:
+			// 		animation.play('purpleholdend');
+			// 	case Down:
+			// 		animation.play('blueholdend');
+			// 	case Up:
+			// 		animation.play('greenholdend');
+			// 	case Right:
+			// 		animation.play('redholdend');
+			// }
 
 			updateHitbox();
 
@@ -284,17 +284,17 @@ class Note extends FlxSprite
 				if (prevNote.isSustainNote)
 				{
 					prevNote.flipY = false;
-					switch (noteNumberScheme[prevNote.noteData % noteNumberScheme.length])
-					{
-						case Left:
-							prevNote.animation.play('purplehold');
-						case Down:
-							prevNote.animation.play('bluehold');
-						case Up:
-							prevNote.animation.play('greenhold');
-						case Right:
-							prevNote.animation.play('redhold');
-					}
+					// switch (noteNumberScheme[prevNote.noteData % noteNumberScheme.length])
+					// {
+					// 	case Left:
+					// 		prevNote.animation.play('purplehold');
+					// 	case Down:
+					// 		prevNote.animation.play('bluehold');
+					// 	case Up:
+					// 		prevNote.animation.play('greenhold');
+					// 	case Right:
+					// 		prevNote.animation.play('redhold');
+					// }
 
 					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * (Settings.engineSettings.data.customScrollSpeed ? Settings.engineSettings.data.scrollSpeed : PlayState.SONG.speed);
 					prevNote.updateHitbox();
