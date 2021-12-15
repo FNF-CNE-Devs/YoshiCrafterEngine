@@ -1,5 +1,6 @@
 import LoadSettings.Settings;
 import flixel.FlxG;
+import flixel.math.FlxMath;
 
 
 class ScoreText {
@@ -19,7 +20,7 @@ class ScoreText {
     public static function generateAccuracy(ps:PlayState) {
         switch(Settings.engineSettings.data.accuracyMode) {
             default:
-                return Settings.engineSettings.data.showAccuracy ? (" | Accuracy:" + (ps.numberOfNotes == 0 ? "0%" : Std.string((Math.round(ps.accuracy * 10000 / ps.numberOfNotes) / 10000) * 100) + "%") + " (" + accuracyTypesText[Settings.engineSettings.data.accuracyMode].charAt(0) + ")") : "";
+                return Settings.engineSettings.data.showAccuracy ? (" | Accuracy:" + (ps.numberOfNotes == 0 ? "0%" : Std.string(FlxMath.roundDecimal(Math.round(ps.accuracy / ps.numberOfNotes) * 100, 2)) + "%") + " (" + accuracyTypesText[Settings.engineSettings.data.accuracyMode].charAt(0) + ")") : "";
             case 1:
                 var accuracyFloat:Float = 0;
 
@@ -27,13 +28,13 @@ class ScoreText {
                     accuracyFloat += PlayState.current.hits[rat.name] * rat.accuracy;
                 }
 
-                return Settings.engineSettings.data.showAccuracy ? (" | Accuracy:" + (ps.numberOfNotes == 0 ? "0%" : Std.string((Math.round(accuracyFloat * 10000 / ps.numberOfNotes) / 10000) * 100) + "%") + " (" + accuracyTypesText[Settings.engineSettings.data.accuracyMode].charAt(0) + ")") : "";
+                return Settings.engineSettings.data.showAccuracy ? (" | Accuracy:" + (ps.numberOfNotes == 0 ? "0%" : Std.string(FlxMath.roundDecimal(Math.round(ps.accuracy / ps.numberOfNotes) * 100, 2)) + "%") + " (" + accuracyTypesText[Settings.engineSettings.data.accuracyMode].charAt(0) + ")") : "";
         }
         
     }
 
     public static function generateAverageDelay(ps:PlayState) {
-        return Settings.engineSettings.data.showAverageDelay ? (" | Average:" + ((ps.numberOfArrowNotes == 0) ? "0ms" : Std.string(Math.floor((ps.delayTotal / ps.numberOfArrowNotes) * 100) / 100) + "ms")) : "";
+        return Settings.engineSettings.data.showAverageDelay ? (" | Average:" + ((ps.numberOfArrowNotes == 0) ? "0ms" : Std.string(FlxMath.roundDecimal(ps.delayTotal / ps.numberOfArrowNotes, 2)) + "ms")) : "";
     }
 
     public static function generateRating(ps:PlayState) {

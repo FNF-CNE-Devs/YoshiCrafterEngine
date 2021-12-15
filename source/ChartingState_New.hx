@@ -219,8 +219,8 @@ class ChartingState_New extends MusicBeatState
 		check_voices.checked = _song.needsVoices;
 
 		
-		noteNumber = new FlxUINumericStepper(10, 10, 1, _song.keyNumber, 1);
-		noteNumber.value = 0;
+		noteNumber = new FlxUINumericStepper(10, UI_songTitle.y + UI_songTitle.height + 10, 1, _song.keyNumber, 1);
+		noteNumber.value = _song.keyNumber;
 		noteNumber.name = 'note amount';
 
 		// _song.needsVoices = check_voices.checked;
@@ -262,7 +262,7 @@ class ChartingState_New extends MusicBeatState
 			loadJson(_song.song.toLowerCase());
 		});
 
-		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, 'load autosave', loadAutosave);
+		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, 'Load Autosave', loadAutosave);
 
 		var stepperSpeed:FlxUINumericStepper = new FlxUINumericStepper(10, 80, 0.1, 1, 0.1, 10, 1);
 		stepperSpeed.value = _song.speed;
@@ -594,8 +594,12 @@ class ChartingState_New extends MusicBeatState
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
 
-		if (FlxG.keys.pressed.CONTROL && FlxG.mouse.wheel != 0) {
-			zoom += FlxG.mouse.wheel;
+		var zoomShit = FlxG.mouse.wheel;
+		if (FlxG.keys.justPressed.PAGEUP) zoomShit++;
+		if (FlxG.keys.justPressed.PAGEDOWN) zoomShit--;
+
+		if (FlxG.keys.pressed.CONTROL && zoomShit != 0) {
+			zoom += zoomShit;
 			if (zoom < 1) zoom = 1;
 			updateGrid(true);
 		}
@@ -642,7 +646,7 @@ class ChartingState_New extends MusicBeatState
 				if (FlxG.mouse.x > gridBG.x
 					&& FlxG.mouse.x < gridBG.x + gridBG.width
 					&& FlxG.mouse.y > gridBG.y
-					&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps))
+					&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * zoom * _song.notes[curSection].lengthInSteps))
 				{
 					FlxG.log.add('added note');
 					addNote();
@@ -653,7 +657,7 @@ class ChartingState_New extends MusicBeatState
 		if (FlxG.mouse.x > gridBG.x
 			&& FlxG.mouse.x < gridBG.x + gridBG.width
 			&& FlxG.mouse.y > gridBG.y
-			&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps))
+			&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * zoom * _song.notes[curSection].lengthInSteps))
 		{
 			dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
 			if (FlxG.keys.pressed.SHIFT)
@@ -788,8 +792,7 @@ class ChartingState_New extends MusicBeatState
 		bpmTxt.text = bpmTxt.text = Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
 			+ " / "
 			+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2))
-			+ "\nSection: "
-			+ curSection;
+			+ '\nSection: $curSection\rcurBeat: $curBeat\rcurStep: $curStep';
 		super.update(elapsed);
 	}
 
