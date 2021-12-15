@@ -29,7 +29,7 @@ class FreeplayGraph {
             if (newColor == g.color)
                 newColor = FlxColor.WHITE;
 
-            var pos = new FlxPoint(center.x + (Math.sin(current / total * maxAngle) * (width + 2 / 2)), center.y + (Math.cos(current / total * maxAngle) * (height + 2 / 2)));
+            var pos = new FlxPoint(center.x + (Math.sin(current / total * maxAngle) * ((width + 2) / 2)), center.y + (Math.cos(current / total * maxAngle) * ((height + 2) / 2)));
             // if (Math.abs(pos.x - center.x ) / (width / 2) < 2) continue;
             bData.drawLine(center, pos, newColor, 2);
             

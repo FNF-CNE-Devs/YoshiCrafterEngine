@@ -1493,7 +1493,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.SEVEN)
 		{
-			FlxG.sound.music.pause();
+			if (FlxG.sound.music != null) FlxG.sound.music.pause();
 			if (Settings.engineSettings.data.yoshiEngineCharter)
 				// FlxG.switchState(new YoshiEngineCharter());
 				FlxG.switchState(new ChartingState_New());
