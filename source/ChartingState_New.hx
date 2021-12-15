@@ -113,6 +113,7 @@ class ChartingState_New extends MusicBeatState
 		add(bg);
 
 		curSection = lastSection;
+		if (curSection * 4 * Conductor.crochet > FlxG.sound.music.length) curSection = 0;
 
 		if (PlayState.SONG != null)
 			_song = PlayState.SONG;
@@ -170,9 +171,9 @@ class ChartingState_New extends MusicBeatState
 
 		// sections = _song.notes;
 
-		updateGrid();
 
 		loadSong(_song.song);
+		updateGrid();
 		Conductor.changeBPM(_song.bpm);
 		Conductor.mapBPMChanges(_song);
 
@@ -459,6 +460,7 @@ class ChartingState_New extends MusicBeatState
 		}
 
 		FlxG.sound.playMusic(Paths.modInst(daSong, PlayState.songMod), 0.6);
+		if (curSection * 4 * Conductor.crochet > FlxG.sound.music.length) curSection = 0;
 
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
 		vocals = new FlxSound().loadEmbedded(Paths.modVoices(daSong, PlayState.songMod));
@@ -1006,7 +1008,7 @@ class ChartingState_New extends MusicBeatState
 			if (daSus > 0)
 			{
 				var sustainVis:FlxSprite = new FlxSprite(note.x + (GRID_SIZE / 2),
-					note.y + GRID_SIZE).makeGraphic(8, Math.floor(FlxMath.remapToRange(daSus, 0, Conductor.stepCrochet * 16, 0, gridBG.height * zoom)));
+					note.y + GRID_SIZE).makeGraphic(8, Math.floor(FlxMath.remapToRange(daSus, 0, Conductor.stepCrochet * 16, 0, gridBG.height)));
 				curRenderedSustains.add(sustainVis);
 			}
 		}
@@ -1107,7 +1109,7 @@ class ChartingState_New extends MusicBeatState
 
 	function getYfromStrum(strumTime:Float):Float
 	{
-		return FlxMath.remapToRange(strumTime, 0, 16 * Conductor.stepCrochet, gridBG.y, gridBG.y + (gridBG.height * zoom));
+		return FlxMath.remapToRange(strumTime, 0, 16 * Conductor.stepCrochet, gridBG.y, gridBG.y + gridBG.height);
 	}
 
 	/*
