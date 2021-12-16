@@ -1,0 +1,15 @@
+[Space] Play Song
+[Enter] Test Song
+[Arrows] Navigate between section
+[Shift + Left/Right] Navigate 4 sections
+[Tab] Navigate between UI tabs
+
+[WASD] Navigate in section
+[Shift + WASD] Navigate faster
+[Mouse Wheel] Scroll
+
+[Ctrl + Page Up/Down] Zoom in/out
+[Left Click] Place/Remove a note
+[A/E] Remove/Add Sustain to current note
+[Ctrl + Click] Select Note
+[R] Reset Section

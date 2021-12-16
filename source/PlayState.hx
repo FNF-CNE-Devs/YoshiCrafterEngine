@@ -1080,7 +1080,7 @@ class PlayState extends MusicBeatState
 		
 
 		if (Settings.engineSettings.data.showTimer) {
-			var timerBG = new FlxSprite(0, -25).makeGraphic(300, 25, 0xFF222222);
+			var timerBG = new FlxSprite(0, -25 + (guiOffset.y / 2)).makeGraphic(300, 25, 0xFF222222);
 			timerBG.alpha = 0;
 			timerBG.cameras = [camHUD];
 			timerBG.cameraCenter(X);
@@ -1096,8 +1096,8 @@ class PlayState extends MusicBeatState
 			timerBar.createFilledBar(0xFF000000, 0xFFFFFFFF);
 			add(timerBar);
 
-			FlxTween.tween(timerBG, {y : 25, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
-			FlxTween.tween(timerBar, {y : 29, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
+			FlxTween.tween(timerBG, {y : 25 + (guiOffset.y / 2), alpha : 1}, 0.5, {ease : FlxEase.circInOut});
+			FlxTween.tween(timerBar, {y : 29 + (guiOffset.y / 2), alpha : 1}, 0.5, {ease : FlxEase.circInOut});
 		}
 
 		FlxG.sound.music.onComplete = endSong;

@@ -115,7 +115,11 @@ class ChartingState_New extends MusicBeatState
 		add(bg);
 
 		curSection = lastSection;
-		if (curSection * 4 * Conductor.crochet > FlxG.sound.music.length) curSection = 0;
+		if (FlxG.sound.music == null)
+			curSection = 0;
+		else
+			if (curSection * 4 * Conductor.crochet > FlxG.sound.music.length)
+				curSection = 0;
 
 		if (PlayState.SONG != null)
 			_song = PlayState.SONG;
@@ -190,9 +194,10 @@ class ChartingState_New extends MusicBeatState
 		add(dummyArrow);
 
 		var tabs = [
+			{name: "Controls", label: 'Controls'},
 			{name: "Song", label: 'Song'},
 			{name: "Section", label: 'Section'},
-			{name: "Note", label: 'Note'}
+			{name: "Note", label: 'Note'},
 		];
 
 		UI_box = new FlxUITabMenu(null, tabs, true);
@@ -205,6 +210,7 @@ class ChartingState_New extends MusicBeatState
 		addSongUI();
 		addSectionUI();
 		addNoteUI();
+		addControlsUI();
 
 		add(curRenderedNotes);
 		add(curRenderedSustains);
@@ -212,6 +218,13 @@ class ChartingState_New extends MusicBeatState
 		super.create();
 	}
 
+	function addControlsUI():Void {
+		var controls = new FlxUIText(10, 10, 280, Assets.getText(Paths.txt("charterControls", "preload")));
+		var tab_group_controls = new FlxUI(null, UI_box);
+		tab_group_controls.name = "Controls";
+		tab_group_controls.add(controls);
+		UI_box.addGroup(tab_group_controls);
+	}
 	function addSongUI():Void
 	{
 		var UI_songTitle = new FlxUIInputText(10, 10, 70, _song.song, 8);
@@ -850,6 +863,10 @@ class ChartingState_New extends MusicBeatState
 
 					vocals.time = FlxG.sound.music.time;
 				}
+				if (FlxG.keys.pressed.A || FlxG.keys.pressed.D) {
+					strumLine.x = Math.min(Math.max(0, strumLine.x + (GRID_SIZE * _song.keyNumber * elapsed * (FlxG.keys.pressed.A ? -1 : 1))), GRID_SIZE * _song.keyNumber * 2 * (_song.noteTypes.length - 1));
+
+				}
 			}
 			else
 			{
@@ -882,9 +899,9 @@ class ChartingState_New extends MusicBeatState
 		var shiftThing:Int = 1;
 		if (FlxG.keys.pressed.SHIFT)
 			shiftThing = 4;
-		if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D)
+		if (FlxG.keys.justPressed.RIGHT)
 			changeSection(curSection + shiftThing);
-		if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A)
+		if (FlxG.keys.justPressed.LEFT)
 			changeSection(curSection - shiftThing);
 
 		bpmTxt.text = bpmTxt.text = Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
@@ -1042,7 +1059,7 @@ class ChartingState_New extends MusicBeatState
 			var oldPos = members.indexOf(gridBG);
 			remove(gridBG);
 			gridBG.destroy();
-			gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * _song.keyNumber * 2, Std.int(GRID_SIZE * 16 * zoom));
+			gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * _song.keyNumber * 2 * _song.noteTypes.length, Std.int(GRID_SIZE * 16 * zoom));
 			insert(oldPos, gridBG);
 		}
 		while (curRenderedNotes.members.length > 0)
