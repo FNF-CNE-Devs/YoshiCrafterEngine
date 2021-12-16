@@ -145,7 +145,7 @@ class ChartingState_New extends MusicBeatState
 		if (_song.keyNumber == null)
 			_song.keyNumber = 4;
 
-		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * _song.keyNumber * 2, GRID_SIZE * 16);
+		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * _song.keyNumber * 2 * _song.noteTypes.length, GRID_SIZE * 16);
 		add(gridBG);
 
 		p1 = new HealthIcon(_song.player1);

@@ -237,7 +237,7 @@ class PlayState extends MusicBeatState
 			FlxG.scaleMode = new RatioScaleMode();
 			FlxG.camera.width = 1280;
 			FlxG.camera.height = 720;
-			FlxG.camera.follow(camFollow, LOCKON, 0.04);
+			FlxG.camera.follow(camFollow, LOCKON, 0.02);
 			camHUD.x = 0;
 		}
 		return enable;
@@ -1582,9 +1582,9 @@ class PlayState extends MusicBeatState
 				// trace(PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
 			}
 
-			if (camFollow.x != dad.getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
+			if (!PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
 			{
-				camFollow.setPosition(dad.getMidpoint().x + 150 + dad.camOffset.x, dad.getMidpoint().y - 100 + dad.camOffset.y);
+				
 				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
 
 				// switch (dad.curCharacter)
@@ -1598,39 +1598,59 @@ class PlayState extends MusicBeatState
 				// 		camFollow.y = dad.getMidpoint().y - 430;
 				// 		camFollow.x = dad.getMidpoint().x - 100;
 				// }
+				camFollow.setPosition(dad.getMidpoint().x + 150 + dad.camOffset.x, dad.getMidpoint().y - 100 + dad.camOffset.y);
+				if (camFollow.x != dad.getMidpoint().x + 150) {
+					if (dad.curCharacter == 'mom')
+						vocals.volume = 1;
+	
+					if (SONG.song.toLowerCase() == 'tutorial')
+					{
+						tweenCamIn();
+					}
+				}
 
+				
+			}
+			
 
-				if (dad.curCharacter == 'mom')
-					vocals.volume = 1;
+			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
+			{
+				var camMovement:FlxPoint = new FlxPoint(0,0);
 
-				if (SONG.song.toLowerCase() == 'tutorial')
-				{
-					tweenCamIn();
+				if (boyfriend.animation.curAnim != null) {
+					var n = boyfriend.animation.curAnim.name;
+					if (n.startsWith("singLEFT")) camMovement.x = -1;
+					if (n.startsWith("singRIGHT")) camMovement.x = 1;
+					if (n.startsWith("singUP")) camMovement.y = -1;
+					if (n.startsWith("singDOWN")) camMovement.y = 1;
+				}
+
+				var ang = Math.atan2(camMovement.x, camMovement.y);
+
+				camFollow.setPosition(boyfriend.getMidpoint().x - 100 + boyfriend.camOffset.x + (Math.sin(ang) * 20), boyfriend.getMidpoint().y - 100 + boyfriend.camOffset.y + (Math.cos(ang) * 20));
+
+				if (camFollow.x != boyfriend.getMidpoint().x - 100) {
+					if (SONG.song.toLowerCase() == 'tutorial')
+					{
+						FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
+					}
 				}
 			}
 
-			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
+			
+
+			switch (curStage)
 			{
-				camFollow.setPosition(boyfriend.getMidpoint().x - 100 + boyfriend.camOffset.x, boyfriend.getMidpoint().y - 100 + boyfriend.camOffset.y);
-
-				switch (curStage)
-				{
-					case 'limo':
-						camFollow.x = boyfriend.getMidpoint().x - 300;
-					case 'mall':
-						camFollow.y = boyfriend.getMidpoint().y - 200;
-					case 'school':
-						camFollow.x = boyfriend.getMidpoint().x - 200;
-						camFollow.y = boyfriend.getMidpoint().y - 200;
-					case 'schoolEvil':
-						camFollow.x = boyfriend.getMidpoint().x - 200;
-						camFollow.y = boyfriend.getMidpoint().y - 200;
-				}
-
-				if (SONG.song.toLowerCase() == 'tutorial')
-				{
-					FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
-				}
+				case 'limo':
+					camFollow.x = boyfriend.getMidpoint().x - 300;
+				case 'mall':
+					camFollow.y = boyfriend.getMidpoint().y - 200;
+				case 'school':
+					camFollow.x = boyfriend.getMidpoint().x - 200;
+					camFollow.y = boyfriend.getMidpoint().y - 200;
+				case 'schoolEvil':
+					camFollow.x = boyfriend.getMidpoint().x - 200;
+					camFollow.y = boyfriend.getMidpoint().y - 200;
 			}
 		}
 

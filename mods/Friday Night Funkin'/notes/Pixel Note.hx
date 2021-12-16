@@ -43,6 +43,13 @@ function create() {
         note.animation.add('bluehold', [1]);
     }
 
+    if (note.isSustainNote) {
+
+    } else {
+        
+    }
+    var anims = ['purpleScroll', 'blueScroll', 'greenScroll', 'redScroll'];
+    note.animation.play(anims[note.noteData % 4]);
     note.setGraphicSize(Std.int(note.width * PlayState_.daPixelZoom));
     note.updateHitbox();
 }
@@ -67,6 +74,19 @@ function onPlayerHit(direction) {
             PlayState.boyfriend.playAnim("singUP", true);
         case 3: //SING RIGHT
             PlayState.boyfriend.playAnim("singRIGHT", true);
+    }
+}
+
+function onDadHit(direction) {
+    switch(direction) {
+        case 0: //SING LEFT
+            PlayState.dad.playAnim("singLEFT", true);
+        case 1: //SING DOWN
+            PlayState.dad.playAnim("singDOWN", true);
+        case 2: //SING UP
+            PlayState.dad.playAnim("singUP", true);
+        case 3: //SING RIGHT
+            PlayState.dad.playAnim("singRIGHT", true);
     }
 }
 
