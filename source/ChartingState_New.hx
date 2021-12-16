@@ -103,6 +103,9 @@ class ChartingState_New extends MusicBeatState
 		FlxColor.fromRGB(111,111,255),
 	];
 
+	var gridBlackLines:Array<FlxSprite> = [
+
+	];
 	public static var zoom:Float = 1;
 
 	override function create()
@@ -1114,7 +1117,7 @@ class ChartingState_New extends MusicBeatState
 			if (daNoteInfo < _song.keyNumber * 2) {
 				note.color = FlxColor.WHITE;
 			} else {
-				note.color = noteColors[(Math.floor(daNoteInfo / _song.keyNumber * 2) + 1) % noteColors.length];
+				note.color = noteColors[(Math.floor(daNoteInfo / (_song.keyNumber * 2))) % noteColors.length];
 			}
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();
