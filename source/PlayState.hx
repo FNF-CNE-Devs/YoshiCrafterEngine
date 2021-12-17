@@ -1192,7 +1192,7 @@ class PlayState extends MusicBeatState
 					}
 			});
 			script.variables.set("onDadHit", function(e) {
-				
+				// dad.playAnim("sing")
 			});
 			script.execute(ModSupport.getExpressionFromPath(Paths.getModsFolder() + '/$noteScriptMod/notes/$noteScriptName.hx'));
 			ModSupport.setHaxeFileDefaultVars(script, noteScriptMod);

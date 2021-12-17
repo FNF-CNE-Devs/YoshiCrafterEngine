@@ -204,6 +204,7 @@ class Note extends FlxSprite
 		this.strumTime = strumTime;
 
 		this.noteData = noteData;
+		noteType = Math.floor(noteData / (PlayState.SONG.keyNumber * 2));
 
 		var daStage:String = PlayState.curStage;
 

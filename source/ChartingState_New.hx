@@ -1,5 +1,6 @@
 package;
 
+import flixel.addons.ui.FlxUIRadioGroup;
 import flixel.addons.ui.FlxUIText;
 import StoryMenuState.WeeksJson;
 import sys.FileSystem;
@@ -544,7 +545,11 @@ class ChartingState_New extends MusicBeatState
 	}
 
 	var stepperSusLength:FlxUINumericStepper;
+	var noteTypeRadioGroup:FlxUIRadioGroup;
 
+	function updateNoteTypes() {
+		noteTypeRadioGroup.updateRadios([for (i in _song.noteTypes) Std.string(i)], _song.noteTypes);
+	}
 	function addNoteUI():Void
 	{
 		var tab_group_note = new FlxUI(null, UI_box);
@@ -557,10 +562,23 @@ class ChartingState_New extends MusicBeatState
 		stepperSusLength.name = 'note_susLength';
 
 		var applyLength:FlxButton = new FlxButton(212, 9, 'Apply');
+		var removeSelected:FlxButton = new FlxButton(212, applyLength.y + applyLength.height + 10, 'Remove Type', function() {
+			_song.noteTypes.remove(noteTypeRadioGroup.selectedLabel);
+			if (_song.noteTypes.length == 0) _song.noteTypes = ["Friday Night Funkin':Default Note"];
+			updateNoteTypes();
+		});
+
+		var noteTypeDropdown:FlxUIDropDownMenu = new FlxUIDropDownMenu(10, applyLength.y + applyLength.height + 10);
+		noteTypeRadioGroup = new FlxUIRadioGroup(10, 35, [for (i in _song.noteTypes) Std.string(i)], _song.noteTypes, null, 25, 280, 20, 280);
 
 		tab_group_note.add(new FlxUIText(10, 11, 0, "Sustain Length (ms)"));
 		tab_group_note.add(stepperSusLength);
+		tab_group_note.add(removeSelected);
 		tab_group_note.add(applyLength);
+		tab_group_note.add(noteTypeRadioGroup);
+
+		
+		
 
 		UI_box.addGroup(tab_group_note);
 	}
