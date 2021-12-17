@@ -1490,7 +1490,6 @@ class PlayState extends MusicBeatState
 			DiscordClient.changePresence(detailsPausedText, songAltName + " (" + storyDifficultyText + ")", iconRPC);
 			#end
 		}
-
 		if (FlxG.keys.justPressed.SEVEN)
 		{
 			if (FlxG.sound.music != null) FlxG.sound.music.pause();
@@ -1615,19 +1614,20 @@ class PlayState extends MusicBeatState
 
 			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
 			{
-				var camMovement:FlxPoint = new FlxPoint(0,0);
+				// var camMovement:FlxPoint = new FlxPoint(0,0);
 
-				if (boyfriend.animation.curAnim != null) {
-					var n = boyfriend.animation.curAnim.name;
-					if (n.startsWith("singLEFT")) camMovement.x = -1;
-					if (n.startsWith("singRIGHT")) camMovement.x = 1;
-					if (n.startsWith("singUP")) camMovement.y = -1;
-					if (n.startsWith("singDOWN")) camMovement.y = 1;
-				}
+				// if (boyfriend.animation.curAnim != null) {
+				// 	var n = boyfriend.animation.curAnim.name;
+				// 	if (n.startsWith("singLEFT")) camMovement.x = -1;
+				// 	if (n.startsWith("singRIGHT")) camMovement.x = 1;
+				// 	if (n.startsWith("singUP")) camMovement.y = -1;
+				// 	if (n.startsWith("singDOWN")) camMovement.y = 1;
+				// }
 
-				var ang = Math.atan2(camMovement.x, camMovement.y);
+				// var ang = Math.atan2(camMovement.x, camMovement.y);
 
-				camFollow.setPosition(boyfriend.getMidpoint().x - 100 + boyfriend.camOffset.x + (Math.sin(ang) * 20), boyfriend.getMidpoint().y - 100 + boyfriend.camOffset.y + (Math.cos(ang) * 20));
+				// camFollow.setPosition(boyfriend.getMidpoint().x - 100 + boyfriend.camOffset.x + (Math.sin(ang) * 20), boyfriend.getMidpoint().y - 100 + boyfriend.camOffset.y + (Math.cos(ang) * 20));
+				camFollow.setPosition(boyfriend.getMidpoint().x - 100 + boyfriend.camOffset.x, boyfriend.getMidpoint().y - 100 + boyfriend.camOffset.y);
 
 				if (camFollow.x != boyfriend.getMidpoint().x - 100) {
 					if (SONG.song.toLowerCase() == 'tutorial')
@@ -2711,7 +2711,7 @@ class PlayState extends MusicBeatState
 
 			playerStrums.forEach(function(spr:FlxSprite)
 			{
-				if (Math.abs(note.noteData) == spr.ID)
+				if (Math.abs(note.noteData % SONG.keyNumber) == spr.ID)
 				{
 					spr.animation.play('confirm', true);
 				}
