@@ -1,3 +1,4 @@
+import flixel.math.FlxMath;
 import openfl.geom.Rectangle;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
@@ -16,6 +17,7 @@ class BitmapDataPlus extends BitmapData {
             ), color);
         }
     }
+
     public function drawLineReplacing(beginPos:FlxPoint, endPos:FlxPoint, color:FlxColor, replaces:FlxColor, thickness:Float = 2) {
         var loopLength = Math.ceil(Math.sqrt(Math.pow(beginPos.x - endPos.x, 2) + Math.pow(beginPos.y - endPos.y, 2)) * 1.5);
         if (thickness <= 0) return;
@@ -32,6 +34,7 @@ class BitmapDataPlus extends BitmapData {
             ), color);
         }
     }
+
     public function drawLineExceptOn(beginPos:FlxPoint, endPos:FlxPoint, color:FlxColor, replaces:FlxColor, thickness:Float = 2) {
         var loopLength = Math.ceil(Math.sqrt(Math.pow(beginPos.x - endPos.x, 2) + Math.pow(beginPos.y - endPos.y, 2)) * 1.5);
         if (thickness <= 0) return;
@@ -64,5 +67,30 @@ class BitmapDataPlus extends BitmapData {
                 Math.ceil(thickness / 2)
             ), color);
         }
+    }
+
+    public function generateBlammedEffect(bgColor:FlxColor, fgColor:FlxColor):BitmapData {return GenerateBlammedEffect(this, bgColor, fgColor);}
+    public static function GenerateBlammedEffect(b:BitmapData, bgColor:FlxColor, fgColor:FlxColor, replaces:FlxColor = FlxColor.BLACK, tolerance:Float = 50):BitmapData {
+        b.lock();
+        for(x in 0...b.width) {
+            for (y in 0...b.height) {
+                var color = new FlxColor(b.getPixel32(x, y));
+                var average = (Math.abs(color.red - replaces.red) + Math.abs(color.green - replaces.green) + Math.abs(color.blue - replaces.blue)) / 3;
+                if (average < tolerance) {
+                    var newColor:Float = (1 - (average / tolerance)) * color.alphaFloat;
+                    var c = new FlxColor(0xFFFFFFFF);
+                    // c.redFloat = FlxMath.RemapToRange(newColor;
+                    c.redFloat = FlxMath.remapToRange(newColor, 0, 1, bgColor.redFloat, fgColor.redFloat);
+                    c.greenFloat = FlxMath.remapToRange(newColor, 0, 1, bgColor.greenFloat, fgColor.greenFloat);
+                    c.blueFloat = FlxMath.remapToRange(newColor, 0, 1, bgColor.blueFloat, fgColor.blueFloat);
+                    c.alphaFloat = color.alphaFloat;
+                    b.setPixel32(x, y, c);
+                } else {
+                    b.setPixel32(x, y, FlxColor.fromRGB(bgColor.red, bgColor.green, bgColor.blue, color.alpha));
+                }
+            }
+        }
+        b.unlock();
+        return b;
     }
 }

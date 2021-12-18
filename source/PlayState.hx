@@ -506,9 +506,9 @@ class PlayState extends MusicBeatState
 			}
 		});
 
-		ModSupport.setHaxeFileDefaultVars(stage, songMod);
-		ModSupport.setHaxeFileDefaultVars(modchart, songMod);
-		ModSupport.setHaxeFileDefaultVars(cutscene, songMod);
+		ModSupport.setHaxeFileDefaultVars(stage, songMod, {});
+		ModSupport.setHaxeFileDefaultVars(modchart, songMod, {});
+		ModSupport.setHaxeFileDefaultVars(cutscene, songMod, {});
 
 		var endCutsceneFunc = function() {
 
@@ -1195,7 +1195,7 @@ class PlayState extends MusicBeatState
 				// dad.playAnim("sing")
 			});
 			script.execute(ModSupport.getExpressionFromPath(Paths.getModsFolder() + '/$noteScriptMod/notes/$noteScriptName.hx'));
-			ModSupport.setHaxeFileDefaultVars(script, noteScriptMod);
+			ModSupport.setHaxeFileDefaultVars(script, noteScriptMod, {});
 			noteScripts.push(script);
 		}
 
@@ -2869,6 +2869,7 @@ class PlayState extends MusicBeatState
 		}
 
 		for (bf in boyfriends) {
+			if (bf == null) continue;
 			if (!bf.animation.curAnim.name.startsWith("sing"))
 			{
 				// bf.playAnim('idle');

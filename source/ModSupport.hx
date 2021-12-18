@@ -1,3 +1,5 @@
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 import flixel.util.FlxAxes;
 import flixel.addons.text.FlxTypeText;
 import openfl.display.PNGEncoderOptions;
@@ -74,8 +76,15 @@ class MP4Video {
 
 class Paths_Mod {
     private var mod:String;
-    public function new(mod:String) {
+    public var copyBitmap:Bool = false;
+    public function new(mod:String, settings:Dynamic) {
         this.mod = mod;
+        trace(settings);
+        if (settings.cloneBitmap != null) {
+            if (Std.is(settings.cloneBitmap, Bool)) {
+                copyBitmap = settings.cloneBitmap;
+            }
+        }
     }
 
     public function getModsFolder() {
@@ -153,7 +162,11 @@ class Paths_Mod {
         var mFolder = Paths.getModsFolder();
         var p = '$mFolder/$mod/images/$key.png';
         if (FileSystem.exists(p)) {
-            return Paths.getBitmapOutsideAssets(p);
+            if (copyBitmap) {
+                return Paths.getBitmapOutsideAssets(p).clone();
+            } else {
+                return Paths.getBitmapOutsideAssets(p);
+            }
         } else {
             trace('Image at "$p" does not exist');
             return null;
@@ -165,7 +178,13 @@ class Paths_Mod {
         var png = '$mFolder/$mod/images/$key.png';
         var xml = '$mFolder/$mod/images/$key.xml';
         if (FileSystem.exists(png) && FileSystem.exists(xml)) {
-            return FlxAtlasFrames.fromSparrow(Paths.getBitmapOutsideAssets(png), Paths.getTextOutsideAssets(xml));
+            var b:BitmapData;
+            if (copyBitmap) {
+                b = Paths.getBitmapOutsideAssets(png).clone();
+            } else {
+                b = Paths.getBitmapOutsideAssets(png);
+            }
+            return FlxAtlasFrames.fromSparrow(b, Paths.getTextOutsideAssets(xml));
         } else {
             trace('Sparrow Atlas at "$mFolder/$mod/images/$key" does not exist. Make sure there is an XML and a PNG file');
             return null;
@@ -184,7 +203,9 @@ class Paths_Mod {
         var png = '$mFolder/$m/characters/$c/spritesheet.png';
         var txt = '$mFolder/$m/characters/$c/spritesheet.txt';
         if (FileSystem.exists(png) && FileSystem.exists(txt)) {
-            return FlxAtlasFrames.fromSpriteSheetPacker(Paths.getBitmapOutsideAssets(png), Paths.getTextOutsideAssets(txt));
+            var b = Paths.getBitmapOutsideAssets(png);
+            if (copyBitmap) b = b.clone();
+            return FlxAtlasFrames.fromSpriteSheetPacker(b, Paths.getTextOutsideAssets(txt));
         } else {
             trace('Sprite Sheet Packer at "$mFolder/$m/characters/$c/spritesheet" does not exist. Make sure there is an TXT and a PNG file');
             return null;
@@ -200,7 +221,9 @@ class Paths_Mod {
         var png = '$mFolder/$mod/images/$key.png';
         var txt = '$mFolder/$mod/images/$key.txt';
         if (FileSystem.exists(png) && FileSystem.exists(txt)) {
-            return FlxAtlasFrames.fromSpriteSheetPacker(Paths.getBitmapOutsideAssets(png), Paths.getTextOutsideAssets(txt));
+            var b = Paths.getBitmapOutsideAssets(png);
+            if (copyBitmap) b = b.clone();
+            return FlxAtlasFrames.fromSpriteSheetPacker(b, Paths.getTextOutsideAssets(txt));
         } else {
             trace('Packer Atlas at "$mFolder/$mod/images/$key" does not exist. Make sure there is an XML and a PNG file');
             return null;
@@ -346,7 +369,7 @@ class ModSupport {
         return ast;
     }
 
-    public static function setHaxeFileDefaultVars(hscript:hscript.Interp, mod:String) {
+    public static function setHaxeFileDefaultVars(hscript:hscript.Interp, mod:String, settings:Dynamic) {
 		hscript.variables.set("PlayState", PlayState.current);
 		hscript.variables.set("EngineSettings", Settings.engineSettings.data);
         hscript.variables.set("include", function(path:String) {
@@ -364,7 +387,7 @@ class ModSupport {
 		hscript.variables.set("FlxSprite", FlxSprite);
 		hscript.variables.set("BitmapData", BitmapData);
 		hscript.variables.set("FlxG", FlxG);
-		hscript.variables.set("Paths", new Paths_Mod(mod));
+		hscript.variables.set("Paths", new Paths_Mod(mod, settings));
 		hscript.variables.set("Paths_", Paths);
 		hscript.variables.set("Std", Std);
 		hscript.variables.set("Math", Math);
@@ -394,6 +417,9 @@ class ModSupport {
 		hscript.variables.set("FlxTypeText", FlxTypeText);
 		hscript.variables.set("FlxText", FlxText);
 		hscript.variables.set("FlxAxes", FlxAxes);
+		hscript.variables.set("BitmapDataPlus", BitmapDataPlus);
+		hscript.variables.set("Rectangle", Rectangle);
+		hscript.variables.set("Point", Point);
 		// hscript.variables.set("FlxColor", Int);
     }
     public static function executeFunc(hscript:hscript.Interp, funcName:String, ?args:Array<Dynamic>):Dynamic {

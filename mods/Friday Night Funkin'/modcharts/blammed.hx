@@ -28,95 +28,47 @@ function create() {
     street = getStageVar('street');
     streetBehind = getStageVar('streetBehind');
     light = getStageVar('light');
+    
     if (EngineSettings.blammedEffect) {
-        var cBF = EngineSettings.customBFSkin;
-        // var path = Paths_.getSkinsPath() + '/bf/' + cBF + '/blammed.png';
-        // trace(path);
-        // if (!FileSystem.exists(path)) {
-        //     bfDarkMode = new BitmapData(PlayState.boyfriend.pixels.image.width, PlayState.boyfriend.pixels.image.height, true, 0xFF000000);
-        //     bfDarkMode.lock();
-        //     var bfBitmap:BitmapData = PlayState.boyfriend.pixels;
-        //     for(x in 0...bfBitmap.width) {
-        //         for (y in 0...bfBitmap.height) {
-        //             var color = new FlxColor(bfBitmap.getPixel32(x, y));
-        //             var average = (color.red + color.green + color.blue) / 3;
-        //             if (average < 50) {
-        //                 var newColor:Float = (1 - (average / 50));
-        //                 var c = new FlxColor(0xFFFFFFFF);
-        //                 c.redF loat = newColor;
-        //                 c.blueFloat = newColor;
-        //                 c.greenFloat = newColor;
-        //                 c.alphaFloat = color.alphaFloat;
-        //                 bfDarkMode.setPixel32(x, y, c.color);
-        //             }
-        //         }
-        //     }
-        //     bfDarkMode.unlock();
-        //     File.saveBytes(path, bfDarkMode.encode(bfDarkMode.rect, new PNGEncoderOptions(true)));
-        // }
-
-        // if (!FileSystem.exists(Paths_.getSkinsPath() + '/bf/' + cBF + '/blammed.xml')) File.copy(Paths_.getSkinsPath() + '/bf/' + cBF + '/spritesheet.xml', Paths_.getSkinsPath() + '/bf/' + cBF + '/blammed.xml');
-        
-        
-
-
-        var cGF = EngineSettings.customGFSkin;
-        // if (!FileSystem.exists(Paths_.getSkinsPath() + '/gf/' + cGF + '/blammed.png')) {
-        //     gfDarkMode = new BitmapData(PlayState.gf.pixels.image.width, PlayState.gf.pixels.image.height, true, 0xFF000000);
-        //     gfDarkMode.lock();
-        //     var gfBitmap:BitmapData = PlayState.gf.pixels;
-        //     for(x in 0...gfBitmap.width) {
-        //         for (y in 0...gfBitmap.height) {
-        //             var color = new FlxColor(gfBitmap.getPixel32(x, y));
-        //             var average = (color.red + color.green + color.blue) / 3;
-        //             if (average < 50) {
-        //                 var newColor:Float = (1 - (average / 50));
-        //                 var c = new FlxColor(0xFFFFFFFF);
-        //                 c.redFloat = newColor;
-        //                 c.blueFloat = newColor;
-        //                 c.greenFloat = newColor;
-        //                 c.alphaFloat = color.alphaFloat;
-        //                 gfDarkMode.setPixel32(x, y, c.color);
-        //             }
-        //         }
-        //     }
-        //     gfDarkMode.unlock();
-        //     File.saveBytes(Paths_.getSkinsPath() + '/gf/' + cGF + '/blammed.png', gfDarkMode.encode(gfDarkMode.rect, new PNGEncoderOptions(true)));
-        // }
-        // if (!FileSystem.exists(Paths_.getSkinsPath() + '/gf/' + cGF + '/blammed.xml')) File.copy(Paths_.getSkinsPath() + '/gf/' + cGF + '/spritesheet.xml', Paths_.getSkinsPath() + '/gf/' + cGF + '/blammed.xml');
 
         trace("creating gf");
-        gfDark = new Character(400, 130, (FileSystem.exists(Paths_.getSkinsPath() + '/gf/' + cGF + '/blammed.xml') && FileSystem.exists(Paths_.getSkinsPath() + '/gf/' + cGF + '/blammed.png')) ? "GF_blammed" : "gf");
+        gfDark = new Character(400, 130, "gf", false, true);
+        gfDark.pixels.copyPixels(BitmapDataPlus.GenerateBlammedEffect(gfDark.pixels.clone(), 0xFF000000, 0xFFFFFFFF), new Rectangle(0, 0, gfDark.pixels.width, gfDark.pixels.height), new Point(0,0));
         gfDark.visible = false;
+        gfDark.setPosition(PlayState.gf.x, PlayState.gf.y);
         PlayState.add(gfDark);
 
         // bfDark = new Boyfriend(770, 100, PlayState.SONG.player1, EngineSettings.customBFSkin == "default" ? "BF_blammed" : "blammed");
         
         trace("creating bf");
-        gfDark = new Character(400, 130, (FileSystem.exists(Paths_.getSkinsPath() + '/bf/' + cGF + '/blammed.xml') && FileSystem.exists(Paths_.getSkinsPath() + '/bf/' + cGF + '/blammed.png')) ? "BF_blammed" : "bf");
+        bfDark = new Character(400, 130, PlayState.song.player1, false, true);
+        bfDark.pixels.copyPixels(BitmapDataPlus.GenerateBlammedEffect(bfDark.pixels.clone(), 0xFF000000, 0xFFFFFFFF), new Rectangle(0, 0, bfDark.pixels.width, bfDark.pixels.height), new Point(0,0));
         bfDark.visible = false;
-        PlayState.add(bfDark);
+        bfDark.flipX = !bfDark.flipX;
+        bfDark.setPosition(PlayState.boyfriend.x, PlayState.boyfriend.y);
         PlayState.boyfriends.push(bfDark);
+        PlayState.add(bfDark);
 
         trace("creating pico");
-        dadDark = new Character(100, 100, "pico-blammed");
+        dadDark = new Character(400, 130, PlayState.song.player2, false, true);
+        dadDark.pixels.copyPixels(BitmapDataPlus.GenerateBlammedEffect(dadDark.pixels.clone(), 0xFF000000, 0xFFFFFFFF), new Rectangle(0, 0, dadDark.pixels.width, dadDark.pixels.height), new Point(0,0));
         dadDark.visible = false;
+        dadDark.setPosition(PlayState.dad.x, PlayState.dad.y);
         PlayState.dads.push(dadDark);
         PlayState.add(dadDark);
         
-        trace("done ");
+        trace("done");
 
         // picoDarkMode = Paths.getBitmapOutsideAssets('assets/characters/PICO_blammed.png');
         // ogPico = PlayState.dad.pixels.clone();
         // ogBF = PlayState.boyfriend.pixels.clone();
         // ogGF = PlayState.gf.pixels.clone();
 
-        blackScreen = new FlxSprite(0, 0).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.WHITE);
-        blackScreen.cameras = [PlayState.camHUD];
-        blackScreen.alpha = 0;
-        PlayState.add(blackScreen);
+        // blackScreen = new FlxSprite(0, 0).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.WHITE);
+        // blackScreen.cameras = [PlayState.camHUD];
+        // blackScreen.alpha = 0;
+        // PlayState.add(blackScreen);
     }
-    
 }
 function beatHit(curBeat:Int) {
     if (gfDark != null) gfDark.dance();

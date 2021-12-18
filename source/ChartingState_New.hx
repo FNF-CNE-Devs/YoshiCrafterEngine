@@ -1,5 +1,8 @@
 package;
 
+import openfl.geom.Rectangle;
+import flixel.addons.ui.FlxUIButton;
+import sys.io.File;
 import flixel.addons.ui.FlxUIRadioGroup;
 import flixel.addons.ui.FlxUIText;
 import StoryMenuState.WeeksJson;
@@ -166,8 +169,8 @@ class ChartingState_New extends MusicBeatState
 		p1.setPosition(0, -100);
 		p2.setPosition(gridBG.width / 2, -100);
 
-		var gridBlackLine:FlxSprite = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
-		add(gridBlackLine);
+		// var gridBlackLine:FlxSprite = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
+		// add(gridBlackLine);
 
 		curRenderedNotes = new FlxTypedGroup<CharterNote>();
 		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
@@ -349,8 +352,6 @@ class ChartingState_New extends MusicBeatState
 			FlxG.sound.music.volume = vol;
 		};
 
-		
-
 		noteNumber = new FlxUINumericStepper(290, check_mute_inst.y + check_mute_inst.height + 10, 1, _song.keyNumber, 1);
 		noteNumber.x -= noteNumber.width;
 		noteNumber.value = _song.keyNumber;
@@ -401,7 +402,17 @@ class ChartingState_New extends MusicBeatState
 		
 
 
-
+		var fixChartButton = new FlxButton(10, 654, "Fix Chart", function() {
+			for (s in _song.notes) {
+				for (n in s.sectionNotes) {
+					s.sectionNotes.remove(n);
+					_song.notes[Math.floor(Math.max(0, n[0] + Conductor.stepCrochet) / (Conductor.crochet * 4))].sectionNotes.push(n);
+				}
+			}
+		});
+		fixChartButton.y -= fixChartButton.height;
+		var fixChartLabel = new FlxUIText(10, fixChartButton.y - 10, 280, "Pressing this button will fix chart's note section problem, where notes are in the wrong section and off the grid. This operation may take a while depending on the size on the chart. Continue at your own risk.");
+		fixChartLabel.y -= fixChartLabel.height;
 
 
 
@@ -429,6 +440,9 @@ class ChartingState_New extends MusicBeatState
 		tab_group_song.add(p1label);
 		tab_group_song.add(player1CharDropDown);
 		tab_group_song.add(player1ModDropDown);
+
+		tab_group_song.add(fixChartLabel);
+		tab_group_song.add(fixChartButton);
 
 		UI_box.addGroup(tab_group_song);
 		UI_box.scrollFactor.set();
@@ -549,6 +563,14 @@ class ChartingState_New extends MusicBeatState
 
 	function updateNoteTypes() {
 		noteTypeRadioGroup.updateRadios([for (i in _song.noteTypes) Std.string(i)], _song.noteTypes);
+		var r = noteTypeRadioGroup.getRadios();
+		for(i in 0...r.length) {
+			if (i > 0) {
+				var l = r[i].getLabel();
+				l.setFormat(null, 8, noteColors[(i - 1) % noteColors.length], null, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			}
+		}
+		updateGrid(true);
 	}
 	function addNoteUI():Void
 	{
@@ -562,19 +584,38 @@ class ChartingState_New extends MusicBeatState
 		stepperSusLength.name = 'note_susLength';
 
 		var applyLength:FlxButton = new FlxButton(212, 9, 'Apply');
-		var removeSelected:FlxButton = new FlxButton(212, applyLength.y + applyLength.height + 10, 'Remove Type', function() {
+		var nTypes:Array<String> = [];
+		var mPath = Paths.getModsFolder();
+		for (mod in FileSystem.readDirectory(mPath)) {
+			if (FileSystem.exists('$mPath/$mod/notes/')) {
+				for (nType in FileSystem.readDirectory('$mPath/$mod/notes/')) {
+					if (nType.toLowerCase().endsWith(".hx")) { // ONLY ACCEPTS HX FILES !!!!
+						var extless = nType.substr(0, nType.length - 3);
+						nTypes.push('$mod:$extless');
+					}
+				}
+			}
+		}
+		var noteTypeDropdown:FlxUIDropDownMenu = new FlxUIDropDownMenu(10, applyLength.y + applyLength.height + 10, FlxUIDropDownMenu.makeStrIdLabelArray(nTypes, false), null, new FlxUIDropDownHeader(270 - Math.floor(applyLength.width)));
+		var addButton:FlxButton = new FlxButton(noteTypeDropdown.x + noteTypeDropdown.width + 10, noteTypeDropdown.y + 10, "Add Type", function() {
+			_song.noteTypes.push(noteTypeDropdown.selectedLabel);
+			updateNoteTypes();
+		});
+		var removeSelected:FlxButton = new FlxButton(212, addButton.y + addButton.height + 10, 'Remove Type', function() {
 			_song.noteTypes.remove(noteTypeRadioGroup.selectedLabel);
 			if (_song.noteTypes.length == 0) _song.noteTypes = ["Friday Night Funkin':Default Note"];
 			updateNoteTypes();
 		});
+		addButton.y -= addButton.height / 2;
 
-		var noteTypeDropdown:FlxUIDropDownMenu = new FlxUIDropDownMenu(10, applyLength.y + applyLength.height + 10);
-		noteTypeRadioGroup = new FlxUIRadioGroup(10, 35, [for (i in _song.noteTypes) Std.string(i)], _song.noteTypes, null, 25, 280, 20, 280);
+		noteTypeRadioGroup = new FlxUIRadioGroup(10, addButton.y + addButton.height + 10, [for (i in _song.noteTypes) Std.string(i)], _song.noteTypes, null, 25, 280, 20, 280);
 
 		tab_group_note.add(new FlxUIText(10, 11, 0, "Sustain Length (ms)"));
 		tab_group_note.add(stepperSusLength);
 		tab_group_note.add(removeSelected);
 		tab_group_note.add(applyLength);
+		tab_group_note.add(addButton);
+		tab_group_note.add(noteTypeDropdown);
 		tab_group_note.add(noteTypeRadioGroup);
 
 		
@@ -719,6 +760,15 @@ class ChartingState_New extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		var r = noteTypeRadioGroup.getRadios();
+		for(i in 0...r.length) {
+			if (i > 0) {
+				var l = r[i].getLabel();
+				l.color = noteColors[(i - 1) % noteColors.length];
+				// l.setFormat(null, 8, noteColors[(i - 1) % noteColors.length], null, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			}
+		}
+
 		curStep = recalculateSteps();
 
 		Conductor.songPosition = FlxG.sound.music.time;
@@ -866,6 +916,11 @@ class ChartingState_New extends MusicBeatState
 				vocals.time = FlxG.sound.music.time;
 			}
 
+			if (FlxG.keys.pressed.A || FlxG.keys.pressed.D) {
+				var speed = FlxG.keys.pressed.SHIFT ? 3 : 1;
+				strumLine.x = Math.min(Math.max(0, strumLine.x + (GRID_SIZE * _song.keyNumber * elapsed * (FlxG.keys.pressed.A ? -speed : speed))), GRID_SIZE * _song.keyNumber * 2 * (_song.noteTypes.length - 1));
+			}
+
 			if (!FlxG.keys.pressed.SHIFT)
 			{
 				if (FlxG.keys.pressed.W || FlxG.keys.pressed.S)
@@ -883,10 +938,6 @@ class ChartingState_New extends MusicBeatState
 						FlxG.sound.music.time += daTime;
 
 					vocals.time = FlxG.sound.music.time;
-				}
-				if (FlxG.keys.pressed.A || FlxG.keys.pressed.D) {
-					strumLine.x = Math.min(Math.max(0, strumLine.x + (GRID_SIZE * _song.keyNumber * elapsed * (FlxG.keys.pressed.A ? -1 : 1))), GRID_SIZE * _song.keyNumber * 2 * (_song.noteTypes.length - 1));
-
 				}
 			}
 			else
@@ -1074,6 +1125,7 @@ class ChartingState_New extends MusicBeatState
 			stepperSusLength.value = curSelectedNote[2];
 	}
 
+	var gridOverlay:FlxSprite;
 	function updateGrid(updateSprite:Bool = false):Void
 	{
 		if (updateSprite) {
@@ -1081,6 +1133,24 @@ class ChartingState_New extends MusicBeatState
 			remove(gridBG);
 			gridBG.destroy();
 			gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * _song.keyNumber * 2 * _song.noteTypes.length, Std.int(GRID_SIZE * 16 * zoom));
+			if (gridOverlay != null) {
+				remove(gridOverlay);
+				gridOverlay.destroy();
+			}
+			gridOverlay = new FlxSprite(gridBG.x, gridBG.y).makeGraphic(GRID_SIZE * _song.keyNumber * 2 * _song.noteTypes.length, Std.int(GRID_SIZE * 16 * zoom), FlxColor.TRANSPARENT);
+			gridOverlay.pixels.lock();
+			if (_song.noteTypes.length > 1) {
+				for(i in 1..._song.noteTypes.length) {
+					var c = noteColors[i - 1];
+					c.alphaFloat = 0.5;
+					gridOverlay.pixels.fillRect(new Rectangle(GRID_SIZE * _song.keyNumber * 2 * i, 0, GRID_SIZE * _song.keyNumber * 2, Std.int(GRID_SIZE * 16 * zoom)), c);
+				}
+			}
+			for (i in 0...(_song.noteTypes.length * 2)) {
+				gridOverlay.pixels.fillRect(new Rectangle(GRID_SIZE * _song.keyNumber * i - (((i % 2) == 0) ? 0 : 1), 0, ((i % 2) == 0) ? 1 : 2, Std.int(GRID_SIZE * 16 * zoom)), FlxColor.BLACK);
+			}
+			gridOverlay.pixels.unlock();
+			insert(oldPos, gridOverlay);
 			insert(oldPos, gridBG);
 		}
 		while (curRenderedNotes.members.length > 0)
@@ -1135,7 +1205,7 @@ class ChartingState_New extends MusicBeatState
 			if (daNoteInfo < _song.keyNumber * 2) {
 				note.color = FlxColor.WHITE;
 			} else {
-				note.color = noteColors[(Math.floor(daNoteInfo / (_song.keyNumber * 2))) % noteColors.length];
+				note.color = noteColors[(Math.floor(daNoteInfo / (_song.keyNumber * 2)) - 1) % noteColors.length];
 			}
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();

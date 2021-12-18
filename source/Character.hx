@@ -101,7 +101,7 @@ class Character extends FlxSprite
 	 * @param isPlayer			Whenever the character is the player or not.
 	 * @param textureOverride 	Optional, allows you to override the texture. (ex : `bf` as char for Boyfriend's anims and assets, and `blammed` for the Boyfriend blammed appearance)
 	 */
-	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false, ?textureOverride:String = "")
+	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false, cloneBitmap:Bool = false, ?textureOverride:String = "")
 	{
 		super(x, y);
 
@@ -133,13 +133,13 @@ class Character extends FlxSprite
 		});
 		var p = Paths.getCharacterFolderPath(curCharacter) + "/Character.hx";
 		var sName = curCharacter.split(":");
+		ModSupport.setHaxeFileDefaultVars(characterScript, sName.length > 1 ? sName[0] : "Friday Night Funkin'", {"cloneBitmap" : cloneBitmap});
 		try {
 			characterScript.execute(ModSupport.getExpressionFromPath(p, true));
 		} catch(e) {
 			return;
 		}
 
-		ModSupport.setHaxeFileDefaultVars(characterScript, sName.length > 1 ? sName[0] : "Friday Night Funkin'");
 
 		try {
 			ModSupport.executeFunc(characterScript, "create");
