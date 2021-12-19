@@ -76,10 +76,16 @@ class FreeplayState extends MusicBeatState
 
 	public static function loadFreeplaySongs() {
 		var mPath = Paths.getModsFolder();
+		
 		songs = [];
 		for(mod in FileSystem.readDirectory('$mPath/')) {
 			if (FileSystem.exists('$mPath/$mod/data/freeplaySonglist.json')) {
-				var jsonContent:FreeplaySongList = Json.parse(Paths.getTextOutsideAssets('$mPath/$mod/data/freeplaySonglist.json'));
+				var jsonContent:FreeplaySongList = null;
+				try {
+					jsonContent = Json.parse(Paths.getTextOutsideAssets('$mPath/$mod/data/freeplaySonglist.json'));
+				} catch(e) {
+					trace('Freeplay song list for $mod is invalid.\r\n$e');
+				}
 				if (jsonContent.songs != null) {
 					for(song in jsonContent.songs) {
 						songs.push(SongMetadata.fromFreeplaySong(song, mod));

@@ -617,6 +617,8 @@ class ChartingState_New extends MusicBeatState
 		tab_group_note.add(addButton);
 		tab_group_note.add(noteTypeDropdown);
 		tab_group_note.add(noteTypeRadioGroup);
+		
+		updateNoteTypes();
 
 		
 		
