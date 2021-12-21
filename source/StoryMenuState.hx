@@ -114,7 +114,9 @@ class StoryMenuState extends MusicBeatState
 						#if debug
 							trace(sparrowPath);
 						#end
-						weekCharacters[f] = Paths.getBitmapOutsideAssets(sparrowPath + ".png");
+						var b = Paths.getBitmapOutsideAssets(sparrowPath + ".png");
+						if (b == null) b = new BitmapData(1, 1, true, 0x00000000);
+						weekCharacters[f] = b;
 					}
 				}
 			}
@@ -207,7 +209,12 @@ class StoryMenuState extends MusicBeatState
 			var mod = week.mod;
 			var file = week.dad.file;
 			var sparrowPath = Paths.getModsFolder() + '/$mod/$file';
-			var charFrames = FlxAtlasFrames.fromSparrow(weekCharacters[week.mod + ":" + week.dad.file].clone(), Paths.getTextOutsideAssets(sparrowPath + ".xml", true));
+			var charFrames = null;
+			try {
+				charFrames = FlxAtlasFrames.fromSparrow(weekCharacters[week.mod + ":" + week.dad.file].clone(), Paths.getTextOutsideAssets(sparrowPath + ".xml", true));
+			} catch(e) {
+
+			}
 			if (charFrames == null) {
 				modWeekCharacters.push(new FlxSprite(0,0).makeGraphic(1,1,FlxColor.TRANSPARENT));
 				continue;

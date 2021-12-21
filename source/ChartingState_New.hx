@@ -219,8 +219,8 @@ class ChartingState_New extends MusicBeatState
 		addNoteUI();
 		addControlsUI();
 
-		add(curRenderedNotes);
-		add(curRenderedSustains);
+		insert(members.indexOf(UI_box), curRenderedSustains);
+		insert(members.indexOf(UI_box), curRenderedNotes);
 
 		super.create();
 	}
@@ -1211,6 +1211,7 @@ class ChartingState_New extends MusicBeatState
 			note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
 
 			curRenderedNotes.add(note);
+			
 
 			if (daSus > 0)
 			{

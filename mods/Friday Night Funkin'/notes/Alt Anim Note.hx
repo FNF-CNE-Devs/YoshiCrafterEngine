@@ -91,7 +91,7 @@ var schemeShit:Array<String> = null;
 
 function generateStaticArrow(babyArrow:FlxSprite, i:Int) {
     var s = noteSchemes[PlayState.song.keyNumber][i % PlayState.song.keyNumber];
-    babyArrow.frames = (EngineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas(EngineSettings.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets') : Paths_.getSparrowAtlas_Custom(Paths_.getSkinsPath() + "/skins/notes/" + EngineSettings.customArrowSkin.toLowerCase());
+    babyArrow.frames = (EngineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas(EngineSettings.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets') : Paths_.getSparrowAtlas_Custom(Paths_.getSkinsPath() + "/notes/" + EngineSettings.customArrowSkin.toLowerCase());
     babyArrow.antialiasing = true;
     babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
     

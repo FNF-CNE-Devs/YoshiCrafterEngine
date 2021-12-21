@@ -348,6 +348,7 @@ class AlphaCharacter extends FlxSprite
 			this.color = FlxColor.WHITE;
 			trace(letter);
 			createNumber(letter);
+			y -= height;
 			return;
 		}
 		animation.addByPrefix(letter, letter.toUpperCase() + " bold", 24);
@@ -374,14 +375,19 @@ class AlphaCharacter extends FlxSprite
 		this.color = letterColor;
 	}
 
-	public function createNumber(letter:String):Void
+	public function createNumber(letter:String, autoPos:Bool = true):Void
 	{
 		animation.addByPrefix('$letter-', '$letter-', 24);
 		animation.play('$letter-');
 		
-		y = (110 - height);
-
 		updateHitbox();
+
+		if (autoPos) {
+			y = (110 - height);
+			y += row * 60;
+		}
+
+
 		this.color = letterColor;
 	}
 

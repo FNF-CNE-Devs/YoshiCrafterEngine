@@ -1169,7 +1169,7 @@ class PlayState extends MusicBeatState
 				noteScriptMod = splittedThingy[0];
 			}
 			script.variables.set("generateStaticArrow", function(babyArrow:FlxSprite, i:Int) {
-				babyArrow.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas(engineSettings.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets') : Paths.getSparrowAtlas_Custom("skins/notes/" + engineSettings.customArrowSkin.toLowerCase());
+				babyArrow.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas(engineSettings.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets') : Paths.getSparrowAtlas_Custom(Paths.getModsFolder() + "/notes/" + engineSettings.customArrowSkin.toLowerCase());
 					
 					babyArrow.animation.addByPrefix('green', 'arrowUP');
 					babyArrow.animation.addByPrefix('blue', 'arrowDOWN');

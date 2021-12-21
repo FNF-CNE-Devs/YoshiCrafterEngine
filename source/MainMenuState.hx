@@ -64,7 +64,7 @@ class MainMenuState extends MusicBeatState
 		var fallBackBG:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xFFFDE871);
 		fallBackBG.scrollFactor.set();
 		add(fallBackBG);
-		
+
 		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
 		bg.scrollFactor.x = 0;
 		bg.scrollFactor.y = 0.18;
@@ -113,7 +113,9 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, 0.06);
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "v" + Application.current.meta.get('version'), 12);
+		var fnfVer = Application.current.meta.get('version');
+		var yoshiEngineVer = Main.engineVer.join(".");
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, 'Yoshi Engine v$yoshiEngineVer - FNF v$fnfVer', 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);

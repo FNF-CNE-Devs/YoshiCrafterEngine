@@ -1,5 +1,6 @@
 package;
 
+import sys.FileSystem;
 import flixel.graphics.frames.FlxAtlasFrames;
 import ControlsSettingsSubState.ControlsSettingsSub;
 import openfl.display.Preloader.DefaultPreloader;
@@ -91,11 +92,11 @@ class FNFOption extends Alphabet {
 					alphaCharacter.x -= AlphaCharacter.widths[char] != null ? (Std.int(AlphaCharacter.widths[char] / 2)) : Std.int(alphaCharacter.width);
 					lastLetterPos += AlphaCharacter.widths[char] != null ? (Std.int(AlphaCharacter.widths[char] / 2)) : Std.int(alphaCharacter.width) + 5;
 				case 1:
-					alphaCharacter.createNumber(char);
-					alphaCharacter.y -= 60;
+					alphaCharacter.createNumber(char, true);
 					alphaCharacter.updateHitbox();
 					value.push(alphaCharacter);
 					add(alphaCharacter);
+					alphaCharacter.y -= 60;
 					lastLetterPos += AlphaCharacter.widths[char] != null ? (Std.int(AlphaCharacter.widths[char] / 2)) : Std.int(alphaCharacter.width) + 5;
 				case 2:
 					alphaCharacter.createSymbol(char);
@@ -396,20 +397,6 @@ class OptionsMenu extends MusicBeatState
 			checkboxChecked: Settings.engineSettings.data.showMisses,
 			value: ""
 		});
-		options.push(
-			{
-				text : "Show number of misses",
-				updateOnSelected: function(elapsed:Float, o:FNFOption) {
-					if (controls.ACCEPT) {
-						Settings.engineSettings.data.showMisses = !Settings.engineSettings.data.showMisses;
-						o.checkboxChecked = Settings.engineSettings.data.showMisses;
-						o.check(Settings.engineSettings.data.showMisses);
-					}
-				},
-				checkbox: true,
-				checkboxChecked: Settings.engineSettings.data.showMisses,
-				value: ""
-			});
 		options.push({
 			text : "Show average hit delay",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
@@ -525,9 +512,18 @@ class OptionsMenu extends MusicBeatState
 		});
 
 		#if sys
-			if (sys.FileSystem.exists(Paths.getSkinsPath() + "/notes/list.txt")) {
-				var skins:Array<String> = Paths.getTextOutsideAssets(Paths.getSkinsPath() + "/notes/list.txt").trim().split("\r\n");
+			if (sys.FileSystem.exists(Paths.getSkinsPath() + "/notes/")) {
+				var skins:Array<String> = [];
 				skins.insert(0, "default");
+				var sPath = Paths.getSkinsPath();
+				for (f in FileSystem.readDirectory('$sPath/notes/')) {
+					if (f.endsWith(".png") && !FileSystem.isDirectory('$sPath/notes/$f')) {
+						var skinName = f.substr(0, f.length - 4);
+						if (FileSystem.exists('$sPath/notes/$skinName.xml')) {
+							skins.push(skinName);
+						}
+					}
+				}
 
 				if (skins.indexOf(Settings.engineSettings.data.customArrowSkin) == -1) Settings.engineSettings.data.customArrowSkin = "default";
 				var pos:Int = skins.indexOf(Settings.engineSettings.data.customArrowSkin);
