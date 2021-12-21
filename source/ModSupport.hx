@@ -389,7 +389,7 @@ class ModSupport {
 
     public static function setHaxeFileDefaultVars(hscript:hscript.Interp, mod:String, settings:Dynamic) {
 		hscript.variables.set("PlayState", PlayState.current);
-		hscript.variables.set("EngineSettings", Settings.engineSettings.data);
+		hscript.variables.set("EngineSettings", PlayState.current.engineSettings);
         hscript.variables.set("include", function(path:String) {
             var splittedPath = path.split(":");
             if (splittedPath.length < 2) splittedPath.insert(0, mod);
@@ -426,8 +426,8 @@ class ModSupport {
 		hscript.variables.set("FlxSound", FlxSound);
 		hscript.variables.set("FlxEase", FlxEase);
 		hscript.variables.set("FlxTween", FlxTween);
-		hscript.variables.set("File", File);
-		hscript.variables.set("FileSystem", FileSystem);
+		// hscript.variables.set("File", File);
+		// hscript.variables.set("FileSystem", FileSystem);
 		hscript.variables.set("FlxColor", FlxColor_Helper);
 		hscript.variables.set("Boyfriend", Boyfriend);
 		hscript.variables.set("FlxTypedGroup", FlxTypedGroup);
@@ -436,7 +436,7 @@ class ModSupport {
 		hscript.variables.set("FlxTimer", FlxTimer);
 		hscript.variables.set("Json", Json);
 		hscript.variables.set("MP4Video", MP4Video);
-		hscript.variables.set("PNGEncoderOptions", PNGEncoderOptions);
+		// hscript.variables.set("PNGEncoderOptions", PNGEncoderOptions);
 		hscript.variables.set("CoolUtil", CoolUtil);
 		hscript.variables.set("FlxTypeText", FlxTypeText);
 		hscript.variables.set("FlxText", FlxText);
