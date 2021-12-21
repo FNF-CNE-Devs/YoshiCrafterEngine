@@ -112,7 +112,11 @@ class Alphabet extends FlxSpriteGroup
 				else
 				{
 					letter.letterColor = FlxColor.WHITE;
-					letter.createLetter(character);
+					if (AlphaCharacter.numbers.contains(character)) {
+						letter.createNumber(character);
+					} else {
+						letter.createLetter(character);
+					}
 				}
 				// if (isBold && AlphaCharacter.numbers.indexOf(character) == -1) {
 				// 	letter.createBold(character);
@@ -372,8 +376,10 @@ class AlphaCharacter extends FlxSprite
 
 	public function createNumber(letter:String):Void
 	{
-		animation.addByPrefix(letter, letter, 24);
-		animation.play(letter);
+		animation.addByPrefix('$letter-', '$letter-', 24);
+		animation.play('$letter-');
+		
+		y = (110 - height);
 
 		updateHitbox();
 		this.color = letterColor;

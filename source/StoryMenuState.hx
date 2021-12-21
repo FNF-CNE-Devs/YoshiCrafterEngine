@@ -204,12 +204,17 @@ class StoryMenuState extends MusicBeatState
 
 		var vi = true;
 		for (week in weekData) {
-			var menuCharacter = new FlxSprite((FlxG.width * 0.25) - 150);
-			
 			var mod = week.mod;
 			var file = week.dad.file;
 			var sparrowPath = Paths.getModsFolder() + '/$mod/$file';
-			menuCharacter.frames = FlxAtlasFrames.fromSparrow(weekCharacters[week.mod + ":" + week.dad.file].clone(), Paths.getTextOutsideAssets(sparrowPath + ".xml", true));
+			var charFrames = FlxAtlasFrames.fromSparrow(weekCharacters[week.mod + ":" + week.dad.file].clone(), Paths.getTextOutsideAssets(sparrowPath + ".xml", true));
+			if (charFrames == null) {
+				modWeekCharacters.push(new FlxSprite(0,0).makeGraphic(1,1,FlxColor.TRANSPARENT));
+				continue;
+			}
+			var menuCharacter = new FlxSprite((FlxG.width * 0.25) - 150);
+			
+			menuCharacter.frames = charFrames;
 			menuCharacter.y += 70;
 			menuCharacter.antialiasing = true;
 			menuCharacter.animation.addByPrefix("char", week.dad.animation, 24);

@@ -1,0 +1,110 @@
+{
+    "credits" : [
+        {
+            "name" : "ninjamuffin99",
+            "role" : "Main game developer",
+            "urls" : [
+                {
+                    "name" : "Newgrounds",
+                    "url" : "https://ninjamuffin99.newgrounds.com/"
+                },
+                {
+                    "name" : "Twitter",
+                    "url" : "https://twitter.com/ninja_muffin99"
+                }
+            ]
+        },
+        {
+            "name" : "PhantomArcade",
+            "role" : "Animator",
+            "urls" : [
+                {
+                    "name" : "Newgrounds",
+                    "url" : "https://phantomarcade.newgrounds.com/"
+                },
+                {
+                    "name" : "Twitter",
+                    "url" : "https://twitter.com/phantomarcade3k"
+                }
+            ]
+        },
+        {
+            "name" : "kawaisprite",
+            "role" : "Musician",
+            "urls" : [
+                {
+                    "name" : "Newgrounds",
+                    "url" : "https://kawaisprite.newgrounds.com/"
+                },
+                {
+                    "name" : "Twitter",
+                    "url" : "https://twitter.com/kawaisprite"
+                }
+            ]
+        },
+        {
+            "name" : "evilsk8r",
+            "role" : "Artist",
+            "urls" : [
+                {
+                    "name" : "Newgrounds",
+                    "url" : "https://evilsk8r.newgrounds.com/"
+                },
+                {
+                    "name" : "Twitter",
+                    "url" : "https://twitter.com/evilsk8r"
+                }
+            ]
+        },
+        {
+            "name" : "Tom Fulp",
+            "role" : "Creator of Newgrounds and Pico",
+            "urls" : [
+                {
+                    "name" : "Newgrounds",
+                    "url" : "https://tomfulp.newgrounds.com/"
+                },
+                {
+                    "name" : "Twitter",
+                    "url" : "https://twitter.com/TomFulp"
+                }
+            ]
+        },
+        {
+            "name" : "Sr Pelo",
+            "role" : "Creator of Skid & Pump",
+            "urls" : [
+                {
+                    "name" : "Newgrounds",
+                    "url" : "https://srpelo.newgrounds.com/"
+                },
+                {
+                    "name" : "Twitter",
+                    "url" : "https://www.twitter.com/SrPelo"
+                },
+                {
+                    "name" : "YouTube",
+                    "url" : "https://www.youtube.com/c/SrPelo"
+                }
+            ]
+        },
+        {
+            "name" : "BassetFilms",
+            "role" : "Made Monster's soundtrack",
+            "urls" : [
+                {
+                    "name" : "Newgrounds",
+                    "url" : "https://bassetfilms.newgrounds.com/"
+                },
+                {
+                    "name" : "Twitter",
+                    "url" : "https://twitter.com/Bassetfilms"
+                },
+                {
+                    "name" : "YouTube",
+                    "url" : "https://www.youtube.com/channel/UC6Qai6akEfmcB67xkTvqXmg"
+                }
+            ]
+        }
+    ]
+}

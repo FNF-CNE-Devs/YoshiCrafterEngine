@@ -426,6 +426,7 @@ class FreeplayState extends MusicBeatState
 
 			// PlayState._SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 			PlayState._SONG = Song.loadModFromJson(poop, songs[curSelected].mod, songs[curSelected].songName.toLowerCase());
+			PlayState._SONG.validScore = true;
 			PlayState.isStoryMode = false;
 			PlayState.songMod = songs[curSelected].mod;
 			PlayState.storyDifficulty = songs[curSelected].difficulties[curDifficulty];

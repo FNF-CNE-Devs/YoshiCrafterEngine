@@ -1,0 +1,36 @@
+{
+    "credits" : [
+        {
+            "name" : "Muffichii aka YoshiCrafter29",
+            "role" : "Engine developer",
+            "urls" : [
+                {
+                    "name" : "YouTube",
+                    "url" : "https://www.youtube.com/channel/UCyV3oiWZy3oSMQ1M-ZKW_0w"
+                },
+                {
+                    "name" : "Twitter",
+                    "url" : "https://twitter.com/muffichii"
+                },
+                {
+                    "name" : "GitHub",
+                    "url" : "https://github.com/YoshiCrafter29"
+                }
+            ]
+        },
+        {
+            "name" : "PolybiusProxy",
+            "role" : "MP4 Video Cutscene support",
+            "urls" : [
+                {
+                    "name" : "GitHub",
+                    "url" : "https://github.com/PolybiusProxy"
+                },
+                {
+                    "name" : "Twitter",
+                    "url" : "https://twitter.com/polybiusproxy"
+                }
+            ]
+        }
+    ]
+}

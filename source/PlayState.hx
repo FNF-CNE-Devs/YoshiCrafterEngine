@@ -466,7 +466,7 @@ class PlayState extends MusicBeatState
 				image : "Friday Night Funkin':ratings/sick",
 				accuracy : 1,
 				health : 0.10,
-				maxDiff : 35,
+				maxDiff : 50,
 				score : 350,
 				color : "#24DEFF"                                                                                                                                                                        
 			},
@@ -475,7 +475,7 @@ class PlayState extends MusicBeatState
 				image : "Friday Night Funkin':ratings/good",
 				accuracy : 2 / 3,
 				health : 0.06,
-				maxDiff : 65,
+				maxDiff : 100,
 				score : 200,
 				color : "#3FD200"
 			},
@@ -484,7 +484,7 @@ class PlayState extends MusicBeatState
 				image : "Friday Night Funkin':ratings/bad",
 				accuracy : 1 / 3,
 				health : 0.0,
-				maxDiff : 100,
+				maxDiff : 150,
 				score : 50,
 				color : "#D70000"
 			},

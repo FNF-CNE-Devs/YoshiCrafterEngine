@@ -92,6 +92,7 @@ class FNFOption extends Alphabet {
 					lastLetterPos += AlphaCharacter.widths[char] != null ? (Std.int(AlphaCharacter.widths[char] / 2)) : Std.int(alphaCharacter.width) + 5;
 				case 1:
 					alphaCharacter.createNumber(char);
+					alphaCharacter.y -= 60;
 					alphaCharacter.updateHitbox();
 					value.push(alphaCharacter);
 					add(alphaCharacter);
@@ -920,6 +921,15 @@ class OptionsMenu extends MusicBeatState
 			op.x += 100;
 			optionsAlphabets.add(op);
 		}
+
+		var yBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGYoshi'));
+		yBG.setGraphicSize(Std.int(yBG.width * 1.1));
+		yBG.updateHitbox();
+		yBG.screenCenter();
+		yBG.y = -menuBGy + 23;
+		yBG.antialiasing = true;
+		add(yBG);
+
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		menuBG.color = 0xFFfd719b;
 		// menuBG.color = 0xFF494949;
@@ -930,6 +940,7 @@ class OptionsMenu extends MusicBeatState
 		// menuBG.color.
 		menuBG.antialiasing = true;
 		add(menuBG);
+
 		var blackSelectionBar = new FlxSprite(0, (FlxG.height / 2) - (69 / 2)).makeGraphic(Std.int(FlxG.width), 69, new FlxColor(0x88000000));
 		blackSelectionBar.alpha = 0;
 		add(blackSelectionBar);
@@ -941,8 +952,13 @@ class OptionsMenu extends MusicBeatState
 		optionsAlphabets.y = FlxG.height * 3;
 		curSelected = -1;
 		changeSelection(1, false);
-		FlxTween.color(menuBG, 0.5, 0xFFFDE871, 0xFF494949, {ease : FlxEase.cubeInOut, onComplete: function(t:FlxTween) {
+		// FlxTween.color(menuBG, 0.5, 0xFFFDE871, 0xFF494949, {ease : FlxEase.cubeInOut, onComplete: function(t:FlxTween) {
+		// 	usable = true;
+		// }});
+		FlxTween.tween(menuBG, {alpha : 0}, 0.5, {onComplete: function(t) {
 			usable = true;
+			remove(menuBG);
+			menuBG.destroy();
 		}});
 		FlxTween.tween(optionsAlphabets, {y: (FlxG.height / 2) - (69 / 2) - (curSelected * 80)}, 0.5, {ease : FlxEase.cubeInOut});
 		FlxTween.tween(blackSelectionBar, {alpha : 1}, 0.5, {ease : FlxEase.cubeInOut});

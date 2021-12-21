@@ -1,5 +1,6 @@
 package;
 
+import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileCircle;
 import LoadSettings.Settings;
 #if desktop
 import Discord.DiscordClient;
@@ -28,7 +29,7 @@ class MainMenuState extends MusicBeatState
 	var menuItems:FlxTypedGroup<FlxSprite>;
 
 	#if !switch
-	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate', 'options'];
+	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate', 'credits', 'options'];
 	#else
 	var optionShit:Array<String> = ['story mode', 'freeplay'];
 	#end
@@ -60,6 +61,10 @@ class MainMenuState extends MusicBeatState
 
 		persistentUpdate = persistentDraw = true;
 
+		var fallBackBG:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xFFFDE871);
+		fallBackBG.scrollFactor.set();
+		add(fallBackBG);
+		
 		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
 		bg.scrollFactor.x = 0;
 		bg.scrollFactor.y = 0.18;
@@ -68,6 +73,7 @@ class MainMenuState extends MusicBeatState
 		bg.screenCenter();
 		bg.antialiasing = true;
 		add(bg);
+		
 
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
@@ -91,7 +97,8 @@ class MainMenuState extends MusicBeatState
 
 		for (i in 0...optionShit.length)
 		{
-			var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
+			// var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
+			var menuItem:FlxSprite = new FlxSprite(0, (FlxG.height / optionShit.length * i) + (FlxG.height / (optionShit.length * 2)));
 			menuItem.frames = tex;
 			menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
 			menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
@@ -100,6 +107,7 @@ class MainMenuState extends MusicBeatState
 			menuItem.screenCenter(X);
 			menuItems.add(menuItem);
 			menuItem.scrollFactor.set();
+			menuItem.y -= menuItem.height / 2;
 			menuItem.antialiasing = true;
 		}
 
@@ -220,6 +228,11 @@ class MainMenuState extends MusicBeatState
 									FlxG.switchState(new FreeplayState());
 
 									trace("Freeplay Menu Selected");
+								
+								case 'credits':
+									FlxG.switchState(new CreditsState());
+
+									trace ("Credits Menu Selected");
 
 								case 'options':
 									FlxTransitionableState.skipNextTransIn = true;

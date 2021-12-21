@@ -52,7 +52,7 @@ class Conductor
 	/**
 	 * Safe frames
 	 */
-	public static var safeFrames:Int = 8;
+	public static var safeFrames:Int = 11;
 	
 
 	/**

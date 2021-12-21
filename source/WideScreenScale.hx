@@ -44,10 +44,11 @@ class WideScreenScale extends BaseScaleMode
                 PlayState.current.camGame.width = FlxG.width;
                 PlayState.current.camGame.height = FlxG.height;
             }
-            if (PlayState.current.camFollow != null) {
-                FlxG.camera.follow(PlayState.current.camFollow, LOCKON, 0.04);
-            }
+            // if (PlayState.current.camFollow != null) {
+            //     FlxG.camera.follow(PlayState.current.camFollow, LOCKON, 0.04);
+            // }
         }
+        if (FlxG.camera.target != null) FlxG.camera.follow(FlxG.camera.target, LOCKON, FlxG.camera.followLerp);
         // FlxG.camera.
     }
 

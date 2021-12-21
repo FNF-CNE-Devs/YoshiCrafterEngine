@@ -1,3 +1,52 @@
+# Friday Night Funkin' - Yoshi Engine
+
+This is the repository of Yoshi Engine, a modification of Friday Night Funkin' which allows full modding without source code access.
+
+The documentation is [here](documentation/index.md) (in construction), feel free to download it for offline use !
+
+Thanks to PolybiusProxy for the [MP4 Cutscene Support](https://github.com/brightfyregit/Friday-Night-Funkin-Mp4-Video-Support) !
+
+## Here's a full list of Yoshi Engine's functionnalities :
+- **Full mod support**
+	- Songs
+	- Characters
+	- Stages
+	- Modcharts
+	- Custom notes
+	- Cutscenes
+	- Weeks
+	- Credits
+	
+- **Customization**
+	- Custom keybinds
+	- Downscroll
+	- Custom scroll speed
+	- GUI scale
+	- **GUI Options**
+		- Accuracy mode
+		- Text quality level
+		- Timer
+		- Press delay
+		- Accuracy
+		- Number of misses
+		- Average hit delay
+		- Rating
+		- Animated info bar
+	- Custom note colors
+	- Custom note skins
+	- Custom Boyfriend skins
+	- Custom Girlfriend skins
+- Botplay
+- Green Screen Mode
+- New charter
+- Freeplay Statistics
+- **Developer Mode**
+	- In game logs
+	- Disables cache
+	- Character debug mode
+
+
+---
 # Friday Night Funkin
 
 This is the repository for Friday Night Funkin, a game originally made for Ludum Dare 47 "Stuck In a Loop".
