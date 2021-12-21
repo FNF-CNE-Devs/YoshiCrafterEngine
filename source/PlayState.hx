@@ -91,12 +91,14 @@ class Rating {
 }
 class PlayState extends MusicBeatState
 {
+	public var vars:Map<String, Dynamic> = [];
 	public var ratings:Array<Rating> = [];
 
 	public var hits:Map<String, Int> = [];
 
 	static public var curStage:String = '';
 	static public var SONG:SwagSong;
+	static public var _SONG:SwagSong; // DO NOT TOUCH !!!
 	public var song(get, set):SwagSong;
 	public function set_song(s:SwagSong):SwagSong {
 		PlayState.SONG = s;
@@ -110,6 +112,7 @@ class PlayState extends MusicBeatState
 	static public var storyPlaylist:Array<String> = [];
 	static public var storyDifficulty:String = "Normal";
 	public static var actualModWeek:FNFWeek;
+	public static var log:Array<String> = [];
 	
 	public var halloweenLevel:Bool = false;
 	public var validScore:Bool = true;
@@ -261,10 +264,15 @@ class PlayState extends MusicBeatState
 	public var debugNum:Int = 0;
 	
 	public var endingSong:Bool = false;
+
+	public var engineSettings:Dynamic;
 	
 	public var startedMoving:Bool = false;
 
-	public var guiOffset:FlxPoint = new FlxPoint((1280 - (1280 / Settings.engineSettings.data.noteScale)), (720 - (720 / Settings.engineSettings.data.noteScale)));
+	public var guiOffset(get, null):FlxPoint;
+	public function get_guiOffset():FlxPoint {
+		return new FlxPoint((1280 - (1280 / engineSettings.noteScale)), (720 - (720 / engineSettings.noteScale)));
+	}
 
 	public static var modchart:hscript.Interp;
 	public static var stage:hscript.Interp;
@@ -315,12 +323,12 @@ class PlayState extends MusicBeatState
 	override public function create()
 	{
 		PlayState.current = this;
-		
+		engineSettings = Reflect.copy(Settings.engineSettings.data);
 		
 		FlxG.scaleMode = new WideScreenScale();
 		// Assets.loadLibrary("songs");
 		#if sys
-		if (Settings.engineSettings.data.emptySkinCache) {
+		if (engineSettings.emptySkinCache) {
 			Paths.clearCache();
 		}
 		#end
@@ -332,13 +340,13 @@ class PlayState extends MusicBeatState
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
 		WideScreenScale.updatePlayStateHUD();
-		if (Settings.engineSettings.data.greenScreenMode) {
+		if (engineSettings.greenScreenMode) {
 			camHUD.bgColor = new FlxColor(0xFF00FF00);
 		} else {
 			camHUD.bgColor.alpha = 0;
 		}
 
-		camHUD.zoom = Settings.engineSettings.data.noteScale;
+		camHUD.zoom = engineSettings.noteScale;
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD);
 
@@ -347,14 +355,16 @@ class PlayState extends MusicBeatState
 		persistentUpdate = true;
 		persistentDraw = true;
 
-		if (SONG == null)
-			SONG = Song.loadModFromJson('tutorial', 'Friday Night Funkin\'');
+		if (_SONG == null)
+			_SONG = Song.loadModFromJson('tutorial', 'Friday Night Funkin\'');
+
+		SONG = Reflect.copy(_SONG);
 
 		if (SONG.keyNumber == null)
 			SONG.keyNumber = 4;
 		if (SONG.noteTypes == null)
 			SONG.noteTypes = ["Friday Night Funkin':Default Note"];
-		if (Settings.engineSettings.data.botplay || !SONG.validScore)
+		if (engineSettings.botplay || !SONG.validScore)
 			validScore = false;
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
@@ -444,7 +454,7 @@ class PlayState extends MusicBeatState
 			script.variables.set("stepHit", function(curStep:Int) {});
 			script.variables.set("setSharedVars", function() {return [];});
 			script.variables.set("getVar", function(v) {return null;});
-			script.variables.set("botplay", Settings.engineSettings.data.botplay);
+			script.variables.set("botplay", engineSettings.botplay);
 		}
 		stage.variables.set("gfVersion", "gf");
 		modchart.variables.set("getStageVar", function(v:String) {
@@ -714,7 +724,7 @@ class PlayState extends MusicBeatState
 
 		Conductor.songPosition = -5000;
 
-		strumLine = new FlxSprite(0, (Settings.engineSettings.data.downscroll ? FlxG.height - 150 : 50) * (1 / Settings.engineSettings.data.noteScale) + (guiOffset.y / 2)).makeGraphic(FlxG.width, 10);
+		strumLine = new FlxSprite(0, (engineSettings.downscroll ? FlxG.height - 150 : 50) * (1 / engineSettings.noteScale) + (guiOffset.y / 2)).makeGraphic(FlxG.width, 10);
 		strumLine.scrollFactor.set();
 
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
@@ -756,7 +766,7 @@ class PlayState extends MusicBeatState
 		hitCounter.cameras = [camHUD];
 		add(hitCounter);
 
-		healthBarBG = new FlxSprite(0, FlxG.height * (Settings.engineSettings.data.downscroll ? 0.075 : 0.9) * (1 / Settings.engineSettings.data.noteScale) + (guiOffset.y / 2)).loadGraphic(Paths.image('healthBar'));
+		healthBarBG = new FlxSprite(0, FlxG.height * (engineSettings.downscroll ? 0.075 : 0.9) * (1 / engineSettings.noteScale) + (guiOffset.y / 2)).loadGraphic(Paths.image('healthBar'));
 		healthBarBG.cameras = [camHUD];
 		healthBarBG.cameraCenter(X);
 		healthBarBG.scrollFactor.set();
@@ -771,10 +781,10 @@ class PlayState extends MusicBeatState
 		add(healthBar);
 
 		// scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
-		scoreTxt = new FlxText(0, healthBarBG.y + 30, 1280 * Settings.engineSettings.data.textQualityLevel, "", 20);
-		scoreTxt.setFormat(Paths.font("vcr.ttf"), Std.int(16 * Settings.engineSettings.data.textQualityLevel), FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		scoreTxt.scale.x = 1 / Settings.engineSettings.data.textQualityLevel;
-		scoreTxt.scale.y = 1 / Settings.engineSettings.data.textQualityLevel;
+		scoreTxt = new FlxText(0, healthBarBG.y + 30, 1280 * engineSettings.textQualityLevel, "", 20);
+		scoreTxt.setFormat(Paths.font("vcr.ttf"), Std.int(16 * engineSettings.textQualityLevel), FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		scoreTxt.scale.x = 1 / engineSettings.textQualityLevel;
+		scoreTxt.scale.y = 1 / engineSettings.textQualityLevel;
 		scoreTxt.antialiasing = true;
 		scoreTxt.cameras = [camHUD];
 		scoreTxt.cameraCenter(X);
@@ -939,10 +949,10 @@ class PlayState extends MusicBeatState
 		generateStaticArrows(1);
 
 		msScoreLabel = new FlxText(playerStrums.members[0].x, playerStrums.members[0].y - 25, playerStrums.members[playerStrums.members.length - 1].width + playerStrums.members[playerStrums.members.length - 1].x - playerStrums.members[0].x, "0ms", 20);
-		msScoreLabel.setFormat(Paths.font("vcr.ttf"), Std.int(30 * Settings.engineSettings.data.textQualityLevel), FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		msScoreLabel.setFormat(Paths.font("vcr.ttf"), Std.int(30 * engineSettings.textQualityLevel), FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		msScoreLabel.antialiasing = true;
-		msScoreLabel.scale.x = 1 / Settings.engineSettings.data.textQualityLevel;
-		msScoreLabel.scale.y = 1 / Settings.engineSettings.data.textQualityLevel;
+		msScoreLabel.scale.x = 1 / engineSettings.textQualityLevel;
+		msScoreLabel.scale.y = 1 / engineSettings.textQualityLevel;
 		msScoreLabel.scrollFactor.set();
 		msScoreLabel.cameras = [camHUD];
 		msScoreLabel.alpha = 0;
@@ -1079,7 +1089,7 @@ class PlayState extends MusicBeatState
 
 		
 
-		if (Settings.engineSettings.data.showTimer) {
+		if (engineSettings.showTimer) {
 			var timerBG = new FlxSprite(0, -25 + (guiOffset.y / 2)).makeGraphic(300, 25, 0xFF222222);
 			timerBG.alpha = 0;
 			timerBG.cameras = [camHUD];
@@ -1159,7 +1169,7 @@ class PlayState extends MusicBeatState
 				noteScriptMod = splittedThingy[0];
 			}
 			script.variables.set("generateStaticArrow", function(babyArrow:FlxSprite, i:Int) {
-				babyArrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getSparrowAtlas(Settings.engineSettings.data.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets') : Paths.getSparrowAtlas_Custom("skins/notes/" + Settings.engineSettings.data.customArrowSkin.toLowerCase());
+				babyArrow.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas(engineSettings.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets') : Paths.getSparrowAtlas_Custom("skins/notes/" + engineSettings.customArrowSkin.toLowerCase());
 					
 					babyArrow.animation.addByPrefix('green', 'arrowUP');
 					babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
@@ -1228,7 +1238,7 @@ class PlayState extends MusicBeatState
 				var susLength:Float = swagNote.sustainLength;
 
 				susLength = susLength / Conductor.stepCrochet;
-				if (!Settings.engineSettings.data.downscroll) unspawnNotes.push(swagNote);
+				if (!engineSettings.downscroll) unspawnNotes.push(swagNote);
 
 				for (susNote in 0...Math.floor(susLength))
 				{
@@ -1246,7 +1256,7 @@ class PlayState extends MusicBeatState
 					}
 				}
 
-				if (Settings.engineSettings.data.downscroll) unspawnNotes.push(swagNote);
+				if (engineSettings.downscroll) unspawnNotes.push(swagNote);
 
 				swagNote.mustPress = gottaHitNote;
 
@@ -1425,12 +1435,12 @@ class PlayState extends MusicBeatState
 		#if !debug
 		perfectMode = false;
 		#end
-		if (Settings.engineSettings.data.customArrowColors) {
+		if (engineSettings.customArrowColors) {
 			var noteColors:Array<FlxColor> = [
-				new FlxColor(Settings.engineSettings.data.arrowColor0),
-				new FlxColor(Settings.engineSettings.data.arrowColor1),
-				new FlxColor(Settings.engineSettings.data.arrowColor2),
-				new FlxColor(Settings.engineSettings.data.arrowColor3)
+				new FlxColor(engineSettings.arrowColor0),
+				new FlxColor(engineSettings.arrowColor1),
+				new FlxColor(engineSettings.arrowColor2),
+				new FlxColor(engineSettings.arrowColor3)
 			];
 			for (strum in playerStrums) {
 				#if secret
@@ -1493,7 +1503,7 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.SEVEN)
 		{
 			if (FlxG.sound.music != null) FlxG.sound.music.pause();
-			if (Settings.engineSettings.data.yoshiEngineCharter)
+			if (engineSettings.yoshiEngineCharter)
 				// FlxG.switchState(new YoshiEngineCharter());
 				FlxG.switchState(new ChartingState_New());
 			else
@@ -1657,7 +1667,7 @@ class PlayState extends MusicBeatState
 		if (camZooming)
 		{
 			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
-			camHUD.zoom = FlxMath.lerp(1 * Settings.engineSettings.data.noteScale, camHUD.zoom, 0.95);
+			camHUD.zoom = FlxMath.lerp(1 * engineSettings.noteScale, camHUD.zoom, 0.95);
 		}
 
 		FlxG.watch.addQuick("beatShit", curBeat);
@@ -1735,20 +1745,20 @@ class PlayState extends MusicBeatState
 					daNote.active = true;
 				}
 
-				var pos:FlxPoint = new FlxPoint(-(daNote.noteOffset.x + ((daNote.isSustainNote ? daNote.width / 2 : 0) * (Settings.engineSettings.data.downscroll ? 1 : -1))),0);
+				var pos:FlxPoint = new FlxPoint(-(daNote.noteOffset.x + ((daNote.isSustainNote ? daNote.width / 2 : 0) * (engineSettings.downscroll ? 1 : -1))),0);
 				var strum = (daNote.mustPress ? playerStrums.members : cpuStrums.members)[daNote.noteData % SONG.keyNumber];
 				if (strum.angle == 0) {
 
-					pos.y = (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(Settings.engineSettings.data.customScrollSpeed ? Settings.engineSettings.data.scrollSpeed : SONG.speed, 2));
+					pos.y = (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(engineSettings.customScrollSpeed ? engineSettings.scrollSpeed : SONG.speed, 2));
 				} else {
-					pos.x = Math.sin((strum.angle + 180) * Math.PI / 180) * ((Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(Settings.engineSettings.data.customScrollSpeed ? Settings.engineSettings.data.scrollSpeed : SONG.speed, 2)));
-					pos.x += Math.sin((strum.angle + (Settings.engineSettings.data.downscroll ? 90 : 270)) * Math.PI / 180) * ((daNote.noteOffset.x));
-					pos.y = Math.cos((strum.angle) * Math.PI / 180) * (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(Settings.engineSettings.data.customScrollSpeed ? Settings.engineSettings.data.scrollSpeed : SONG.speed, 2));
-					pos.y += Math.cos((strum.angle + (Settings.engineSettings.data.downscroll ? 270 : 90)) * Math.PI / 180) * ((daNote.noteOffset.x));
+					pos.x = Math.sin((strum.angle + 180) * Math.PI / 180) * ((Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(engineSettings.customScrollSpeed ? engineSettings.scrollSpeed : SONG.speed, 2)));
+					pos.x += Math.sin((strum.angle + (engineSettings.downscroll ? 90 : 270)) * Math.PI / 180) * ((daNote.noteOffset.x));
+					pos.y = Math.cos((strum.angle) * Math.PI / 180) * (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(engineSettings.customScrollSpeed ? engineSettings.scrollSpeed : SONG.speed, 2));
+					pos.y += Math.cos((strum.angle + (engineSettings.downscroll ? 270 : 90)) * Math.PI / 180) * ((daNote.noteOffset.x));
 				}
 
-				if (Settings.engineSettings.data.downscroll) {
-					// daNote.y = (strumLine.y + (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(Settings.engineSettings.data.customScrollSpeed ? Settings.engineSettings.data.scrollSpeed : SONG.speed, 2)));
+				if (engineSettings.downscroll) {
+					// daNote.y = (strumLine.y + (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(engineSettings.customScrollSpeed ? engineSettings.scrollSpeed : SONG.speed, 2)));
 					// Code above not modchart proof
 
 					daNote.y = (strum.y + pos.y);
@@ -1769,7 +1779,7 @@ class PlayState extends MusicBeatState
 
 				// i am so fucking sorry for this if condition
 
-				if (Settings.engineSettings.data.downscroll) {
+				if (engineSettings.downscroll) {
 					if (daNote.isSustainNote
 						// && (daNote.y + daNote.height - daNote.offset.y >= strumLine.y + Note.swagWidth / 2)
 						&& (daNote.y + daNote.height - (daNote.offset.y * daNote.scale.y) >= (daNote.mustPress ? playerStrums.members : cpuStrums.members)[daNote.noteData % SONG.keyNumber].y + Note.swagWidth / 2)
@@ -1830,7 +1840,7 @@ class PlayState extends MusicBeatState
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
-				if ((daNote.y - (guiOffset.y / 2) < -daNote.height && !Settings.engineSettings.data.downscroll) || ((FlxG.height - (guiOffset.y / 2)) - daNote.y < -daNote.height && Settings.engineSettings.data.downscroll))
+				if ((daNote.y - (guiOffset.y / 2) < -daNote.height && !engineSettings.downscroll) || ((FlxG.height - (guiOffset.y / 2)) - daNote.y < -daNote.height && engineSettings.downscroll))
 				{
 					if ((daNote.tooLate || !daNote.wasGoodHit) && daNote.mustPress)
 					{
@@ -1954,7 +1964,7 @@ class PlayState extends MusicBeatState
 				FlxTransitionableState.skipNextTransOut = true;
 				prevCamFollow = camFollow;
 
-				PlayState.SONG = Song.loadModFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, songMod, PlayState.storyPlaylist[0]);
+				PlayState._SONG = Song.loadModFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, songMod, PlayState.storyPlaylist[0]);
 				FlxG.sound.music.stop();
 
 				LoadingState.loadAndSwitchState(new PlayState());
@@ -2000,7 +2010,7 @@ class PlayState extends MusicBeatState
 		
 		numberOfArrowNotes++;
 
-		if (Settings.engineSettings.data.showPressDelay) {
+		if (engineSettings.showPressDelay) {
 			msScoreLabel.text = Std.string(Math.floor(noteDiff)) + "ms";
 			msScoreLabel.alpha = 1;
 			if (msScoreLabelTween != null) {
@@ -2008,9 +2018,9 @@ class PlayState extends MusicBeatState
 				msScoreLabelTween.destroy();
 			}
 			msScoreLabel.color = daRating.color;
-			msScoreLabel.scale.x = 1 / Settings.engineSettings.data.textQualityLevel;
-			msScoreLabel.scale.y = 1 / Settings.engineSettings.data.textQualityLevel;
-			msScoreLabelTween = FlxTween.tween(msScoreLabel, {alpha: 0, "scale.x" : 0.8 / Settings.engineSettings.data.textQualityLevel, "scale.y" : 0.8 / Settings.engineSettings.data.textQualityLevel}, 0.2, {
+			msScoreLabel.scale.x = 1 / engineSettings.textQualityLevel;
+			msScoreLabel.scale.y = 1 / engineSettings.textQualityLevel;
+			msScoreLabelTween = FlxTween.tween(msScoreLabel, {alpha: 0, "scale.x" : 0.8 / engineSettings.textQualityLevel, "scale.y" : 0.8 / engineSettings.textQualityLevel}, 0.2, {
 				onComplete: function(tween:FlxTween)
 				{
 					msScoreLabelTween = null;
@@ -2134,14 +2144,14 @@ class PlayState extends MusicBeatState
 		});
 
 		
-		if (Settings.engineSettings.data.animateInfoBar) {
+		if (engineSettings.animateInfoBar) {
 			if (scoreTxtTween != null) {
 				scoreTxtTween.cancel();
 				scoreTxtTween.destroy();
 			}
-			scoreTxt.scale.x = 1.15 / Settings.engineSettings.data.textQualityLevel;
-			scoreTxt.scale.y = 1.15 / Settings.engineSettings.data.textQualityLevel;
-			scoreTxtTween = FlxTween.tween(scoreTxt, {"scale.x" : 1 / Settings.engineSettings.data.textQualityLevel, "scale.y" : 1 / Settings.engineSettings.data.textQualityLevel}, 0.25, {ease : FlxEase.cubeOut, onComplete: function(tween:FlxTween) {
+			scoreTxt.scale.x = 1.15 / engineSettings.textQualityLevel;
+			scoreTxt.scale.y = 1.15 / engineSettings.textQualityLevel;
+			scoreTxtTween = FlxTween.tween(scoreTxt, {"scale.x" : 1 / engineSettings.textQualityLevel, "scale.y" : 1 / engineSettings.textQualityLevel}, 0.25, {ease : FlxEase.cubeOut, onComplete: function(tween:FlxTween) {
 				scoreTxtTween = null;
 				tween.destroy();
 			}});
@@ -2189,7 +2199,7 @@ class PlayState extends MusicBeatState
 	// 	}
 	// 	var accuracyAdd:Float = 0;
 
-	// 	switch(Settings.engineSettings.data.accuracyMode) {
+	// 	switch(engineSettings.accuracyMode) {
 	// 		case 0:
 	// 			accuracyAdd = 1 - (FlxMath.wrap(Std.int(noteDiff), 0, Std.int(Conductor.safeZoneOffset)) / Conductor.safeZoneOffset);
 	// 		case 1:
@@ -2208,7 +2218,7 @@ class PlayState extends MusicBeatState
 		
 	// 	numberOfArrowNotes++;
 
-	// 	if (Settings.engineSettings.data.showPressDelay) {
+	// 	if (engineSettings.showPressDelay) {
 	// 		msScoreLabel.text = Std.string(Math.floor(noteDiff)) + "ms";
 	// 		msScoreLabel.alpha = 1;
 	// 		if (msScoreLabelTween != null) {
@@ -2216,9 +2226,9 @@ class PlayState extends MusicBeatState
 	// 			msScoreLabelTween.destroy();
 	// 		}
 	// 		msScoreLabel.color = ratingColor;
-	// 		msScoreLabel.scale.x = 1 / Settings.engineSettings.data.textQualityLevel;
-	// 		msScoreLabel.scale.y = 1 / Settings.engineSettings.data.textQualityLevel;
-	// 		msScoreLabelTween = FlxTween.tween(msScoreLabel, {alpha: 0, "scale.x" : 0.8 / Settings.engineSettings.data.textQualityLevel, "scale.y" : 0.8 / Settings.engineSettings.data.textQualityLevel}, 0.2, {
+	// 		msScoreLabel.scale.x = 1 / engineSettings.textQualityLevel;
+	// 		msScoreLabel.scale.y = 1 / engineSettings.textQualityLevel;
+	// 		msScoreLabelTween = FlxTween.tween(msScoreLabel, {alpha: 0, "scale.x" : 0.8 / engineSettings.textQualityLevel, "scale.y" : 0.8 / engineSettings.textQualityLevel}, 0.2, {
 	// 			onComplete: function(tween:FlxTween)
 	// 			{
 	// 				msScoreLabelTween = null;
@@ -2371,14 +2381,14 @@ class PlayState extends MusicBeatState
 	// 	});
 
 		
-	// 	if (Settings.engineSettings.data.animateInfoBar) {
+	// 	if (engineSettings.animateInfoBar) {
 	// 		if (scoreTxtTween != null) {
 	// 			scoreTxtTween.cancel();
 	// 			scoreTxtTween.destroy();
 	// 		}
-	// 		scoreTxt.scale.x = 1.15 / Settings.engineSettings.data.textQualityLevel;
-	// 		scoreTxt.scale.y = 1.15 / Settings.engineSettings.data.textQualityLevel;
-	// 		scoreTxtTween = FlxTween.tween(scoreTxt, {"scale.x" : 1 / Settings.engineSettings.data.textQualityLevel, "scale.y" : 1 / Settings.engineSettings.data.textQualityLevel}, 0.25, {ease : FlxEase.cubeOut, onComplete: function(tween:FlxTween) {
+	// 		scoreTxt.scale.x = 1.15 / engineSettings.textQualityLevel;
+	// 		scoreTxt.scale.y = 1.15 / engineSettings.textQualityLevel;
+	// 		scoreTxtTween = FlxTween.tween(scoreTxt, {"scale.x" : 1 / engineSettings.textQualityLevel, "scale.y" : 1 / engineSettings.textQualityLevel}, 0.25, {ease : FlxEase.cubeOut, onComplete: function(tween:FlxTween) {
 	// 			scoreTxtTween = null;
 	// 			tween.destroy();
 	// 		}});
@@ -2441,9 +2451,9 @@ class PlayState extends MusicBeatState
 		var justPressedArray:Array<Bool> = [];
 		var justReleasedArray:Array<Bool> = [];
 
-		if (!Settings.engineSettings.data.botplay) {
+		if (!engineSettings.botplay) {
 			for(i in 0...SONG.keyNumber) {
-				var key:FlxKey = cast(Reflect.field(Settings.engineSettings.data, 'control_' + kNum + '_$i'), FlxKey);
+				var key:FlxKey = cast(Reflect.field(engineSettings, 'control_' + kNum + '_$i'), FlxKey);
 				pressedArray.push(FlxG.keys.anyPressed([key])); // Should prob fix this
 				justPressedArray.push(FlxG.keys.anyJustPressed([key])); // Should prob fix this
 				justReleasedArray.push(FlxG.keys.anyJustReleased([key])); // Should prob fix this

@@ -92,4 +92,12 @@ class CoolUtil
 			return max;
 		return value;
 	}
+	
+	public static function addZeros(v:String, length:Int) {
+		var r = v;
+		while(r.length < length) {
+			r = '0$r';
+		}
+		return r;
+	}
 }

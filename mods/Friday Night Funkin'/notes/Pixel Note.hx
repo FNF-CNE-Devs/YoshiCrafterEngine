@@ -44,14 +44,22 @@ function create() {
     }
 
     if (note.isSustainNote) {
-
+        var anims = ['purpleholdend', 'blueholdend', 'greenholdend', 'redholdend'];
+        var anims2 = ['purplehold', 'bluehold', 'greenhold', 'redhold'];
+        note.animation.play(anims[note.noteData % 4]);
+        note.setGraphicSize(Std.int(note.width * PlayState_.daPixelZoom));
+        note.updateHitbox();
+        if (note.prevNote != null) {
+            if (anims.contains(note.animation.curAnim.name)) {
+                note.prevNote.animation.play(anims2[note.noteData % 4]);
+            }
+        }
     } else {
-        
+        var anims = ['purpleScroll', 'blueScroll', 'greenScroll', 'redScroll'];
+        note.animation.play(anims[note.noteData % 4]);
+        note.setGraphicSize(Std.int(note.width * PlayState_.daPixelZoom));
+        note.updateHitbox();
     }
-    var anims = ['purpleScroll', 'blueScroll', 'greenScroll', 'redScroll'];
-    note.animation.play(anims[note.noteData % 4]);
-    note.setGraphicSize(Std.int(note.width * PlayState_.daPixelZoom));
-    note.updateHitbox();
 }
 
 function update(elapsed) {

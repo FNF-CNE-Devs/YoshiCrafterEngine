@@ -16,8 +16,8 @@ function create() {
 
     character.setGraphicSize(Std.int(character.width * 6));
     character.updateHitbox();
-    character.charGlobalOffset.x = 150;
-    character.charGlobalOffset.y = 360;
+    character.charGlobalOffset.x = -150 - 100;
+    character.charGlobalOffset.y = 100 - 430;
     // character.charGlobalOffset.y = 180;
     character.camOffset.x = -150;
     character.camOffset.y = -character.height / 3.5;

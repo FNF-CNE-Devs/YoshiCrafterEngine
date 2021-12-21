@@ -19,7 +19,8 @@ class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Options', 'Change Keybinds', 'Exit to menu'];
+	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Options', 'Change Keybinds'];
+	var devMenuItems:Array<String> = ['Logs'];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
@@ -63,7 +64,10 @@ class PauseSubState extends MusicBeatSubstate
 		FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
 		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 		FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
-
+		if (Settings.engineSettings.data.developerMode == true) {
+			for (d in devMenuItems) menuItems.push(d);
+		}
+		menuItems.push("Exit to menu");
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
 
@@ -117,6 +121,9 @@ class PauseSubState extends MusicBeatSubstate
 					s.closeCallback = function() {
 						FlxTween.tween(PlayState.current.camHUD, {zoom : oldZoom}, 0.2, {ease : FlxEase.smoothStepInOut});
 					};
+					openSubState(s);
+				case "Logs":
+					var s = new LogSubState();
 					openSubState(s);
 				case "Options":
 					FlxG.switchState(new OptionsMenu(0, 0, true));

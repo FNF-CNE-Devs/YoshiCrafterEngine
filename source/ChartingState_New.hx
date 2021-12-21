@@ -128,8 +128,8 @@ class ChartingState_New extends MusicBeatState
 			if (curSection * 4 * Conductor.crochet > FlxG.sound.music.length)
 				curSection = 0;
 
-		if (PlayState.SONG != null)
-			_song = PlayState.SONG;
+		if (PlayState._SONG != null)
+			_song = PlayState._SONG;
 		else
 		{
 			_song = {
@@ -466,10 +466,6 @@ class ChartingState_New extends MusicBeatState
 			var title = new FlxUIText(10, 11, 0, "=====[Section Settings]=====");
 			title.x = (300 / 2) - (title.width / 2);
 
-			check_mustHitSection = new FlxUICheckBox(10, title.y + title.height + 10, null, null, "Must hit section", 100);
-			check_mustHitSection.name = 'check_mustHit';
-			check_mustHitSection.checked = true;
-
 			check_changeBPM = new FlxUICheckBox(10, 60, null, null, 'Change BPM', 100);
 			check_changeBPM.name = 'check_changeBPM';
 
@@ -481,7 +477,7 @@ class ChartingState_New extends MusicBeatState
 
 
 			tab_group_section.add(title);
-			tab_group_section.add(check_mustHitSection);
+			// tab_group_section.add(check_mustHitSection);
 			tab_group_section.add(stepperSectionBPM);
 			tab_group_section.add(check_changeBPM);
 		}
@@ -805,7 +801,7 @@ class ChartingState_New extends MusicBeatState
 		FlxG.watch.addQuick('daStep', curStep);
 
 		
-		if (FlxG.mouse.justPressed)
+		if (FlxG.mouse.justPressed && !FlxG.mouse.overlaps(UI_box))
 		{
 			if (FlxG.mouse.overlaps(curRenderedNotes))
 			{
@@ -854,7 +850,7 @@ class ChartingState_New extends MusicBeatState
 		{
 			lastSection = curSection;
 
-			PlayState.SONG = _song;
+			PlayState._SONG = _song;
 			FlxG.sound.music.stop();
 			vocals.stop();
 			FlxG.switchState(new PlayState());

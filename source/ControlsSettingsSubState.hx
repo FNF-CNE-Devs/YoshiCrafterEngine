@@ -161,6 +161,7 @@ class ControlsSettingsSub extends MusicBeatSubstate {
                 if (FlxG.mouse.justReleased) {
                     for(i in 0...arrowNumber) {
                         Reflect.setField(Settings.engineSettings.data, 'control_' + arrowNumber + '_$i', currentControls[i]);
+                        if (PlayState.current != null) Reflect.setField(PlayState.current.engineSettings, 'control_' + arrowNumber + '_$i', currentControls[i]);
                     }
                     CoolUtil.playMenuSFX(1);
                     saveButtonEnabled = false;
@@ -187,13 +188,13 @@ class ControlsSettingsSub extends MusicBeatSubstate {
         this.arrowNumber = arrowNumber;
         FlxG.mouse.visible = true;
 
-        var menuBG:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0x88000000);
+        var menuBG:FlxSprite = new FlxSprite().makeGraphic(1280, 720, 0x88000000);
         menuBG.camera = camera;
 		menuBG.updateHitbox();
 		menuBG.screenCenter();
         add(menuBG);
 
-        var infoText = new FlxText(0, 10, FlxG.width * 2, "Click on an arrow to configure the keybind.");
+        var infoText = new FlxText(0, 10, 1280 * 2, "Click on an arrow to configure the keybind.");
         infoText.scale.x = 0.5;
         infoText.scale.y = 0.5;
         infoText.camera = camera;
@@ -210,8 +211,8 @@ class ControlsSettingsSub extends MusicBeatSubstate {
         saveButton.scale.y = 0.75;
         saveButton.antialiasing = true;
         saveButton.updateHitbox();
-        saveButton.x = FlxG.width - saveButton.width - 25;
-        saveButton.y = FlxG.height - saveButton.height - 25;
+        saveButton.x = 1280 - saveButton.width - 25;
+        saveButton.y = 720 - saveButton.height - 25;
         saveButton.camera = camera;
         add(saveButton);
 
@@ -223,15 +224,15 @@ class ControlsSettingsSub extends MusicBeatSubstate {
         exitButton.scale.y = 0.75;
         exitButton.antialiasing = true;
         exitButton.updateHitbox();
-        exitButton.x = FlxG.width - saveButton.width - 25 - exitButton.width - 25;
-        exitButton.y = FlxG.height - exitButton.height - 25;
+        exitButton.x = 1280 - saveButton.width - 25 - exitButton.width - 25;
+        exitButton.y = 720 - exitButton.height - 25;
         exitButton.camera = camera;
         add(exitButton);
 
         size = Math.min(1, 10 / arrowNumber) * 160 * 0.7;
 
         for(i in 0...arrowNumber) {
-            var babyArrow = new FlxSprite((FlxG.width / 2) + size * (-(arrowNumber / 2) + i - 0.5), 50);
+            var babyArrow = new FlxSprite((1280 / 2) + size * (-(arrowNumber / 2) + i - 0.5), 50);
             
             babyArrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getSparrowAtlas(Settings.engineSettings.data.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets', 'shared') : Paths.getSparrowAtlas_Custom("skins/notes/" + Settings.engineSettings.data.customArrowSkin.toLowerCase());
 					
@@ -287,10 +288,10 @@ class ControlsSettingsSub extends MusicBeatSubstate {
             add(text);
         }
 
-        keybindSettingBackground = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0x88000000);
+        keybindSettingBackground = new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000);
         keybindSettingBackground.camera = camera;
 
-        keybindSettingBackground2 = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width / 1.5), Std.int(FlxG.height / 1.5), 0x44000000);
+        keybindSettingBackground2 = new FlxSprite(0, 0).makeGraphic(Std.int(1280 / 1.5), Std.int(720 / 1.5), 0x44000000);
         keybindSettingBackground2.screenCenter();
         keybindSettingBackground2.camera = camera;
 

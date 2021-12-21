@@ -79,7 +79,7 @@ class FreeplayState extends MusicBeatState
 		
 		songs = [];
 		for(mod in FileSystem.readDirectory('$mPath/')) {
-			if (FileSystem.exists('$mPath/$mod/data/freeplaySonglist.json')) {
+			if (FileSystem.exists('$mPath/$mod/data/freeplaySonglist.json') && FileSystem.exists('$mPath/$mod/song_conf.hx')) {
 				var jsonContent:FreeplaySongList = null;
 				try {
 					jsonContent = Json.parse(Paths.getTextOutsideAssets('$mPath/$mod/data/freeplaySonglist.json'));
@@ -424,8 +424,8 @@ class FreeplayState extends MusicBeatState
 
 			trace(poop);
 
-			// PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
-			PlayState.SONG = Song.loadModFromJson(poop, songs[curSelected].mod, songs[curSelected].songName.toLowerCase());
+			// PlayState._SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
+			PlayState._SONG = Song.loadModFromJson(poop, songs[curSelected].mod, songs[curSelected].songName.toLowerCase());
 			PlayState.isStoryMode = false;
 			PlayState.songMod = songs[curSelected].mod;
 			PlayState.storyDifficulty = songs[curSelected].difficulties[curDifficulty];

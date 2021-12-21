@@ -300,6 +300,7 @@ class Character extends FlxSprite
 
 		if (animation.getByName(AnimName) == null) {
 			trace(AnimName + " doesn't exist on character " + curCharacter);
+			PlayState.log.push('Character.playAnim: $AnimName doesn\'t exist on character $curCharacter');
 			return;
 		}
 		if (isPlayer && AnimName == "singLEFT" && flipX)

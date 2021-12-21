@@ -41,7 +41,10 @@ class HealthIcon extends FlxSprite
 		// }
 		
 		var cBF:String = Settings.engineSettings.data.customBFSkin;
+		if (PlayState.current != null) cBF = PlayState.current.engineSettings.customBFSkin;
 		var cGF:String = Settings.engineSettings.data.customGFSkin;
+		if (PlayState.current != null) cGF = PlayState.current.engineSettings.customGFSkin;
+		
 		if (character == "bf" && cBF != "default") {
 			loadGraphic(Paths.getBitmapOutsideAssets(Paths.getSkinsPath() + '/bf/$cBF/icon.png'), true, 150, 150);
 		} else if (character == "gf" && cGF != "default") {

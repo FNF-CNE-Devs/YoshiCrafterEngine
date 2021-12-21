@@ -117,7 +117,7 @@ class Paths
 		var path = Paths.getModsFolder() + '/$mod/songs/$song/Inst.ogg';
 		if (Settings.engineSettings.data.developerMode) {
 			if (!FileSystem.exists(path)) {
-				PlayState.showException('Inst for song $song at "$path" does not exist.');
+				PlayState.log.push('Paths : Inst for song $song at "$path" does not exist.');
 			}
 		}
 		return Sound.fromFile(path);
@@ -128,7 +128,7 @@ class Paths
 		var path = Paths.getModsFolder() + '/$mod/songs/$song/Voices.ogg';
 		if (Settings.engineSettings.data.developerMode) {
 			if (!FileSystem.exists(path)) {
-				PlayState.showException('Voices for song $song at "$path" does not exist.');
+				PlayState.log.push('Paths : Voices for song $song at "$path" does not exist.');
 			}
 		}
 		return Sound.fromFile(path);
@@ -139,7 +139,7 @@ class Paths
 		var p = ModSupport.song_stage_path + #if web '/$file.mp3' #else '/$file.ogg' #end;
 		if (Settings.engineSettings.data.developerMode) {
 			if (!FileSystem.exists(p)) {
-				PlayState.showException('Sound at "$p" does not exist.');
+				PlayState.log.push('Paths : Sound at "$p" does not exist.');
 			}
 		}
 		return Sound.fromFile(p);
@@ -188,7 +188,7 @@ class Paths
 		
 		if (Settings.engineSettings.data.developerMode) {
 			if (!FileSystem.exists(path)) {
-				PlayState.showException('Text file at "$path" does not exist.');
+				PlayState.log.push('Paths : Text file at "$path" does not exist.');
 			}
 		}
 		if (Paths.cacheText[path] == null) {
@@ -204,7 +204,7 @@ class Paths
 		
 		if (Settings.engineSettings.data.developerMode) {
 			if (!FileSystem.exists(path)) {
-				PlayState.showException('Bitmap at "$path" does not exist.');
+				PlayState.log.push('Paths : Bitmap at "$path" does not exist.');
 			}
 		}
 		if (Paths.cacheBitmap[path] == null) {
@@ -219,7 +219,7 @@ class Paths
 		
 		if (Settings.engineSettings.data.developerMode) {
 			if (!FileSystem.exists(path)) {
-				PlayState.showException('Byte file at "$path" does not exist.');
+				PlayState.log.push('Paths : Byte file at "$path" does not exist.');
 			}
 		}
 		if (Paths.cacheBytes[path] == null) {

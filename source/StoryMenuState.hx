@@ -85,7 +85,7 @@ class StoryMenuState extends MusicBeatState
 		weekCharacters = [];
 		
 		for (mod in FileSystem.readDirectory(Paths.getModsFolder() + "/")) {
-			if (FileSystem.exists(Paths.getModsFolder() + '/$mod/weeks.json')) {
+			if (FileSystem.exists(Paths.getModsFolder() + '/$mod/weeks.json') && FileSystem.exists(Paths.getModsFolder() + '/$mod/song_conf.hx')) {
 				var json:WeeksJson = Json.parse(sys.io.File.getContent(Paths.getModsFolder() + '/$mod/weeks.json'));
 				for(week in json.weeks) {
 					week.mod = mod;
@@ -415,7 +415,7 @@ class StoryMenuState extends MusicBeatState
 
 			PlayState.storyDifficulty = weekData[curWeek].difficulties[curDifficulty].name;
 
-			PlayState.SONG = Song.loadModFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.songMod, PlayState.storyPlaylist[0].toLowerCase());
+			PlayState._SONG = Song.loadModFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.songMod, PlayState.storyPlaylist[0].toLowerCase());
 			PlayState.storyWeek = curWeek;
 			PlayState.campaignScore = 0;
 			new FlxTimer().start(1, function(tmr:FlxTimer)

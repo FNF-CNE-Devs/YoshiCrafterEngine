@@ -94,8 +94,8 @@ class YoshiEngineCharter extends MusicBeatState {
 
         if (FlxG.sound.music != null) FlxG.sound.music.pause();   
 
-        if (PlayState.SONG != null)
-            _song = PlayState.SONG;
+        if (PlayState._SONG != null)
+            _song = PlayState._SONG;
 
         // Load music and vocals
         FlxG.sound.playMusic(Paths.inst(_song.song));
@@ -194,7 +194,7 @@ class YoshiEngineCharter extends MusicBeatState {
                 vocals.stop();
                 vocals.destroy();
             }
-            PlayState.SONG = _song;
+            PlayState._SONG = _song;
             FlxG.switchState(new PlayState());
         }
 

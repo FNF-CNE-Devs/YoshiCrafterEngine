@@ -1,3 +1,4 @@
+import haxe.PosInfos;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import flixel.util.FlxAxes;
@@ -95,7 +96,7 @@ class Paths_Mod {
         if (FileSystem.exists(path)) {
             return File.getContent(path);
         } else {
-            trace('File at "$path" does not exist');
+            PlayState.log.push('Paths : File at "$path" does not exist');
             return "";
         }
     }
@@ -104,7 +105,7 @@ class Paths_Mod {
         var mFolder = Paths.getModsFolder();
         var path = '$mFolder/$mod/$file';
         if (!FileSystem.exists(path)) {
-            trace('File at "$path" does not exist');
+            PlayState.log.push('Paths : File at "$path" does not exist');
         }
     }
 
@@ -140,6 +141,10 @@ class Paths_Mod {
         return 'mods/$mod/videos/$key.mp4';
     }
 
+    public function soundRandom(file:String, min:Int, max:Int):Sound {
+        var r = FlxG.random.int(min, max);
+        return sound('$file$r');
+    }
     public function sound(file:String):Sound {
         var mFolder = Paths.getModsFolder();
         #if web
@@ -168,7 +173,7 @@ class Paths_Mod {
                 return Paths.getBitmapOutsideAssets(p);
             }
         } else {
-            trace('Image at "$p" does not exist');
+            PlayState.log.push('Paths : Image at "$p" does not exist');
             return null;
         }
     }
@@ -186,7 +191,7 @@ class Paths_Mod {
             }
             return FlxAtlasFrames.fromSparrow(b, Paths.getTextOutsideAssets(xml));
         } else {
-            trace('Sparrow Atlas at "$mFolder/$mod/images/$key" does not exist. Make sure there is an XML and a PNG file');
+            PlayState.log.push('Paths : Sparrow Atlas at "$mFolder/$mod/images/$key" does not exist. Make sure there is an XML and a PNG file');
             return null;
         }
     }
@@ -207,7 +212,7 @@ class Paths_Mod {
             if (copyBitmap) b = b.clone();
             return FlxAtlasFrames.fromSpriteSheetPacker(b, Paths.getTextOutsideAssets(txt));
         } else {
-            trace('Sprite Sheet Packer at "$mFolder/$m/characters/$c/spritesheet" does not exist. Make sure there is an TXT and a PNG file');
+            PlayState.log.push('Paths : Sprite Sheet Packer at "$mFolder/$m/characters/$c/spritesheet" does not exist. Make sure there is an TXT and a PNG file');
             return null;
         }
     }
@@ -225,11 +230,12 @@ class Paths_Mod {
             if (copyBitmap) b = b.clone();
             return FlxAtlasFrames.fromSpriteSheetPacker(b, Paths.getTextOutsideAssets(txt));
         } else {
-            trace('Packer Atlas at "$mFolder/$mod/images/$key" does not exist. Make sure there is an XML and a PNG file');
+            PlayState.log.push('Paths : Packer Atlas at "$mFolder/$mod/images/$key" does not exist. Make sure there is an XML and a PNG file');
             return null;
         }
     }
 }
+
 class FlxColor_Helper {
     var fc:FlxColor;
 
@@ -369,6 +375,18 @@ class ModSupport {
         return ast;
     }
 
+    public static function hTrace(text:String, hscript:hscript.Interp) {
+        if (!Settings.engineSettings.data.developerMode) return;
+        var posInfo = hscript.posInfos();
+
+        var fileName = posInfo.fileName;
+        var lineNumber = Std.string(posInfo.lineNumber);
+        var methodName = posInfo.methodName;
+        var className = posInfo.className;
+        for (e in ('$fileName:$methodName:$lineNumber: $text').split("\n")) PlayState.log.push(e.trim());
+        trace(text);
+    }
+
     public static function setHaxeFileDefaultVars(hscript:hscript.Interp, mod:String, settings:Dynamic) {
 		hscript.variables.set("PlayState", PlayState.current);
 		hscript.variables.set("EngineSettings", Settings.engineSettings.data);
@@ -383,6 +401,12 @@ class ModSupport {
             }
         });
 
+        if (PlayState.current != null) {
+            hscript.variables.set("global", PlayState.current.vars);
+        }
+        hscript.variables.set("trace", function(text) {
+            hTrace(text, hscript);
+        });
 		hscript.variables.set("PlayState_", PlayState);
 		hscript.variables.set("FlxSprite", FlxSprite);
 		hscript.variables.set("BitmapData", BitmapData);
@@ -433,7 +457,8 @@ class ModSupport {
                 } catch(e) {
                     var s = e.stack;
                     var details = e.details();
-                    trace('$e for $funcName at \r\n$s\r\n$details');
+                    
+                    hTrace('$e at $s\r\n$details', hscript);
                 }
                 return result;
             } else {
@@ -441,7 +466,10 @@ class ModSupport {
                 try {
                     result = Reflect.callMethod(null, f, args);
                 } catch(e) {
-                    trace('$e for $funcName');
+                    var s = e.stack;
+                    var details = e.details();
+
+                    hTrace('$e at $s\r\n$details', hscript);
                 }
                 return result;
             }
@@ -450,7 +478,7 @@ class ModSupport {
         return null;
     }
     public static function parseSongConfig() {
-        var songName = PlayState.SONG.song.toLowerCase();
+        var songName = PlayState._SONG.song.toLowerCase();
         var songCodePath = Paths.getModsFolder() + '/$currentMod/song_conf.hx';
         var parser = new hscript.Parser();
         parser.allowTypes = true;
