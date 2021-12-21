@@ -1,6 +1,5 @@
 body {
     margin : 0px;
-    background-image : url("skin-funkin-cardbordtoast.jpg");
     background-position: center;
     background-size: cover;
     height : 100%;
@@ -14,7 +13,7 @@ body {
 .container {
     margin-left : 2.5vw;
     margin-right : 2.5vw;
-    margin-top : calc(35px + 50px);
+    margin-top : 35px;
     margin-bottom : 35px;
     box-sizing: border-box;
     overflow : hidden scroll;
@@ -24,7 +23,7 @@ body {
     border-radius : 15px;
     
     padding: 15px;
-    height : calc(100% - 70px - 75px);
+    height : calc(100% - 70px);
 }
 
 .tree .tree {
@@ -102,4 +101,23 @@ horBar {
 #topBar horBar:hover {
     padding : 10px;
     background-color : #FFF2;
+}
+
+iframe {
+    position: absolute;
+    border : none;
+    left : 0px;
+    top : 50px;
+    right : 0px;
+    bottom : 0px;
+    width : 100%;
+    height : calc(100% - 50px);
+}
+
+inlineCode {
+    border : 1px solid #444;
+    background-color : #222;
+    display : inline-block;
+    padding : 5px;
+    font-family: 'Courier New', Courier, monospace;
 }

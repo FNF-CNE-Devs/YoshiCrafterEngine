@@ -31,10 +31,10 @@ function dance() {
 
 function getColors(altAnim) {
     return [
-        new FlxColor(0xFFAF66CE),
-        new FlxColor(0xFFAF66CE),
-        new FlxColor(0xFFAF66CE),
-        new FlxColor(0xFFAF66CE),
-        new FlxColor(0xFFAF66CE)
+        0xFFAF66CE,
+        0xFFAF66CE,
+        0xFFAF66CE,
+        0xFFAF66CE,
+        0xFFAF66CE
     ];
 }
