@@ -467,7 +467,7 @@ class FreeplayState extends MusicBeatState
 		curDifficulty += change;
 
 		if (curDifficulty < 0)
-			curDifficulty = 2;
+			curDifficulty = songs[curSelected].difficulties.length - 1;
 		if (curDifficulty >= songs[curSelected].difficulties.length)
 			curDifficulty = 0;
 

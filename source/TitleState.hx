@@ -1,5 +1,6 @@
 package;
 
+import haxe.Http;
 import LoadSettings.Settings;
 #if desktop
 import Discord.DiscordClient;
@@ -308,22 +309,22 @@ class TitleState extends MusicBeatState
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
 				// Check if version is outdated
+				var http = new Http("");
+				var version:String = "v" + Application.current.meta.get('version');
 
-				// var version:String = "v" + Application.current.meta.get('version');
-
-				// if (version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState)
-				// {
-				// 	FlxG.switchState(new OutdatedSubState());
-				// 	trace('OLD VERSION!');
-				// 	trace('old ver');
-				// 	trace(version.trim());
-				// 	trace('cur ver');
-				// 	//trace( NGio .GAME_VER_NUMS.trim());
-				// }
-				// else
-				// {
+				if (version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState)
+				{
+					FlxG.switchState(new OutdatedSubState());
+					trace('OLD VERSION!');
+					trace('old ver');
+					trace(version.trim());
+					trace('cur ver');
+					//trace( NGio .GAME_VER_NUMS.trim());
+				}
+				else
+				{
 					FlxG.switchState(new MainMenuState());
-				// }
+				}
 			});
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
