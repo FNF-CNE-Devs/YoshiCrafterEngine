@@ -6,6 +6,8 @@ The documentation is [here](documentation/index.md) (in construction), feel free
 
 Thanks to PolybiusProxy for the [MP4 Cutscene Support](https://github.com/brightfyregit/Friday-Night-Funkin-Mp4-Video-Support) !
 
+Also, if you're going to mod it, do NOT include the executable with it, only your mod in the "mods" folder. The goal of this engine is to have one instance of FNF with every mods in it
+
 ## Here's a full list of Yoshi Engine's functionnalities :
 - **Full mod support**
 	- Songs
@@ -46,6 +48,13 @@ Thanks to PolybiusProxy for the [MP4 Cutscene Support](https://github.com/bright
 
 ## People who helped me
 - **AbnormalPoof** for the pretty printing of chart jsons.
+
+## How to install a mod
+1. Download an Yoshi Engine mod
+2. Get the mod folder (in the root or in a "mods" folder, or see instructions)
+3. Copy over to the "mods" folder
+4. Restart the engine
+5. Enjoy !
 
 ---
 # Friday Night Funkin
