@@ -1,7 +1,5 @@
 package;
 
-import sys.FileSystem;
-import sys.io.File;
 import flixel.FlxGame;
 import flixel.FlxState;
 import openfl.Assets;
@@ -28,14 +26,7 @@ class Main extends Sprite
 
 	public static function main():Void
 	{
-		try {
-			Lib.current.addChild(new Main());
-		} catch(e) {
-			var message = e.message;
-			var details = e.details;
-			var stack   = e.stack;
-			File.saveContent("./crash.txt", '==MESSAGE==\r\n$message\r\n\r\n==DETAILS==\r\n$details\r\n\r\n==STACK==\r\n$stack');
-		}
+		Lib.current.addChild(new Main());
 	}
 
 	public function new()

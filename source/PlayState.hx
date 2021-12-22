@@ -1844,15 +1844,36 @@ class PlayState extends MusicBeatState
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
-				if ((daNote.y - (guiOffset.y / 2) < -daNote.height && !engineSettings.downscroll) || ((FlxG.height - (guiOffset.y / 2)) - daNote.y < -daNote.height && engineSettings.downscroll))
-				{
-					if ((daNote.tooLate || !daNote.wasGoodHit) && daNote.mustPress)
-					{
-						daNote.script.variables.set("note", daNote);
-						ModSupport.executeFunc(daNote.script, "onMiss", [Note.noteNumberScheme[daNote.noteData % PlayState.SONG.keyNumber]]);
-						// noteMiss((daNote.noteData % _SONG.keyNumber) % SONG.keyNumber);
-					}
+				// if ((daNote.y - (guiOffset.y / 2) < -daNote.height && !engineSettings.downscroll) || ((FlxG.height - (guiOffset.y / 2)) - daNote.y < -daNote.height && engineSettings.downscroll))
+				// {
+				// 	if ((daNote.tooLate || !daNote.wasGoodHit) && daNote.mustPress)
+				// 	{
+				// 		daNote.script.variables.set("note", daNote);
+				// 		ModSupport.executeFunc(daNote.script, "onMiss", [Note.noteNumberScheme[daNote.noteData % PlayState.SONG.keyNumber]]);
+				// 		// noteMiss((daNote.noteData % _SONG.keyNumber) % SONG.keyNumber);
+				// 	}
 					
+				// daNote.active = false;
+				// daNote.visible = false;
+
+				// daNote.kill();
+				// notes.remove(daNote, true);
+				// daNote.destroy();
+				// }
+				if ((daNote.tooLate && !daNote.wasGoodHit) && daNote.mustPress)
+				{
+					daNote.script.variables.set("note", daNote);
+					ModSupport.executeFunc(daNote.script, "onMiss", [Note.noteNumberScheme[daNote.noteData % PlayState.SONG.keyNumber]]);
+					// noteMiss((daNote.noteData % _SONG.keyNumber) % SONG.keyNumber);
+
+					daNote.active = false;
+					daNote.visible = false;
+
+					daNote.kill();
+					notes.remove(daNote, true);
+					daNote.destroy();
+					
+				} else if (daNote.wasGoodHit) {
 					daNote.active = false;
 					daNote.visible = false;
 
