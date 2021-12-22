@@ -1800,6 +1800,7 @@ class PlayState extends MusicBeatState
 						// newRect.height -= swagRect.y;
 
 						if (swagRect.height < 1) {
+						// if (swagRect.height < 0.5) {
 							remove(daNote);
 							daNote.kill();
 							notes.remove(daNote, true);
@@ -1860,27 +1861,39 @@ class PlayState extends MusicBeatState
 				// notes.remove(daNote, true);
 				// daNote.destroy();
 				// }
-				if ((daNote.tooLate && !daNote.wasGoodHit) && daNote.mustPress)
-				{
-					daNote.script.variables.set("note", daNote);
-					ModSupport.executeFunc(daNote.script, "onMiss", [Note.noteNumberScheme[daNote.noteData % PlayState.SONG.keyNumber]]);
-					// noteMiss((daNote.noteData % _SONG.keyNumber) % SONG.keyNumber);
-
-					daNote.active = false;
-					daNote.visible = false;
-
-					daNote.kill();
-					notes.remove(daNote, true);
-					daNote.destroy();
-					
-				} else if (daNote.wasGoodHit) {
-					daNote.active = false;
-					daNote.visible = false;
-
-					daNote.kill();
-					notes.remove(daNote, true);
-					daNote.destroy();
+				if (daNote.isSustainNote) {
+					if (daNote.strumTime + Conductor.stepCrochet < Conductor.songPosition) {
+						daNote.active = false;
+						daNote.visible = false;
+	
+						daNote.kill();
+						notes.remove(daNote, true);
+						daNote.destroy();
+					}
+				} else {
+					if ((daNote.tooLate && !daNote.wasGoodHit) && daNote.mustPress)
+					{
+						daNote.script.variables.set("note", daNote);
+						ModSupport.executeFunc(daNote.script, "onMiss", [Note.noteNumberScheme[daNote.noteData % PlayState.SONG.keyNumber]]);
+						// noteMiss((daNote.noteData % _SONG.keyNumber) % SONG.keyNumber);
+	
+						daNote.active = false;
+						daNote.visible = false;
+	
+						daNote.kill();
+						notes.remove(daNote, true);
+						daNote.destroy();
+						
+					} else if (daNote.wasGoodHit) {
+						daNote.active = false;
+						daNote.visible = false;
+	
+						daNote.kill();
+						notes.remove(daNote, true);
+						daNote.destroy();
+					}
 				}
+				
 			});
 		}
 

@@ -1,5 +1,6 @@
 package;
 
+import haxe.Json;
 import haxe.Http;
 import LoadSettings.Settings;
 #if desktop
@@ -309,22 +310,47 @@ class TitleState extends MusicBeatState
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
 				// Check if version is outdated
-				var http = new Http("");
-				var version:String = "v" + Application.current.meta.get('version');
+				// var http = new Http("https://raw.githubusercontent.com/YoshiCrafter29/YoshiEngine/main/update.json");
+				var http = new Http("https://pastebin.com/raw/rtVtsaiB");
+				http.onData = function(data:String) {
+					// var version:String = "v" + Application.current.meta.get('version');
+					var jsonData:YoshiEngineVersion = Json.parse(data.trim());
+					var outDated = false;
+					var amount = jsonData.version.length;
+					if (Main.engineVer.length > amount) amount = Main.engineVer.length;
+					for(i in 0...amount) {
+						var latestVer = 0;
+						var localVer = 0;
+						if (i < Main.engineVer.length)
+							localVer = Main.engineVer[i];
+						if (i < jsonData.version.length)
+							latestVer = jsonData.version[i];
 
-				if (version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState)
-				{
-					FlxG.switchState(new OutdatedSubState());
-					trace('OLD VERSION!');
-					trace('old ver');
-					trace(version.trim());
-					trace('cur ver');
-					//trace( NGio .GAME_VER_NUMS.trim());
+						if (localVer < latestVer) {
+							outDated = true;
+							break;
+						}
+					}
+					if (outDated)
+					{
+						FlxG.switchState(new OutdatedSubState(jsonData));
+						// trace('OLD VERSION!');
+						// trace('old ver');
+						// trace(version.trim());
+						// trace('cur ver');
+						//trace( NGio .GAME_VER_NUMS.trim());
+					}
+					else
+					{
+						FlxG.switchState(new MainMenuState());
+					}
 				}
-				else
-				{
+				http.onError = function(msg:String) {
+					trace(msg);
 					FlxG.switchState(new MainMenuState());
 				}
+				http.request();
+				
 			});
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
@@ -373,11 +399,12 @@ class TitleState extends MusicBeatState
 
 		if (logoBl != null) logoBl.animation.play('bump');
 		danceLeft = !danceLeft;
-
-		if (danceLeft)
-			gfDance.animation.play('danceRight');
-		else
-			gfDance.animation.play('danceLeft');
+		if (gfDance != null) {
+			if (danceLeft)
+				gfDance.animation.play('danceRight');
+			else
+				gfDance.animation.play('danceLeft');
+		}
 
 		FlxG.log.add(curBeat);
 

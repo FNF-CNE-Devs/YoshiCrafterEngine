@@ -1,4 +1,7 @@
 {
-    "updateLog" : "Test",
-    "version" : [1,0,1]
+    "updateLog" : [
+        "Initial release"
+    ],
+    "version" : [1,0,0],
+    "url" : "https://github.com/YoshiCrafter29/YoshiEngine"
 }
