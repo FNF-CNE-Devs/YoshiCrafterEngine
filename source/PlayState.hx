@@ -1746,7 +1746,7 @@ class PlayState extends MusicBeatState
 				}
 
 				var pos:FlxPoint = new FlxPoint(-(daNote.noteOffset.x + ((daNote.isSustainNote ? daNote.width / 2 : 0) * (engineSettings.downscroll ? 1 : -1))),0);
-				var strum = (daNote.mustPress ? playerStrums.members : cpuStrums.members)[daNote.noteData % SONG.keyNumber];
+				var strum = (daNote.mustPress ? playerStrums.members : cpuStrums.members)[daNote.noteData % _SONG.keyNumber];
 				if (strum.angle == 0) {
 
 					pos.y = (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(engineSettings.customScrollSpeed ? engineSettings.scrollSpeed : SONG.speed, 2));
@@ -1782,15 +1782,15 @@ class PlayState extends MusicBeatState
 				if (engineSettings.downscroll) {
 					if (daNote.isSustainNote
 						// && (daNote.y + daNote.height - daNote.offset.y >= strumLine.y + Note.swagWidth / 2)
-						&& (daNote.y + daNote.height - (daNote.offset.y * daNote.scale.y) >= (daNote.mustPress ? playerStrums.members : cpuStrums.members)[daNote.noteData % SONG.keyNumber].y + Note.swagWidth / 2)
+						&& (daNote.y + daNote.height - (daNote.offset.y * daNote.scale.y) >= (daNote.mustPress ? playerStrums.members : cpuStrums.members)[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber].y + Note.swagWidth / 2)
 						&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
 					{
-						var strum = (daNote.mustPress ? playerStrums.members : cpuStrums.members)[daNote.noteData % SONG.keyNumber];
+						var strum = (daNote.mustPress ? playerStrums.members : cpuStrums.members)[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber];
 						var size = Math.abs(daNote.y - daNote.height);
 						// var swagRect = new FlxRect(0, -(daNote.height / 2), daNote.frameWidth * 2, FlxMath.wrap(Std.int(FlxMath.remapToRange(size, (Note.swagWidth / 2) + strum.y - (daNote.height / 2), strum.y + (Note.swagWidth / 2), 0, 50)), 0, 50));
 						var swagRect = new FlxRect(0, 0, daNote.width * 2, CoolUtil.wrapFloat(FlxMath.remapToRange(daNote.y, strumLine.y - (Note.swagWidth) - (daNote.height / 2), strumLine.y - (Note.swagWidth / 2), 50, 0), 0, 50));
 						// swagRect.height -= swagRect.y;
-						// swagRect.height = ((daNote.mustPress ? playerStrums.members : cpuStrums.members)[daNote.noteData % SONG.keyNumber].y + (Note.swagWidth / 2) - daNote.y) / daNote.scale.y;
+						// swagRect.height = ((daNote.mustPress ? playerStrums.members : cpuStrums.members)[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber].y + (Note.swagWidth / 2) - daNote.y) / daNote.scale.y;
 
 						// daNote.offset.y = daNote.height / 2;
 						// newRect.height -= swagRect.y;
@@ -1807,10 +1807,10 @@ class PlayState extends MusicBeatState
 					}
 				} else {
 					if (daNote.isSustainNote
-						&& (daNote.y + daNote.offset.y <= (daNote.mustPress ? playerStrums.members : cpuStrums.members)[daNote.noteData % SONG.keyNumber].y + Note.swagWidth / 2)
+						&& (daNote.y + daNote.offset.y <= (daNote.mustPress ? playerStrums.members : cpuStrums.members)[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber].y + Note.swagWidth / 2)
 						&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
 					{
-						var swagRect = new FlxRect(0, (daNote.mustPress ? playerStrums.members : cpuStrums.members)[daNote.noteData % SONG.keyNumber].y + Note.swagWidth / 2 - daNote.y, daNote.width * 2, daNote.height * 2);
+						var swagRect = new FlxRect(0, (daNote.mustPress ? playerStrums.members : cpuStrums.members)[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber].y + Note.swagWidth / 2 - daNote.y, daNote.width * 2, daNote.height * 2);
 						swagRect.y /= daNote.scale.y;
 						swagRect.height -= swagRect.y;
 	
@@ -1846,7 +1846,7 @@ class PlayState extends MusicBeatState
 					{
 						daNote.script.variables.set("note", daNote);
 						ModSupport.executeFunc(daNote.script, "onMiss", [Note.noteNumberScheme[daNote.noteData % PlayState.SONG.keyNumber]]);
-						// noteMiss(daNote.noteData % SONG.keyNumber);
+						// noteMiss((daNote.noteData % _SONG.keyNumber) % SONG.keyNumber);
 					}
 					
 					daNote.active = false;
@@ -2465,12 +2465,12 @@ class PlayState extends MusicBeatState
 					if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
 					{
 						if (daNote.strumTime < Conductor.songPosition) {
-							botplayNoteHitMoment[daNote.noteData % SONG.keyNumber] = Math.max(Conductor.songPosition, botplayNoteHitMoment[daNote.noteData % SONG.keyNumber]);
+							botplayNoteHitMoment[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber] = Math.max(Conductor.songPosition, botplayNoteHitMoment[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber]);
 							// botplayHitNotes.push(daNote);
-							justPressedArray[daNote.noteData % SONG.keyNumber] = true; // (Math.abs(daNote.strumTime - Conductor.songPosition) < elapsed * 1000) || 
+							justPressedArray[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber] = true; // (Math.abs(daNote.strumTime - Conductor.songPosition) < elapsed * 1000) || 
 						} else if (daNote.isSustainNote) {
-							botplayNoteHitMoment[daNote.noteData % SONG.keyNumber] = Math.max(Conductor.songPosition, botplayNoteHitMoment[daNote.noteData % SONG.keyNumber]);
-							pressedArray[daNote.noteData % SONG.keyNumber] = true; // (Math.abs(daNote.strumTime - Conductor.songPosition) < elapsed * 1000) || 
+							botplayNoteHitMoment[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber] = Math.max(Conductor.songPosition, botplayNoteHitMoment[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber]);
+							pressedArray[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber] = true; // (Math.abs(daNote.strumTime - Conductor.songPosition) < elapsed * 1000) || 
 						}
 						
 					}
@@ -2496,18 +2496,18 @@ class PlayState extends MusicBeatState
 			{
 				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote)
 				{
-					if (justPressedArray[daNote.noteData % SONG.keyNumber]) {
+					if (justPressedArray[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber]) {
 						var can = false;
-						if (notesToHit[daNote.noteData % SONG.keyNumber] != null) {
-							if (notesToHit[daNote.noteData % SONG.keyNumber].strumTime > daNote.strumTime)
+						if (notesToHit[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber] != null) {
+							if (notesToHit[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber].strumTime > daNote.strumTime)
 								can = true;
-							if (notesToHit[daNote.noteData % SONG.keyNumber].strumTime == daNote.strumTime) {
+							if (notesToHit[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber].strumTime == daNote.strumTime) {
 								goodNoteHit(daNote);
 							}
 						} else {
 							can = true;
 						}
-						if (can) notesToHit[daNote.noteData % SONG.keyNumber] = daNote;
+						if (can) notesToHit[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber] = daNote;
 					}
 				}
 			});
@@ -2524,9 +2524,9 @@ class PlayState extends MusicBeatState
 			{
 				if (daNote.canBeHit && daNote.mustPress && daNote.isSustainNote)
 				{
-					if (pressedArray[daNote.noteData % SONG.keyNumber])
+					if (pressedArray[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber])
 						goodNoteHit(daNote);
-					// switch (daNote.noteData % SONG.keyNumber)
+					// switch ((daNote.noteData % _SONG.keyNumber) % SONG.keyNumber)
 					// {
 					// 	// NOTES YOU ARE HOLDING
 					// 	case 0:
@@ -2706,7 +2706,7 @@ class PlayState extends MusicBeatState
 					if (rating != null) {
 						health += rating.health;
 						if (rating.miss) 
-							noteMiss(note.noteData % SONG.keyNumber);
+							noteMiss((note.noteData % _SONG.keyNumber) % SONG.keyNumber);
 					}
 				}
 			}
@@ -2721,7 +2721,7 @@ class PlayState extends MusicBeatState
 
 			playerStrums.forEach(function(spr:FlxSprite)
 			{
-				if (Math.abs(note.noteData % SONG.keyNumber) == spr.ID)
+				if (Math.abs((note.noteData % _SONG.keyNumber) % SONG.keyNumber) == spr.ID)
 				{
 					spr.animation.play('confirm', true);
 				}
@@ -2754,7 +2754,7 @@ class PlayState extends MusicBeatState
 	// 		}
 	// 		if (rating == "shit") {
 	// 			health -= 0.09375;
-	// 			noteMiss(note.noteData % SONG.keyNumber);
+	// 			noteMiss((note.noteData % _SONG.keyNumber) % SONG.keyNumber);
 	// 			note.kill();
 	// 			notes.remove(note, true);
 	// 			note.destroy();

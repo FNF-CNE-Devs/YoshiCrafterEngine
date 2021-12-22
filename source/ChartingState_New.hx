@@ -1,5 +1,7 @@
 package;
 
+import haxe.iterators.StringIterator;
+import flixel.addons.ui.FlxButtonPlus;
 import openfl.geom.Rectangle;
 import flixel.addons.ui.FlxUIButton;
 import sys.io.File;
@@ -381,6 +383,11 @@ class ChartingState_New extends MusicBeatState
 		{
 			saveLevel();
 		});
+		var saveButton2:FlxButtonPlus = new FlxButtonPlus(saveButton.x, saveButton.y + saveButton.height + 10, function()
+		{
+			saveLevel("\t");
+		}, "Save with\npretty print", 100, 50);
+		
 
 
 		var refresh:FlxButton = new FlxButton(saveButton.x + saveButton.width + 10, saveButton.y, "Refresh", function()
@@ -1388,13 +1395,13 @@ class ChartingState_New extends MusicBeatState
 		FlxG.save.flush();
 	}
 
-	private function saveLevel()
+	private function saveLevel(?space:String)
 	{
 		var json = {
 			"song": _song
 		};
 
-		var data:String = Json.stringify(json);
+		var data:String = Json.stringify(json, space);
 
 		if ((data != null) && (data.length > 0))
 		{

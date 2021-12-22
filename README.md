@@ -16,7 +16,6 @@ Thanks to PolybiusProxy for the [MP4 Cutscene Support](https://github.com/bright
 	- Cutscenes
 	- Weeks
 	- Credits
-	
 - **Customization**
 	- Custom keybinds
 	- Downscroll
@@ -45,6 +44,8 @@ Thanks to PolybiusProxy for the [MP4 Cutscene Support](https://github.com/bright
 	- Disables cache
 	- Character debug mode
 
+## People who helped me
+- **AbnormalPoof** for the pretty printing of chart jsons.
 
 ---
 # Friday Night Funkin
