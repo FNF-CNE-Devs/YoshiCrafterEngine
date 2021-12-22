@@ -355,15 +355,19 @@ class PlayState extends MusicBeatState
 		persistentUpdate = true;
 		persistentDraw = true;
 
+		if (_SONG.keyNumber == null)
+			_SONG.keyNumber = 4;
+		
+		if (_SONG.noteTypes == null)
+			_SONG.noteTypes = ["Friday Night Funkin':Default Note"];
+
 		if (_SONG == null)
 			_SONG = Song.loadModFromJson('tutorial', 'Friday Night Funkin\'');
 
 		SONG = Reflect.copy(_SONG);
 
-		if (SONG.keyNumber == null)
-			SONG.keyNumber = 4;
-		if (SONG.noteTypes == null)
-			SONG.noteTypes = ["Friday Night Funkin':Default Note"];
+		
+			
 		if (engineSettings.botplay || !SONG.validScore)
 			validScore = false;
 		Conductor.mapBPMChanges(SONG);
