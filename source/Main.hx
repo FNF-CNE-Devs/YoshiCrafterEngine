@@ -20,7 +20,7 @@ class Main extends Sprite
 
 	// YOSHI ENGINE STUFF
 	public static var engineVer:Array<Int> = [1,0,0];
-	public static var buildVer:String = "Prerelease";
+	public static var buildVer:String = "Preview";
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
 

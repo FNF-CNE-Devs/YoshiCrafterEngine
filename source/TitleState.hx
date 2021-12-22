@@ -123,6 +123,7 @@ class TitleState extends MusicBeatState
 		Application.current.onExit.add (function (exitCode) {
 			DiscordClient.shutdown();
 		 });
+		 
 
 		 
 		#end
@@ -310,8 +311,8 @@ class TitleState extends MusicBeatState
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
 				// Check if version is outdated
-				// var http = new Http("https://raw.githubusercontent.com/YoshiCrafter29/YoshiEngine/main/update.json");
-				var http = new Http("https://pastebin.com/raw/rtVtsaiB");
+				var http = new Http("https://raw.githubusercontent.com/YoshiCrafter29/YoshiEngine/main/update.json");
+				// var http = new Http("https://pastebin.com/raw/rtVtsaiB");
 				http.onData = function(data:String) {
 					// var version:String = "v" + Application.current.meta.get('version');
 					var jsonData:YoshiEngineVersion = Json.parse(data.trim());

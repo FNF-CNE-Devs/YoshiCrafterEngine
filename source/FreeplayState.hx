@@ -472,7 +472,7 @@ class FreeplayState extends MusicBeatState
 			curDifficulty = 0;
 
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected].songName, songs[curSelected].difficulties[curDifficulty]);
+		intendedScore = Highscore.getModScore(songs[curSelected].mod, songs[curSelected].songName, songs[curSelected].difficulties[curDifficulty]);
 		#end
 
 		// switch (curDifficulty)
@@ -526,7 +526,7 @@ class FreeplayState extends MusicBeatState
 		// selector.y = (70 * curSelected) + 30;
 
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected].songName, songs[curSelected].difficulties[curDifficulty]);
+		intendedScore = Highscore.getModScore(songs[curSelected].mod, songs[curSelected].songName, songs[curSelected].difficulties[curDifficulty]);
 		// lerpScore = 0;
 		#end
 

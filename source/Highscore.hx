@@ -138,6 +138,14 @@ class Highscore
 		return songScores.get(formatSong(song, diff));
 	}
 
+	public static function getModScore(mod:String, song:String, diff:String):Int
+	{
+		if (!songScores.exists(formatSong('$mod:$song', diff)))
+			setScore(formatSong('$mod:$song', diff), 0);
+
+		return songScores.get(formatSong('$mod:$song', diff));
+	}
+
 	public static function getWeekScore(week:Int, diff:String):Int
 	{
 		if (!songScores.exists(formatSong('week' + week, diff)))
