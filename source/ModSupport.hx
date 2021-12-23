@@ -1,3 +1,4 @@
+import cpp.Lib;
 import flixel.util.FlxSave;
 import lime.app.Application;
 import haxe.PosInfos;
@@ -373,7 +374,10 @@ class ModSupport {
 			trace(ex);
             var exThingy = Std.string(ex);
             var line = parser.line;
-            if (critical) FlxG.switchState(new ExceptionState('Failed to parse the file located at "$path".\r\n$exThingy at $line', 0));
+            if (critical) {
+                openfl.Lib.application.window.alert('Failed to parse the file located at "$path".\r\n$exThingy at $line');
+                FlxG.switchState(new ExceptionState('Failed to parse the file located at "$path".\r\n$exThingy at $line', 0));
+            }
             trace('Failed to parse the file located at "$path".\r\n$exThingy at $line');
 		}
         return ast;
