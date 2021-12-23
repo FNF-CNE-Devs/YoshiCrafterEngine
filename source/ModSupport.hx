@@ -1,3 +1,5 @@
+import flixel.util.FlxSave;
+import lime.app.Application;
 import haxe.PosInfos;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -355,6 +357,8 @@ class ModSupport {
     public static var song_cutscene_path:String = "";
     public static var currentMod:String = "Friday Night Funkin'";
 
+    public static var modSaves:Map<String, FlxSave> = [];
+
     public static function getExpressionFromPath(path:String, critical:Bool = false):hscript.Expr {
         var parser = new hscript.Parser();
 		parser.allowTypes = true;
@@ -450,6 +454,7 @@ class ModSupport {
 		hscript.variables.set("BitmapDataPlus", BitmapDataPlus);
 		hscript.variables.set("Rectangle", Rectangle);
 		hscript.variables.set("Point", Point);
+		hscript.variables.set("Window", Application.current.window);
 		// hscript.variables.set("FlxColor", Int);
     }
     public static function executeFunc(hscript:hscript.Interp, funcName:String, ?args:Array<Dynamic>):Dynamic {

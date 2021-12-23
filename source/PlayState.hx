@@ -1079,6 +1079,10 @@ class PlayState extends MusicBeatState
 		popUpGUIelements();
 	}
 
+	public var timerBG:FlxSprite = null;
+	public var timerBar:FlxBar = null;
+	public var timerTotalLength:FlxText = null;
+
 	function startSong():Void
 	{
 		startingSong = false;
@@ -1094,24 +1098,35 @@ class PlayState extends MusicBeatState
 		
 
 		if (engineSettings.showTimer) {
-			var timerBG = new FlxSprite(0, -25 + (guiOffset.y / 2)).makeGraphic(300, 25, 0xFF222222);
+			var apparitionPos = -25 - (guiOffset.y / 2);
+			if (engineSettings.downscroll) {
+				apparitionPos = 720 + (guiOffset.y / 2) + 25;
+			}
+			timerBG = new FlxSprite(0, apparitionPos).makeGraphic(300, 25, 0xFF222222);
 			timerBG.alpha = 0;
 			timerBG.cameras = [camHUD];
 			timerBG.cameraCenter(X);
 			timerBG.scrollFactor.set();
 			add(timerBG);
 
-			var timerBar = new FlxBar(timerBG.x + 4, timerBG.y + 4, LEFT_TO_RIGHT, Std.int(timerBG.width - 8)*5, Std.int(timerBG.height - 8), Conductor, 'songPosition', 0, FlxG.sound.music.length);
+			timerBar = new FlxBar(timerBG.x + 4, timerBG.y + 4, LEFT_TO_RIGHT, Std.int(timerBG.width - 8)*5, Std.int(timerBG.height - 8), Conductor, 'songPosition', 0, FlxG.sound.music.length);
 			timerBar.scale.x = 0.2;
 			timerBar.alpha = 0;
 			timerBar.cameras = [camHUD];
 			timerBar.cameraCenter(X);
+			timerBar.antialiasing = true;
+			// timerBar.barWidth = Std.int(FlxG.sound.music.length / 1000);
 			timerBar.scrollFactor.set();
 			timerBar.createFilledBar(0xFF000000, 0xFFFFFFFF);
 			add(timerBar);
 
-			FlxTween.tween(timerBG, {y : 25 + (guiOffset.y / 2), alpha : 1}, 0.5, {ease : FlxEase.circInOut});
-			FlxTween.tween(timerBar, {y : 29 + (guiOffset.y / 2), alpha : 1}, 0.5, {ease : FlxEase.circInOut});
+			if (engineSettings.downscroll) {
+				FlxTween.tween(timerBG, {y : 720 - 29 + (guiOffset.y / 2), alpha : 1}, 0.5, {ease : FlxEase.circInOut});
+				FlxTween.tween(timerBar, {y : 720 - 25 + (guiOffset.y / 2), alpha : 1}, 0.5, {ease : FlxEase.circInOut});
+			} else {
+				FlxTween.tween(timerBG, {y : 25 + (guiOffset.y / 2), alpha : 1}, 0.5, {ease : FlxEase.circInOut});
+				FlxTween.tween(timerBar, {y : 29 + (guiOffset.y / 2), alpha : 1}, 0.5, {ease : FlxEase.circInOut});
+			}
 		}
 
 		FlxG.sound.music.onComplete = endSong;
@@ -1739,15 +1754,25 @@ class PlayState extends MusicBeatState
 				notes.forEachAlive(function(daNote:Note)
 				{
 					if (daNote == null) return;
-					if (daNote.y > FlxG.height - guiOffset.y)
+					// if (daNote.y > FlxG.height - guiOffset.y)
+					// {
+					// 	daNote.active = false;
+					// 	daNote.visible = false;
+					// }
+					// else
+					// {
+					// 	daNote.visible = true;
+					// 	daNote.active = true;
+					// }
+					if (daNote.tooLate && daNote.mustPress)
 					{
-						daNote.active = false;
-						daNote.visible = false;
-					}
-					else
-					{
-						daNote.visible = true;
-						daNote.active = true;
+						daNote.script.variables.set("note", daNote);
+						ModSupport.executeFunc(daNote.script, "onMiss", [Note.noteNumberScheme[daNote.noteData % PlayState.SONG.keyNumber]]);
+						// noteMiss((daNote.noteData % _SONG.keyNumber) % SONG.keyNumber);
+						daNote.kill();
+						notes.remove(daNote, true);
+						daNote.destroy();
+						return;
 					}
 
 					var pos:FlxPoint = new FlxPoint(-(daNote.noteOffset.x + ((daNote.isSustainNote ? daNote.width / 2 : 0) * (engineSettings.downscroll ? 1 : -1))),0);
@@ -1824,45 +1849,40 @@ class PlayState extends MusicBeatState
 						}
 					}
 					
-						if (!daNote.mustPress && daNote.wasGoodHit)
-						{
-							if (SONG.song != 'Tutorial')
-								camZooming = true;
-		
-							daNote.script.variables.set("note", daNote);
-							try {
-								var script = daNote.script;
-								ModSupport.executeFunc(daNote.script, "onDadHit", [daNote.noteData % PlayState.SONG.keyNumber]);
-							} catch(e) {
-								trace(e);
-							}
-							
-		
-		
-							dad.holdTimer = 0;
-		
-							if (SONG.needsVoices)
-								vocals.volume = 1;
-		
-							remove(daNote);
-							daNote.kill();
-							notes.remove(daNote, true);
-							daNote.destroy();
-							
-							return;
+					if (!daNote.mustPress && daNote.wasGoodHit)
+					{
+						if (SONG.song != 'Tutorial')
+							camZooming = true;
+	
+						daNote.script.variables.set("note", daNote);
+						try {
+							var script = daNote.script;
+							ModSupport.executeFunc(daNote.script, "onDadHit", [daNote.noteData % PlayState.SONG.keyNumber]);
+						} catch(e) {
+							trace(e);
 						}
+						
+	
+	
+						dad.holdTimer = 0;
+	
+						if (SONG.needsVoices)
+							vocals.volume = 1;
+	
+						remove(daNote);
+						daNote.kill();
+						notes.remove(daNote, true);
+						daNote.destroy();
+						
+						return;
+					}
 
 					// WIP interpolation shit? Need to fix the pause issue
 					// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
 					// if ((daNote.y - (guiOffset.y / 2) < -daNote.height && !engineSettings.downscroll) || ((FlxG.height - (guiOffset.y / 2)) - daNote.y < -daNote.height && engineSettings.downscroll))
 					// {
-					// 	if ((daNote.tooLate || !daNote.wasGoodHit) && daNote.mustPress)
-					// 	{
-					// 		daNote.script.variables.set("note", daNote);
-					// 		ModSupport.executeFunc(daNote.script, "onMiss", [Note.noteNumberScheme[daNote.noteData % PlayState.SONG.keyNumber]]);
-					// 		// noteMiss((daNote.noteData % _SONG.keyNumber) % SONG.keyNumber);
-					// 	}
+					
 						
 					// daNote.active = false;
 					// daNote.visible = false;
@@ -1872,7 +1892,7 @@ class PlayState extends MusicBeatState
 					// daNote.destroy();
 					// }
 					if (daNote.isSustainNote) {
-						if (daNote.strumTime + Conductor.stepCrochet < Conductor.songPosition) {
+						if (daNote.strumTime + Conductor.stepCrochet < Conductor.songPosition && daNote.wasGoodHit) {
 							trace(1879);
 							daNote.active = false;
 							daNote.visible = false;
@@ -2512,6 +2532,7 @@ class PlayState extends MusicBeatState
 				justReleasedArray.push(FlxG.keys.anyJustReleased([key])); // Should prob fix this
 			}
 		} else {
+			// BOTPLAY CODE
 			justPressedArray = [for (i in 0...SONG.keyNumber) false];
 			notes.forEachAlive(function(daNote:Note)
 				{
@@ -2531,6 +2552,7 @@ class PlayState extends MusicBeatState
 			for(i in 0...SONG.keyNumber) {
 				justReleasedArray.push((botplayNoteHitMoment[i] + 150 < Conductor.songPosition) && !pressedArray[i] && !justPressedArray[i]);
 			}
+			// END OF BOTPLAY CODE
 		}
 		
 		// FlxG.watch.addQuick('asdfa', upP);
