@@ -376,15 +376,16 @@ class ModSupport {
     }
 
     public static function hTrace(text:String, hscript:hscript.Interp) {
-        if (!Settings.engineSettings.data.developerMode) return;
         var posInfo = hscript.posInfos();
 
         var fileName = posInfo.fileName;
         var lineNumber = Std.string(posInfo.lineNumber);
         var methodName = posInfo.methodName;
         var className = posInfo.className;
+        trace('$fileName:$methodName:$lineNumber: $text');
+
+        if (!Settings.engineSettings.data.developerMode) return;
         for (e in ('$fileName:$methodName:$lineNumber: $text').split("\n")) PlayState.log.push(e.trim());
-        trace(text);
     }
 
     public static function setHaxeFileDefaultVars(hscript:hscript.Interp, mod:String, settings:Dynamic) {
@@ -405,7 +406,12 @@ class ModSupport {
             hscript.variables.set("global", PlayState.current.vars);
         }
         hscript.variables.set("trace", function(text) {
-            hTrace(text, hscript);
+            try {
+                hTrace(text, hscript);
+            } catch(e) {
+                trace(e);
+            }
+            
         });
 		hscript.variables.set("PlayState_", PlayState);
 		hscript.variables.set("FlxSprite", FlxSprite);
@@ -447,7 +453,10 @@ class ModSupport {
 		// hscript.variables.set("FlxColor", Int);
     }
     public static function executeFunc(hscript:hscript.Interp, funcName:String, ?args:Array<Dynamic>):Dynamic {
-        
+        if (hscript == null) {
+            trace("hscript is null");
+            return null;
+        }
 		if (hscript.variables.exists(funcName)) {
             var f = hscript.variables.get(funcName);
             if (args == null) {

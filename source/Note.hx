@@ -88,6 +88,14 @@ class Note extends FlxSprite
 		return noteNumberScheme;
 	}
 
+	public override function destroy() {
+		// pixels = new BitmapData(1, 1, 0x00000000);
+		// framePixels = new BitmapData(1, 1, 0x00000000);
+		// graphic.bitmap = new BitmapData(1, 1, 0x00000000);
+		graphic.destroyOnNoUse = false;
+		graphic.persist = true;
+		// super.destroy();
+	}
 	public function createNote() {
 		// switch(noteType) {
 		// 	default:
