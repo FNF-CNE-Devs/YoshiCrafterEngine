@@ -1,3 +1,6 @@
+import cpp.Lib;
+import flixel.util.FlxSave;
+import lime.app.Application;
 import haxe.PosInfos;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -355,6 +358,8 @@ class ModSupport {
     public static var song_cutscene_path:String = "";
     public static var currentMod:String = "Friday Night Funkin'";
 
+    public static var modSaves:Map<String, FlxSave> = [];
+
     public static function getExpressionFromPath(path:String, critical:Bool = false):hscript.Expr {
         var parser = new hscript.Parser();
 		parser.allowTypes = true;
@@ -369,22 +374,26 @@ class ModSupport {
 			trace(ex);
             var exThingy = Std.string(ex);
             var line = parser.line;
-            if (critical) FlxG.switchState(new ExceptionState('Failed to parse the file located at "$path".\r\n$exThingy at $line', 0));
+            if (critical) {
+                openfl.Lib.application.window.alert('Failed to parse the file located at "$path".\r\n$exThingy at $line');
+                FlxG.switchState(new ExceptionState('Failed to parse the file located at "$path".\r\n$exThingy at $line', 0));
+            }
             trace('Failed to parse the file located at "$path".\r\n$exThingy at $line');
 		}
         return ast;
     }
 
     public static function hTrace(text:String, hscript:hscript.Interp) {
-        if (!Settings.engineSettings.data.developerMode) return;
         var posInfo = hscript.posInfos();
 
         var fileName = posInfo.fileName;
         var lineNumber = Std.string(posInfo.lineNumber);
         var methodName = posInfo.methodName;
         var className = posInfo.className;
+        trace('$fileName:$methodName:$lineNumber: $text');
+
+        if (!Settings.engineSettings.data.developerMode) return;
         for (e in ('$fileName:$methodName:$lineNumber: $text').split("\n")) PlayState.log.push(e.trim());
-        trace(text);
     }
 
     public static function setHaxeFileDefaultVars(hscript:hscript.Interp, mod:String, settings:Dynamic) {
@@ -405,7 +414,12 @@ class ModSupport {
             hscript.variables.set("global", PlayState.current.vars);
         }
         hscript.variables.set("trace", function(text) {
-            hTrace(text, hscript);
+            try {
+                hTrace(text, hscript);
+            } catch(e) {
+                trace(e);
+            }
+            
         });
 		hscript.variables.set("PlayState_", PlayState);
 		hscript.variables.set("FlxSprite", FlxSprite);
@@ -444,10 +458,14 @@ class ModSupport {
 		hscript.variables.set("BitmapDataPlus", BitmapDataPlus);
 		hscript.variables.set("Rectangle", Rectangle);
 		hscript.variables.set("Point", Point);
+		hscript.variables.set("Window", Application.current.window);
 		// hscript.variables.set("FlxColor", Int);
     }
     public static function executeFunc(hscript:hscript.Interp, funcName:String, ?args:Array<Dynamic>):Dynamic {
-        
+        if (hscript == null) {
+            trace("hscript is null");
+            return null;
+        }
 		if (hscript.variables.exists(funcName)) {
             var f = hscript.variables.get(funcName);
             if (args == null) {

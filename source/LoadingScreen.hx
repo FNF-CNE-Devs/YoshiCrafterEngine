@@ -49,11 +49,11 @@ class LoadingScreen extends FlxState {
         add(loadingText);
 
         var logoBl = new FlxSprite(-150, -100);
-		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
-		logoBl.antialiasing = true;
-		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
-		logoBl.animation.play('bump');
-		logoBl.updateHitbox();
+        logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
+        logoBl.antialiasing = true;
+        logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
+        logoBl.animation.play('bump');
+        logoBl.updateHitbox();
         logoBl.screenCenter(X);
         add(logoBl);
 
@@ -75,6 +75,7 @@ class LoadingScreen extends FlxState {
 
     public override function update(elapsed:Float) {
         super.update(elapsed);
+        if (switchin) return;
 
         if (step < 0) {
             loadingText.text = "Loading " + loadSections[0].name + "... (0%)";
@@ -82,11 +83,11 @@ class LoadingScreen extends FlxState {
             return;
         }
         if (step >= loadSections.length) {
-            if (!switchin) {
                 switchin = true;
-                FlxG.switchState(new TitleState());
                 FlxG.autoPause = true;
-            }
+                var e = new TitleState();
+                trace(e);
+                FlxG.switchState(e);
         } else {
             loadSections[step].func();
             step++;
@@ -131,12 +132,14 @@ class LoadingScreen extends FlxState {
         diamond.persist = true;
         diamond.destroyOnNoUse = false;
 
-
+        trace("transitions");
         FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
             new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+        trace(FlxTransitionableState.defaultTransIn);
+
         FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
             {asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
-
+        trace(FlxTransitionableState.defaultTransOut);
         // transIn = FlxTransitionableState.defaultTransIn;
         // transOut = FlxTransitionableState.defaultTransOut;
 

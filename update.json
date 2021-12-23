@@ -1,6 +1,12 @@
 {
     "updateLog" : [
-        "Initial release"
+        "     DAY ONE UPDATE - VARIOUS BUG FIXES",
+        "Fixed a glitch that would crash the engine when an custom arrow was pressed",
+        "Added the \"Window\" variable in the game which allows you to change the window's size, position, etc...",
+        "Added pretty printing export in Chart Editor",
+        "Fixed a glitch that caused the timer to always appear up screen, even if downscroll was enabled",
+        "Fixed a glitch that prevented notes from being missed",
+        "Parse errors will now show a message box instead of directly crash the engine."
     ],
     "version" : [1,0,0],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine"

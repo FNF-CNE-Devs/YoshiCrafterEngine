@@ -1,5 +1,6 @@
 package;
 
+import openfl.events.UncaughtErrorEvent;
 import flixel.FlxGame;
 import flixel.FlxState;
 import openfl.Assets;
@@ -19,8 +20,8 @@ class Main extends Sprite
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
 	// YOSHI ENGINE STUFF
-	public static var engineVer:Array<Int> = [1,0,0];
-	public static var buildVer:String = "Preview";
+	public static var engineVer:Array<Int> = [1,0,1];
+	public static var buildVer:String = "";
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
@@ -33,6 +34,11 @@ class Main extends Sprite
 	{
 		super();
 
+		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, function(e:UncaughtErrorEvent) {
+			trace(e.error);
+			trace(e.text);
+		});
+		
 		if (stage != null)
 		{
 			init();

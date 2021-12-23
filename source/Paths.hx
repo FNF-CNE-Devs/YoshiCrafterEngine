@@ -20,6 +20,8 @@ class Paths
 
 	static var currentLevel:String;
 
+	public static var copyBitmap:Bool = false;
+
 	static public function setCurrentLevel(name:String)
 	{
 		currentLevel = name.toLowerCase();

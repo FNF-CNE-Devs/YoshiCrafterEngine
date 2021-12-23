@@ -47,8 +47,11 @@ class TitleState extends MusicBeatState
 
 	var wackyImage:FlxSprite;
 
+
 	override public function create():Void
 	{
+
+		trace(54);
 		#if polymod
 			#if sourceCode
 			// Polymod.init({modRoot: "./", dirs: ['mods']}); //poggers
@@ -57,12 +60,15 @@ class TitleState extends MusicBeatState
 			#end
 		#end
 
+		trace("PlayerSettings");
 		PlayerSettings.init();
 
+		trace("curWacky");
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
 		// DEBUG BULLSHIT
 
+		trace("super.create()");
 		super.create();
 
 		// NGio .noLogin(APIStuff.API);
@@ -77,6 +83,7 @@ class TitleState extends MusicBeatState
 		// Copy default files
 
 
+		trace("CoolUtil.copyFolder");
 		#if sys
 			// Copies the skin folder
 			#if windows
@@ -86,6 +93,7 @@ class TitleState extends MusicBeatState
 			#end
 		#end
 		
+		trace("Highscore.load");
 		Highscore.load();
 		#if web
 			trace("Loading characters library");
@@ -111,6 +119,8 @@ class TitleState extends MusicBeatState
 		#elseif CHARTING
 		FlxG.switchState(new ChartingState_New());
 		#else
+		
+		trace("FlxTimer");
 		new FlxTimer().start(1, function(tmr:FlxTimer)
 		{
 			startIntro();
@@ -118,14 +128,16 @@ class TitleState extends MusicBeatState
 		#end
 
 		#if desktop
+		trace("DiscordClient");
 		DiscordClient.initialize();
 		
+		trace("Application.current.onExit");
 		Application.current.onExit.add (function (exitCode) {
 			DiscordClient.shutdown();
-		 });
-		 
+		});
+		
 
-		 
+		
 		#end
 	}
 
