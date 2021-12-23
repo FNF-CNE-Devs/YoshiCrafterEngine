@@ -1893,7 +1893,6 @@ class PlayState extends MusicBeatState
 					// }
 					if (daNote.isSustainNote) {
 						if (daNote.strumTime + Conductor.stepCrochet < Conductor.songPosition && daNote.wasGoodHit) {
-							trace(1879);
 							daNote.active = false;
 							daNote.visible = false;
 		
@@ -1901,7 +1900,6 @@ class PlayState extends MusicBeatState
 							notes.remove(daNote, true);
 							daNote.destroy();
 							
-							trace(1887);
 						}
 					} else {
 						if ((daNote.tooLate && !daNote.wasGoodHit) && daNote.mustPress)

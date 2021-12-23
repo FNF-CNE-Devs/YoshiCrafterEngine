@@ -1,5 +1,6 @@
 package;
 
+import openfl.events.UncaughtErrorEvent;
 import flixel.FlxGame;
 import flixel.FlxState;
 import openfl.Assets;
@@ -33,6 +34,11 @@ class Main extends Sprite
 	{
 		super();
 
+		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, function(e:UncaughtErrorEvent) {
+			trace(e.error);
+			trace(e.text);
+		});
+		
 		if (stage != null)
 		{
 			init();
