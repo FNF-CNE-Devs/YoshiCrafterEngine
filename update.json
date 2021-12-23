@@ -8,6 +8,6 @@
         "Fixed a glitch that prevented notes from being missed",
         "Parse errors will now show a message box instead of directly crash the engine."
     ],
-    "version" : [1,0,0],
+    "version" : [1,0,1],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine"
 }
