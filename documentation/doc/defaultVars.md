@@ -2,7 +2,7 @@
 For each hscript (Stages, Characters, Modcharts, etc...), default variables/classes are automatically set/imported. These can be used to interact with the game, and mod it.
 
 ## Variables
-- `PlayState` - Current PlayState instance
+- [`PlayState`](playstate.md) - Current PlayState instance
 - `EngineSettings` - Copy of the engine settings that you can mess with. Will have effect in game (not permanent)
 - `global` - `Map<String, Dynamic>` shared between all hscripts. Useful for sharing FlxSprites.
 - `Paths` - Instance of the `Paths_Mod` class used to get assets from your mod folder.
@@ -43,3 +43,4 @@ For each hscript (Stages, Characters, Modcharts, etc...), default variables/clas
 - [`BitmapDataPlus`] - `BitmapData` but better. Used for the Blammed effect.
 - [`Rectangle`](https://api.haxeflixel.com/flash/geom/Rectangle.html)
 - [`Point`](https://api.haxeflixel.com/flash/geom/Point.html)
+- [`Window`](https://api.haxeflixel.com/lime/ui/Window.html) - Current window

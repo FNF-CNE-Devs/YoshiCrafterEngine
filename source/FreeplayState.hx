@@ -78,6 +78,7 @@ class FreeplayState extends MusicBeatState
 		var mPath = Paths.getModsFolder();
 		
 		songs = [];
+		var fnfSongs = [];
 		for(mod in FileSystem.readDirectory('$mPath/')) {
 			if (FileSystem.exists('$mPath/$mod/data/freeplaySonglist.json') && FileSystem.exists('$mPath/$mod/song_conf.hx')) {
 				var jsonContent:FreeplaySongList = null;
@@ -88,11 +89,12 @@ class FreeplayState extends MusicBeatState
 				}
 				if (jsonContent.songs != null) {
 					for(song in jsonContent.songs) {
-						songs.push(SongMetadata.fromFreeplaySong(song, mod));
+						(mod == "Friday Night Funkin'" ? fnfSongs : songs).push(SongMetadata.fromFreeplaySong(song, mod));
 					}
 				}
 			}
 		}
+		if (!(Settings.engineSettings.data.hideOriginalGame && songs.length > 0)) for (s in fnfSongs) songs.push(s);
 	}
 	override function create()
 	{

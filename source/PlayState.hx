@@ -138,18 +138,16 @@ class PlayState extends MusicBeatState
 	@:isVar public var dad(get, set):Character;
 	@:isVar public var boyfriend(get, set):Boyfriend;
 
-	function get_boyfriend():Boyfriend 	{return boyfriends[currentBoyfriend];}
-	function get_dad():Character 		{return dads[currentDad];}
+	function get_boyfriend():Boyfriend 	{return boyfriends[0];}
+	function get_dad():Character 		{return dads[0];}
 
 	function set_boyfriend(bf):Boyfriend {
 		boyfriends.push(bf);
-		currentBoyfriend = boyfriends.length - 1;
 		return bf;
 	}
 
 	function set_dad(dad):Character {
 		dads.push(dad);
-		currentDad = dads.length - 1;
 		return dad;
 	}
 	
@@ -245,6 +243,38 @@ class PlayState extends MusicBeatState
 		}
 		return enable;
 	}
+
+	public function showKeys() {
+		for(i in 0...SONG.keyNumber) {
+			var m = playerStrums.members[i];
+			var t = new FlxText(0, m.y + m.height + 10);
+			t.setFormat(Paths.font("vcr.ttf"), Std.int(16), FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			t.cameras = [camHUD];
+			t.antialiasing = true;
+			if (!engineSettings.botplay) {
+				var field = cast(Reflect.field(engineSettings, 'control_' + SONG.keyNumber + '_$i'), FlxKey);
+				// if (field != null) {
+					t.text = ControlsSettingsSubState.ControlsSettingsSub.getKeyName(field);
+				// }
+			}
+			t.x = playerStrums.members[i].x + (playerStrums.members[i].width / 2) - (t.width / 2);
+
+			if (engineSettings.downscroll) {
+				t.y = playerStrums.members[i].y - 10 - t.height;
+			}
+			add(t);
+			FlxTween.tween(t, {alpha : 1}, 0.25, {onComplete : function(ti) {
+				new FlxTimer().start(5, function(ti) {
+					FlxTween.tween(t, {alpha : 0}, 0.25, {
+						onComplete : function(ti) {
+							remove(t);
+							t.destroy();
+						}
+					});
+				});
+			}});
+		}
+	}
 	public var delayTotal:Float = 0;
 
 	public var hitCounter:FlxText;
@@ -272,6 +302,23 @@ class PlayState extends MusicBeatState
 	public var guiOffset(get, null):FlxPoint;
 	public function get_guiOffset():FlxPoint {
 		return new FlxPoint((1280 - (1280 / engineSettings.noteScale)), (720 - (720 / engineSettings.noteScale)));
+	}
+
+	public function setDownscroll(downscroll:Bool, autoPos:Bool) {
+		var p:Bool = autoPos && (engineSettings.downscroll == downscroll);
+		engineSettings.downscroll = downscroll;
+		if (p) {
+			for (strum in playerStrums.members) {
+				var oldStrumLinePos = strumLine.y;
+				strumLine.y = (engineSettings.downscroll ? FlxG.height - 150 : 50) * (1 / engineSettings.noteScale) + (guiOffset.y / 2);
+				strum.y = strum.y - oldStrumLinePos + strumLine.y;
+			}
+			for (strum in cpuStrums.members) {
+				var oldStrumLinePos = strumLine.y;
+				strumLine.y = (engineSettings.downscroll ? FlxG.height - 150 : 50) * (1 / engineSettings.noteScale) + (guiOffset.y / 2);
+				strum.y = strum.y - oldStrumLinePos + strumLine.y;
+			}
+		}
 	}
 
 	public static var modchart:hscript.Interp;
@@ -940,6 +987,7 @@ class PlayState extends MusicBeatState
 				elem.y = FlxG.height + elem.height;
 				FlxTween.tween(elem, {y : oldElemY, alpha : oldAlpha}, 0.75, {ease : FlxEase.quartInOut});
 			}
+			elem.visible = true;
 		}
 	}
 	public function startCountdown():Void

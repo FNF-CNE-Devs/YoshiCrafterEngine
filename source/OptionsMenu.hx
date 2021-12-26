@@ -1,5 +1,6 @@
 package;
 
+import FreeplayState.FreeplaySong;
 import sys.FileSystem;
 import flixel.graphics.frames.FlxAtlasFrames;
 import ControlsSettingsSubState.ControlsSettingsSub;
@@ -770,6 +771,22 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: Settings.engineSettings.data.greenScreenMode,
+			value: ""
+		});
+		options.push({
+			text : "Hide original game",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.hideOriginalGame = !Settings.engineSettings.data.hideOriginalGame;
+					o.checkboxChecked = Settings.engineSettings.data.hideOriginalGame;
+					o.check(Settings.engineSettings.data.hideOriginalGame);
+
+					StoryMenuState.loadWeeks();
+					FreeplayState.loadFreeplaySongs();
+				}
+			},
+			checkbox: true,
+			checkboxChecked: Settings.engineSettings.data.hideOriginalGame,
 			value: ""
 		});
 		options.push({

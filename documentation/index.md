@@ -6,3 +6,4 @@ Welcome to Yoshi Engine's official documentation. Select a chapter below on how 
 
 ## Main documentation
 - [Characters](doc/chars.md)
+- [PlayState](doc/playstate.md)
