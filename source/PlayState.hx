@@ -151,6 +151,23 @@ class PlayState extends MusicBeatState
 		return dad;
 	}
 	
+	public function updateHealthBarColors() {
+		var dadColor = 0xFFFF0000;
+		var bfColor = 0xFF66FF33;
+		try {
+			var c:Null<Int> = dad.getColors()[0];
+			if (c != 0 && c != null) dadColor == c;
+		} catch(e) {
+
+		}
+		try {
+			var c:Null<Int> = boyfriend.getColors()[0];
+			if (c != 0 && c != null) bfColor == c;
+		} catch(e) {
+			
+		}
+		healthBar.createFilledBar(dadColor, bfColor);
+	}
 	public var notes:FlxTypedGroup<Note>;
 	public var unspawnNotes:Array<Note> = [];
 
@@ -305,17 +322,16 @@ class PlayState extends MusicBeatState
 	}
 
 	public function setDownscroll(downscroll:Bool, autoPos:Bool) {
-		var p:Bool = autoPos && (engineSettings.downscroll == downscroll);
+		var p:Bool = autoPos;
 		engineSettings.downscroll = downscroll;
 		if (p) {
+			
+			var oldStrumLinePos = strumLine.y;
+			strumLine.y = (engineSettings.downscroll ? FlxG.height - 150 : 50) * (1 / engineSettings.noteScale) + (guiOffset.y / 2);
 			for (strum in playerStrums.members) {
-				var oldStrumLinePos = strumLine.y;
-				strumLine.y = (engineSettings.downscroll ? FlxG.height - 150 : 50) * (1 / engineSettings.noteScale) + (guiOffset.y / 2);
 				strum.y = strum.y - oldStrumLinePos + strumLine.y;
 			}
 			for (strum in cpuStrums.members) {
-				var oldStrumLinePos = strumLine.y;
-				strumLine.y = (engineSettings.downscroll ? FlxG.height - 150 : 50) * (1 / engineSettings.noteScale) + (guiOffset.y / 2);
 				strum.y = strum.y - oldStrumLinePos + strumLine.y;
 			}
 		}
@@ -827,7 +843,8 @@ class PlayState extends MusicBeatState
 			'health', 0, 2);
 		healthBar.scrollFactor.set();
 		healthBar.cameras = [camHUD];
-		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
+		// healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
+		updateHealthBarColors();
 		// healthBar
 		add(healthBar);
 
@@ -1298,7 +1315,7 @@ class PlayState extends MusicBeatState
 				else
 					oldNote = null;
 
-				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, gottaHitNote);
+				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, gottaHitNote, section.altAnim);
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
 
@@ -1311,7 +1328,7 @@ class PlayState extends MusicBeatState
 				{
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * (susNote + 0.5)), daNoteData, oldNote, true, gottaHitNote);
+					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * (susNote + 0.5)), daNoteData, oldNote, true, gottaHitNote, section.altAnim);
 					sustainNote.scrollFactor.set();
 					unspawnNotes.push(sustainNote);
 
@@ -1503,19 +1520,20 @@ class PlayState extends MusicBeatState
 		perfectMode = false;
 		#end
 		if (engineSettings.customArrowColors) {
-			var noteColors:Array<FlxColor> = [
-				new FlxColor(engineSettings.arrowColor0),
-				new FlxColor(engineSettings.arrowColor1),
-				new FlxColor(engineSettings.arrowColor2),
-				new FlxColor(engineSettings.arrowColor3)
-			];
+			// var noteColors:Array<FlxColor> = [
+			// 	new FlxColor(engineSettings.arrowColor0),
+			// 	new FlxColor(engineSettings.arrowColor1),
+			// 	new FlxColor(engineSettings.arrowColor2),
+			// 	new FlxColor(engineSettings.arrowColor3)
+			// ];
+			var noteColors:Array<FlxColor> = boyfriend.getColors();
 			for (strum in playerStrums) {
 				#if secret
 					var c:FlxColor = new FlxColor(0xFFFF0000);
 					c.hue = (Conductor.songPosition / 100) % 359;
 					if (strum.animation.curAnim != null) strum.color = (strum.animation.curAnim.name == "static" ? new FlxColor(0xFFFFFFFF) : c);
 				#else
-					if (strum.animation.curAnim != null) strum.color = (strum.animation.curAnim.name == "static" ? new FlxColor(0xFFFFFFFF) : noteColors[strum.ID % 4]);
+					if (strum.animation.curAnim != null) strum.color = (strum.animation.curAnim.name == "static" ? new FlxColor(0xFFFFFFFF) : noteColors[(strum.ID % (noteColors.length - 1)) + 1]);
 				#end
 			}
 		}

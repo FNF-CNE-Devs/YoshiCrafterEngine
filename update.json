@@ -1,7 +1,10 @@
 {
     "updateLog" : [
-        "     1.1.0",
-        "Added a new variable in Note that prevents the bot from automatically hitting (prob deadly) notes"
+        "Added a new variable in Note that prevents the bot from automatically hitting (prob deadly) notes",
+        "A \"mod\" variable have been added in scripts to allow people that arent sure of their mod name to put this variable instead of a definitive name",
+        "Fixed Week 6",
+        "Fixed Week 5's Daddy Dearest getting kicked in the balls voice",
+        ""
     ],
     "version" : [1,1,0],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine"

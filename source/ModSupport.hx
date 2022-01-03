@@ -374,8 +374,8 @@ class ModSupport {
 			trace(ex);
             var exThingy = Std.string(ex);
             var line = parser.line;
+            openfl.Lib.application.window.alert('Failed to parse the file located at "$path".\r\n$exThingy at $line');
             if (critical) {
-                openfl.Lib.application.window.alert('Failed to parse the file located at "$path".\r\n$exThingy at $line');
                 FlxG.switchState(new ExceptionState('Failed to parse the file located at "$path".\r\n$exThingy at $line', 0));
             }
             trace('Failed to parse the file located at "$path".\r\n$exThingy at $line');
@@ -397,6 +397,7 @@ class ModSupport {
     }
 
     public static function setHaxeFileDefaultVars(hscript:hscript.Interp, mod:String, settings:Dynamic) {
+		hscript.variables.set("mod", mod);
 		hscript.variables.set("PlayState", PlayState.current);
 		hscript.variables.set("EngineSettings", PlayState.current.engineSettings);
         hscript.variables.set("include", function(path:String) {

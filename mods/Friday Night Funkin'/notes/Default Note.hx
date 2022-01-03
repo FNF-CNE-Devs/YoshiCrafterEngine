@@ -151,5 +151,5 @@ function onMiss(noteData) {
 }
 
 function onDadHit(noteData) {
-    PlayState.dad.playAnim(noteSchemes[PlayState.song.keyNumber][noteData % PlayState.song.keyNumber][4], true);
+    PlayState.dad.playAnim(noteSchemes[PlayState.song.keyNumber][noteData % PlayState.song.keyNumber][4] + (note.altAnim ? "-alt" : ""), true);
 }

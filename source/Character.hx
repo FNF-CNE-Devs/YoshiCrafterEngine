@@ -185,7 +185,31 @@ class Character extends FlxSprite
 	 */
 	public function getColors(altAnim:Bool = false):Array<FlxColor>
 	{
-		return ModSupport.executeFunc(characterScript, "getColors", [altAnim]);
+		var defNoteColors = [
+			Settings.engineSettings.data.arrowColor0,
+			Settings.engineSettings.data.arrowColor1,
+			Settings.engineSettings.data.arrowColor2,
+			Settings.engineSettings.data.arrowColor3
+		];
+		var c:Array<Int> = ModSupport.executeFunc(characterScript, "getColors", [altAnim]);
+		var invalid = false;
+		invalid = c == null;
+		if (!invalid) invalid = c.length < 1;
+		if (invalid) c = [
+			(this.isPlayer ? 0xFF66FF33 : 0xFFFF0000),
+			Settings.engineSettings.data.arrowColor0,
+			Settings.engineSettings.data.arrowColor1,
+			Settings.engineSettings.data.arrowColor2,
+			Settings.engineSettings.data.arrowColor3
+		];
+
+		for (i in 1...c.length) {
+			if (c[i] == 0) {
+				c[i] = defNoteColors[(i - 1) % defNoteColors.length];
+			}
+		}
+
+		return c;
 	}
 
 	override function update(elapsed:Float)
