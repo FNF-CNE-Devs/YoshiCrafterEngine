@@ -102,13 +102,16 @@ function generateStaticArrow(babyArrow:FlxSprite, i:Int) {
     babyArrow.animation.addByPrefix('confirm', s[2], 24, false);
 }
 
+var blammed:Bool = false;
+var light:FlxSprite = null;
 function create() {
-    if (EngineSettings.customArrowColors) {
+
+    if (EngineSettings.customArrowColors && EngineSettings.customArrowSkin != "default") {
         var colors:Array<Int> = (note.mustPress || EngineSettings.customArrowColors_allChars) ? PlayState.boyfriend.getColors(false) : PlayState.dad.getColors(false);
-        note.frames = (EngineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored') : Paths_.getSparrowAtlas_Custom(StringTools.replace(StringTools.replace(Paths_.getSkinsPath() + "notes/" + EngineSettings.customArrowSkin.toLowerCase(), "/", "\\"), "\r", ""));
+        note.frames = Paths_.getSparrowAtlas_Custom(StringTools.replace(StringTools.replace(Paths_.getSkinsPath() + "notes/" + EngineSettings.customArrowSkin.toLowerCase(), "/", "\\"), "\r", ""));
 		note.color = colors[(note.noteData % 4) + 1];
     } else {
-        note.frames = (EngineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets') : Paths_.getSparrowAtlas_Custom(StringTools.replace(StringTools.replace(Paths_.getSkinsPath() + "notes/" + EngineSettings.customArrowSkin.toLowerCase(), "/", "\\"), "\r", ""));
+        note.frames = (EngineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas("NOTE_assets_blammed_colored") : Paths_.getSparrowAtlas_Custom(StringTools.replace(StringTools.replace(Paths_.getSkinsPath() + "notes/" + EngineSettings.customArrowSkin.toLowerCase(), "/", "\\"), "\r", ""));
     }
 
     schemeShit = noteSchemes[PlayState.song.keyNumber][note.noteData % PlayState.song.keyNumber];
@@ -131,6 +134,9 @@ function create() {
 }
 
 function update(elapsed) {
+    if (EngineSettings.customArrowSkin == "default") {
+        note.color = global["light"].color;
+    }
     if (note.isSustainNote) {
         note.canBeHit = (note.strumTime - (Conductor.stepCrochet * 0.6) < Conductor.songPosition) && (note.strumTime + (Conductor.stepCrochet) > Conductor.songPosition);
     } else {

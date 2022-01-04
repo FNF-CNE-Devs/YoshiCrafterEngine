@@ -479,6 +479,7 @@ class ModSupport {
                     
                     hTrace('$e at $s\r\n$details', hscript);
                 }
+                Paths.copyBitmap = false;
                 return result;
             } else {
                 var result = null;
@@ -490,6 +491,7 @@ class ModSupport {
 
                     hTrace('$e at $s\r\n$details', hscript);
                 }
+                Paths.copyBitmap = false;
                 return result;
             }
 			// f();

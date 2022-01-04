@@ -218,9 +218,14 @@ class Paths
 		var b = Paths.cacheBitmap[path];
 		if (copyBitmap) {
 			b = b.clone();
-			Paths.cacheBitmap[path + Time.];
+			for(i in 0...0x00FFFFFF) {
+				if (Paths.cacheBitmap[path + "/" + Std.string(i)] == null) {
+					Paths.cacheBitmap[path + "/" + Std.string(i)] = b;
+					break;
+				}
+			}
 		}
-		return (copyBitmap ?  : Paths.cacheBitmap[path]);
+		return (copyBitmap ? b : Paths.cacheBitmap[path]);
 	}
 	inline static public function getBytesOutsideAssets(path:String) {
 		// trace(path);
