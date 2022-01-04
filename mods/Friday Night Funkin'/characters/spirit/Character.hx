@@ -23,3 +23,13 @@ function create() {
 
     character.antialiasing = false;
 }
+
+function getColors(alt:Bool) {
+    return [
+        0xFFFF3C6E,
+        0xFFFF3C6E,
+        0xFFFF3C6E,
+        0xFFFF3C6E,
+        0xFFFF3C6E
+    ];
+}

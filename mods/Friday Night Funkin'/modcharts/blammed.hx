@@ -32,6 +32,7 @@ function create() {
     if (EngineSettings.blammedEffect) {
 
         trace("creating gf");
+        Paths_.copyBitmap = true;
         gfDark = new Character(400, 130, "gf", false, true);
         gfDark.pixels.copyPixels(BitmapDataPlus.GenerateBlammedEffect(gfDark.pixels.clone(), 0xFF000000, 0xFFFFFFFF), new Rectangle(0, 0, gfDark.pixels.width, gfDark.pixels.height), new Point(0,0));
         gfDark.visible = false;
@@ -41,6 +42,7 @@ function create() {
         // bfDark = new Boyfriend(770, 100, PlayState.SONG.player1, EngineSettings.customBFSkin == "default" ? "BF_blammed" : "blammed");
         
         trace("creating bf");
+        Paths_.copyBitmap = true;
         bfDark = new Character(400, 130, PlayState.song.player1, false, true);
         bfDark.pixels.copyPixels(BitmapDataPlus.GenerateBlammedEffect(bfDark.pixels.clone(), 0xFF000000, 0xFFFFFFFF), new Rectangle(0, 0, bfDark.pixels.width, bfDark.pixels.height), new Point(0,0));
         bfDark.visible = false;
@@ -50,12 +52,14 @@ function create() {
         PlayState.add(bfDark);
 
         trace("creating pico");
+        Paths_.copyBitmap = true;
         dadDark = new Character(400, 130, PlayState.song.player2, false, true);
         dadDark.pixels.copyPixels(BitmapDataPlus.GenerateBlammedEffect(dadDark.pixels.clone(), 0xFF000000, 0xFFFFFFFF), new Rectangle(0, 0, dadDark.pixels.width, dadDark.pixels.height), new Point(0,0));
         dadDark.visible = false;
         dadDark.setPosition(PlayState.dad.x, PlayState.dad.y);
         PlayState.dads.push(dadDark);
         PlayState.add(dadDark);
+        Paths_.copyBitmap = false;
         
         trace("done");
 
@@ -127,17 +131,10 @@ function beatHit(curBeat:Int) {
     }
     
     
-    if (curBeat % 4 == 0) {
-        if (curBeat >= 128 && curBeat < 192 && EngineSettings.blammedEffect) {
-            PlayState.boyfriend.color = light.color;
-            PlayState.dad.color = light.color;
-            gfDark.color = light.color;
-            // PlayState.gf.color = stage.light.color;
-        } else {
-            PlayState.boyfriend.color = -1;
-            PlayState.dad.color = -1;
-            // PlayState.gf.color = -1;
-        }
+    if (curBeat % 4 == 0 && EngineSettings.blammedEffect) {
+        bfDark.color = light.color;
+        dadDark.color = light.color;
+        gfDark.color = light.color;
     }
 }
 

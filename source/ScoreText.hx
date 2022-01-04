@@ -38,6 +38,8 @@ class ScoreText {
     }
 
     public static function generateRating(ps:PlayState) {
+        if (ps.engineSettings.botplay) return " | BOTPLAY";
+
         if (Settings.engineSettings.data.showRating && ps.numberOfNotes != 0) {
             var rating = getRating(ps.accuracy / ps.numberOfNotes);
 

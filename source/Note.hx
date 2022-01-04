@@ -37,6 +37,7 @@ class Note extends FlxSprite
 
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
+	public var hitOnBotplay:Bool = true;
 
 	public var noteScore:Float = 1;
 
@@ -185,17 +186,19 @@ class Note extends FlxSprite
 	}
 	public var noteOffset:FlxPoint = new FlxPoint(0,0);
 	public var enableRating:Bool = true;
+	public var altAnim:Bool = true;
 	public var engineSettings:Dynamic;
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?mustHit = true)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?mustHit = true, ?altAnim = false)
 	{
 		super();
+		this.altAnim = altAnim;
 		engineSettings = Settings.engineSettings.data;
 		if (PlayState.current != null) engineSettings = PlayState.current.engineSettings;
 
 		var noteNumberScheme:Array<NoteDirection> = noteNumberSchemes[PlayState.SONG.keyNumber];
 		if (noteNumberScheme == null) noteNumberScheme = noteNumberSchemes[4];
 
-		
+		this.mustPress = mustHit;
 
 		// if (prevNote == null)
 		// 	prevNote = this;

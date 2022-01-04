@@ -83,6 +83,8 @@ class StoryMenuState extends MusicBeatState
 		weekData = [];
 		weekButtons = [];
 		weekCharacters = [];
+		var fnfWeekData = [];
+		var fnfWeekButtons = [];
 		
 		for (mod in FileSystem.readDirectory(Paths.getModsFolder() + "/")) {
 			if (FileSystem.exists(Paths.getModsFolder() + '/$mod/weeks.json') && FileSystem.exists(Paths.getModsFolder() + '/$mod/song_conf.hx')) {
@@ -101,13 +103,14 @@ class StoryMenuState extends MusicBeatState
 						{"name" : "Hard", "sprite" : "Friday Night Funkin':storymenu/hard"}
 					];
 					var sprite = week.buttonSprite;
-					weekData.push(week);
+					trace(mod);
+					(mod == "Friday Night Funkin'" ? fnfWeekData : weekData).push(week);
 
 					var weekButton = Paths.getBitmapOutsideAssets(Paths.getModsFolder() + '/$mod/$sprite');
 					if (weekButton == null) {
 						weekButton = new BitmapData(443, 82, true, 0x00000000);
 					}
-					weekButtons.push(weekButton);
+					(mod == "Friday Night Funkin'" ? fnfWeekButtons : weekButtons).push(weekButton);
 
 					var f = mod + ":" + week.dad.file;
 					if (weekCharacters[f] == null) {
@@ -126,6 +129,11 @@ class StoryMenuState extends MusicBeatState
 					}
 				}
 			}
+		}
+		
+		if (!(Settings.engineSettings.data.hideOriginalGame && weekData.length > 0)) {
+			for (s in fnfWeekData) weekData.push(s);
+			for (b in fnfWeekButtons) weekButtons.push(b);
 		}
 	}
 

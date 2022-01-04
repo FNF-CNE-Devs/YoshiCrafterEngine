@@ -1,12 +1,12 @@
 {
     "updateLog" : [
-        "     DAY ONE UPDATE - VARIOUS BUG FIXES",
-        "Fixed a glitch that would crash the engine when an custom arrow was pressed",
-        "Added the \"Window\" variable in the game which allows you to change the window's size, position, etc...",
-        "Fixed a glitch that caused the timer to always appear up screen, even if downscroll was enabled",
-        "Fixed a glitch that prevented notes from being missed",
-        "Parse errors will now show a message box instead of directly crash the engine."
+        " THE ENGINE IS NOW STABLE !",
+        "",
+        "Added a new variable in Note that prevents the bot from automatically hitting (prob deadly) notes",
+        "A \"mod\" variable have been added in scripts to allow people that arent sure of their mod name to put this variable instead of a definitive name",
+        "Fixed Week 6",
+        "Fixed Week 5's Daddy Dearest getting kicked in the balls voice"
     ],
-    "version" : [1,0,1],
-    "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/tag/v1.0.1"
+    "version" : [1,1,0],
+    "url" : "https://github.com/YoshiCrafter29/YoshiEngine"
 }

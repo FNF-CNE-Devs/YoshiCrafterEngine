@@ -20,7 +20,7 @@ function create() {
     character.charGlobalOffset.y = 360;
     // character.charGlobalOffset.y = 180;
     character.camOffset.x = -150;
-    character.camOffset.y = -character.height / 3.5;
+    character.camOffset.y = -100 - (character.height / 4);
 
     character.antialiasing = false;
     character.playAnim('idle');

@@ -73,6 +73,7 @@ function create()
     light.setGraphicSize(Std.int(light.width * 0.85));
     light.updateHitbox();
     light.antialiasing = true;
+    global["light"] = light;
     PlayState.add(light);
 
     streetBehind = new FlxSprite(-40, 50).loadGraphic(Paths.image('philly/behindTrain'));

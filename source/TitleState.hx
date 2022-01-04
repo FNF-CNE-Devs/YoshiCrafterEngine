@@ -342,6 +342,8 @@ class TitleState extends MusicBeatState
 						if (localVer < latestVer) {
 							outDated = true;
 							break;
+						} else if (latestVer < localVer) {
+							break;
 						}
 					}
 					if (outDated)
