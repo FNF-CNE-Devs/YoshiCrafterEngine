@@ -1,5 +1,7 @@
 {
     "updateLog" : [
+        " THE ENGINE IS NOW STABLE !",
+        "",
         "Added a new variable in Note that prevents the bot from automatically hitting (prob deadly) notes",
         "A \"mod\" variable have been added in scripts to allow people that arent sure of their mod name to put this variable instead of a definitive name",
         "Fixed Week 6",
