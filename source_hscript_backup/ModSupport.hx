@@ -375,9 +375,9 @@ class ModSupport {
             var exThingy = Std.string(ex);
             var line = parser.line;
             openfl.Lib.application.window.alert('Failed to parse the file located at "$path".\r\n$exThingy at $line');
-            // if (critical) {
-            //     FlxG.switchState(new ExceptionState('Failed to parse the file located at "$path".\r\n$exThingy at $line', 0));
-            // }
+            if (critical) {
+                FlxG.switchState(new ExceptionState('Failed to parse the file located at "$path".\r\n$exThingy at $line', 0));
+            }
             trace('Failed to parse the file located at "$path".\r\n$exThingy at $line');
 		}
         return ast;
@@ -461,72 +461,6 @@ class ModSupport {
 		hscript.variables.set("Point", Point);
 		hscript.variables.set("Window", Application.current.window);
 		// hscript.variables.set("FlxColor", Int);
-    }
-
-    public static function setScriptDefaultVars(script:Script, mod:String, settings:Dynamic) {
-		script.setVariable("mod", mod);
-		script.setVariable("PlayState", PlayState.current);
-		script.setVariable("EngineSettings", PlayState.current.engineSettings);
-        script.setVariable("include", function(path:String) {
-            var splittedPath = path.split(":");
-            if (splittedPath.length < 2) splittedPath.insert(0, mod);
-            var joinedPath = splittedPath.join("/");
-            var mFolder = Paths.getModsFolder();
-            var expr = getExpressionFromPath('$mFolder/$joinedPath.hx');
-            if (expr != null) {
-                hscript.execute(expr);
-            }
-        });
-
-        if (PlayState.current != null) {
-            script.setVariable("global", PlayState.current.vars);
-        }
-        script.setVariable("trace", function(text) {
-            try {
-                hTrace(text, hscript);
-            } catch(e) {
-                trace(e);
-            }
-            
-        });
-		script.setVariable("PlayState_", PlayState);
-		script.setVariable("FlxSprite", FlxSprite);
-		script.setVariable("BitmapData", BitmapData);
-		script.setVariable("FlxG", FlxG);
-		script.setVariable("Paths", new Paths_Mod(mod, settings));
-		script.setVariable("Paths_", Paths);
-		script.setVariable("Std", Std);
-		script.setVariable("Math", Math);
-		script.setVariable("FlxMath", FlxMath);
-		script.setVariable("FlxAssets", FlxAssets);
-        script.setVariable("Assets", Assets);
-		script.setVariable("ModSupport", ModSupport);
-		script.setVariable("Note", Note);
-		script.setVariable("Character", Character);
-		script.setVariable("Conductor", Conductor);
-		script.setVariable("StringTools", StringTools);
-		script.setVariable("FlxSound", FlxSound);
-		script.setVariable("FlxEase", FlxEase);
-		script.setVariable("FlxTween", FlxTween);
-		// script.setVariable("File", File);
-		// script.setVariable("FileSystem", FileSystem);
-		script.setVariable("FlxColor", FlxColor_Helper);
-		script.setVariable("Boyfriend", Boyfriend);
-		script.setVariable("FlxTypedGroup", FlxTypedGroup);
-		script.setVariable("BackgroundDancer", BackgroundDancer);
-		script.setVariable("BackgroundGirls", BackgroundGirls);
-		script.setVariable("FlxTimer", FlxTimer);
-		script.setVariable("Json", Json);
-		script.setVariable("MP4Video", MP4Video);
-		// script.setVariable("PNGEncoderOptions", PNGEncoderOptions);
-		script.setVariable("CoolUtil", CoolUtil);
-		script.setVariable("FlxTypeText", FlxTypeText);
-		script.setVariable("FlxText", FlxText);
-		script.setVariable("FlxAxes", FlxAxes);
-		script.setVariable("BitmapDataPlus", BitmapDataPlus);
-		script.setVariable("Rectangle", Rectangle);
-		script.setVariable("Point", Point);
-		script.setVariable("Window", Application.current.window);
     }
     public static function executeFunc(hscript:hscript.Interp, funcName:String, ?args:Array<Dynamic>):Dynamic {
         if (hscript == null) {
