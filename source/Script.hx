@@ -1,3 +1,10 @@
+import vm.lua.Lua;
+import vm.lua.State;
+import llua.LuaL;
+import llua.State;
+import llua.State.Lua_State;
+import sys.FileSystem;
+import sys.io.File;
 using StringTools;
 
 import haxe.io.Path;
@@ -11,8 +18,43 @@ class Script {
 
     }
 
-    public static function fromPath(path:String) {
+    public static function fromPath(path:String):Script {
+        var script = create(path);
+        if (script != null) {
+            script.loadFile(path);
+            return script;
+        } else {
+            return null;
+        }
+    }
 
+    public static function create(path:String):Script {
+        var p = path.toLowerCase();
+        var ext = Path.extension(p);
+        trace('ext :');
+        trace(ext);
+
+        var scriptExts = ["lua", "hscript", "hx"];
+        if (ext == "") {
+            for (e in scriptExts) {
+                if (FileSystem.exists('$p.$e')) {
+                    p = '$p.$e';
+                    ext = e;
+                    break;
+                }
+            }
+        }
+        trace(ext);
+        switch(ext.toLowerCase()) {
+            case 'hx' | 'hscript':
+                trace("HScript");
+                return new HScript();
+            case 'lua':
+                trace("Lua");
+                return new LuaScript();
+        }
+        trace('ext not found : $ext for $path');
+        return null;
     }
 
     public function executeFunc(funcName:String, ?args:Array<Dynamic>):Dynamic {
@@ -87,8 +129,18 @@ class HScript extends Script {
 
     public override function loadFile(path:String) {
         fileName = Path.withoutDirectory(path);
+        var p = path;
+        if (Path.extension(p) == "") {
+            var exts = ["hx", "hscript"];
+            for (e in exts) {
+                if (FileSystem.exists('$p.$e')) {
+                    p = '$p.$e';
+                    break;
+                }
+            }
+        }
         try {
-            hscript.execute(ModSupport.getExpressionFromPath(path, false));
+            hscript.execute(ModSupport.getExpressionFromPath(p, false));
         } catch(e) {
 
         }
@@ -108,6 +160,25 @@ class HScript extends Script {
     }
 
     public override function setVariable(name:String, val:Dynamic) {
+        hscript.variables.set(name, val);
+    }
+
+    public override function getVariable(name:String):Dynamic {
+        return hscript.variables.get(name);
+    }
+}
+
+class LuaScript extends Script {
+    public var lua:vm.lua.Lua;
+
+    public function new() {
+        // lua = Luaplugin;
+        lua = new Lua();
+        super();
+    }
+
+    public override function loadFile(path:String) {
+
         
     }
 }

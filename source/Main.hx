@@ -23,6 +23,8 @@ class Main extends Sprite
 	public static var engineVer:Array<Int> = [1,1,0];
 	public static var buildVer:String = "";
 
+	public static var supportedFileTypes = ["lua", "hx", "hscript"];
+
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
 	public static function main():Void

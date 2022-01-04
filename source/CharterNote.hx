@@ -59,8 +59,8 @@ class CharterNote extends FlxSprite
 
 	public static var noteTypes:Array<hscript.Expr> = [];
 	// public var script:hscript.Interp;
-	public var script(get, null):hscript.Interp;
-	public function get_script():hscript.Interp {
+	public var script(get, null):Script;
+	public function get_script():Script {
 		return PlayState.current.noteScripts[noteType % PlayState.current.noteScripts.length];
 	}
 

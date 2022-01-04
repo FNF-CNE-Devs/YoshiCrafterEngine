@@ -441,8 +441,8 @@ class ModSupport {
 		hscript.variables.set("FlxSound", FlxSound);
 		hscript.variables.set("FlxEase", FlxEase);
 		hscript.variables.set("FlxTween", FlxTween);
-		// hscript.variables.set("File", File);
-		// hscript.variables.set("FileSystem", FileSystem);
+		// hscript.setVariable("File", File);
+		// hscript.setVariable("FileSystem", FileSystem);
 		hscript.variables.set("FlxColor", FlxColor_Helper);
 		hscript.variables.set("Boyfriend", Boyfriend);
 		hscript.variables.set("FlxTypedGroup", FlxTypedGroup);
@@ -451,7 +451,7 @@ class ModSupport {
 		hscript.variables.set("FlxTimer", FlxTimer);
 		hscript.variables.set("Json", Json);
 		hscript.variables.set("MP4Video", MP4Video);
-		// hscript.variables.set("PNGEncoderOptions", PNGEncoderOptions);
+		// hscript.setVariable("PNGEncoderOptions", PNGEncoderOptions);
 		hscript.variables.set("CoolUtil", CoolUtil);
 		hscript.variables.set("FlxTypeText", FlxTypeText);
 		hscript.variables.set("FlxText", FlxText);
@@ -460,30 +460,30 @@ class ModSupport {
 		hscript.variables.set("Rectangle", Rectangle);
 		hscript.variables.set("Point", Point);
 		hscript.variables.set("Window", Application.current.window);
-		// hscript.variables.set("FlxColor", Int);
+		// hscript.setVariable("FlxColor", Int);
     }
 
     public static function setScriptDefaultVars(script:Script, mod:String, settings:Dynamic) {
 		script.setVariable("mod", mod);
 		script.setVariable("PlayState", PlayState.current);
 		script.setVariable("EngineSettings", PlayState.current.engineSettings);
-        script.setVariable("include", function(path:String) {
-            var splittedPath = path.split(":");
-            if (splittedPath.length < 2) splittedPath.insert(0, mod);
-            var joinedPath = splittedPath.join("/");
-            var mFolder = Paths.getModsFolder();
-            var expr = getExpressionFromPath('$mFolder/$joinedPath.hx');
-            if (expr != null) {
-                hscript.execute(expr);
-            }
-        });
+        // script.setVariable("include", function(path:String) {
+        //     var splittedPath = path.split(":");
+        //     if (splittedPath.length < 2) splittedPath.insert(0, mod);
+        //     var joinedPath = splittedPath.join("/");
+        //     var mFolder = Paths.getModsFolder();
+        //     var expr = getExpressionFromPath('$mFolder/$joinedPath.hx');
+        //     if (expr != null) {
+        //         hscript.execute(expr);
+        //     }
+        // });
 
         if (PlayState.current != null) {
             script.setVariable("global", PlayState.current.vars);
         }
         script.setVariable("trace", function(text) {
             try {
-                hTrace(text, hscript);
+                script.trace(text);
             } catch(e) {
                 trace(e);
             }
@@ -528,62 +528,62 @@ class ModSupport {
 		script.setVariable("Point", Point);
 		script.setVariable("Window", Application.current.window);
     }
-    public static function executeFunc(hscript:hscript.Interp, funcName:String, ?args:Array<Dynamic>):Dynamic {
-        if (hscript == null) {
-            trace("hscript is null");
-            return null;
-        }
-		if (hscript.variables.exists(funcName)) {
-            var f = hscript.variables.get(funcName);
-            if (args == null) {
-                var result = null;
-                try {
-                    result = f();
-                } catch(e) {
-                    var s = e.stack;
-                    var details = e.details();
+    // public static function executeFunc(hscript:hscript.Interp, funcName:String, ?args:Array<Dynamic>):Dynamic {
+    //     if (hscript == null) {
+    //         trace("hscript is null");
+    //         return null;
+    //     }
+	// 	if (hscript.variables.exists(funcName)) {
+    //         var f = hscript.getVariable(funcName);
+    //         if (args == null) {
+    //             var result = null;
+    //             try {
+    //                 result = f();
+    //             } catch(e) {
+    //                 var s = e.stack;
+    //                 var details = e.details();
                     
-                    hTrace('$e at $s\r\n$details', hscript);
-                }
-                Paths.copyBitmap = false;
-                return result;
-            } else {
-                var result = null;
-                try {
-                    result = Reflect.callMethod(null, f, args);
-                } catch(e) {
-                    var s = e.stack;
-                    var details = e.details();
+    //                 hTrace('$e at $s\r\n$details', hscript);
+    //             }
+    //             Paths.copyBitmap = false;
+    //             return result;
+    //         } else {
+    //             var result = null;
+    //             try {
+    //                 result = Reflect.callMethod(null, f, args);
+    //             } catch(e) {
+    //                 var s = e.stack;
+    //                 var details = e.details();
 
-                    hTrace('$e at $s\r\n$details', hscript);
-                }
-                Paths.copyBitmap = false;
-                return result;
-            }
-			// f();
-		}
-        return null;
-    }
+    //                 hTrace('$e at $s\r\n$details', hscript);
+    //             }
+    //             Paths.copyBitmap = false;
+    //             return result;
+    //         }
+	// 		// f();
+	// 	}
+    //     return null;
+    // }
     public static function parseSongConfig() {
         var songName = PlayState._SONG.song.toLowerCase();
-        var songCodePath = Paths.getModsFolder() + '/$currentMod/song_conf.hx';
+        var songCodePath = Paths.getModsFolder() + '/$currentMod/song_conf';
         var parser = new hscript.Parser();
         parser.allowTypes = true;
-        var ast = null;
+        // var ast = null;
         #if sys
-        ast = parser.parseString(sys.io.File.getContent(songCodePath));
+        // ast = parser.parseString(sys.io.File.getContent(songCodePath));
         #end
-        var interp = new hscript.Interp();
-        interp.variables.set("song", songName);
-        interp.variables.set("difficulty", PlayState.storyDifficulty);
-        interp.variables.set("stage", "default_stage");
-        interp.variables.set("cutscene", "");
-        interp.variables.set("modchart", "");
-        interp.execute(ast);
+        var interp = Script.create(songCodePath);
+        interp.setVariable("song", songName);
+        interp.setVariable("difficulty", PlayState.storyDifficulty);
+        interp.setVariable("stage", "default_stage");
+        interp.setVariable("cutscene", "");
+        interp.setVariable("modchart", "");
+        interp.loadFile(songCodePath);
 
-        var stage = interp.variables.get("stage");
-        var modchart = interp.variables.get("modchart");
-        var cutscene = interp.variables.get("cutscene");
+        var stage = interp.getVariable("stage");
+        var modchart = interp.getVariable("modchart");
+        var cutscene = interp.getVariable("cutscene");
         trace(stage);
         if (stage == "default_stage")
             song_stage_path = Paths.getModsFolder() + '/Friday Night Funkin\'/stages/$stage'; // fallback
@@ -591,12 +591,12 @@ class ModSupport {
             song_stage_path = Paths.getModsFolder() + '/$currentMod/stages/$stage';
 
         if (modchart != "")
-            song_modchart_path = Paths.getModsFolder() + '/$currentMod/modcharts/$modchart.hx';
+            song_modchart_path = Paths.getModsFolder() + '/$currentMod/modcharts/$modchart';
         else
             song_modchart_path = "";
 
         if (cutscene != "")
-            song_cutscene_path = Paths.getModsFolder() + '/$currentMod/cutscenes/$cutscene.hx';
+            song_cutscene_path = Paths.getModsFolder() + '/$currentMod/cutscenes/$cutscene';
         else
             song_cutscene_path = "";
         trace(song_stage_path);

@@ -1,5 +1,6 @@
 package;
 
+import haxe.io.Path;
 import haxe.iterators.StringIterator;
 import flixel.addons.ui.FlxButtonPlus;
 import openfl.geom.Rectangle;
@@ -592,7 +593,7 @@ class ChartingState_New extends MusicBeatState
 		for (mod in FileSystem.readDirectory(mPath)) {
 			if (FileSystem.exists('$mPath/$mod/notes/')) {
 				for (nType in FileSystem.readDirectory('$mPath/$mod/notes/')) {
-					if (nType.toLowerCase().endsWith(".hx")) { // ONLY ACCEPTS HX FILES !!!!
+					if (Path.extension(nType.toLowerCase()) != "") {
 						var extless = nType.substr(0, nType.length - 3);
 						nTypes.push('$mod:$extless');
 					}

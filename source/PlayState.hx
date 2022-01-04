@@ -1,5 +1,6 @@
 package;
 
+import Script.HScript;
 import Highscore.SaveDataRating;
 import Highscore.AdvancedSaveData;
 using FlxSpriteCenterFix;
@@ -337,11 +338,11 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	public static var modchart:hscript.Interp;
-	public static var stage:hscript.Interp;
-	public static var cutscene:hscript.Interp;
+	public static var modchart:Script;
+	public static var stage:Script;
+	public static var cutscene:Script;
 
-	public var noteScripts:Array<hscript.Interp> = [];
+	public var noteScripts:Array<Script> = [];
 
 	public var stage_persistent_vars:Map<String, Dynamic> = [];
 	
@@ -510,24 +511,33 @@ class PlayState extends MusicBeatState
 		ModSupport.currentMod = songMod;
 		ModSupport.parseSongConfig();
 
-        stage = new hscript.Interp();
-		modchart = new hscript.Interp();
-		cutscene = new hscript.Interp();
-		for(script in [stage, modchart]) {
-			script.variables.set("update", function(elapsed:Float) {});
-			script.variables.set("create", function() {});
-			script.variables.set("musicstart", function() {});
-			script.variables.set("beatHit", function(curBeat:Int) {});
-			script.variables.set("stepHit", function(curStep:Int) {});
-			script.variables.set("setSharedVars", function() {return [];});
-			script.variables.set("getVar", function(v) {return null;});
-			script.variables.set("botplay", engineSettings.botplay);
+        stage = Script.create(ModSupport.song_stage_path);
+		if (stage == null) {
+			stage = new HScript();
 		}
-		stage.variables.set("gfVersion", "gf");
-		modchart.variables.set("getStageVar", function(v:String) {
-			return ModSupport.executeFunc(stage, "getVar", [v]);
+		modchart = Script.create(ModSupport.song_modchart_path);
+		if (modchart == null) {
+			modchart = new HScript();
+		}
+		cutscene = Script.create(ModSupport.song_cutscene_path);
+		if (cutscene == null) {
+			cutscene = new HScript();
+		}
+		for(script in [stage, modchart]) {
+			script.setVariable("update", function(elapsed:Float) {});
+			script.setVariable("create", function() {});
+			script.setVariable("musicstart", function() {});
+			script.setVariable("beatHit", function(curBeat:Int) {});
+			script.setVariable("stepHit", function(curStep:Int) {});
+			script.setVariable("setSharedVars", function() {return [];});
+			script.setVariable("getVar", function(v) {return null;});
+			script.setVariable("botplay", engineSettings.botplay);
+		}
+		stage.setVariable("gfVersion", "gf");
+		modchart.setVariable("getStageVar", function(v:String) {
+			return stage.getVariable(v);
 		});
-		modchart.variables.set("ratings", [
+		modchart.setVariable("ratings", [
 			{
 				name : "Sick",
 				image : "Friday Night Funkin':ratings/sick",
@@ -566,10 +576,10 @@ class PlayState extends MusicBeatState
 				miss : true
 			}
 		]);
-		stage.variables.set("getModchartVar", function(v:String) {
-			return ModSupport.executeFunc(modchart, "getVar", [v]);
+		stage.setVariable("getModchartVar", function(v:String) {
+			return modchart.getVariable(v);
 		});
-		modchart.variables.set("getCameraZoom", function(curBeat) {
+		modchart.setVariable("getCameraZoom", function(curBeat) {
 			if (curBeat % 4 == 0) {
 				return {
 					hud : 0.03,
@@ -583,48 +593,27 @@ class PlayState extends MusicBeatState
 			}
 		});
 
-		ModSupport.setHaxeFileDefaultVars(stage, songMod, {});
-		ModSupport.setHaxeFileDefaultVars(modchart, songMod, {});
-		ModSupport.setHaxeFileDefaultVars(cutscene, songMod, {});
+		ModSupport.setScriptDefaultVars(stage, songMod, {});
+		ModSupport.setScriptDefaultVars(modchart, songMod, {});
+		ModSupport.setScriptDefaultVars(cutscene, songMod, {});
 
 		var endCutsceneFunc = function() {
 
 		};
 
-		cutscene.variables.set("update", function(elapsed) {
+		cutscene.setVariable("update", function(elapsed) {
 
 		});
-		cutscene.variables.set("onSongEnd", function() {
+		cutscene.setVariable("onSongEnd", function() {
 
 		});
-		cutscene.variables.set("create", function() {
+		cutscene.setVariable("create", function() {
 			startCountdown(); //Only execute when cutscene ended
 		});
-		cutscene.variables.set("startCountdown", startCountdown);
-		try {
-			var ex = ModSupport.getExpressionFromPath(ModSupport.song_stage_path + ".hx");
-			// trace(ex);
-			stage.execute(ex);
-		} catch(e) {
-			trace("Stage : " + e);
-		}
-		try {
-			if (ModSupport.song_modchart_path != "") {
-				modchart.execute(ModSupport.getExpressionFromPath(ModSupport.song_modchart_path));
-			}
-		} catch(e) {
-			trace("Modchart : " + e);
-		}
-		try {
-			if (ModSupport.song_cutscene_path != "") {
-				cutscene.execute(ModSupport.getExpressionFromPath(ModSupport.song_cutscene_path));
-			}
-		} catch(e) {
-			trace("Cutscene : " + e);
-		}
+		cutscene.setVariable("startCountdown", startCountdown);
 
 
-		var resultRatings:Array<Dynamic> = modchart.variables.get("ratings");
+		var resultRatings:Array<Dynamic> = modchart.getVariable("ratings");
 		for(rating in resultRatings) {
 			var r:Rating = new Rating();
 			if (rating.accuracy != null) r.accuracy = rating.accuracy;
@@ -654,14 +643,17 @@ class PlayState extends MusicBeatState
 		// var mVars:Array<String> = ModSupport.executeFunc(modchart, "setSharedVars");
 		// var mVars:Array<String> = ModSupport.executeFunc(cutscene, "setSharedVars");
 		// for(s in sVars) {
-		// 	stage.variables.set(s, null);
+		// 	stage.setVariable(s, null);
 		// }
 		// for(s in mVars) {
-		// 	modchart.variables.set(s, null);
+		// 	modchart.setVariable(s, null);
 		// }
 
+		stage.loadFile(ModSupport.song_stage_path);
+		modchart.loadFile(ModSupport.song_modchart_path);
+		cutscene.loadFile(ModSupport.song_cutscene_path);
 		
-		ModSupport.executeFunc(stage, "create");
+		stage.executeFunc("create");
 
 
 		// trace('== BEGINNING OF STAGE VARIABLES ==');
@@ -670,7 +662,7 @@ class PlayState extends MusicBeatState
 
 		// songEvents = new SongEventsManager.SongEventsManager();
 
-		var gfVersion:String = stage.variables.get("gfVersion");
+		var gfVersion:String = stage.getVariable("gfVersion");
 		// songEvents.create();
 
 		switch (curStage)
@@ -771,16 +763,17 @@ class PlayState extends MusicBeatState
 		// dad.y += songEvents.stage.dadOffset.y;
 		// gf.x += songEvents.stage.gfOffset.x;
 		// gf.y += songEvents.stage.gfOffset.y;
-		ModSupport.executeFunc(stage, "createAfterChars");
+		stage.executeFunc("createAfterChars");
 		add(gf);
 
-		ModSupport.executeFunc(stage, "createAfterGf");
+		stage.executeFunc("createAfterGf");
 
 		add(dad);
 		add(boyfriend);
 		
-		ModSupport.executeFunc(stage, "createInFront");
-		if (modchart != null) ModSupport.executeFunc(modchart, "create");
+		stage.executeFunc("createInFront");
+		if (modchart != null) 
+			modchart.executeFunc("create");
 		// songEvents.createInFront();
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
@@ -929,7 +922,7 @@ class PlayState extends MusicBeatState
 			// }
 			if (cutscene != null) {
 				inCutscene = true;
-				ModSupport.executeFunc(cutscene, "create");
+				cutscene.executeFunc("create");
 			} else {
 				startCountdown();
 			}
@@ -1198,8 +1191,8 @@ class PlayState extends MusicBeatState
 
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
-		ModSupport.executeFunc(stage, "musicstart");
-		ModSupport.executeFunc(modchart, "musicstart");
+		stage.executeFunc("musicstart");
+		modchart.executeFunc("musicstart");
 
 		#if desktop
 		// Song duration in a float, useful for the time left feature
@@ -1243,8 +1236,6 @@ class PlayState extends MusicBeatState
 		
 		if (PlayState.SONG.keyNumber == 0 || PlayState.SONG.keyNumber == null) PlayState.SONG.keyNumber = 4;
 		for(t in PlayState.SONG.noteTypes) {
-			var script = new hscript.Interp();
-			script.variables.set("enableRating", true);
 			var noteScriptName = "Default Note";
 			var noteScriptMod = "Friday Night Funkin'";
 			var splittedThingy = t.split(":");
@@ -1254,7 +1245,10 @@ class PlayState extends MusicBeatState
 				noteScriptName = splittedThingy[1];
 				noteScriptMod = splittedThingy[0];
 			}
-			script.variables.set("generateStaticArrow", function(babyArrow:FlxSprite, i:Int) {
+			var p = Paths.getModsFolder() + '/$noteScriptMod/notes/$noteScriptName';
+			var script = Script.create(p);
+			script.setVariable("enableRating", true);
+			script.setVariable("generateStaticArrow", function(babyArrow:FlxSprite, i:Int) {
 				babyArrow.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas(engineSettings.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets') : Paths.getSparrowAtlas_Custom(Paths.getModsFolder() + "/notes/" + engineSettings.customArrowSkin.toLowerCase());
 					
 					babyArrow.animation.addByPrefix('green', 'arrowUP');
@@ -1287,11 +1281,12 @@ class PlayState extends MusicBeatState
 							babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
 					}
 			});
-			script.variables.set("onDadHit", function(e) {
+			script.setVariable("onDadHit", function(e) {
 				// dad.playAnim("sing")
 			});
-			script.execute(ModSupport.getExpressionFromPath(Paths.getModsFolder() + '/$noteScriptMod/notes/$noteScriptName.hx', true));
-			ModSupport.setHaxeFileDefaultVars(script, noteScriptMod, {});
+			// script.execute(ModSupport.getExpressionFromPath(Paths.getModsFolder() + '/$noteScriptMod/notes/$noteScriptName.hx', true));
+			script.loadFile(p);
+			ModSupport.setScriptDefaultVars(script, noteScriptMod, {});
 			noteScripts.push(script);
 		}
 
@@ -1386,7 +1381,7 @@ class PlayState extends MusicBeatState
 					
 				
 			// }
-			ModSupport.executeFunc(noteScripts[0], "generateStaticArrow", [babyArrow, i]);
+			noteScripts[0].executeFunc("generateStaticArrow", [babyArrow, i]);
 			babyArrow.x += Note.swagWidth * i;
 
 			babyArrow.updateHitbox();
@@ -1813,10 +1808,10 @@ class PlayState extends MusicBeatState
 		}
 
 		if (inCutscene) {
-			ModSupport.executeFunc(cutscene, "update", [elapsed]);
+			cutscene.executeFunc("update", [elapsed]);
 		} else {
-			ModSupport.executeFunc(stage, "update", [elapsed]);
-			ModSupport.executeFunc(modchart, "update", [elapsed]);
+			stage.executeFunc("update", [elapsed]);
+			modchart.executeFunc("update", [elapsed]);
 		}
 
 			if (generatedMusic)
@@ -1836,8 +1831,9 @@ class PlayState extends MusicBeatState
 					// }
 					if (daNote.tooLate && daNote.mustPress)
 					{
-						daNote.script.variables.set("note", daNote);
-						ModSupport.executeFunc(daNote.script, "onMiss", [Note.noteNumberScheme[daNote.noteData % PlayState.SONG.keyNumber]]);
+						daNote.script.setVariable("note", daNote);
+						daNote.script.executeFunc("onMiss", [daNote.noteData % PlayState.SONG.keyNumber]);
+						// ModSupport.executeFunc(daNote.script, "onMiss", [Note.noteNumberScheme[daNote.noteData % PlayState.SONG.keyNumber]]);
 						// noteMiss((daNote.noteData % _SONG.keyNumber) % SONG.keyNumber);
 						daNote.kill();
 						notes.remove(daNote, true);
@@ -1924,10 +1920,10 @@ class PlayState extends MusicBeatState
 						if (SONG.song != 'Tutorial')
 							camZooming = true;
 	
-						daNote.script.variables.set("note", daNote);
+						daNote.script.setVariable("note", daNote);
 						try {
 							var script = daNote.script;
-							ModSupport.executeFunc(daNote.script, "onDadHit", [daNote.noteData % PlayState.SONG.keyNumber]);
+							daNote.script.executeFunc("onDadHit", [daNote.noteData % PlayState.SONG.keyNumber]);
 						} catch(e) {
 							trace(e);
 						}
@@ -1974,8 +1970,8 @@ class PlayState extends MusicBeatState
 					} else {
 						if ((daNote.tooLate && !daNote.wasGoodHit) && daNote.mustPress)
 						{
-							daNote.script.variables.set("note", daNote);
-							ModSupport.executeFunc(daNote.script, "onMiss", [Note.noteNumberScheme[daNote.noteData % PlayState.SONG.keyNumber]]);
+							daNote.script.setVariable("note", daNote);
+							daNote.script.executeFunc("onMiss", [daNote.noteData % PlayState.SONG.keyNumber]);
 							// noteMiss((daNote.noteData % _SONG.keyNumber) % SONG.keyNumber);
 		
 							daNote.active = false;
@@ -2099,7 +2095,8 @@ class PlayState extends MusicBeatState
 				// 	FlxG.sound.play(Paths.sound('Lights_Shut_off'));
 				// }
 
-				if (cutscene != null) ModSupport.executeFunc(cutscene, "onSongEnd");
+				
+				if (cutscene != null) cutscene.executeFunc("onSongEnd");
 
 				FlxTransitionableState.skipNextTransIn = true;
 				FlxTransitionableState.skipNextTransOut = true;
@@ -2859,8 +2856,8 @@ class PlayState extends MusicBeatState
 			// else
 			// 	health += 0.004;
 
-			note.script.variables.set("note", note);
-			ModSupport.executeFunc(note.script, "onPlayerHit", [note.noteData % PlayState.SONG.keyNumber]);
+			note.script.setVariable("note", note);
+			note.script.executeFunc("onPlayerHit", [note.noteData % PlayState.SONG.keyNumber]);
 
 			playerStrums.forEach(function(spr:FlxSprite)
 			{
@@ -2955,8 +2952,8 @@ class PlayState extends MusicBeatState
 
 	override function stepHit()
 	{
-		ModSupport.executeFunc(stage, "stepHit", [curStep]);
-		ModSupport.executeFunc(modchart, "stepHit", [curStep]);
+		stage.executeFunc("stepHit", [curStep]);
+		modchart.executeFunc("stepHit", [curStep]);
 		
 		super.stepHit();
 		// songEvents.stepHit(curStep);
@@ -2974,8 +2971,8 @@ class PlayState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
-		ModSupport.executeFunc(stage, "beatHit", [curBeat]);
-		ModSupport.executeFunc(modchart, "beatHit", [curBeat]);
+		stage.executeFunc("beatHit", [curBeat]);
+		modchart.executeFunc("beatHit", [curBeat]);
 		if (generatedMusic)
 		{
 			notes.sort(FlxSort.byY, FlxSort.DESCENDING);
@@ -3003,7 +3000,7 @@ class PlayState extends MusicBeatState
 
 		if (camZooming)
 		{
-			var z = ModSupport.executeFunc(modchart, "getCameraZoom", [curBeat]);
+			var z = modchart.executeFunc("getCameraZoom", [curBeat]);
 			if (Reflect.hasField(z, "game"))
 				FlxG.camera.zoom = Math.min(FlxG.camera.zoom + z.game, 1.35);
 			if (Reflect.hasField(z, "hud"))

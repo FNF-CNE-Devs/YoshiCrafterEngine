@@ -287,7 +287,13 @@ class Paths
 		}
 		var folder = Paths.getModsFolder() + '/$charMod/characters/$charName';
 		trace(folder);
-		if (!FileSystem.exists(folder + "/Character.hx")) {
+		
+		var exists = false;
+		for (e in Main.supportedFileTypes) {
+			exists = FileSystem.exists('$folder/Character.$e');
+			if (exists) break;
+		}
+		if (!exists) {
 			folder = Paths.getModsFolder() + '/Friday Night Funkin\'/characters/unknown';
 		}
 		return folder;

@@ -87,7 +87,12 @@ class StoryMenuState extends MusicBeatState
 		var fnfWeekButtons = [];
 		
 		for (mod in FileSystem.readDirectory(Paths.getModsFolder() + "/")) {
-			if (FileSystem.exists(Paths.getModsFolder() + '/$mod/weeks.json') && FileSystem.exists(Paths.getModsFolder() + '/$mod/song_conf.hx')) {
+			var exists = false;
+			for (e in Main.supportedFileTypes) {
+				exists = FileSystem.exists(Paths.getModsFolder() + '/$mod/song_conf.$e');
+				if (exists) break;
+			}
+			if (FileSystem.exists(Paths.getModsFolder() + '/$mod/weeks.json') && exists) {
 				var json:WeeksJson = null;
 				try {
 					json = Json.parse(sys.io.File.getContent(Paths.getModsFolder() + '/$mod/weeks.json'));

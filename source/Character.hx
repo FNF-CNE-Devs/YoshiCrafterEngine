@@ -60,7 +60,7 @@ class Character extends FlxSprite
 	public static var customGFAnims:Array<String> = [];
 	public static var customGFOffsets:Array<String> = [];
 
-	public var characterScript:hscript.Interp;
+	public var characterScript:Script;
 
 	/**
 	 * Reconfigures animations for custom BF and GF.
@@ -114,15 +114,16 @@ class Character extends FlxSprite
 
 
 		
-		characterScript = new hscript.Interp();
-		characterScript.variables.set("curCharacter", curCharacter);
-		characterScript.variables.set("character", this);
-		characterScript.variables.set("textureOverride", textureOverride);
-		characterScript.variables.set("dance", function() {playAnim("idle");});
-		characterScript.variables.set("create", function() {});
-		characterScript.variables.set("update", function(elapsed:Float) {});
-		characterScript.variables.set("onAnim", function(animName:String) {});
-		characterScript.variables.set("getColors", function(altAnim:Bool) {
+		var p = Paths.getCharacterFolderPath(curCharacter) + "/Character";
+		characterScript = Script.create(p);
+		characterScript.setVariable("curCharacter", curCharacter);
+		characterScript.setVariable("character", this);
+		characterScript.setVariable("textureOverride", textureOverride);
+		characterScript.setVariable("dance", function() {playAnim("idle");});
+		characterScript.setVariable("create", function() {});
+		characterScript.setVariable("update", function(elapsed:Float) {});
+		characterScript.setVariable("onAnim", function(animName:String) {});
+		characterScript.setVariable("getColors", function(altAnim:Bool) {
 			return [
 				(this.isPlayer ? new FlxColor(0xFF66FF33) : new FlxColor(0xFFFF0000)),
 				new FlxColor(Settings.engineSettings.data.arrowColor0),
@@ -131,18 +132,17 @@ class Character extends FlxSprite
 				new FlxColor(Settings.engineSettings.data.arrowColor3)
 			];
 		});
-		var p = Paths.getCharacterFolderPath(curCharacter) + "/Character.hx";
 		var sName = curCharacter.split(":");
-		ModSupport.setHaxeFileDefaultVars(characterScript, sName.length > 1 ? sName[0] : "Friday Night Funkin'", {"cloneBitmap" : cloneBitmap});
+		ModSupport.setScriptDefaultVars(characterScript, sName.length > 1 ? sName[0] : "Friday Night Funkin'", {"cloneBitmap" : cloneBitmap});
 		try {
-			characterScript.execute(ModSupport.getExpressionFromPath(p, true));
+			characterScript.loadFile(p);
 		} catch(e) {
 			return;
 		}
 
 
 		try {
-			ModSupport.executeFunc(characterScript, "create");
+			characterScript.executeFunc("create");
 		} catch(ex) {
 			trace(ex);
 		}
@@ -191,7 +191,7 @@ class Character extends FlxSprite
 			Settings.engineSettings.data.arrowColor2,
 			Settings.engineSettings.data.arrowColor3
 		];
-		var c:Array<Int> = ModSupport.executeFunc(characterScript, "getColors", [altAnim]);
+		var c:Array<Int> = characterScript.executeFunc("getColors", [altAnim]);
 		var invalid = false;
 		invalid = c == null;
 		if (!invalid) invalid = c.length < 1;
@@ -245,7 +245,7 @@ class Character extends FlxSprite
 		}
 		
 
-		ModSupport.executeFunc(characterScript, "update", [elapsed]);
+		characterScript.executeFunc("update", [elapsed]);
 		super.update(elapsed);
 	}
 
@@ -270,7 +270,7 @@ class Character extends FlxSprite
 		
 		if (!debugMode)
 		{
-			ModSupport.executeFunc(characterScript, "dance");
+			characterScript.executeFunc("dance");
 			// switch (curCharacter)
 			// {
 			// 	case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel' | 'gfTankmen':
@@ -320,7 +320,7 @@ class Character extends FlxSprite
 		if (AnimName.startsWith("sing")) {
 			lastNoteHitTime = Conductor.songPosition;
 		}
-		ModSupport.executeFunc(characterScript, "onAnim", [AnimName]);
+		characterScript.executeFunc("onAnim", [AnimName]);
 
 		if (animation.getByName(AnimName) == null) {
 			trace(AnimName + " doesn't exist on character " + curCharacter);
