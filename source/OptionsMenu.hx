@@ -399,6 +399,19 @@ class OptionsMenu extends MusicBeatState
 			value: ""
 		});
 		options.push({
+			text : "Show ratings amount",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.showRatingTotal = !Settings.engineSettings.data.showRatingTotal;
+					o.checkboxChecked = Settings.engineSettings.data.showRatingTotal;
+					o.check(Settings.engineSettings.data.showRatingTotal);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: Settings.engineSettings.data.showRatingTotal,
+			value: ""
+		});
+		options.push({
 			text : "Show average hit delay",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {

@@ -31,6 +31,7 @@ function create() {
     
     if (EngineSettings.blammedEffect) {
 
+        Paths_.copyBitmap = true;
         trace("creating gf");
         gfDark = new Character(400, 130, "gf", false, true);
         gfDark.pixels.copyPixels(BitmapDataPlus.GenerateBlammedEffect(gfDark.pixels.clone(), 0xFF000000, 0xFFFFFFFF), new Rectangle(0, 0, gfDark.pixels.width, gfDark.pixels.height), new Point(0,0));
@@ -56,6 +57,7 @@ function create() {
         dadDark.setPosition(PlayState.dad.x, PlayState.dad.y);
         PlayState.dads.push(dadDark);
         PlayState.add(dadDark);
+        Paths_.copyBitmap = false;
         
         trace("done");
 

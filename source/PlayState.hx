@@ -827,11 +827,13 @@ class PlayState extends MusicBeatState
 
 		FlxG.fixedTimestep = false;
 
-		hitCounter = new FlxText(-(guiOffset.x / 2) + 20,720 + (guiOffset.y / 2) - ((ratings.length + 1) * 16), 1280, "Misses : 0", 12);
-		hitCounter.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		hitCounter.antialiasing = true;
-		hitCounter.cameras = [camHUD];
-		add(hitCounter);
+		if (engineSettings.showRatingTotal) {
+			hitCounter = new FlxText(-(guiOffset.x / 2) + 20,720 + (guiOffset.y / 2) - ((ratings.length + 1) * 16), 1280, "Misses : 0", 12);
+			hitCounter.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			hitCounter.antialiasing = true;
+			hitCounter.cameras = [camHUD];
+			add(hitCounter);
+		}
 
 		healthBarBG = new FlxSprite(0, FlxG.height * (engineSettings.downscroll ? 0.075 : 0.9) * (1 / engineSettings.noteScale) + (guiOffset.y / 2)).loadGraphic(Paths.image('healthBar'));
 		healthBarBG.cameras = [camHUD];
@@ -1553,18 +1555,20 @@ class PlayState extends MusicBeatState
 		// scoreTxt.text = "Score:" + songScore + " | Misses:" + Std.string(misses) + " | Accuracy:" + (numberOfNotes == 0 ? "0%" : Std.string((Math.round(accuracy * 10000 / numberOfNotes) / 10000) * 100) + "%");
 		scoreTxt.text = ScoreText.generate(this);
 
-		var hitsText = "";
-		var hitIterator = hits.keys();
-		while(true) {
-			var it = hitIterator.next();
-			if (it != "Misses") {
-				var amount = Std.string(hits[it]);
-				hitsText = '\r\n$it : $amount' + hitsText;
+		if (hitCounter != null) {
+			var hitsText = "";
+			var hitIterator = hits.keys();
+			while(true) {
+				var it = hitIterator.next();
+				if (it != "Misses") {
+					var amount = Std.string(hits[it]);
+					hitsText = '\r\n$it : $amount' + hitsText;
+				}
+				if (!hitIterator.hasNext()) break;
 			}
-			if (!hitIterator.hasNext()) break;
+			hitCounter.text = hitsText;
+			hitCounter.y = 700 + (guiOffset.y / 2) - hitCounter.height;
 		}
-		hitCounter.text = hitsText;
-		hitCounter.y = 700 + (guiOffset.y / 2) - hitCounter.height;
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{

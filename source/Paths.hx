@@ -214,7 +214,13 @@ class Paths
 		} else if (!Paths.cacheBitmap[path].readable) {
 			Paths.cacheBitmap[path] = BitmapData.fromFile(path);
 		}
-		return Paths.cacheBitmap[path];
+		
+		var b = Paths.cacheBitmap[path];
+		if (copyBitmap) {
+			b = b.clone();
+			Paths.cacheBitmap[path + Time.];
+		}
+		return (copyBitmap ?  : Paths.cacheBitmap[path]);
 	}
 	inline static public function getBytesOutsideAssets(path:String) {
 		// trace(path);
@@ -287,7 +293,9 @@ class Paths
 		#if debug
 			trace(folder);
 		#end
-		return FlxAtlasFrames.fromSparrow(Paths.getBitmapOutsideAssets('$folder/spritesheet.png'), Paths.getTextOutsideAssets('$folder/spritesheet.xml'));
+		var b = Paths.getBitmapOutsideAssets('$folder/spritesheet.png');
+		
+		return FlxAtlasFrames.fromSparrow(b, Paths.getTextOutsideAssets('$folder/spritesheet.xml'));
 	}
 
 	inline static public function getCharacterIcon(key:String)
