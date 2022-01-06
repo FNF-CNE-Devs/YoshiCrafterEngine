@@ -32,6 +32,11 @@ import flixel.math.FlxMath;
 import flixel.tweens.FlxTween;
 using StringTools;
 
+#if windows
+@:headerCode("#include <windows.h>")
+@:headerCode("#undef RegisterClass")
+#end
+
 class ExceptionState extends FlxState {
     var text:String;
     var resumeTo = 0;
@@ -360,6 +365,11 @@ class ModSupport {
 
     public static var modSaves:Map<String, FlxSave> = [];
 
+    #if windows
+    public static function changeWindowIcon(iconPath:String) {
+        
+    }
+    #end
     public static function getExpressionFromPath(path:String, critical:Bool = false):hscript.Expr {
         var parser = new hscript.Parser();
 		parser.allowTypes = true;
@@ -374,7 +384,7 @@ class ModSupport {
 			trace(ex);
             var exThingy = Std.string(ex);
             var line = parser.line;
-            openfl.Lib.application.window.alert('Failed to parse the file located at "$path".\r\n$exThingy at $line');
+            if (!openfl.Lib.application.window.fullscreen) openfl.Lib.application.window.alert('Failed to parse the file located at "$path".\r\n$exThingy at $line');
             // if (critical) {
             //     FlxG.switchState(new ExceptionState('Failed to parse the file located at "$path".\r\n$exThingy at $line', 0));
             // }

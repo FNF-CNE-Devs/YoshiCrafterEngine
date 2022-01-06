@@ -1,5 +1,7 @@
 package;
 
+import lime.graphics.Image;
+import openfl.display.Application;
 import flixel.system.scaleModes.RatioScaleMode;
 import flixel.addons.transition.TransitionData;
 import LoadSettings.Settings;
@@ -17,6 +19,8 @@ class MusicBeatState extends FlxUIState
 	private var curStep:Int = 0;
 	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
+
+	public static var defaultIcon:Image = null;
 
 	public function new(?transIn:TransitionData, ?transOut:TransitionData) {
 		
@@ -37,6 +41,13 @@ class MusicBeatState extends FlxUIState
 		
 		FlxG.scaleMode = new RatioScaleMode();
 		super(transIn, transOut);
+
+		if (defaultIcon == null) defaultIcon = Image.fromFile("assets/images/icon.png");
+		lime.app.Application.current.window.title = "Friday Night Funkin' - Yoshi Engine";
+		if (PlayState.iconChanged) {
+			lime.app.Application.current.window.setIcon(defaultIcon);
+			PlayState.iconChanged = false;
+		}
 	}
 
 	inline function get_controls():Controls
@@ -66,7 +77,7 @@ class MusicBeatState extends FlxUIState
 
 	private function updateBeat():Void
 	{
-		curBeat = Math.floor(curStep / 4);
+		curBeat = Std.int(Math.max(curBeat, Math.floor(curStep / 4)));
 	}
 
 	private function updateCurStep():Void
@@ -82,7 +93,7 @@ class MusicBeatState extends FlxUIState
 				lastChange = Conductor.bpmChangeMap[i];
 		}
 
-		curStep = lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet);
+		curStep = Std.int(Math.max(curStep, lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet)));
 	}
 
 	public function stepHit():Void

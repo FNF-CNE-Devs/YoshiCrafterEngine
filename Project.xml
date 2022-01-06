@@ -133,8 +133,10 @@
 	<haxelib name="newgrounds"/>
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="polymod"/>
-	<haxelib name="linc_lua"/>
+	<!-- 
 	<haxelib name="hxvm-lua"/>
+	<haxelib name="linc_lua"/>
+	-->
 	<!-- <haxelib name="flixel-animate"/> -->
 	<haxelib name="discord_rpc" if="desktop"/>
 

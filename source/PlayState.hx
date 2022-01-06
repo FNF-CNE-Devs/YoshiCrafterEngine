@@ -1,5 +1,11 @@
 package;
 
+import lime.utils.UInt8Array;
+import lime.graphics.ImageBuffer;
+import sys.io.File;
+import openfl.display.Application;
+import lime.graphics.Image;
+import sys.FileSystem;
 import Script.HScript;
 import Highscore.SaveDataRating;
 import Highscore.AdvancedSaveData;
@@ -342,6 +348,7 @@ class PlayState extends MusicBeatState
 	public static var stage:Script;
 	public static var cutscene:Script;
 
+	public static var iconChanged:Bool = false;
 	public var noteScripts:Array<Script> = [];
 
 	public var stage_persistent_vars:Map<String, Dynamic> = [];
@@ -388,7 +395,46 @@ class PlayState extends MusicBeatState
 	{
 		PlayState.current = this;
 		engineSettings = Reflect.copy(Settings.engineSettings.data);
+
+		// GAME TITLE
+		var gameTitle = songMod;
+		var fullTitleThingies = ["friday night funkin", "-", "fnf"];
+		var fullTitle = false;
+		for (t in fullTitleThingies) {
+			if (songMod.toLowerCase().contains(t)) {
+				fullTitle = true;
+				break;
+			}
+		}
+		if (!fullTitle) gameTitle = 'Friday Night Funkin\' - $gameTitle';
+		lime.app.Application.current.window.title = gameTitle;
+
+		// GAME ICON
+		var modFolder = Paths.getModsFolder();
+		trace('$modFolder/$songMod/icon.ico');
+		/*
+		#if cpp
+		if (FileSystem.exists('$modFolder/$songMod/icon.ico')) {
+			// Application
+			
+			@:privateAccess
+			var handle = lime.app.Application.current.window.__backend.handle;
+			@:privateAccess
+			lime._internal.backend.native.NativeCFFI.lime_window_set_icon(handle, new ImageBuffer(UInt8Array.fromBytes(File.getBytes('$modFolder/$songMod/icon.ico'))));
+			
+			@:privateAccess
+			lime.app.Application.current.window.__backend.handle;
+			// lime.app.Application.current.window.setIcon(Image.fromFile('$modFolder/$songMod/icon.ico'));
+		} else
+		#end
+		*/
+		if (FileSystem.exists('$modFolder/$songMod/icon.png')) {
+			lime.app.Application.current.window.setIcon(Image.fromFile('$modFolder/$songMod/icon.png'));
+			iconChanged = true;
+		}
 		
+		
+		// lime_window_set_icon 
 		FlxG.scaleMode = new WideScreenScale();
 		// Assets.loadLibrary("songs");
 		#if sys

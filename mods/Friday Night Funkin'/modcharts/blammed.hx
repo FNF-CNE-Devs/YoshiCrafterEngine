@@ -22,12 +22,12 @@ var light:FlxSprite = null;
 function create() {
     stage = PlayState_.stage;
     
-    phillyTrain = getStageVar('phillyTrain');
-    bg = getStageVar('bg');
-    city = getStageVar('city');
-    street = getStageVar('street');
-    streetBehind = getStageVar('streetBehind');
-    light = getStageVar('light');
+    phillyTrain = global['phillyTrain'];
+    bg = global['bg'];
+    city = global['city'];
+    street = global['street'];
+    streetBehind = global['streetBehind'];
+    light = global['light'];
     
     if (EngineSettings.blammedEffect) {
 

@@ -13,7 +13,7 @@ class WideScreenScale extends BaseScaleMode
         // gameSize.x = Std.int(Width * _widthScale);
         // gameSize.y = Std.int(Height * _heightScale);
         var scale = (Width / Height) / (1280 / 720);
-        if (scale < 0) {
+        if (scale < 1) {
             @:privateAccess
             FlxG.width = 1280;
             @:privateAccess
@@ -39,6 +39,7 @@ class WideScreenScale extends BaseScaleMode
                 PlayState.current.camHUD.height = 720;
                 PlayState.current.camHUD.x = (FlxG.width - 1280) / 2;
                 PlayState.current.camHUD.y = (FlxG.height - 720) / 2;
+                // PlayState.current.camHUD.setScale(Math.min(FlxG.width / 1280, 1), Math.min(FlxG.width / 1280, 1));
             }
             if (PlayState.current.camGame != null) {
                 PlayState.current.camGame.width = FlxG.width;

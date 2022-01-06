@@ -1,16 +1,20 @@
-import vm.lua.Lua;
-import vm.lua.State;
-import llua.LuaL;
-import llua.State;
-import llua.State.Lua_State;
-import sys.FileSystem;
-import sys.io.File;
+import lime.app.Application;
 using StringTools;
 
+import sys.FileSystem;
+import sys.io.File;
 import haxe.io.Path;
 import LoadSettings.Settings;
-import hscript.Interp;
 import haxe.Exception;
+
+// HSCRIPT
+import hscript.Interp;
+
+// LUA
+/*
+import vm.lua.Lua;
+import vm.lua.Api;
+*/
 
 class Script {
     public var fileName:String = "";
@@ -49,15 +53,17 @@ class Script {
             case 'hx' | 'hscript':
                 trace("HScript");
                 return new HScript();
+                /*
             case 'lua':
                 trace("Lua");
                 return new LuaScript();
+                */
         }
         trace('ext not found : $ext for $path');
         return null;
     }
 
-    public function executeFunc(funcName:String, ?args:Array<Dynamic>):Dynamic {
+    public function executeFunc(funcName:String, ?args:Array<Any>):Dynamic {
         throw new Exception("NOT IMPLEMENTED !");
         return null;
     }
@@ -81,6 +87,10 @@ class Script {
     public function loadFile(path:String) {
         throw new Exception("NOT IMPLEMENTED !");
     }
+
+    public function destroy() {
+
+    }
 }
 
 class HScript extends Script {
@@ -90,9 +100,9 @@ class HScript extends Script {
         super();
     }
 
-    public override function executeFunc(funcName:String, ?args:Array<Dynamic>):Dynamic {
+    public override function executeFunc(funcName:String, ?args:Array<Any>):Dynamic {
         if (hscript == null) {
-            trace("hscript is null");
+            this.trace("hscript is null");
             return null;
         }
 		if (hscript.variables.exists(funcName)) {
@@ -105,7 +115,7 @@ class HScript extends Script {
                     var s = e.stack;
                     var details = e.details();
                     
-                    trace('$e at $s\r\n$details');
+                    this.trace('$e at $s\r\n$details');
                 }
                 Paths.copyBitmap = false;
                 return result;
@@ -117,7 +127,7 @@ class HScript extends Script {
                     var s = e.stack;
                     var details = e.details();
 
-                    trace('$e at $s\r\n$details');
+                    this.trace('$e at $s\r\n$details');
                 }
                 Paths.copyBitmap = false;
                 return result;
@@ -128,6 +138,7 @@ class HScript extends Script {
     }
 
     public override function loadFile(path:String) {
+        if (path.trim() == "") return;
         fileName = Path.withoutDirectory(path);
         var p = path;
         if (Path.extension(p) == "") {
@@ -135,6 +146,7 @@ class HScript extends Script {
             for (e in exts) {
                 if (FileSystem.exists('$p.$e')) {
                     p = '$p.$e';
+                    fileName += e;
                     break;
                 }
             }
@@ -167,18 +179,91 @@ class HScript extends Script {
         return hscript.variables.get(name);
     }
 }
-
+/*
 class LuaScript extends Script {
+    // public var lua:State;
     public var lua:vm.lua.Lua;
 
     public function new() {
+        lua = new vm.lua.Lua();
+        // lua = LuaL.newstate();
+        // Lua.(lua);
+
         // lua = Luaplugin;
-        lua = new Lua();
+        // lua = new llua.LuaL();
+        
         super();
     }
 
     public override function loadFile(path:String) {
-
-        
+        var p = path;
+        if (Path.extension(p) == "") {
+            if (FileSystem.exists('$p.lua')) {
+                p = '$p.lua';
+            }
+        }
+        fileName = Path.withoutDirectory(p);
+        if (FileSystem.exists(p)) {
+            try {
+                lua.run(Paths.getTextOutsideAssets(p));
+            } catch(e) {
+                var t = 'Failed to run lua file at "$p".\r\n$e';
+                trace(t);
+                openfl.Lib.application.window.alert(t);
+            }
+        } else {
+            trace('Lua script at "$p" doesn\'t exist.');
+            openfl.Lib.application.window.alert('Lua script at "$p" doesn\'t exist.');
+        }
     }
+
+    public override function trace(text:String) {
+        trace('$fileName: $text');
+
+        if (!Settings.engineSettings.data.developerMode) return;
+        for (e in ('$fileName: $text').split("\n")) PlayState.log.push(e.trim());
+    }
+
+    public override function setVariable(name:String, val:Dynamic) {
+        lua.setGlobalVar(name, val);
+    }
+
+    public override function getVariable(name:String):Dynamic {
+        #if debug trace('getting var $name'); #end
+        Api.lua_getglobal(lua.l, name);
+        var i = 0;
+        if ((i = Api.lua_gettop(lua.l)) != 0) {
+            var val = Lua.toHaxeValue(lua.l, 1);
+            trace('val :');
+            trace(val);
+            Api.lua_pop(lua.l, 1);
+            #if debug trace('popped'); #end
+            return val;
+        }
+        #if debug trace('no var'); #end
+        return null;
+    }
+
+    public override function executeFunc(funcName:String, ?args:Array<Any>) {
+        try {
+            if (args == null) {
+                return lua.call(funcName, []);
+            } else {
+                return lua.call(funcName, args);
+            }
+        } catch(e) {
+            this.trace(e.toString() + '\r' + e.stack);
+            return null;
+        }
+    }
+
+    public override function destroy() {
+        lua.destroy();
+    }
+
+    // public override function setVariable()
+    // public override function getVariable(name:String):Dynamic {
+    //     return Lua.getglobal(lua, name);
+    // }
 }
+*/
