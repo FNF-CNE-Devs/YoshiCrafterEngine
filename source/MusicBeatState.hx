@@ -1,8 +1,10 @@
 package;
 
+import lime.graphics.Image;
+import openfl.display.Application;
 import flixel.system.scaleModes.RatioScaleMode;
 import flixel.addons.transition.TransitionData;
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
 import flixel.addons.transition.FlxTransitionableState;
@@ -17,6 +19,8 @@ class MusicBeatState extends FlxUIState
 	private var curStep:Int = 0;
 	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
+
+	public static var defaultIcon:Image = null;
 
 	public function new(?transIn:TransitionData, ?transOut:TransitionData) {
 		
@@ -37,6 +41,13 @@ class MusicBeatState extends FlxUIState
 		
 		FlxG.scaleMode = new RatioScaleMode();
 		super(transIn, transOut);
+
+		if (defaultIcon == null) defaultIcon = Image.fromFile("assets/images/icon.png");
+		lime.app.Application.current.window.title = "Friday Night Funkin' - Yoshi Engine";
+		if (PlayState.iconChanged) {
+			lime.app.Application.current.window.setIcon(defaultIcon);
+			PlayState.iconChanged = false;
+		}
 	}
 
 	inline function get_controls():Controls
@@ -48,6 +59,10 @@ class MusicBeatState extends FlxUIState
 			trace('reg ' + transIn.region);
 
 		super.create();
+		if (EngineSettings.Settings.engineSettings != null) {
+			FlxG.drawFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
+			FlxG.updateFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
+		}
 	}
 
 	override function update(elapsed:Float)
@@ -66,7 +81,11 @@ class MusicBeatState extends FlxUIState
 
 	private function updateBeat():Void
 	{
-		curBeat = Math.floor(curStep / 4);
+		if (Std.is(FlxG.state, ChartingState_New) || Std.is(FlxG.state, ChartingState)) {
+			curBeat = Std.int(Math.floor(curStep / 4));
+		} else {
+			curBeat = Std.int(Math.max(curBeat, Math.floor(curStep / 4)));
+		}
 	}
 
 	private function updateCurStep():Void
@@ -82,7 +101,7 @@ class MusicBeatState extends FlxUIState
 				lastChange = Conductor.bpmChangeMap[i];
 		}
 
-		curStep = lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet);
+		curStep = Std.int(Math.max(curStep, lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet)));
 	}
 
 	public function stepHit():Void

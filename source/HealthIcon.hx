@@ -4,7 +4,7 @@ import sys.FileSystem;
 import flixel.FlxG;
 import lime.utils.Assets;
 import flixel.FlxSprite;
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 
 class HealthIcon extends FlxSprite
 {
@@ -12,16 +12,17 @@ class HealthIcon extends FlxSprite
 	 * Used for FreeplayState! If you use it elsewhere, prob gonna annoying
 	 */
 	public var sprTracker:FlxSprite;
+	public var frameIndexes:Array<Array<Int>> = [[20, 0], [0, 1]];
 
 	public static var redirects:Map<String, String> = null;
 	public function new(char:String = 'bf', isPlayer:Bool = false, ?mod:String)
 	{
 		super();
 		
-		if (char.indexOf(":") == -1 && mod != null) {
-			if (FileSystem.exists(Paths.getModsFolder() + '/$mod/characters/$char/icon.png'))
-				char = '$mod:$char';
-		}
+		// if (char.indexOf(":") == -1 && mod != null) {
+		// 	if (FileSystem.exists(Paths.getModsFolder() + '/$mod/characters/$char/icon.png'))
+		// 		char = '$mod:$char';
+		// }
 		// if (HealthIcon.redirects == null) {
 		// 	var ir = CoolUtil.coolTextFile("characters:assets/characters/icons/iconRedirects.txt");
 		// 	var redirects:Map<String, String> = [];
@@ -32,10 +33,11 @@ class HealthIcon extends FlxSprite
 		// 	HealthIcon.redirects = redirects;
 		// }
 
+
 		antialiasing = true;
 		scrollFactor.set();
 
-		var character = char;
+		var character = CoolUtil.getCharacterFullString(char, mod);
 		// if (HealthIcon.redirects[character] != null) {
 		// 	character = HealthIcon.redirects[character];
 		// }
@@ -45,15 +47,10 @@ class HealthIcon extends FlxSprite
 		var cGF:String = Settings.engineSettings.data.customGFSkin;
 		if (PlayState.current != null) cGF = PlayState.current.engineSettings.customGFSkin;
 		
-		if (character == "bf" && cBF != "default") {
-			loadGraphic(Paths.getBitmapOutsideAssets(Paths.getSkinsPath() + '/bf/$cBF/icon.png'), true, 150, 150);
-		} else if (character == "gf" && cGF != "default") {
-			loadGraphic(Paths.getBitmapOutsideAssets(Paths.getSkinsPath() + '/gf/$cGF/icon.png'), true, 150, 150);
-		} else {
-			var path = Paths.getCharacterFolderPath(character) + "/icon.png";
-			loadGraphic(FileSystem.exists(path) ? Paths.getBitmapOutsideAssets(path) : Paths.getBitmapOutsideAssets(Paths.getModsFolder() + "/Friday Night Funkin'/characters/unknown/icon.png"), true, 150, 150);
-		}
-		animation.add('char', [0, 1], 0, false, isPlayer);
+		var path = Paths.getCharacterFolderPath(character) + "/icon.png";
+		loadGraphic(FileSystem.exists(path) ? Paths.getBitmapOutsideAssets(path) : Paths.getBitmapOutsideAssets(Paths.getModsFolder() + "/Friday Night Funkin'/characters/unknown/icon.png"), true, 150, 150);
+		
+		animation.add('char', [for (i in 0...frames.frames.length) i], 0, false, isPlayer);
 		animation.play('char');
 	}
 

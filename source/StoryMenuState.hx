@@ -3,7 +3,7 @@ package;
 import flixel.graphics.atlas.FlxAtlas;
 import flixel.graphics.frames.FlxTileFrames;
 import openfl.display.BitmapData;
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 import flixel.tweens.FlxEase;
 import haxe.Json;
 import sys.FileSystem;
@@ -87,7 +87,12 @@ class StoryMenuState extends MusicBeatState
 		var fnfWeekButtons = [];
 		
 		for (mod in FileSystem.readDirectory(Paths.getModsFolder() + "/")) {
-			if (FileSystem.exists(Paths.getModsFolder() + '/$mod/weeks.json') && FileSystem.exists(Paths.getModsFolder() + '/$mod/song_conf.hx')) {
+			var exists = false;
+			for (e in Main.supportedFileTypes) {
+				exists = FileSystem.exists(Paths.getModsFolder() + '/$mod/song_conf.$e');
+				if (exists) break;
+			}
+			if (FileSystem.exists(Paths.getModsFolder() + '/$mod/weeks.json') && exists) {
 				var json:WeeksJson = null;
 				try {
 					json = Json.parse(sys.io.File.getContent(Paths.getModsFolder() + '/$mod/weeks.json'));
@@ -95,6 +100,10 @@ class StoryMenuState extends MusicBeatState
 
 				}
 				if (json == null) continue;
+				if (json.weeks == null) {
+					PlayState.log.push('"week" value for $mod\'s weeks.json is null. Skipping...');
+					continue;
+				};
 				for(week in json.weeks) {
 					week.mod = mod;
 					if (week.difficulties == null) week.difficulties = [
@@ -206,6 +215,7 @@ class StoryMenuState extends MusicBeatState
 			var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, weekButtons[i].clone());
 			weekThing.y += ((weekThing.height + 20) * i);
 			weekThing.targetY = i;
+			weekThing.antialiasing = true;
 			grpWeekText.add(weekThing);
 
 			weekThing.screenCenter(X);
@@ -276,18 +286,11 @@ class StoryMenuState extends MusicBeatState
 
 		trace("Line 124");
 
-		leftArrow = new FlxSprite(grpWeekText.members[0].x + grpWeekText.members[0].width + 10, grpWeekText.members[0].y + 10);
-		leftArrow.frames = ui_tex;
-		leftArrow.animation.addByPrefix('idle', "arrow left");
-		leftArrow.animation.addByPrefix('press', "arrow push left");
-		leftArrow.animation.play('idle');
-		difficultySelectors.add(leftArrow);
-
 		for(week in weekData) {
 			for (diff in week.difficulties) {
 				if (difficultySprites[diff.sprite] == null) {
 					var modsPath = Paths.getModsFolder();
-					sprDifficulty = new FlxSprite(1070, leftArrow.y);
+					sprDifficulty = new FlxSprite(1070, grpWeekText.members[0].y + 10);
 					var bitmapMod = week.mod;
 					var bitmapPath = "";
 					var bitmapSplit:Array<String> = diff.sprite.split(":");
@@ -301,6 +304,7 @@ class StoryMenuState extends MusicBeatState
 					if (sprDifficulty.width > 290) sprDifficulty.setGraphicSize(290);
 					sprDifficulty.x -= (sprDifficulty.width / 2);
 					difficultySelectors.add(sprDifficulty);
+					sprDifficulty.antialiasing = true;
 					difficultySprites[diff.sprite] = sprDifficulty;
 				}
 			}
@@ -308,6 +312,15 @@ class StoryMenuState extends MusicBeatState
 		changeDifficulty();
 
 		// difficultySelectors.add(sprDifficulty);
+		
+
+		leftArrow = new FlxSprite(918, grpWeekText.members[0].y + 10);
+		leftArrow.frames = ui_tex;
+		leftArrow.animation.addByPrefix('idle', "arrow left");
+		leftArrow.animation.addByPrefix('press', "arrow push left");
+		leftArrow.animation.play('idle');
+		leftArrow.antialiasing = true;
+		difficultySelectors.add(leftArrow);
 
 		rightArrow = new FlxSprite(1222, leftArrow.y);
 		// rightArrow = new FlxSprite(leftArrow.x + 130 + 196 + 50, leftArrow.y);
@@ -315,6 +328,7 @@ class StoryMenuState extends MusicBeatState
 		rightArrow.animation.addByPrefix('idle', 'arrow right');
 		rightArrow.animation.addByPrefix('press', "arrow push right", 24, false);
 		rightArrow.animation.play('idle');
+		rightArrow.antialiasing = true;
 		// rightArrow.x = FlxG.width - 10 - rightArrow.width;
 		difficultySelectors.add(rightArrow);
 
@@ -343,7 +357,7 @@ class StoryMenuState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		// scoreText.setFormat('VCR OSD Mono', 32);
-		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.5));
+		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.5 * 60 * elapsed));
 
 		scoreText.text = "WEEK SCORE:" + lerpScore;
 

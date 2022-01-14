@@ -7,7 +7,7 @@ import flixel.util.FlxColor;
 import flixel.text.FlxText;
 import Note.NoteDirection;
 import flixel.input.keyboard.FlxKey;
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.FlxG;

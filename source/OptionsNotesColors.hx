@@ -1,6 +1,17 @@
 package;
 
-import LoadSettings.Settings;
+import haxe.io.Bytes;
+import lime.ui.FileDialogType;
+import lime.ui.FileDialog;
+import openfl.events.IOErrorEvent;
+import openfl.events.Event;
+import openfl.net.FileReference;
+import flixel.ui.FlxButton;
+import flixel.addons.ui.FlxButtonPlus;
+import flixel.addons.ui.FlxUIButton;
+import flixel.addons.ui.FlxUIInputText;
+import NoteShader.ColoredNoteShader;
+import EngineSettings.Settings;
 import Controls.Control;
 import Options;
 import flash.text.TextField;
@@ -33,6 +44,8 @@ class OptionsNotesColors extends MusicBeatState
 
 	var rgbChannelSprites:Array<FlxText> = [];
 
+	var hexCodeInput:FlxUIInputText;
+
 	override function create()
 	{
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
@@ -61,7 +74,7 @@ class OptionsNotesColors extends MusicBeatState
 			arrow0.frames = Paths.getSparrowAtlas("NOTE_assets_colored", "shared");
 			arrow0.animation.addByPrefix("arrow", arrowAnimsNames[i]);
 			arrow0.animation.play("arrow");
-			arrow0.color = colors[i];
+			arrow0.shader = new ColoredNoteShader(colors[i].red, colors[i].green, colors[i].blue);
 			arrow0.antialiasing = true;
 			arrow0.setGraphicSize(Std.int(arrow0.width * 0.7));
 			arrowSprites.push(arrow0);
@@ -76,16 +89,97 @@ class OptionsNotesColors extends MusicBeatState
 		}
 		for (i in 0...3)
 		{
-			var rgbThingy = new FlxText(arrowSprites[1].x, FlxG.height - 300 + (i * 52), 0, "- : 0", 32);
+			var rgbThingy = new FlxText(arrowSprites[1].x, 75 + arrowSprites[i].height + 25 + (i * 52), 0, "- : 0", 32);
 			rgbThingy.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			add(rgbThingy);
 			rgbChannelSprites.push(rgbThingy);
 		}
-		refreshColorCodes();
-		changeChannel(0);
-		super.create();
+		var hexHashtag = new FlxText(arrowSprites[1].x, 0, 0, "#");
+		hexHashtag.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		add(hexHashtag);
+		hexCodeInput = new FlxUIInputText(arrowSprites[1].x + hexHashtag.width + 5, rgbChannelSprites[2].y + rgbChannelSprites[2].height + 10, 250, "000000", 12);
+		hexHashtag.y = hexCodeInput.y + (hexCodeInput.height / 2) - (hexHashtag.height / 2);
+		var errorMessage:FlxText = new FlxText(hexCodeInput.x, hexCodeInput.y + hexCodeInput.height + 10, 0, "");
+		errorMessage.setFormat("VCR OSD Mono", 16, 0xFFFF4444, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+
+
+		var applyButton:FlxButton = new FlxButton(hexCodeInput.x + hexCodeInput.width + 10, hexCodeInput.y, "Apply", function() {
+			var c = FlxColor.fromString("#" + hexCodeInput.text);
+			if (c == null) {
+				errorMessage.text = "Invalid color. The color must be of format #000000.";
+			} else {
+				errorMessage.text = "";
+				c.alphaFloat = 1;
+				colors[arrowSelected] = c;
+				refreshColorCodes();
+			}
+		});
+		applyButton.y = hexCodeInput.y + (hexCodeInput.height / 2) - (applyButton.height / 2);
+		add(hexCodeInput);
+		add(errorMessage);
+		add(applyButton);
+
+
+		var resetButton:FlxButton = new FlxButton(hexHashtag.x, errorMessage.y + errorMessage.height + 10, "Reset", resetColors);
+		add(resetButton);
+
+		#if sys
+		var saveButton:FlxButton = new FlxButton(resetButton.x + resetButton.width + 10, resetButton.y, "Save", function() {
+			var _file = new FileReference();
+			var onClose:Event->Void = null;
+			var errFunc:Event->Void = function(e) {
+				errorMessage.text = e.toString();
+				onClose(e);
+			};
+			onClose = function(e) {
+				_file.removeEventListener(Event.COMPLETE, onClose);
+				_file.removeEventListener(Event.CANCEL, onClose);
+				_file.removeEventListener(IOErrorEvent.IO_ERROR, errFunc);
+			};
+			_file.addEventListener(Event.COMPLETE, onClose);
+			_file.addEventListener(Event.CANCEL, onClose);
+			_file.addEventListener(IOErrorEvent.IO_ERROR, errFunc);
+			var t = [];
+			for(k => c in colors) {
+				t[k] = c.toWebString();
+			}
+			_file.save(t.join(" "), "notes.txt");
+		});
+		add(saveButton);
+
+		var openButton:FlxButton = new FlxButton(saveButton.x + saveButton.width + 10, saveButton.y, "Open", function() {
+			var fDial = new FileDialog();
+			fDial.onSelect.add(function(path) {
+				var text = Paths.getTextOutsideAssets(path);
+				var colors = [
+					new FlxColor(0xFFC24B99),
+					new FlxColor(0xFF00FFFF),
+					new FlxColor(0xFF12FA05),
+					new FlxColor(0xFFF9393F),
+				];
+				for(k => c in text.split(" ")) {
+					colors[k] = FlxColor.fromString(c);
+				}
+				this.colors = colors;
+				refreshColorCodes();
+				refreshNotes();
+			});
+			fDial.browse(FileDialogType.OPEN, null, null, "Select your note skin text file.");
+		});
+		add(openButton);
+		#end
 	}
 
+	public function resetColors() {
+		colors = [
+			new FlxColor(0xFFC24B99),
+			new FlxColor(0xFF00FFFF),
+			new FlxColor(0xFF12FA05),
+			new FlxColor(0xFFF9393F),
+		];
+		refreshNotes();
+		refreshColorCodes();
+	}
 	public static function truncateFloat(number:Float, precision:Int):Float
 	{
 		var num = number;
@@ -113,9 +207,15 @@ class OptionsNotesColors extends MusicBeatState
 		}
 		if (FlxG.keys.justPressed.TAB)
 		{
-			arrowSelected++;
+			if (FlxG.keys.pressed.SHIFT)
+				arrowSelected--;
+			else
+				arrowSelected++;
+
 			if (arrowSelected > 3)
 				arrowSelected = 0;
+			if (arrowSelected < 0)
+				arrowSelected = 3;
 			arrowSelectorThingy.x = arrowSprites[arrowSelected].x + 10;
 			FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
 			refreshColorCodes();
@@ -126,14 +226,7 @@ class OptionsNotesColors extends MusicBeatState
 		}
 		if (FlxG.keys.justPressed.R)
 		{
-			colors = [
-				new FlxColor(0xFFC24B99),
-				new FlxColor(0xFF00FFFF),
-				new FlxColor(0xFF12FA05),
-				new FlxColor(0xFFF9393F),
-			];
-			refreshNotes();
-			refreshColorCodes();
+			resetColors();
 		}
 		if (FlxG.keys.justPressed.UP)
 		{
@@ -185,7 +278,7 @@ class OptionsNotesColors extends MusicBeatState
 	{
 		for (i in 0...4)
 		{
-			arrowSprites[i].color = colors[i];
+			cast(arrowSprites[i].shader, ColoredNoteShader).setColors(colors[i].red, colors[i].green, colors[i].blue);
 		}
 	}
 
@@ -194,6 +287,7 @@ class OptionsNotesColors extends MusicBeatState
 		rgbChannelSprites[0].text = "R : " + colors[arrowSelected].red;
 		rgbChannelSprites[1].text = "G : " + colors[arrowSelected].green;
 		rgbChannelSprites[2].text = "B : " + colors[arrowSelected].blue;
+		hexCodeInput.text = colors[arrowSelected].toWebString().substr(1);
 	}
 
 	function changeRGB(change:Int)

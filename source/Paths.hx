@@ -1,7 +1,7 @@
 package;
 
 import haxe.io.Bytes;
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 import openfl.media.Sound;
 import sys.FileSystem;
 import sys.io.File;
@@ -114,22 +114,36 @@ class Paths
 		return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
 	}
 
-	inline static public function modInst(song:String, mod:String)
+	inline static public function modInst(song:String, mod:String, ?difficulty:String = "")
 	{
-		var path = Paths.getModsFolder() + '/$mod/songs/$song/Inst.ogg';
-		if (Settings.engineSettings.data.developerMode) {
-			if (!FileSystem.exists(path)) {
+		
+		return Sound.fromFile(getInstPath(song, mod, difficulty));
+	}
+	inline static public function getInstPath(song:String, mod:String, ?difficulty:String = "")
+	{
+		var path = Paths.getModsFolder() + '/$mod/songs/$song/';
+		// trace(path + 'Inst-$difficulty.ogg');
+		if (FileSystem.exists(path + 'Inst-$difficulty.ogg')) {
+			path += 'Inst-$difficulty.ogg';
+		} else {
+			if (FileSystem.exists(path + 'Inst.ogg')) {
+				path += 'Inst.ogg';
+			} else {
 				PlayState.log.push('Paths : Inst for song $song at "$path" does not exist.');
 			}
 		}
-		return Sound.fromFile(path);
+		return path;
 	}
 
-	inline static public function modVoices(song:String, mod:String)
+	inline static public function modVoices(song:String, mod:String, ?difficulty:String = "")
 	{
-		var path = Paths.getModsFolder() + '/$mod/songs/$song/Voices.ogg';
-		if (Settings.engineSettings.data.developerMode) {
-			if (!FileSystem.exists(path)) {
+		var path = Paths.getModsFolder() + '/$mod/songs/$song/';
+		if (FileSystem.exists(path + 'Voices-$difficulty.ogg')) {
+			path += 'Voices-$difficulty.ogg';
+		} else {
+			if (FileSystem.exists(path + 'Voices.ogg')) {
+				path += 'Voices.ogg';
+			} else {
 				PlayState.log.push('Paths : Voices for song $song at "$path" does not exist.');
 			}
 		}
@@ -148,6 +162,9 @@ class Paths
 	}
 	
 	inline static public function getSkinsPath() {
+		return "./skins/";
+	}
+	inline static public function getOldSkinsPath() {
 		return System.applicationStorageDirectory + "../../YoshiCrafter29/Yoshi Engine/skins/";
 	}
 
@@ -180,10 +197,13 @@ class Paths
 	inline static public function clearCache() {
 		cacheText.clear();
 		for (bData in cacheBitmap) {
-			bData.dispose();
-			bData.disposeImage();
+			if (bData != null) {
+				bData.dispose();
+				bData.disposeImage();
+			}
 		}
 		cacheBitmap.clear();
+		cacheBytes.clear();
 	}
 
 	inline static public function getTextOutsideAssets(path:String, log:Bool = false) {
@@ -286,11 +306,24 @@ class Paths
 			charMod = splittedCharacterID[0];
 		}
 		var folder = Paths.getModsFolder() + '/$charMod/characters/$charName';
+		if (charMod == "~") {
+			// You have unlocked secret skin menu !
+			folder = '${Paths.getSkinsPath()}/$charName';
+		}
 		trace(folder);
-		if (!FileSystem.exists(folder + "/Character.hx")) {
+		
+		var exists = false;
+		for (e in Main.supportedFileTypes) {
+			exists = FileSystem.exists('$folder/Character.$e');
+			if (exists) break;
+		}
+		if (!exists) {
 			folder = Paths.getModsFolder() + '/Friday Night Funkin\'/characters/unknown';
 		}
 		return folder;
+	}
+	inline static public function getCharacterFolderPath_Array(character:Array<String>):String {
+		return '${Paths.getModsFolder()}\\${character[0]}\\characters\\${character[1]}';
 	}
 	inline static public function getModCharacter(characterId:String)
 	{

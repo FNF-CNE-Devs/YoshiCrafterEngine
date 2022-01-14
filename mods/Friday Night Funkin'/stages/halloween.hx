@@ -15,7 +15,6 @@ function create()
     halloweenBG.antialiasing = true;
     PlayState.add(halloweenBG);
 }
-
 function beatHit(curBeat)
 {
     if (FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
@@ -32,5 +31,7 @@ function lightningStrikeShit()
     lightningOffset = FlxG.random.int(8, 24);
 
     PlayState.boyfriend.playAnim('scared', true);
+    PlayState.boyfriend.lastNoteHitTime = Conductor.songPosition;
     PlayState.gf.playAnim('scared', true);
+    PlayState.gf.lastNoteHitTime = Conductor.songPosition;
 }

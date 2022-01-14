@@ -5,84 +5,84 @@ var noteSchemes:Array<Array<Array<String>>> = [
     ],
     [
         // ["Static arrow sprite", "Pressed arrow sprite", "Confirmed arrow sprite", "Scroll arrow sprite", "Character animation", "Hold end piece animation", "Hold piece animation"]
-        ["arrowUP", "up press", "up confirm", "green0", "singUP-alt", "green hold end", "green hold piece"]
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"]
     ],
     [
-        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT-alt", "pruple end hold", "purple hold piece"],
-        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT-alt", "red hold end", "red hold piece"]
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"]
     ],
     [
-        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT-alt", "pruple end hold", "purple hold piece"],
-        ["arrowUP", "up press", "up confirm", "green0", "singUP-alt", "green hold end", "green hold piece"],
-        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT-alt", "red hold end", "red hold piece"]
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"]
     ],
     [
-        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT-alt", "pruple end hold", "purple hold piece"],
-        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN-alt", "blue hold end", "blue hold piece"],
-        ["arrowUP", "up press", "up confirm", "green0", "singUP-alt", "green hold end", "green hold piece"],
-        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT-alt", "red hold end", "red hold piece"],
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN", "blue hold end", "blue hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
     ],
     [
-        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT-alt", "pruple end hold", "purple hold piece"],
-        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT-alt", "red hold end", "red hold piece"],
-        ["arrowUP", "up press", "up confirm", "green0", "singUP-alt", "green hold end", "green hold piece"],
-        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT-alt", "pruple end hold", "purple hold piece"],
-        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT-alt", "red hold end", "red hold piece"],
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
     ],
     [
-        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT-alt", "pruple end hold", "purple hold piece"],
-        ["arrowUP", "up press", "up confirm", "green0", "singUP-alt", "green hold end", "green hold piece"],
-        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT-alt", "red hold end", "red hold piece"],
-        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT-alt", "pruple end hold", "purple hold piece"],
-        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN-alt", "blue hold end", "blue hold piece"],
-        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT-alt", "red hold end", "red hold piece"],
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN", "blue hold end", "blue hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
     ],
     [
-        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT-alt", "pruple end hold", "purple hold piece"],
-        ["arrowUP", "up press", "up confirm", "green0", "singUP-alt", "green hold end", "green hold piece"],
-        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT-alt", "red hold end", "red hold piece"],
-        ["arrowUP", "up press", "up confirm", "green0", "singUP-alt", "green hold end", "green hold piece"],
-        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT-alt", "pruple end hold", "purple hold piece"],
-        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN-alt", "blue hold end", "blue hold piece"],
-        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT-alt", "red hold end", "red hold piece"],
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN", "blue hold end", "blue hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
     ],
     [
-        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT-alt", "pruple end hold", "purple hold piece"],
-        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN-alt", "blue hold end", "blue hold piece"],
-        ["arrowUP", "up press", "up confirm", "green0", "singUP-alt", "green hold end", "green hold piece"],
-        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT-alt", "red hold end", "red hold piece"],
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN", "blue hold end", "blue hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
         
-        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT-alt", "pruple end hold", "purple hold piece"],
-        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN-alt", "blue hold end", "blue hold piece"],
-        ["arrowUP", "up press", "up confirm", "green0", "singUP-alt", "green hold end", "green hold piece"],
-        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT-alt", "red hold end", "red hold piece"],
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN", "blue hold end", "blue hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
     ],
     [
-        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT-alt", "pruple end hold", "purple hold piece"],
-        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN-alt", "blue hold end", "blue hold piece"],
-        ["arrowUP", "up press", "up confirm", "green0", "singUP-alt", "green hold end", "green hold piece"],
-        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT-alt", "red hold end", "red hold piece"],
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN", "blue hold end", "blue hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
         
-        ["arrowUP", "up press", "up confirm", "green0", "singUP-alt", "green hold end", "green hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
         
-        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT-alt", "pruple end hold", "purple hold piece"],
-        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN-alt", "blue hold end", "blue hold piece"],
-        ["arrowUP", "up press", "up confirm", "green0", "singUP-alt", "green hold end", "green hold piece"],
-        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT-alt", "red hold end", "red hold piece"],
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN", "blue hold end", "blue hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
     ],
     [
-        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT-alt", "pruple end hold", "purple hold piece"],
-        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN-alt", "blue hold end", "blue hold piece"],
-        ["arrowUP", "up press", "up confirm", "green0", "singUP-alt", "green hold end", "green hold piece"],
-        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT-alt", "red hold end", "red hold piece"],
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN", "blue hold end", "blue hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
         
-        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT-alt", "pruple end hold", "purple hold piece"],
-        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT-alt", "red hold end", "red hold piece"],
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
         
-        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT-alt", "pruple end hold", "purple hold piece"],
-        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN-alt", "blue hold end", "blue hold piece"],
-        ["arrowUP", "up press", "up confirm", "green0", "singUP-alt", "green hold end", "green hold piece"],
-        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT-alt", "red hold end", "red hold piece"],
+        ["arrowLEFT", "left press", "left confirm", "purple0", "singLEFT", "pruple end hold", "purple hold piece"],
+        ["arrowDOWN", "down press", "down confirm", "blue0", "singDOWN", "blue hold end", "blue hold piece"],
+        ["arrowUP", "up press", "up confirm", "green0", "singUP", "green hold end", "green hold piece"],
+        ["arrowRIGHT", "right press", "right confirm", "red0", "singRIGHT", "red hold end", "red hold piece"],
     ]
 ];
 // enableMiss(true);
@@ -100,13 +100,15 @@ function generateStaticArrow(babyArrow:FlxSprite, i:Int) {
     babyArrow.animation.addByPrefix('static', s[0]);
     babyArrow.animation.addByPrefix('pressed', s[1], 24, false);
     babyArrow.animation.addByPrefix('confirm', s[2], 24, false);
+    babyArrow.colored = EngineSettings.customArrowColors;
 }
 
 function create() {
     if (EngineSettings.customArrowColors) {
-        var colors:Array<Int> = (note.mustPress || EngineSettings.customArrowColors_allChars) ? PlayState.boyfriend.getColors(false) : PlayState.dad.getColors(false);
+        // var colors:Array<Int> = (note.mustPress || EngineSettings.customArrowColors_allChars) ? PlayState.boyfriend.getColors(note.altAnim) : PlayState.dad.getColors(note.altAnim);
         note.frames = (EngineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored') : Paths_.getSparrowAtlas_Custom(StringTools.replace(StringTools.replace(Paths_.getSkinsPath() + "notes/" + EngineSettings.customArrowSkin.toLowerCase(), "/", "\\"), "\r", ""));
-		note.color = colors[(note.noteData % 4) + 1];
+        note.colored = true;
+		// note.color = colors[(note.noteData % 4) + 1];
     } else {
         note.frames = (EngineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets') : Paths_.getSparrowAtlas_Custom(StringTools.replace(StringTools.replace(Paths_.getSkinsPath() + "notes/" + EngineSettings.customArrowSkin.toLowerCase(), "/", "\\"), "\r", ""));
     }
@@ -141,15 +143,15 @@ function update(elapsed) {
 }
 
 function onPlayerHit(noteData) {
-    PlayState.boyfriend.playAnim(noteSchemes[PlayState.song.keyNumber][noteData % PlayState.song.keyNumber][4], true);
+    for (bf in PlayState.boyfriends) bf.playAnim(noteSchemes[PlayState.song.keyNumber][noteData % PlayState.song.keyNumber][4] + "-alt", true);
 }
 
 function onMiss(noteData) {
-    PlayState.boyfriend.playAnim(noteSchemes[PlayState.song.keyNumber][noteData % PlayState.song.keyNumber][4] + "miss", true);
+    for (bf in PlayState.boyfriends) bf.playAnim(noteSchemes[PlayState.song.keyNumber][noteData % PlayState.song.keyNumber][4] + "miss", true);
     PlayState.noteMiss(note.noteData);
     PlayState.health -= note.isSustainNote ? 0.03125 : 0.125;
 }
 
 function onDadHit(noteData) {
-    PlayState.dad.playAnim(noteSchemes[PlayState.song.keyNumber][noteData % PlayState.song.keyNumber][4], true);
+    for (dad in PlayState.dads) dad.playAnim(noteSchemes[PlayState.song.keyNumber][noteData % PlayState.song.keyNumber][4] + "-alt", true);
 }

@@ -22,57 +22,44 @@ var light:FlxSprite = null;
 function create() {
     stage = PlayState_.stage;
     
-    phillyTrain = getStageVar('phillyTrain');
-    bg = getStageVar('bg');
-    city = getStageVar('city');
-    street = getStageVar('street');
-    streetBehind = getStageVar('streetBehind');
-    light = getStageVar('light');
-    
+    phillyTrain = global['phillyTrain'];
+    bg = global['bg'];
+    city = global['city'];
+    street = global['street'];
+    streetBehind = global['streetBehind'];
+    light = global['light'];
     if (EngineSettings.blammedEffect) {
+        PlayState.boyfriend.shader = new BlammedShader(255, 255, 255);
+        PlayState.boyfriend.shader.enabled.value = [false];
 
-        trace("creating gf");
-        Paths_.copyBitmap = true;
-        gfDark = new Character(400, 130, "gf", false, true);
-        gfDark.pixels.copyPixels(BitmapDataPlus.GenerateBlammedEffect(gfDark.pixels.clone(), 0xFF000000, 0xFFFFFFFF), new Rectangle(0, 0, gfDark.pixels.width, gfDark.pixels.height), new Point(0,0));
-        gfDark.visible = false;
-        gfDark.setPosition(PlayState.gf.x, PlayState.gf.y);
-        PlayState.add(gfDark);
+        PlayState.dad.shader = new BlammedShader(255, 255, 255);
+        PlayState.dad.shader.enabled.value = [false];
 
-        // bfDark = new Boyfriend(770, 100, PlayState.SONG.player1, EngineSettings.customBFSkin == "default" ? "BF_blammed" : "blammed");
-        
-        trace("creating bf");
-        Paths_.copyBitmap = true;
-        bfDark = new Character(400, 130, PlayState.song.player1, false, true);
-        bfDark.pixels.copyPixels(BitmapDataPlus.GenerateBlammedEffect(bfDark.pixels.clone(), 0xFF000000, 0xFFFFFFFF), new Rectangle(0, 0, bfDark.pixels.width, bfDark.pixels.height), new Point(0,0));
-        bfDark.visible = false;
-        bfDark.flipX = !bfDark.flipX;
-        bfDark.setPosition(PlayState.boyfriend.x, PlayState.boyfriend.y);
-        PlayState.boyfriends.push(bfDark);
-        PlayState.add(bfDark);
+        PlayState.gf.shader = new BlammedShader(255, 255, 255);
+        PlayState.gf.shader.enabled.value = [false];
 
-        trace("creating pico");
-        Paths_.copyBitmap = true;
-        dadDark = new Character(400, 130, PlayState.song.player2, false, true);
-        dadDark.pixels.copyPixels(BitmapDataPlus.GenerateBlammedEffect(dadDark.pixels.clone(), 0xFF000000, 0xFFFFFFFF), new Rectangle(0, 0, dadDark.pixels.width, dadDark.pixels.height), new Point(0,0));
-        dadDark.visible = false;
-        dadDark.setPosition(PlayState.dad.x, PlayState.dad.y);
-        PlayState.dads.push(dadDark);
-        PlayState.add(dadDark);
-        Paths_.copyBitmap = false;
-        
-        trace("done");
-
-        // picoDarkMode = Paths.getBitmapOutsideAssets('assets/characters/PICO_blammed.png');
-        // ogPico = PlayState.dad.pixels.clone();
-        // ogBF = PlayState.boyfriend.pixels.clone();
-        // ogGF = PlayState.gf.pixels.clone();
-
-        // blackScreen = new FlxSprite(0, 0).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.WHITE);
-        // blackScreen.cameras = [PlayState.camHUD];
-        // blackScreen.alpha = 0;
-        // PlayState.add(blackScreen);
     }
+}
+
+function update(elapsed) {
+    if (PlayState.iconP1 != null) {
+        if (PlayState.iconP1.shader == null) {
+            PlayState.iconP1.shader = new BlammedShader(255, 255, 255);
+            PlayState.iconP1.shader.enabled.value = [false];
+        }
+    }
+    if (PlayState.iconP2 != null) {
+        if (PlayState.iconP2.shader == null) {
+            PlayState.iconP2.shader = new BlammedShader(255, 255, 255);
+            PlayState.iconP2.shader.enabled.value = [false];
+        }
+    } 
+    if (PlayState.healthBarBG != null) {
+        if (PlayState.healthBarBG.shader == null) {
+            PlayState.healthBarBG.shader = new BlammedShader(255, 255, 255);
+            PlayState.healthBarBG.shader.enabled.value = [false];
+        }
+    } 
 }
 function beatHit(curBeat:Int) {
     if (gfDark != null) gfDark.dance();
@@ -83,15 +70,14 @@ function beatHit(curBeat:Int) {
             // switchGF(gfDarkMode);
             // switchPico(picoDarkMode);
             FlxG.camera.flash(0xFFFFFFFF, 2);
-            PlayState.currentBoyfriend = 1;
-            PlayState.boyfriends[0].visible = false;
-            PlayState.boyfriends[1].visible = true;
-            PlayState.currentDad = 1;
-            PlayState.dads[0].visible = false;
-            PlayState.dads[1].visible = true;
-            PlayState.gf.visible = false;
-            gfDark.visible = true;
 
+            PlayState.boyfriend.shader.enabled.value = [true];
+            PlayState.dad.shader.enabled.value = [true];
+            PlayState.gf.shader.enabled.value = [true];
+            PlayState.iconP1.shader.enabled.value = [true];
+            PlayState.iconP2.shader.enabled.value = [true];
+            PlayState.healthBarBG.shader.enabled.value = [true];
+            PlayState.healthBar.visible = false;
 
             phillyTrain.visible = false;
             bg.visible = false;
@@ -104,23 +90,20 @@ function beatHit(curBeat:Int) {
             // switchGF(ogGF);
             // switchPico(ogPico);
             FlxG.camera.flash(0xFF000000, 2);
-            PlayState.currentBoyfriend = 0;
-            PlayState.boyfriends[1].visible = false;
-            PlayState.boyfriends[0].visible = true;
-            PlayState.currentDad = 0;
-            PlayState.dads[0].visible = true;
-            PlayState.dads[1].visible = false;
-            PlayState.gf.visible = true;
-            gfDark.visible = false;
             
             phillyTrain.visible = true;
             bg.visible = true;
             city.visible = true;
             streetBehind.visible = true;
             street.visible = true;
-            PlayState.boyfriend.color = 0xFFFFFFFF;
-            PlayState.dad.color = 0xFFFFFFFF;
-            PlayState.gf.color = 0xFFFFFFFF;
+            
+            PlayState.boyfriend.shader.enabled.value = [false];
+            PlayState.dad.shader.enabled.value = [false];
+            PlayState.gf.shader.enabled.value = [false];
+            PlayState.iconP1.shader.enabled.value = [false];
+            PlayState.iconP2.shader.enabled.value = [false];
+            PlayState.healthBarBG.shader.enabled.value = [false];
+            PlayState.healthBar.visible = true;
 
             // picoDarkMode.dispose();
             // picoDarkMode.disposeImage();
@@ -132,9 +115,13 @@ function beatHit(curBeat:Int) {
     
     
     if (curBeat % 4 == 0 && EngineSettings.blammedEffect) {
-        bfDark.color = light.color;
-        dadDark.color = light.color;
-        gfDark.color = light.color;
+        var color = new FlxColor(light.color);
+        PlayState.boyfriend.shader.setColors(color.red, color.green, color.blue);
+        PlayState.dad.shader.setColors(color.red, color.green, color.blue);
+        PlayState.gf.shader.setColors(color.red, color.green, color.blue);
+        PlayState.iconP1.shader.setColors(color.red, color.green, color.blue);
+        PlayState.iconP2.shader.setColors(color.red, color.green, color.blue);
+        PlayState.healthBarBG.shader.setColors(color.red, color.green, color.blue);
     }
 }
 

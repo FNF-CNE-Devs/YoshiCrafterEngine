@@ -25,3 +25,19 @@ function create() {
     character.antialiasing = false;
     character.playAnim('idle');
 }
+
+function getColors(altAnim) {
+    return [
+        0xFFFFAA6F,
+        0xFFA7B7F5,
+        0xFFFF78BF,
+        0xFFFF78BF,
+        0xFFA7B7F5
+    ];
+}
+
+function healthIcon(icon) {
+    icon.antialiasing = false;
+    // [[Min health, Frame index (grid)]]
+    icon.frameIndexes = [[0, 0]];
+}

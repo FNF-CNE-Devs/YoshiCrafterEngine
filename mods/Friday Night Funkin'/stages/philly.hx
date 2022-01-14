@@ -23,22 +23,6 @@ var trainCooldown:Int = 0;
 var startedMoving:Bool = false;
 var triggeredAlready:Bool = false;
 
-function getVar(v) {
-    switch(v) {
-        case "phillyTrain":
-            return phillyTrain;
-        case "bg":
-            return bg;
-        case "city":
-            return city;
-        case "street":
-            return street;
-        case "streetBehind":
-            return streetBehind;
-        case "light":
-            return light;
-    }
-}
 function beatHit(curBeat) {
     if (curBeat % 4 == 0)
     {
@@ -61,12 +45,14 @@ function create()
     bg = new FlxSprite(-100).loadGraphic(Paths.image('philly/sky'));
     bg.scrollFactor.set(0.1, 0.1);
     PlayState.add(bg);
+    global["bg"] = bg;
 
     city = new FlxSprite(-10).loadGraphic(Paths.image('philly/city'));
     city.scrollFactor.set(0.3, 0.3);
     city.setGraphicSize(Std.int(city.width * 0.85));
     city.updateHitbox();
     PlayState.add(city);
+    global["city"] = city;
 
     light = new FlxSprite(city.x).loadGraphic(Paths.image('philly/win'));
     light.scrollFactor.set(0.3, 0.3);
@@ -78,9 +64,11 @@ function create()
 
     streetBehind = new FlxSprite(-40, 50).loadGraphic(Paths.image('philly/behindTrain'));
     PlayState.add(streetBehind);
+    global["streetBehind"] = streetBehind;
 
     phillyTrain = new FlxSprite(2000, 360).loadGraphic(Paths.image('philly/train'));
     PlayState.add(phillyTrain);
+    global["phillyTrain"] = phillyTrain;
 
     trainSound = new FlxSound().loadEmbedded(Paths.sound('train_passes'));
     FlxG.sound.list.add(trainSound);
@@ -89,6 +77,7 @@ function create()
     // var cityLights:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.win0);
 
     street = new FlxSprite(-40, streetBehind.y).loadGraphic(Paths.image('philly/street'));
+    global["street"] = street;
     PlayState.add(street);
 }
 

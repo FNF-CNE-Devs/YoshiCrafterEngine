@@ -1,7 +1,8 @@
 package;
 
+import NoteShader.ColoredNoteShader;
 import flixel.math.FlxPoint;
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
@@ -42,6 +43,8 @@ class Note extends FlxSprite
 	public var noteScore:Float = 1;
 
 	public var noteType:Int = 0;
+
+	public var colored:Bool = false;
 	// #if secret
 	// 	var c:FlxColor = new FlxColor(0xFFFF0000);
 	// 	c.hue = (strumTime / 100) % 359;
@@ -69,8 +72,8 @@ class Note extends FlxSprite
 
 	public static var noteTypes:Array<hscript.Expr> = [];
 	// public var script:hscript.Interp;
-	public var script(get, null):hscript.Interp;
-	public function get_script():hscript.Interp {
+	public var script(get, null):Script;
+	public function get_script():Script {
 		return PlayState.current.noteScripts[noteType % PlayState.current.noteScripts.length];
 	}
 
@@ -223,8 +226,16 @@ class Note extends FlxSprite
 		var daStage:String = PlayState.curStage;
 
 		// createNote();
-		script.variables.set("note", this);
-		ModSupport.executeFunc(script, "create");
+		script.setVariable("note", this);
+		script.executeFunc("create");
+		if (colored) {
+			var customColors = mustPress ? PlayState.current.boyfriend.getColors(altAnim) : PlayState.current.dad.getColors(altAnim);
+			var c = customColors[(noteData % (customColors.length - 1)) + 1];
+			this.shader = new ColoredNoteShader(c.red, c.green, c.blue);
+		} else {
+			this.shader = new ColoredNoteShader(255, 255, 255);
+			cast(this.shader, ColoredNoteShader).enabled.value = [false];
+		}
 
 		scale.x *= swagWidth / _swagWidth;
 		if (!isSustainNote) {
@@ -327,8 +338,8 @@ class Note extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		ModSupport.executeFunc(script, "update", [elapsed]);
-		script.variables.set("note", this);
+		script.executeFunc("update", [elapsed]);
+		script.setVariable("note", this);
 		if (mustPress)
 		{
 			// The * 0.5 is so that it's easier to hit them too late, instead of too early

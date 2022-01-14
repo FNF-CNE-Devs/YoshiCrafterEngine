@@ -1,6 +1,6 @@
 package;
 
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 import Section.SwagSection;
 import Song.SwagSong;
 import WiggleEffect.WiggleEffectType;

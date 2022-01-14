@@ -3,7 +3,7 @@ package;
 // import sys.io.File;
 import sys.FileSystem;
 import sys.io.File;
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 import PlayState.PlayState;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -50,17 +50,26 @@ class Character extends FlxSprite
 	public var curCharacter:String = 'bf';
 
 	public var holdTimer:Float = 0;
+
+	public var longAnims:Array<String> = [];
 	/**
 	 * If the character is a variant of Boyfriend, or Boyfriend itself.
 	 */
 	public var isaBF:Bool = false;
+
+	public var healthIcon(default, set):HealthIcon;
+	public function set_healthIcon(h:HealthIcon):HealthIcon {
+		healthIcon = h;
+		if (characterScript != null) characterScript.executeFunc("healthIcon", [h]);
+		return h;
+	}
 
 	public static var customBFAnims:Array<String> = [];
 	public static var customBFOffsets:Array<String> = [];
 	public static var customGFAnims:Array<String> = [];
 	public static var customGFOffsets:Array<String> = [];
 
-	public var characterScript:hscript.Interp;
+	public var characterScript:Script;
 
 	/**
 	 * Reconfigures animations for custom BF and GF.
@@ -114,15 +123,16 @@ class Character extends FlxSprite
 
 
 		
-		characterScript = new hscript.Interp();
-		characterScript.variables.set("curCharacter", curCharacter);
-		characterScript.variables.set("character", this);
-		characterScript.variables.set("textureOverride", textureOverride);
-		characterScript.variables.set("dance", function() {playAnim("idle");});
-		characterScript.variables.set("create", function() {});
-		characterScript.variables.set("update", function(elapsed:Float) {});
-		characterScript.variables.set("onAnim", function(animName:String) {});
-		characterScript.variables.set("getColors", function(altAnim:Bool) {
+		var p = Paths.getCharacterFolderPath(curCharacter) + "/Character";
+		characterScript = Script.create(p);
+		characterScript.setVariable("curCharacter", curCharacter);
+		characterScript.setVariable("character", this);
+		characterScript.setVariable("textureOverride", textureOverride);
+		characterScript.setVariable("dance", function() {playAnim("idle");});
+		characterScript.setVariable("create", function() {});
+		characterScript.setVariable("update", function(elapsed:Float) {});
+		characterScript.setVariable("onAnim", function(animName:String) {});
+		characterScript.setVariable("getColors", function(altAnim:Bool) {
 			return [
 				(this.isPlayer ? new FlxColor(0xFF66FF33) : new FlxColor(0xFFFF0000)),
 				new FlxColor(Settings.engineSettings.data.arrowColor0),
@@ -131,18 +141,17 @@ class Character extends FlxSprite
 				new FlxColor(Settings.engineSettings.data.arrowColor3)
 			];
 		});
-		var p = Paths.getCharacterFolderPath(curCharacter) + "/Character.hx";
 		var sName = curCharacter.split(":");
-		ModSupport.setHaxeFileDefaultVars(characterScript, sName.length > 1 ? sName[0] : "Friday Night Funkin'", {"cloneBitmap" : cloneBitmap});
+		ModSupport.setScriptDefaultVars(characterScript, sName.length > 1 ? sName[0] : "Friday Night Funkin'", {"cloneBitmap" : cloneBitmap});
 		try {
-			characterScript.execute(ModSupport.getExpressionFromPath(p, true));
+			characterScript.loadFile(p);
 		} catch(e) {
 			return;
 		}
 
 
 		try {
-			ModSupport.executeFunc(characterScript, "create");
+			characterScript.executeFunc("create");
 		} catch(ex) {
 			trace(ex);
 		}
@@ -191,7 +200,7 @@ class Character extends FlxSprite
 			Settings.engineSettings.data.arrowColor2,
 			Settings.engineSettings.data.arrowColor3
 		];
-		var c:Array<Int> = ModSupport.executeFunc(characterScript, "getColors", [altAnim]);
+		var c:Array<Int> = characterScript.executeFunc("getColors", [altAnim]);
 		var invalid = false;
 		invalid = c == null;
 		if (!invalid) invalid = c.length < 1;
@@ -202,12 +211,30 @@ class Character extends FlxSprite
 			Settings.engineSettings.data.arrowColor2,
 			Settings.engineSettings.data.arrowColor3
 		];
-
-		for (i in 1...c.length) {
-			if (c[i] == 0) {
-				c[i] = defNoteColors[(i - 1) % defNoteColors.length];
+		if (c.length < 5) {
+			for (i in c.length...5) {
+				c.push(switch(i) {
+					case 0:
+						(this.isPlayer ? 0xFF66FF33 : 0xFFFF0000);
+					case 1:
+						Settings.engineSettings.data.arrowColor0;
+					case 2:
+						Settings.engineSettings.data.arrowColor1;
+					case 3:
+						Settings.engineSettings.data.arrowColor2;
+					case 4:
+						Settings.engineSettings.data.arrowColor3;
+					default:
+						0xFFFFFFFF;
+				});
 			}
 		}
+
+		// for (i in 1...c.length) {
+		// 	if (c[i] == 0) {
+		// 		c[i] = defNoteColors[(i - 1) % defNoteColors.length];
+		// 	}
+		// }
 
 		return c;
 	}
@@ -215,9 +242,8 @@ class Character extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		if (!debugMode && animation.curAnim != null) {
-			if (isPlayer && (lastHit <= Conductor.songPosition - 500 || lastHit == 0) && animation.curAnim.name != "idle" && !isaBF)
-				playAnim('idle');
-			// if (!curCharacter.startsWith('bf')) // Ok, what the fuck ?
+			// if (isPlayer && (lastHit <= Conductor.songPosition - 500 || lastHit == 0) && animation.curAnim.name != "idle" && !isPlayer)
+			// 	dance();
 			if (!isPlayer)
 			{
 					if (animation.curAnim.name.startsWith('sing'))
@@ -245,7 +271,7 @@ class Character extends FlxSprite
 		}
 		
 
-		ModSupport.executeFunc(characterScript, "update", [elapsed]);
+		characterScript.executeFunc("update", [elapsed]);
 		super.update(elapsed);
 	}
 
@@ -270,7 +296,7 @@ class Character extends FlxSprite
 		
 		if (!debugMode)
 		{
-			ModSupport.executeFunc(characterScript, "dance");
+			characterScript.executeFunc("dance");
 			// switch (curCharacter)
 			// {
 			// 	case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel' | 'gfTankmen':
@@ -320,7 +346,7 @@ class Character extends FlxSprite
 		if (AnimName.startsWith("sing")) {
 			lastNoteHitTime = Conductor.songPosition;
 		}
-		ModSupport.executeFunc(characterScript, "onAnim", [AnimName]);
+		characterScript.executeFunc("onAnim", [AnimName]);
 
 		if (animation.getByName(AnimName) == null) {
 			trace(AnimName + " doesn't exist on character " + curCharacter);
@@ -393,7 +419,7 @@ class Character extends FlxSprite
 // import sys.FileSystem;
 // #end
 // import lime.utils.Assets;
-// import LoadSettings.Settings;
+// import EngineSettings.Settings;
 // import PlayState.PlayState;
 // import flixel.FlxG;
 // import flixel.FlxSprite;

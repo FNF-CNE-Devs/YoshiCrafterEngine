@@ -1,5 +1,6 @@
 package;
 
+import sys.FileSystem;
 import flixel.FlxG;
 import haxe.DynamicAccess;
 import lime.utils.Assets;
@@ -19,6 +20,21 @@ class CoolUtil
 	* @param path Path of the original folder
 	* @param path Path of the new folder
 	*/
+	public static function deleteFolder(delete:String) {
+		#if sys
+		if (!sys.FileSystem.exists(delete)) return;
+		var files:Array<String> = sys.FileSystem.readDirectory(delete);
+		for(file in files) {
+			if (sys.FileSystem.isDirectory(delete + "/" + file)) {
+				deleteFolder(delete + "/" + file);
+				FileSystem.deleteDirectory(delete + "/" + file);
+			} else {
+				FileSystem.deleteFile(delete + "/" + file);
+			}
+		}
+		#end
+	}
+	/*
 	public static function copyFolder(path:String, copyTo:String) {
 		#if sys
 		if (!sys.FileSystem.exists(copyTo)) {
@@ -34,6 +50,7 @@ class CoolUtil
 		}
 		#end
 	}
+	*/
 	/**
 	* Get the difficulty name based on the actual song
 	*/
@@ -41,6 +58,14 @@ class CoolUtil
 	{
 		// return difficultyArray[PlayState.storyDifficulty];
 		return PlayState.storyDifficulty.toUpperCase();
+	}
+
+	public static function prettySong(song:String):String {
+		var split = song.replace("-", " ").split(" ");
+		for(i in 0...split.length) {
+			if (split[i].length > 0) split[i] = split[i].charAt(0).toUpperCase() + split[i].substr(1).toLowerCase();
+		}
+		return split.join(" ");
 	}
 
 	/**
@@ -99,5 +124,56 @@ class CoolUtil
 			r = '0$r';
 		}
 		return r;
+	}
+
+	public static function getCharacterFullString(char:String, mod:String):String {
+		return getCharacterFull(char, mod).join(":");
+	}
+	public static function getCharacterFull(char:String, mod:String):Array<String> {
+		var splitChar = char.split(":");
+		if (splitChar.length == 1) {
+			for (fileExt in Main.supportedFileTypes) {
+				if (FileSystem.exists('${Paths.getModsFolder()}\\$mod\\characters\\${splitChar[0]}\\Character.$fileExt')) {
+					splitChar.insert(0, mod);
+					break;
+				}
+			}
+			if (splitChar.length == 1) {
+				for (fileExt in Main.supportedFileTypes) {
+					if (FileSystem.exists('${Paths.getModsFolder()}\\Friday Night Funkin\'\\characters\\${splitChar[0]}\\Character.$fileExt')) {
+						splitChar.insert(0, "Friday Night Funkin'");
+						break;
+					}
+				}
+			}
+		}
+        if (splitChar.length == 1) splitChar = ["Friday Night Funkin'", "unknown"];
+
+		
+		return splitChar;
+	}
+	public static function getNoteTypeFullString(char:String, mod:String):String {
+		return getNoteTypeFull(char, mod).join(":");
+	}
+	public static function getNoteTypeFull(char:String, mod:String):Array<String> {
+		var splitChar = char.split(":");
+		if (splitChar.length == 1) {
+			for (fileExt in Main.supportedFileTypes) {
+				if (FileSystem.exists('${Paths.getModsFolder()}\\$mod\\notes\\${splitChar[0]}.$fileExt')) {
+					splitChar.insert(0, mod);
+					break;
+				}
+			}
+			if (splitChar.length == 1) {
+				for (fileExt in Main.supportedFileTypes) {
+					if (FileSystem.exists('${Paths.getModsFolder()}\\Friday Night Funkin\'\\notes\\${splitChar[0]}.$fileExt')) {
+						splitChar.insert(0, "Friday Night Funkin'");
+						break;
+					}
+				}
+			}
+		}
+        if (splitChar.length == 1) splitChar = ["Friday Night Funkin'", "Default Note"];
+		return splitChar;
 	}
 }

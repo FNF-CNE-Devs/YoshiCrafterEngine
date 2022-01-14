@@ -2,7 +2,7 @@ package;
 
 import Note.NoteDirection;
 import flixel.math.FlxPoint;
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
@@ -59,8 +59,8 @@ class CharterNote extends FlxSprite
 
 	public static var noteTypes:Array<hscript.Expr> = [];
 	// public var script:hscript.Interp;
-	public var script(get, null):hscript.Interp;
-	public function get_script():hscript.Interp {
+	public var script(get, null):Script;
+	public function get_script():Script {
 		return PlayState.current.noteScripts[noteType % PlayState.current.noteScripts.length];
 	}
 
@@ -82,7 +82,7 @@ class CharterNote extends FlxSprite
 	public function createNote() {
 		switch(noteType) {
 			default:
-                frames = Paths.getSparrowAtlas('NOTE_assets_colored', 'shared');
+                frames = Paths.getSparrowAtlas('NOTE_assets_charter', 'shared');
 
                 animation.addByPrefix('greenScroll', 'green0');
                 animation.addByPrefix('redScroll', 'red0');

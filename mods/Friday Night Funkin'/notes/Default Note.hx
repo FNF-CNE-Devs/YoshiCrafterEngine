@@ -100,13 +100,15 @@ function generateStaticArrow(babyArrow:FlxSprite, i:Int) {
     babyArrow.animation.addByPrefix('static', s[0]);
     babyArrow.animation.addByPrefix('pressed', s[1], 24, false);
     babyArrow.animation.addByPrefix('confirm', s[2], 24, false);
+    babyArrow.colored = EngineSettings.customArrowColors;
 }
 
 function create() {
     if (EngineSettings.customArrowColors) {
-        var colors:Array<Int> = (note.mustPress || EngineSettings.customArrowColors_allChars) ? PlayState.boyfriend.getColors(false) : PlayState.dad.getColors(false);
+        // var colors:Array<Int> = (note.mustPress || EngineSettings.customArrowColors_allChars) ? PlayState.boyfriend.getColors(note.altAnim) : PlayState.dad.getColors(note.altAnim);
         note.frames = (EngineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored') : Paths_.getSparrowAtlas_Custom(StringTools.replace(StringTools.replace(Paths_.getSkinsPath() + "notes/" + EngineSettings.customArrowSkin.toLowerCase(), "/", "\\"), "\r", ""));
-		note.color = colors[(note.noteData % 4) + 1];
+        note.colored = true;
+		// note.color = colors[(note.noteData % 4) + 1];
     } else {
         note.frames = (EngineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets') : Paths_.getSparrowAtlas_Custom(StringTools.replace(StringTools.replace(Paths_.getSkinsPath() + "notes/" + EngineSettings.customArrowSkin.toLowerCase(), "/", "\\"), "\r", ""));
     }

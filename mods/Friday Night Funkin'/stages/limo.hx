@@ -5,10 +5,7 @@ var grpLimoDancers:Array<FlxSprite> = null;
 var fastCar:FlxSprite = null;
 var fastCarCanDrive:Bool = true;
 
-function createAfterGf()
-{
-    PlayState.add(limo);
-}
+gfVersion = "gf-car";
 
 function createAfterChars()
 {
@@ -36,7 +33,6 @@ function beatHit(curBeat)
 
 function create()
 {
-    gfVersion = "gf-car";
     PlayState.defaultCamZoom = 0.90;
 
     var skyBG:FlxSprite = new FlxSprite(-120, -50).loadGraphic(Paths.image('limo/limoSunset'));
@@ -84,6 +80,8 @@ function create()
     limo.antialiasing = true;
 
     fastCar = new FlxSprite(-300, 160).loadGraphic(Paths.image('limo/fastCarLol'));
+    PlayState.add(PlayState.gf);
+    PlayState.add(limo);
 }
 
 function resetFastCar():Void

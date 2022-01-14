@@ -2,6 +2,8 @@ var upperBoppers:FlxSprite = null;
 var bottomBoppers:FlxSprite = null;
 var santa:FlxSprite = null;
 
+gfVersion = "gf-christmas";
+
 function createAfterChars() {
     PlayState.boyfriend.x += 200;
 }

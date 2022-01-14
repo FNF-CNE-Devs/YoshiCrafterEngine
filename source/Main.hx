@@ -1,5 +1,10 @@
 package;
 
+import haxe.CallStack;
+import openfl.events.ErrorEvent;
+import haxe.Exception;
+import openfl.errors.Error;
+import lime.app.Application;
 import openfl.events.UncaughtErrorEvent;
 import flixel.FlxGame;
 import flixel.FlxState;
@@ -20,8 +25,10 @@ class Main extends Sprite
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
 	// YOSHI ENGINE STUFF
-	public static var engineVer:Array<Int> = [1,1,0];
+	public static var engineVer:Array<Int> = [1,2,0];
 	public static var buildVer:String = "";
+
+	public static var supportedFileTypes = ["lua", "hx", "hscript"];
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
@@ -35,8 +42,18 @@ class Main extends Sprite
 		super();
 
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, function(e:UncaughtErrorEvent) {
-			trace(e.error);
-			trace(e.text);
+			var m:String = e.error;
+			if (Std.is(e.error, Error)) {
+				var err = cast(e.error, Error);
+				m = '${err.message}';
+			} else if (Std.is(e.error, ErrorEvent)) {
+				var err = cast(e.error, ErrorEvent);
+				m = '${err.text}';
+			}
+			m += '\r\n ${CallStack.toString(CallStack.exceptionStack())}';
+ 			Application.current.window.alert('An error occured !\r\nYoshi Engine ver. ${engineVer.join(".")} $buildVer\r\n\r\n${m}\r\n\r\nThe engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !', e.error);
+			e.stopPropagation();
+			e.stopImmediatePropagation();
 		});
 		
 		if (stage != null)

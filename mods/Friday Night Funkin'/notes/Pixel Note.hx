@@ -3,15 +3,11 @@ enableRating = true;
 
 function create() {
     if (EngineSettings.customArrowColors) {
-        var colors:Array<Int> = (note.mustPress || EngineSettings.customArrowColors_allChars) ? PlayState.boyfriend.getColors(false) : PlayState.dad.getColors(false);
         note.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels-colored'), true, 17, 17);
-        //     var c:FlxColor = new FlxColor(0xFFFF0000);
-        //     c.hue = (strumTime / 100) % 359;
-        //     note.color = c;
-        note.color = colors[(note.noteData % 4) + 1];
     } else {
         note.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
     }
+    note.colored = EngineSettings.customArrowColors;
 
     note.animation.add('greenScroll', [6]);
     note.animation.add('redScroll', [7]);
@@ -22,10 +18,7 @@ function create() {
     {
         note.noteOffset.x += 30;
         if (EngineSettings.customArrowColors) {
-            // var colors:Array<Int> = (note.mustPress || EngineSettings.customArrowColors_allChars) ? PlayState.boyfriend.getColors(false) : PlayState.boyfriend.getColors(false);
-            // loadGraphic(Paths.image('weeb/pixelUI/arrowEnds-colored', 'week6'), true, 17, 17);
             note.loadGraphic(Paths.image('weeb/pixelUI/arrowEnds-colored'), true, 7, 6);
-            // note.color = colors[note.noteData % 4];
         } else {
             note.loadGraphic(Paths.image('weeb/pixelUI/arrowEnds'), true, 7, 6);
         }
@@ -120,6 +113,8 @@ function generateStaticArrow(babyArrow:FlxSprite, i:Int) {
     babyArrow.setGraphicSize(Std.int(babyArrow.width * PlayState_.daPixelZoom));
     babyArrow.updateHitbox();
     babyArrow.antialiasing = false;
+    
+    babyArrow.colored = EngineSettings.customArrowColors;
     
     var noteNumberScheme:Array<NoteDirection> = Note.noteNumberSchemes[PlayState.song.keyNumber];
     if (noteNumberScheme == null) noteNumberScheme = Note.noteNumberSchemes[4];

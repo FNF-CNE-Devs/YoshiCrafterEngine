@@ -1,3 +1,69 @@
+/*
+ratings = [
+    {
+        name : "Sick",
+        image : "Friday Night Funkin':weeb/pixelUI/sick-pixel",
+        accuracy : 1,
+        health : 0.10,
+        maxDiff : 50,
+        score : 350,
+        scale : 6.4,
+        color : "#24DEFF",
+        antialiasing : false                                                                                                                                                                     
+    },
+    {
+        name : "Good",
+        image : "Friday Night Funkin':weeb/pixelUI/good-pixel",
+        accuracy : 2 / 3,
+        health : 0.06,
+        maxDiff : 100,
+        score : 200,
+        scale : 6.4,
+        color : "#3FD200",
+        antialiasing : false
+    },
+    {
+        name : "Bad",
+        image : "Friday Night Funkin':weeb/pixelUI/bad-pixel",
+        accuracy : 1 / 3,
+        health : 0.0,
+        maxDiff : 150,
+        score : 50,
+        scale : 6.4,
+        color : "#D70000",
+        antialiasing : false
+    },
+    {
+        name : "Shit",
+        image : "Friday Night Funkin':weeb/pixelUI/shit-pixel",
+        accuracy : 1 / 6,
+        health : 0.0,
+        maxDiff : 1000,
+        score : -150,
+        scale : 6.4,
+        color : "#804913",
+        miss : true,
+        antialiasing : false
+    }
+];
+*/
+ratings[0].image = "Friday Night Funkin':weeb/pixelUI/sick-pixel";
+ratings[0].scale = 6.4;
+ratings[0].antialiasing = false;
+
+ratings[1].image = "Friday Night Funkin':weeb/pixelUI/good-pixel";
+ratings[1].scale = 6.4;
+ratings[1].antialiasing = false;
+
+ratings[2].image = "Friday Night Funkin':weeb/pixelUI/bad-pixel";
+ratings[2].scale = 6.4;
+ratings[2].antialiasing = false;
+
+ratings[3].image = "Friday Night Funkin':weeb/pixelUI/shit-pixel";
+ratings[3].scale = 6.4;
+ratings[3].antialiasing = false;
+
+
 function createAfterChars() {
     // PlayState.boyfriend.x += 200;
     // PlayState.boyfriend.y += 220;
@@ -5,9 +71,15 @@ function createAfterChars() {
     // PlayState.gf.y += 300;
 }
 
+gfVersion = "gf-pixel";
+
 function create() {
     // defaultCamZoom = 0.9;
-    gfVersion = "gf-pixel";
+    GameOverSubstate.char = "Friday Night Funkin':bf-pixel-dead";
+	GameOverSubstate.firstDeathSFX = "Friday Night Funkin':fnf_loss_sfx-pixel";
+	GameOverSubstate.gameOverMusic = "Friday Night Funkin':gameOver-pixel";
+	GameOverSubstate.gameOverMusicBPM = 100;
+	GameOverSubstate.retrySFX = "Friday Night Funkin':gameOverEnd-pixel";
 
     var bgSky = new FlxSprite().loadGraphic(Paths.image('weeb/weebSky'));
     bgSky.scrollFactor.set(0.1, 0.1);

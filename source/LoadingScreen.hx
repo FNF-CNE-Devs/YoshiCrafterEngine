@@ -1,4 +1,4 @@
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 import flixel.addons.transition.TransitionData;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
@@ -62,6 +62,10 @@ class LoadingScreen extends FlxState {
                 "func" : saveData
             });
         loadSections.push({
+                "name" : "Mod Config",
+                "func" : modConfig
+            });
+        loadSections.push({
                 "name" : "Story Weeks",
                 "func" : storyModeShit
             });
@@ -101,6 +105,9 @@ class LoadingScreen extends FlxState {
 
     }
 
+    public function modConfig() {
+        ModSupport.reloadModsConfig();
+    }
     public function storyModeShit() {
         StoryMenuState.loadWeeks();
     }
@@ -121,7 +128,7 @@ class LoadingScreen extends FlxState {
 		// ║ set your own bind path, uses the fields :         ║
 		// ║   - Settings.save_bind_name                       ║
 		// ║   - Settings.save_bind_path                       ║
-		// ║ In the LoadSettings.hx file.                      ║
+		// ║ In the EngineSettings.hx file.                      ║
 		// ╚═══════════════════════════════════════════════════╝
 		   FlxG.save.bind(Settings.save_bind_name, Settings.save_bind_path); // Binds to your mod data
 		   Settings.loadDefault();  // Binds another instance of FlxSave to the engine's settings, allowing synchronisation between mods

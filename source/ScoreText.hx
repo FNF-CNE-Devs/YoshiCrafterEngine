@@ -1,4 +1,4 @@
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 import flixel.FlxG;
 import flixel.math.FlxMath;
 

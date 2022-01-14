@@ -1,8 +1,10 @@
 package;
 
+import sys.FileSystem;
+import haxe.Exception;
 import haxe.Json;
 import haxe.Http;
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 #if desktop
 import Discord.DiscordClient;
 import sys.thread.Thread;
@@ -47,10 +49,17 @@ class TitleState extends MusicBeatState
 
 	var wackyImage:FlxSprite;
 
+	public static var skipOldSkinCheck = false;
+
 
 	override public function create():Void
 	{
 
+		if (!skipOldSkinCheck) {
+			if (FileSystem.exists(Paths.getOldSkinsPath())) {
+				FlxG.switchState(new OutdatedSkinsScreen(new TransitionData(TransitionType.NONE), new TransitionData(TransitionType.NONE)));
+			}
+		}
 		trace(54);
 		#if polymod
 			#if sourceCode
@@ -83,15 +92,15 @@ class TitleState extends MusicBeatState
 		// Copy default files
 
 
-		trace("CoolUtil.copyFolder");
-		#if sys
-			// Copies the skin folder
-			#if windows
-				CoolUtil.copyFolder("skins/", Paths.getSkinsPath());
-			#else
-				CoolUtil.copyFolder("./skins/", Paths.getSkinsPath());
-			#end
-		#end
+		// trace("CoolUtil.copyFolder");
+		// #if sys
+		// 	// Copies the skin folder
+		// 	#if windows
+		// 		CoolUtil.copyFolder("skins/", Paths.getSkinsPath());
+		// 	#else
+		// 		CoolUtil.copyFolder("./skins/", Paths.getSkinsPath());
+		// 	#end
+		// #end
 		
 		trace("Highscore.load");
 		Highscore.load();
@@ -320,10 +329,20 @@ class TitleState extends MusicBeatState
 			transitioning = true;
 			// FlxG.sound.music.stop();
 
+			#if testCrash
+			var lolCrash:Void->Void = null;
+			lolCrash();
+			#end
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
 				// Check if version is outdated
-				var http = new Http("https://raw.githubusercontent.com/YoshiCrafter29/YoshiEngine/main/update.json");
+				var http = new Http(
+					#if pastebinTest
+					"https://pastebin.com/raw/rtVtsaiB"
+					#else
+					"https://raw.githubusercontent.com/YoshiCrafter29/YoshiEngine/main/update.json"
+					#end
+				);
 				// var http = new Http("https://pastebin.com/raw/rtVtsaiB");
 				http.onData = function(data:String) {
 					// var version:String = "v" + Application.current.meta.get('version');
@@ -357,6 +376,7 @@ class TitleState extends MusicBeatState
 					}
 					else
 					{
+
 						FlxG.switchState(new MainMenuState());
 					}
 				}

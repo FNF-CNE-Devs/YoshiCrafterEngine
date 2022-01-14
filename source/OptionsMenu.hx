@@ -19,7 +19,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.group.FlxSpriteGroup;
 import lime.utils.Assets;
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 import Alphabet.AlphaCharacter;
 
 using StringTools;
@@ -124,52 +124,75 @@ class FNFOption extends Alphabet {
 		// 		checkbox.animation.play(checkboxChecked ? "checked" : "unchecked", true);
 	}
 }
+typedef MenuCategory = {
+	public var name:String;
+	public var description:String;
+	public var options:Array<Option>;
+	public var center:Bool;
+}
 typedef Option = {
 	public var text:String;
+	public var description:String;
 	public var updateOnSelected:(Float,FNFOption)->Void;
 	public var checkbox:Bool;
 	public var checkboxChecked:Bool;
-	public var value:String;
+	public var value:Void->String;
 }
 class OptionsMenu extends MusicBeatState
 {
 	var selector:FlxText;
 	var curSelected:Int = 0;
 	var usable:Bool = false;
-	var fromFreeplay:Bool = false;
+	public static var fromFreeplay:Bool = false;
 
 	var menuBGx:Float = 0;
 	var menuBGy:Float = 0;
 	public var optionsAlphabets:FlxSpriteGroup = new FlxSpriteGroup();
-	public var options:Array<Option> = [
-		
-	];
-	public var controlKeys:Array<Int> = [
-		4, 6, 9
-	];
 
-	public function new(x:Float, y:Float, fromFreeplay:Bool = false, ?transIn, ?transOut) {
+	public function new(x:Float, y:Float, ?transIn, ?transOut) {
 		super(transIn, transOut);
 		menuBGx = x;
 		menuBGy = -y;
-		this.fromFreeplay = fromFreeplay;
 	}
 
+	public var settings:Array<MenuCategory> = [
+
+	];
 	function addControlsCategory() {
-		options.push({
+		var kBinds:MenuCategory = {
+			name : "Keybinds",
+			description : "Change your keybinds here !",
+			options : [],
+			center : false
+		};
+		kBinds.options.push({
 			text : "[Keybinds]",
+			description : "",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				
 			},
 			checkbox: false,
 			checkboxChecked: false,
-			value: ""
+			value: function() {return "";}
 		});
-		
-
+		var controlKeys:Array<Int> = [];
+		var it = ModSupport.modConfig.keys();
+		while(it.hasNext()) {
+			var e = it.next();
+			var config = ModSupport.modConfig[e];
+			if (config.keyNumbers != null) {
+				for (k in config.keyNumbers) {
+					if (!controlKeys.contains(k)) controlKeys.push(k);
+				}
+			}
+		}
+		haxe.ds.ArraySort.sort(controlKeys, function(x, y) {
+			return x - y;
+		});
 		for (index => value in controlKeys) {
-			options.push({
+			kBinds.options.push({
 				text : Std.string(value) + ' keys',
+				description : "Change your keybinds for " + Std.string(value) + " keys charts.",
 				updateOnSelected: function(elapsed:Float, o:FNFOption) {
 					if (controls.ACCEPT) {
 						// FlxG.switchState(new ControlsSettings(value));
@@ -182,185 +205,192 @@ class OptionsMenu extends MusicBeatState
 				},
 				checkbox: false,
 				checkboxChecked: false,
-				value: [for(i in 0...value) ControlsSettingsSub.getKeyName(cast(Reflect.field(Settings.engineSettings.data, 'control_' + value + '_$i'), FlxKey), true)].join(" ")
+				value: function() {return [for(i in 0...value) ControlsSettingsSub.getKeyName(cast(Reflect.field(Settings.engineSettings.data, 'control_' + value + '_$i'), FlxKey), true)].join(" ");}
 			});
 		}
 
-		options.push({
+		kBinds.options.push({
 			text : "[]",
+			description : "",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				
 			},
 			checkbox: false,
 			checkboxChecked: false,
-			value: ""
+			value: function() {return "";}
 		});
+		settings.push(kBinds);
 	}
 
 	function addGameplayCategory() {
 
-		options.push(
-			{
-				text : "[Gameplay]",
-				updateOnSelected: function(elapsed:Float, o:FNFOption) {
-					
-				},
-				checkbox: false,
-				checkboxChecked: false,
-				value: ""
-			});
-			options.push({
-				text : "Downscroll",
-				updateOnSelected: function(elapsed:Float, o:FNFOption) {
-					if (controls.ACCEPT) {
-						Settings.engineSettings.data.downscroll = !Settings.engineSettings.data.downscroll;
-						o.checkboxChecked = Settings.engineSettings.data.downscroll;
-						o.check(Settings.engineSettings.data.downscroll);
-					}
-				},
-				checkbox: true,
-				checkboxChecked: Settings.engineSettings.data.downscroll,
-				value: ""
-			});
-		options.push(
-			{
-				text : "Custom scroll speed",
-				updateOnSelected: function(elapsed:Float, o:FNFOption) {
-					if (controls.ACCEPT) {
-						Settings.engineSettings.data.customScrollSpeed = !Settings.engineSettings.data.customScrollSpeed;
-						o.checkboxChecked = Settings.engineSettings.data.customScrollSpeed;
-						o.check(Settings.engineSettings.data.customScrollSpeed);
-					}
-					if (controls.LEFT_P) {
-						Settings.engineSettings.data.scrollSpeed = round(Settings.engineSettings.data.scrollSpeed - 0.1, 2);
-						if (Settings.engineSettings.data.scrollSpeed < 0.1) Settings.engineSettings.data.scrollSpeed = 0.1;
-	
-						var str = Std.string(Settings.engineSettings.data.scrollSpeed);
-						if (str.indexOf(".") == -1) str += ".0";
-	
-						o.setValue(str);
-					}
-					if (controls.RIGHT_P) {
-						Settings.engineSettings.data.scrollSpeed = round(Settings.engineSettings.data.scrollSpeed + 0.1, 2);
-						if (Settings.engineSettings.data.scrollSpeed > 10) Settings.engineSettings.data.scrollSpeed = 10;
-	
-						var str = Std.string(Settings.engineSettings.data.scrollSpeed);
-						if (str.indexOf(".") == -1) str += ".0";
-	
-						o.setValue(str);
-					}
-				},
-				checkbox: true,
-				checkboxChecked: Settings.engineSettings.data.customScrollSpeed,
-				value: Std.string(Settings.engineSettings.data.scrollSpeed).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.scrollSpeed) + ".0" : Std.string(Settings.engineSettings.data.scrollSpeed)
-			});
-		options.push(
-			{
-				text : "GUI scale",
-				updateOnSelected: function(elapsed:Float, o:FNFOption) {
-					if (controls.LEFT_P) {
-						Settings.engineSettings.data.noteScale = round((Settings.engineSettings.data.noteScale * 2) - 0.1, 2) / 2;
-						if (Settings.engineSettings.data.noteScale < 0.1) Settings.engineSettings.data.noteScale = 0.1;
-	
-						var str = Std.string(Settings.engineSettings.data.noteScale);
-						if (str.indexOf(".") == -1) str += ".0";
-	
-						o.setValue(str);
-					}
-					if (controls.RIGHT_P) {
-						Settings.engineSettings.data.noteScale = round((Settings.engineSettings.data.noteScale * 2) + 0.1, 2) / 2;
-						if (Settings.engineSettings.data.noteScale > 10) Settings.engineSettings.data.noteScale = 10;
-	
-						var str = Std.string(Settings.engineSettings.data.noteScale);
-						if (str.indexOf(".") == -1) str += ".0";
-	
-						o.setValue(str);
-					}
-				},
-				checkbox: false,
-				checkboxChecked: false,
-				value: Std.string(Settings.engineSettings.data.noteScale).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.noteScale) + ".0" : Std.string(Settings.engineSettings.data.noteScale)
-			});
-		options.push(
-			{
-				text : "Accuracy mode",
-				updateOnSelected: function(elapsed:Float, o:FNFOption) {
-					if (controls.ACCEPT) {
-						var newVar = Settings.engineSettings.data.accuracyMode + 1;
-						if (newVar >= ScoreText.accuracyTypesText.length) newVar = 0;
-						Settings.engineSettings.data.accuracyMode = newVar;
-						o.setValue(ScoreText.accuracyTypesText[newVar]);
-					}
-				},
-				checkbox: false,
-				checkboxChecked: false,
-				value: ScoreText.accuracyTypesText[Settings.engineSettings.data.accuracyMode]
-			});
-		options.push(
-			{
-				text : "[]",
-				updateOnSelected: function(elapsed:Float, o:FNFOption) {
-					
-				},
-				checkbox: false,
-				checkboxChecked: false,
-				value: ""
-			});
+		var gameplay:MenuCategory = {
+			name : "Gameplay",
+			description : "Configure Gameplay settings like botplay, downscroll and scroll speed.",
+			options : [],
+			center : false
+		};
+		gameplay.options.push({
+			text : "[Gameplay]",
+			description : "",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				
+			},
+			checkbox: false,
+			checkboxChecked: false,
+			value: function() {return "";}
+		});
+		gameplay.options.push({
+			text : "Downscroll",
+			description : "When enabled, makes the note go from up to down instead of down to up.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.downscroll = !Settings.engineSettings.data.downscroll;
+					o.checkboxChecked = Settings.engineSettings.data.downscroll;
+					o.check(Settings.engineSettings.data.downscroll);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: Settings.engineSettings.data.downscroll,
+			value: function() {return "";}
+		});
+		gameplay.options.push({
+			text : "Custom scroll speed",
+			description : "If enabled, sets the scroll speed value to the desired value for all charts. Defaults to disabled.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.customScrollSpeed = !Settings.engineSettings.data.customScrollSpeed;
+					o.checkboxChecked = Settings.engineSettings.data.customScrollSpeed;
+					o.check(Settings.engineSettings.data.customScrollSpeed);
+				}
+				if (controls.LEFT_P) {
+					Settings.engineSettings.data.scrollSpeed = round(Settings.engineSettings.data.scrollSpeed - 0.1, 2);
+					if (Settings.engineSettings.data.scrollSpeed < 0.1) Settings.engineSettings.data.scrollSpeed = 0.1;
+
+					var str = Std.string(Settings.engineSettings.data.scrollSpeed);
+					if (str.indexOf(".") == -1) str += ".0";
+
+					o.setValue(str);
+				}
+				if (controls.RIGHT_P) {
+					Settings.engineSettings.data.scrollSpeed = round(Settings.engineSettings.data.scrollSpeed + 0.1, 2);
+					if (Settings.engineSettings.data.scrollSpeed > 10) Settings.engineSettings.data.scrollSpeed = 10;
+
+					var str = Std.string(Settings.engineSettings.data.scrollSpeed);
+					if (str.indexOf(".") == -1) str += ".0";
+
+					o.setValue(str);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: Settings.engineSettings.data.customScrollSpeed,
+			value: function() {return Std.string(Settings.engineSettings.data.scrollSpeed).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.scrollSpeed) + ".0" : Std.string(Settings.engineSettings.data.scrollSpeed);}
+		});
+		gameplay.options.push({
+			text : "Botplay",
+			description : "When enabled, will let a bot play the game instead of you. Useful for recording mod showcases.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.botplay = !Settings.engineSettings.data.botplay;
+					o.checkboxChecked = Settings.engineSettings.data.botplay;
+					o.check(Settings.engineSettings.data.botplay);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: Settings.engineSettings.data.botplay,
+			value: function() {return "";}
+		});
+		gameplay.options.push({
+			text : "GUI scale",
+			description : "Sets the main GUI's scale. Defaults to 1.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.LEFT_P) {
+					Settings.engineSettings.data.noteScale = round((Settings.engineSettings.data.noteScale * 2) - 0.1, 2) / 2;
+					if (Settings.engineSettings.data.noteScale < 0.1) Settings.engineSettings.data.noteScale = 0.1;
+
+					var str = Std.string(Settings.engineSettings.data.noteScale);
+					if (str.indexOf(".") == -1) str += ".0";
+
+					o.setValue(str);
+				}
+				if (controls.RIGHT_P) {
+					Settings.engineSettings.data.noteScale = round((Settings.engineSettings.data.noteScale * 2) + 0.1, 2) / 2;
+					if (Settings.engineSettings.data.noteScale > 10) Settings.engineSettings.data.noteScale = 10;
+
+					var str = Std.string(Settings.engineSettings.data.noteScale);
+					if (str.indexOf(".") == -1) str += ".0";
+
+					o.setValue(str);
+				}
+			},
+			checkbox: false,
+			checkboxChecked: false,
+			value: function() {return Std.string(Settings.engineSettings.data.noteScale).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.noteScale) + ".0" : Std.string(Settings.engineSettings.data.noteScale);}
+		});
+		gameplay.options.push({
+			text : "Accuracy mode",
+			description : "Sets the accuracy mode. \"Simple\" means based on the rating, \"Complex\" means based on the press delay.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					var newVar = Settings.engineSettings.data.accuracyMode + 1;
+					if (newVar >= ScoreText.accuracyTypesText.length) newVar = 0;
+					Settings.engineSettings.data.accuracyMode = newVar;
+					o.setValue(ScoreText.accuracyTypesText[newVar]);
+				}
+			},
+			checkbox: false,
+			checkboxChecked: false,
+			value: function() {return ScoreText.accuracyTypesText[Settings.engineSettings.data.accuracyMode];}
+		});
+		gameplay.options.push({
+			text : "[]",
+			description : "",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				
+			},
+			checkbox: false,
+			checkboxChecked: false,
+			value: function() {return "";}
+		});
+
+		settings.push(gameplay);
 	}
 
 	function addHealthBarRatingCategory() {
-		options.push(
-			{
-				text : "[GUI Options]",
-				updateOnSelected: function(elapsed:Float, o:FNFOption) {
-					
-				},
-				checkbox: false,
-				checkboxChecked: false,
-				value: ""
-			});
-			options.push(
-			{
-				text : "Text quality level",
-				updateOnSelected: function(elapsed:Float, o:FNFOption) {
-					if (controls.LEFT_P) {
-						Settings.engineSettings.data.textQualityLevel = round(Settings.engineSettings.data.textQualityLevel - 0.5, 2);
-						if (Settings.engineSettings.data.textQualityLevel < 1) Settings.engineSettings.data.textQualityLevel = 1;
-	
-						var str = Std.string(Settings.engineSettings.data.textQualityLevel);
-						if (str.indexOf(".") == -1) str += ".0";
-	
-						o.setValue(str);
-					}
-					if (controls.RIGHT_P) {
-						Settings.engineSettings.data.textQualityLevel = round(Settings.engineSettings.data.textQualityLevel + 0.5, 2);
-						if (Settings.engineSettings.data.textQualityLevel > 2.5) Settings.engineSettings.data.textQualityLevel = 2.5;
-	
-						var str = Std.string(Settings.engineSettings.data.textQualityLevel);
-						if (str.indexOf(".") == -1) str += ".0";
-	
-						o.setValue(str);
-					}
-				},
-				checkbox: false,
-				checkboxChecked: false,
-				value: Std.string(Settings.engineSettings.data.textQualityLevel).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.textQualityLevel) + ".0" : Std.string(Settings.engineSettings.data.textQualityLevel)
-			});
-			options.push({
-				text : "Show timer",
-				updateOnSelected: function(elapsed:Float, o:FNFOption) {
-					if (controls.ACCEPT) {
-						Settings.engineSettings.data.showTimer = !Settings.engineSettings.data.showTimer;
-						o.checkboxChecked = Settings.engineSettings.data.showTimer;
-						o.check(Settings.engineSettings.data.showTimer);
-					}
-				},
-				checkbox: true,
-				checkboxChecked: Settings.engineSettings.data.showTimer,
-				value: ""
-			});
-		options.push({
+		var guiOptions:MenuCategory = {
+			name : "GUI Options",
+			description : "Configure GUI options like enabling and disabling the timer, accuracy, misses, ect...",
+			options : [],
+			center : false
+		};
+		guiOptions.options.push(
+		{
+			text : "[GUI Options]",
+			description : "",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				
+			},
+			checkbox: false,
+			checkboxChecked: false,
+			value: function() {return "";}
+		});
+		guiOptions.options.push({
+			text : "Show timer",
+			description : "If enabled, shows a timer at the top of the screen displaying the current song's position.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.showTimer = !Settings.engineSettings.data.showTimer;
+					o.checkboxChecked = Settings.engineSettings.data.showTimer;
+					o.check(Settings.engineSettings.data.showTimer);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: Settings.engineSettings.data.showTimer,
+			value: function() {return "";}
+		});
+		guiOptions.options.push({
 			text : "Show press delay",
+			description : "If enabled, will show the delay in milliseconds above the strums everytime you press.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.showPressDelay = !Settings.engineSettings.data.showPressDelay;
@@ -370,10 +400,11 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: Settings.engineSettings.data.showPressDelay,
-			value: ""
+			value: function() {return "";}
 		});
-		options.push({
+		guiOptions.options.push({
 			text : "Show accuracy",
+			description : "If enabled, will add your accuracy next to the score.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.showAccuracy = !Settings.engineSettings.data.showAccuracy;
@@ -383,10 +414,11 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: Settings.engineSettings.data.showAccuracy,
-			value: ""
+			value: function() {return "";}
 		});
-		options.push({
+		guiOptions.options.push({
 			text : "Show number of misses",
+			description : "If enabled, will add the amount of misses next to the score.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.showMisses = !Settings.engineSettings.data.showMisses;
@@ -396,10 +428,11 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: Settings.engineSettings.data.showMisses,
-			value: ""
+			value: function() {return "";}
 		});
-		options.push({
+		guiOptions.options.push({
 			text : "Show ratings amount",
+			description : "If enabled, will add the number of notes hit for each rating at the bottom left of the screen.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.showRatingTotal = !Settings.engineSettings.data.showRatingTotal;
@@ -409,10 +442,11 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: Settings.engineSettings.data.showRatingTotal,
-			value: ""
+			value: function() {return "";}
 		});
-		options.push({
+		guiOptions.options.push({
 			text : "Show average hit delay",
+			description : "If enabled, will add your average delay in milliseconds next to the score.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.showAverageDelay = !Settings.engineSettings.data.showAverageDelay;
@@ -422,10 +456,11 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: Settings.engineSettings.data.showAverageDelay,
-			value: ""
+			value: function() {return "";}
 		});
-		options.push({
+		guiOptions.options.push({
 			text : "Show rating",
+			description : "If enabled, will show your rating next to the score (ex : FC).",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.showRating = !Settings.engineSettings.data.showRating;
@@ -435,10 +470,11 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: Settings.engineSettings.data.showRating,
-			value: ""
+			value: function() {return "";}
 		});
-		options.push({
+		guiOptions.options.push({
 			text : "Animate the info bar",
+			description : "If enabled, will \"pop\" the info bar at the bottom of the screen everytime you press a note.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.animateInfoBar = !Settings.engineSettings.data.animateInfoBar;
@@ -448,32 +484,58 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: Settings.engineSettings.data.animateInfoBar,
-			value: ""
+			value: function() {return "";}
 		});
 		
-		options.push({
+		guiOptions.options.push({
 			text : "[]",
+			description : "",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				
 			},
 			checkbox: false,
 			checkboxChecked: false,
-			value: ""
+			value: function() {return "";}
 		});
+
+		settings.push(guiOptions);
 	}
 
 	function addCustomNotesCategory() {
-		options.push({
+		var customisation:MenuCategory = {
+			name : "Customisation",
+			description : "Customise and make FNF yours ! Note colors, custom note skins, Boyfriend skins, Girlfriend skins.",
+			options : [],
+			center : false
+		};
+
+		customisation.options.push({
 			text : "[Customisation]",
+			description : "",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				
 			},
 			checkbox: false,
 			checkboxChecked: false,
-			value: ""
+			value: function() {return "";}
 		});
-		options.push({
+		customisation.options.push({
+			text : "Glow CPU strums",
+			description : "Check this to glow CPU strums whenever they hit a note.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.glowCPUStrums = !Settings.engineSettings.data.glowCPUStrums;
+					o.checkboxChecked = Settings.engineSettings.data.glowCPUStrums;
+					o.check(Settings.engineSettings.data.glowCPUStrums);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: Settings.engineSettings.data.glowCPUStrums,
+			value: function() {return "";}
+		});
+		customisation.options.push({
 			text : "Custom note colors",
+			description : "Check this to enable custom note colors.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.customArrowColors = !Settings.engineSettings.data.customArrowColors;
@@ -483,10 +545,11 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: Settings.engineSettings.data.customArrowColors,
-			value: ""
+			value: function() {return "";}
 		});
-		options.push({
-			text : "Transparent substains notes",
+		customisation.options.push({
+			text : "Transparent note tails",
+			description : "If enabled, will make sustain notes (note tails) semi-transparent.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.transparentSubstains = !Settings.engineSettings.data.transparentSubstains;
@@ -496,10 +559,11 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: Settings.engineSettings.data.transparentSubstains,
-			value: ""
+			value: function() {return "";}
 		});
-		options.push({
+		customisation.options.push({
 			text : "Apply notes colors on everyone",
+			description : "If checked, will also apply your character note colors to the opponent.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.customArrowColors_allChars = !Settings.engineSettings.data.customArrowColors_allChars;
@@ -509,12 +573,13 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: Settings.engineSettings.data.customArrowColors_allChars,
-			value: ""
+			value: function() {return "";}
 		});
 		
 
-		options.push({
+		customisation.options.push({
 			text : "Customize your arrows",
+			description : "Select this to customize your arrow colors.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					FlxG.switchState(new OptionsNotesColors());
@@ -522,7 +587,7 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: false,
 			checkboxChecked: false,
-			value: ""
+			value: function() {return "";}
 		});
 
 		#if sys
@@ -542,8 +607,9 @@ class OptionsMenu extends MusicBeatState
 				if (skins.indexOf(Settings.engineSettings.data.customArrowSkin) == -1) Settings.engineSettings.data.customArrowSkin = "default";
 				var pos:Int = skins.indexOf(Settings.engineSettings.data.customArrowSkin);
 
-				options.push({
+				customisation.options.push({
 					text : "Arrow skin",
+					description : "Select an arrow skin here. To install one, open the \"skins\" folder and follow the instructions in the text file.",
 					updateOnSelected: function(elapsed:Float, o:FNFOption) {
 						var changed = false;
 						if (controls.LEFT_P) {
@@ -557,23 +623,26 @@ class OptionsMenu extends MusicBeatState
 						if (changed) {
 							if (pos < 0) pos = skins.length - 1;
 							if (pos >= skins.length) pos = 0;
-							Settings.engineSettings.data.customArrowSkin = skins[pos].toLowerCase().replace("\r", "").trim().replace("\n", "");
+							Settings.engineSettings.data.customArrowSkin = skins[pos];
 							o.setValue(Settings.engineSettings.data.customArrowSkin);
 						}
 					},
 					checkbox: false,
 					checkboxChecked: false,
-					value: Settings.engineSettings.data.customArrowSkin
+					value: function() {return Settings.engineSettings.data.customArrowSkin;}
 				});
 			}
 			
-			var bfSkins:Array<String> = sys.FileSystem.readDirectory(Paths.getSkinsPath() + "/bf/");
+			var bfSkins:Array<String> = [for (s in sys.FileSystem.readDirectory(Paths.getSkinsPath() + "/bf/")) if (FileSystem.isDirectory('${Paths.getSkinsPath()}/bf/$s')) s];
+			bfSkins.insert(0, "default");
+			bfSkins.remove("template");
 	
 			if (bfSkins.indexOf(Settings.engineSettings.data.customBFSkin) == -1) Settings.engineSettings.data.customBFSkin = "default";
 			var posBF:Int = bfSkins.indexOf(Settings.engineSettings.data.customBFSkin);
 	
-			options.push({
+			customisation.options.push({
 				text : "Boyfriend skin",
+				description : "Select a Boyfriend skin from a mod, or from your skins folder.",
 				updateOnSelected: function(elapsed:Float, o:FNFOption) {
 					var changed = false;
 					if (controls.LEFT_P) {
@@ -593,17 +662,21 @@ class OptionsMenu extends MusicBeatState
 				},
 				checkbox: false,
 				checkboxChecked: false,
-				value: Settings.engineSettings.data.customBFSkin
+				value: function() {return Settings.engineSettings.data.customBFSkin;}
 			});
 		
 
-			var gfSkins:Array<String> = sys.FileSystem.readDirectory(Paths.getSkinsPath() + "/gf/");
+			var gfSkins:Array<String> = [for (s in sys.FileSystem.readDirectory(Paths.getSkinsPath() + "/gf/")) if (FileSystem.isDirectory('${Paths.getSkinsPath()}/gf/$s')) s];
+			gfSkins.insert(0, "default");
+			gfSkins.remove("template");
+
 			var posGF:Int = gfSkins.indexOf(Settings.engineSettings.data.customGFSkin);
 	
 			if (gfSkins.indexOf(Settings.engineSettings.data.customGFSkin) == -1) Settings.engineSettings.data.customGFSkin = "default";
 	
-			options.push({
+			customisation.options.push({
 				text : "Girlfriend skin",
+				description : "Select a Girlfriend skin from a mod, or from your skins folder.",
 				updateOnSelected: function(elapsed:Float, o:FNFOption) {
 					var changed = false;
 					if (controls.LEFT_P) {
@@ -623,14 +696,15 @@ class OptionsMenu extends MusicBeatState
 				},
 				checkbox: false,
 				checkboxChecked: false,
-				value: Settings.engineSettings.data.customGFSkin
+				value: function() {return Settings.engineSettings.data.customGFSkin;}
 			});
 			
 		#end
 
 		#if cpp
-		options.push({
+		customisation.options.push({
 			text : "Open skin folder",
+			description : "Select this to open the skins folder.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					var p = Paths.getSkinsPath().replace("/", "\\");
@@ -646,35 +720,46 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: false,
 			checkboxChecked: false,
-			value: ""
+			value: function() {return "";}
 		});
 		#end
 
-		options.push({
+		customisation.options.push({
 			text : "[]",
+			description : "",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				
 			},
 			checkbox: false,
 			checkboxChecked: false,
-			value: ""
+			value: function() {return "";}
 		});
+
+		settings.push(customisation);
 	}
 
 	function addPerformanceCategory() {
-		options.push({
-			text : "[Performance]",
+		var performance:MenuCategory = {
+			name : "Optimisation and Performances",
+			description : "Optimise the engine with memory and graphics settings.",
+			options : [],
+			center : false
+		};
+		performance.options.push({
+			text : "[Optimisation and Performances]",
+			description : "",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				
 			},
 			checkbox: false,
 			checkboxChecked: false,
-			value: ""
+			value: function() {return "";}
 		});
 		
-		options.push(
+		performance.options.push(
 			{
 				text : "Freeplay Cooldown",
+				description : "If checked, will wait the specified number of seconds in the freeplay menu before automatically playing the song.",
 				updateOnSelected: function(elapsed:Float, o:FNFOption) {
 					if (controls.LEFT_P) {
 						Settings.engineSettings.data.freeplayCooldown = round(Settings.engineSettings.data.freeplayCooldown - 0.1, 2);
@@ -694,13 +779,45 @@ class OptionsMenu extends MusicBeatState
 	
 						o.setValue(str);
 					}
+					if (controls.ACCEPT) {
+						Settings.engineSettings.data.autoplayInFreeplay = !Settings.engineSettings.data.autoplayInFreeplay;
+						o.check(Settings.engineSettings.data.autoplayInFreeplay);
+					}
+				},
+				checkbox: true,
+				checkboxChecked: Settings.engineSettings.data.autoplayInFreeplay,
+				value: function() {return Std.string(Settings.engineSettings.data.freeplayCooldown).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.freeplayCooldown) + ".0" : Std.string(Settings.engineSettings.data.freeplayCooldown);}
+			});
+		
+		performance.options.push(
+			{
+				text : "Maximum Framerate",
+				description : "Sets the maximum framerate the game can have. If the value is higher than what's your " + #if desktop "computer" #elseif android "phone/tablet" #else "device" #end + " is capable of, slowdowns during animations may happen.",
+				updateOnSelected: function(elapsed:Float, o:FNFOption) {
+					if (controls.LEFT_P || (controls.LEFT && FlxG.keys.pressed.SHIFT)) {
+						Settings.engineSettings.data.fpsCap -= 5;
+						if (Settings.engineSettings.data.fpsCap < 20) Settings.engineSettings.data.fpsCap = 20;
+	
+						o.setValue(Settings.engineSettings.data.fpsCap);
+						FlxG.drawFramerate = Settings.engineSettings.data.fpsCap;
+						FlxG.updateFramerate = Settings.engineSettings.data.fpsCap;
+					}
+					if (controls.RIGHT_P || (controls.RIGHT && FlxG.keys.pressed.SHIFT)) {
+						Settings.engineSettings.data.fpsCap += 5;
+						if (Settings.engineSettings.data.fpsCap > 400) Settings.engineSettings.data.fpsCap = 400;
+	
+						o.setValue(Settings.engineSettings.data.fpsCap);
+						FlxG.drawFramerate = Settings.engineSettings.data.fpsCap;
+						FlxG.updateFramerate = Settings.engineSettings.data.fpsCap;
+					}
 				},
 				checkbox: false,
 				checkboxChecked: false,
-				value: Std.string(Settings.engineSettings.data.freeplayCooldown).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.freeplayCooldown) + ".0" : Std.string(Settings.engineSettings.data.freeplayCooldown)
+				value: function() {return Settings.engineSettings.data.fpsCap;}
 			});
-		options.push({
+		performance.options.push({
 			text : "Enable antialiasing on videos",
+			description : "If checked, will enable antialiasing on MP4 videos (cutscenes, ect...)",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.videoAntialiasing = !Settings.engineSettings.data.videoAntialiasing;
@@ -710,10 +827,11 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: Settings.engineSettings.data.videoAntialiasing,
-			value: ""
+			value: function() {return "";}
 		});
-		options.push({
+		performance.options.push({
 			text : "Memory Optimisation",
+			description : "If checked, will optimize the memory of the game by clearing the assets.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.memoryOptimization = !Settings.engineSettings.data.memoryOptimization;
@@ -723,11 +841,12 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: Settings.engineSettings.data.memoryOptimization,
-			value: ""
+			value: function() {return "";}
 		});
 		#if sys
-		options.push({
+		performance.options.push({
 			text : "Auto clear skin cache",
+			description : "If checked, will automatically empty cache after each song.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.emptySkinCache = !Settings.engineSettings.data.emptySkinCache;
@@ -737,10 +856,11 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: Settings.engineSettings.data.emptySkinCache,
-			value: ""
+			value: function() {return "";}
 		});
-		options.push({
+		performance.options.push({
 			text : "Clear skin cache",
+			description : "If checked, will optimize the memory of the game.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Paths.clearCache();
@@ -749,32 +869,42 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: false,
 			checkboxChecked: false,
-			value: ""
+			value: function() {return "";}
 		});
 		#end
-		options.push({
+		performance.options.push({
 			text : "[]",
+			description : "",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				
 			},
 			checkbox: false,
 			checkboxChecked: false,
-			value: ""
+			value: function() {return "";}
 		});
+		settings.push(performance);
 	}
 
 	function addMiscCategory() {
-		options.push({
-			text : "[Misc]",
+		var misc:MenuCategory = {
+			name : "Miscellaneous",
+			description : "Other options like Green Screen and hiding original game.",
+			options : [],
+			center : false
+		};
+		misc.options.push({
+			text : "[Miscellaneous]",
+			description : "",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				
 			},
 			checkbox: false,
 			checkboxChecked: false,
-			value: ""
+			value: function() {return "";}
 		});
-		options.push({
+		misc.options.push({
 			text : "Green screen mode",
+			description : "When enabled, shows a green screen behind the GUI.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.greenScreenMode = !Settings.engineSettings.data.greenScreenMode;
@@ -784,10 +914,11 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: Settings.engineSettings.data.greenScreenMode,
-			value: ""
+			value: function() {return "";}
 		});
-		options.push({
+		misc.options.push({
 			text : "Hide original game",
+			description : "When enabled, hides the base game from the Story Menu and Freeplay if any other mod is present.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.hideOriginalGame = !Settings.engineSettings.data.hideOriginalGame;
@@ -800,70 +931,54 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: Settings.engineSettings.data.hideOriginalGame,
-			value: ""
+			value: function() {return "";}
 		});
-		options.push({
-			text : "Botplay",
-			updateOnSelected: function(elapsed:Float, o:FNFOption) {
-				if (controls.ACCEPT) {
-					Settings.engineSettings.data.botplay = !Settings.engineSettings.data.botplay;
-					o.checkboxChecked = Settings.engineSettings.data.botplay;
-					o.check(Settings.engineSettings.data.botplay);
-				}
-			},
-			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.botplay,
-			value: ""
-		});
-		options.push({
-			text : "Enable blammed effects",
-			updateOnSelected: function(elapsed:Float, o:FNFOption) {
-				if (controls.ACCEPT) {
-					Settings.engineSettings.data.blammedEffect = !Settings.engineSettings.data.blammedEffect;
-					o.checkboxChecked = Settings.engineSettings.data.blammedEffect;
-					o.check(Settings.engineSettings.data.blammedEffect);
-				}
-			},
-			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.blammedEffect,
-			value: ""
-		});
-		options.push({
-			text : "Use new charter",
-			updateOnSelected: function(elapsed:Float, o:FNFOption) {
-				if (controls.ACCEPT) {
-					Settings.engineSettings.data.yoshiEngineCharter = !Settings.engineSettings.data.yoshiEngineCharter;
-					o.checkboxChecked = Settings.engineSettings.data.yoshiEngineCharter;
-					o.check(Settings.engineSettings.data.yoshiEngineCharter);
-				}
-			},
-			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.yoshiEngineCharter,
-			value: ""
-		});
-		options.push({
+		// misc.options.push({
+		// 	text : "Use new charter",
+		// 	updateOnSelected: function(elapsed:Float, o:FNFOption) {
+		// 		if (controls.ACCEPT) {
+		// 			Settings.engineSettings.data.yoshiEngineCharter = !Settings.engineSettings.data.yoshiEngineCharter;
+		// 			o.checkboxChecked = Settings.engineSettings.data.yoshiEngineCharter;
+		// 			o.check(Settings.engineSettings.data.yoshiEngineCharter);
+		// 		}
+		// 	},
+		// 	checkbox: true,
+		// 	checkboxChecked: Settings.engineSettings.data.yoshiEngineCharter,
+		// 	value: ""
+		// });
+		misc.options.push({
 			text : "[]",
+			description : "",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				
 			},
 			checkbox: false,
 			checkboxChecked: false,
-			value: ""
+			value: function() {return "";}
 		});
+		settings.push(misc);
 	}
 
 	function addDeveloperCategory() {
-		options.push({
-			text : "[Developer Mode]",
+		var dev:MenuCategory = {
+			name : "Developer Menu",
+			description: "Developer related options.",
+			options : [],
+			center : false
+		};
+		dev.options.push({
+			text : "[Developer Menu]",
+			description : "",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				
 			},
 			checkbox: false,
 			checkboxChecked: false,
-			value: ""
+			value: function() {return "";}
 		});
-		options.push({
+		dev.options.push({
 			text : "Developer Mode",
+			description : "When checked, enables Developer Mode, which gives access to Logs, and autoclears cache after every state change.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.developerMode = !Settings.engineSettings.data.developerMode;
@@ -872,10 +987,11 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: Settings.engineSettings.data.developerMode,
-			value: ""
+			value: function() {return "";}
 		});
-		options.push({
+		dev.options.push({
 			text : "Enable character debug mode",
+			description : "Disables character's dance. Please, for god's sake, do NOT post an \"My characters doesn't dance\" on the issues pages if this is checked.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.debugMode = !Settings.engineSettings.data.debugMode;
@@ -885,19 +1001,88 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: Settings.engineSettings.data.debugMode,
-			value: ""
+			value: function() {return "";}
 		});
-		options.push({
-			text : "[]",
-			updateOnSelected: function(elapsed:Float, o:FNFOption) {
-				
-			},
-			checkbox: false,
-			checkboxChecked: false,
-			value: ""
-		});
+		settings.push(dev);
+	}
+	
+
+	function setOptions(?o2:MenuCategory) {
+		for (op in optionsAlphabets) {
+			remove(op);
+			optionsAlphabets.remove(op);
+			op.destroy();
+		}
+		optionsAlphabets.clear();
+		usable = false;
+		var ops = o2;
+		if (ops == null) {
+			var s:Array<Option> = [];
+
+			for (mc in settings) {
+				s.push({
+					text : mc.name,
+					description : mc.description,
+					value : function() {return "";},
+					checkboxChecked: false,
+					checkbox: false,
+					updateOnSelected: function(elapsed, option) {
+						if (controls.ACCEPT) {
+							setOptions(mc);
+							isInCategory = true;
+						}
+					}
+				});
+			}
+
+			ops = {
+				name: "Main Menu",
+				options: s,
+				description: "Select an option to continue.",
+				center: true
+			}
+		}
+		disabledOptions = [];
+		for (i in 0...ops.options.length) {
+			var o:Option = ops.options[i];
+			var op = null;
+			var text = o.text;
+
+			var isTitle = ops.center;
+			if (o.text.charAt(0) == "[" && o.text.charAt(o.text.length - 1) == "]") {
+				text = o.text.substr(1, o.text.length - 2);
+				isTitle = true;
+				disabledOptions.push(i);
+			}
+			op = new FNFOption(0, 0 + (i * 80), text, function(elapsed:Float) {
+				o.updateOnSelected(elapsed, op);
+			}, o.checkbox, o.checkboxChecked, "");
+			for (i in 0...op.length) {
+				var a = op.members[i];
+				if (a != op.checkbox) {
+					a.setGraphicSize(Std.int(a.width * 0.75));
+					if (isTitle) {
+						a.x = ((FlxG.width - 100) / 2) - (40 * ((o.checkbox ? op.length - 1 : op.length) / 2)) + (a.x * 0.75);
+					} else {
+						a.x = a.x * 0.75;
+					}
+				}
+			}
+			op.setValue(o.value());
+			op.x += 50;
+			if (!isTitle) op.x += 50;
+			optionsAlphabets.add(op);
+		}
+
+		optionsAlphabets.y = FlxG.height * 3;
+		curSelected = -1;
+		changeSelection(1, false);
+		FlxTween.tween(optionsAlphabets, {y: (FlxG.height / 2) - (69 / 2) - (curSelected * 80)}, 0.5, {ease : FlxEase.cubeInOut, onComplete: function(t) {
+			usable = true;
+		}});
 	}
 
+	
 	override function create()
 	{
 		addControlsCategory();
@@ -918,35 +1103,6 @@ class OptionsMenu extends MusicBeatState
 
 		// FlxAtlasFrames.fromTexturePackerJson()
 		
-		for (i in 0...options.length) {
-			var o:Option = options[i];
-			var op = null;
-			var text = o.text;
-
-			var isTitle = false;
-			if (o.text.charAt(0) == "[" && o.text.charAt(o.text.length - 1) == "]") {
-				text = o.text.substr(1, o.text.length - 2);
-				isTitle = true;
-				disabledOptions.push(i);
-			}
-			op = new FNFOption(0, 0 + (i * 80), text, function(elapsed:Float) {
-				o.updateOnSelected(elapsed, op);
-			}, o.checkbox, o.checkboxChecked, "");
-			for (i in 0...op.length) {
-				var a = op.members[i];
-				if (a != op.checkbox) {
-					a.setGraphicSize(Std.int(a.width * 0.75));
-					if (isTitle) {
-						a.x = ((FlxG.width - 100) / 2) - (40 * ((o.checkbox ? op.length - 1 : op.length) / 2)) + (a.x * 0.75);
-					} else {
-						a.x = a.x * 0.75;
-					}
-				}
-			}
-			op.setValue(o.value);
-			op.x += 100;
-			optionsAlphabets.add(op);
-		}
 
 		var yBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGYoshi'));
 		yBG.setGraphicSize(Std.int(yBG.width * 1.1));
@@ -967,17 +1123,16 @@ class OptionsMenu extends MusicBeatState
 		menuBG.antialiasing = true;
 		add(menuBG);
 
-		var blackSelectionBar = new FlxSprite(0, (FlxG.height / 2) - (69 / 2)).makeGraphic(Std.int(FlxG.width), 69, new FlxColor(0x88000000));
-		blackSelectionBar.alpha = 0;
-		add(blackSelectionBar);
+		// var blackSelectionBar = new FlxSprite(0, (FlxG.height / 2) - (69 / 2)).makeGraphic(Std.int(FlxG.width), 69, new FlxColor(0x88000000));
+		// blackSelectionBar.alpha = 0;
+		// add(blackSelectionBar);
+		optionsAlphabets.scrollFactor.set(0, 0);
 		add(optionsAlphabets);
 		// FlxTween.tween(menuBG, {"color.red" : 0x49, "color.green" : 0x49, "color.blue" : 0x49}, 0.5, {ease : FlxEase.linear, onComplete: function(t:FlxTween) {
 		// 	usable = true;
 		// }});
+		setOptions();
 		
-		optionsAlphabets.y = FlxG.height * 3;
-		curSelected = -1;
-		changeSelection(1, false);
 		// FlxTween.color(menuBG, 0.5, 0xFFFDE871, 0xFF494949, {ease : FlxEase.cubeInOut, onComplete: function(t:FlxTween) {
 		// 	usable = true;
 		// }});
@@ -986,43 +1141,54 @@ class OptionsMenu extends MusicBeatState
 			remove(menuBG);
 			menuBG.destroy();
 		}});
-		FlxTween.tween(optionsAlphabets, {y: (FlxG.height / 2) - (69 / 2) - (curSelected * 80)}, 0.5, {ease : FlxEase.cubeInOut});
-		FlxTween.tween(blackSelectionBar, {alpha : 1}, 0.5, {ease : FlxEase.cubeInOut});
+		// FlxTween.tween(blackSelectionBar, {alpha : 1}, 0.5, {ease : FlxEase.cubeInOut});
 
 		// controlsStrings = CoolUtil.coolTextFile(Paths.txt('controls'));
 		super.create();
 
 		// openSubState(new OptionsSubState());
 	}
+	var isInCategory = false;
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 		if (!usable) return;
 
-		if (controls.BACK)
-			if (fromFreeplay)
-				FlxG.switchState(new PlayState());
-			else
-				FlxG.switchState(new MainMenuState());
-
+		if (controls.BACK) {
+			CoolUtil.playMenuSFX(2);
+			if (isInCategory) {
+				setOptions();
+				isInCategory = false;
+				return;
+			} else {
+				if (fromFreeplay)
+					FlxG.switchState(new PlayState());
+				else
+					FlxG.switchState(new MainMenuState());
+			}
+		}
+			
 		if (controls.UP_P)
 			changeSelection(-1);
 		if (controls.DOWN_P)
 			changeSelection(1);
-		 
+		
+		optionsAlphabets.y = FlxMath.lerp(optionsAlphabets.y, (FlxG.height / 2) - (69 / 2) - (curSelected * 80), CoolUtil.wrapFloat(0.1 / 60 / elapsed, 0, 1));
+		
+
 		for (i in 0...optionsAlphabets.members.length) {
-			(cast (optionsAlphabets.members[i], FNFOption)).up(elapsed);
+			if (optionsAlphabets.members[i] != null) (cast (optionsAlphabets.members[i], FNFOption)).up(elapsed);
 		}
 		if (optionsAlphabets.members[curSelected] != null) (cast (optionsAlphabets.members[curSelected], FNFOption)).updateSelected(elapsed);
 	}
 
 	function waitingInput():Void
 	{
-		if (FlxG.keys.getIsDown().length > 0)
-		{
-			PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxG.keys.getIsDown()[0].ID, null);
-		}
+		// if (FlxG.keys.getIsDown().length > 0)
+		// {
+		// 	PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxG.keys.getIsDown()[0].ID, null);
+		// }
 		// PlayerSettings.player1.controls.replaceBinding(Control)
 	}
 
@@ -1044,7 +1210,7 @@ class OptionsMenu extends MusicBeatState
 	}
 
 	public var disabledOptions:Array<Int> = [];
-	public var ghreuighesioghseuiogseruiogbseruigbseruiogbretgubgiobreg:FlxTween;
+	// public var ghreuighesioghseuiogseruiogbseruigbseruiogbretgubgiobreg:FlxTween;
 	function changeSelection(change:Int = 0, animate:Bool = true)
 	{
 		#if !switch
@@ -1061,9 +1227,12 @@ class OptionsMenu extends MusicBeatState
 			if (curSelected < 0) curSelected = optionsAlphabets.length - 1;
 			if (curSelected >= optionsAlphabets.length) curSelected = 0;
 		}
+		for(k=>op in optionsAlphabets.members) {
+			op.alpha = (k == curSelected || disabledOptions.contains(k)) ? 1 : 0.45;
+		}
 		if (!animate) return;
-		if (ghreuighesioghseuiogseruiogbseruigbseruiogbretgubgiobreg != null) ghreuighesioghseuiogseruiogbseruigbseruiogbretgubgiobreg.cancel();
-		FlxTween.tween(optionsAlphabets, {y: (FlxG.height / 2) - (69 / 2) - (curSelected * 80)}, 0.1, {ease : FlxEase.quadInOut});
+		// if (ghreuighesioghseuiogseruiogbseruigbseruiogbretgubgiobreg != null) ghreuighesioghseuiogseruiogbseruigbseruiogbretgubgiobreg.cancel();
+		// FlxTween.tween(optionsAlphabets, {y: (FlxG.height / 2) - (69 / 2) - (curSelected * 80)}, 0.1, {ease : FlxEase.quadInOut});
 		// optionsAlphabets.y = ;
 
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
