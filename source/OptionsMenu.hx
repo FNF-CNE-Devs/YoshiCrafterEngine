@@ -255,6 +255,20 @@ class OptionsMenu extends MusicBeatState
 			value: function() {return "";}
 		});
 		gameplay.options.push({
+			text : "Middlescroll",
+			description : "When enabled, moves your strums to the center, and hides the opponents' ones.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.middleScroll = !Settings.engineSettings.data.middleScroll;
+					o.checkboxChecked = Settings.engineSettings.data.middleScroll;
+					o.check(Settings.engineSettings.data.middleScroll);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: Settings.engineSettings.data.middleScroll,
+			value: function() {return "";}
+		});
+		gameplay.options.push({
 			text : "Custom scroll speed",
 			description : "If enabled, sets the scroll speed value to the desired value for all charts. Defaults to disabled.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {

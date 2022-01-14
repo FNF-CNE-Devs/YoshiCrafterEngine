@@ -309,17 +309,17 @@ class StoryMenuState extends MusicBeatState
 				}
 			}
 		}
-		changeDifficulty();
 
 		// difficultySelectors.add(sprDifficulty);
 		
 
-		leftArrow = new FlxSprite(918, grpWeekText.members[0].y + 10);
+		leftArrow = new FlxSprite(1190 - 175 + 48, grpWeekText.members[0].y + 10);
 		leftArrow.frames = ui_tex;
 		leftArrow.animation.addByPrefix('idle', "arrow left");
 		leftArrow.animation.addByPrefix('press', "arrow push left");
 		leftArrow.animation.play('idle');
 		leftArrow.antialiasing = true;
+		leftArrow.x -= leftArrow.width;
 		difficultySelectors.add(leftArrow);
 
 		rightArrow = new FlxSprite(1222, leftArrow.y);
@@ -331,6 +331,8 @@ class StoryMenuState extends MusicBeatState
 		rightArrow.antialiasing = true;
 		// rightArrow.x = FlxG.width - 10 - rightArrow.width;
 		difficultySelectors.add(rightArrow);
+
+		changeDifficulty();
 
 		trace("Line 150");
 

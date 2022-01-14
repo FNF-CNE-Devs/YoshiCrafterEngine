@@ -67,6 +67,9 @@ import flixel.FlxG;
 	// Use PlayState.setDownscroll(true, true) to enable downscroll and reposition the strums.
 	@:keep public static var downscroll:Bool = false;
 	
+	// If true, middlescroll is enabled. Doesn't have an effect after the song started.
+	@:keep public static var middleScroll:Bool = false;
+	
 	
 	// Current accuracy mode.
 	// 0 : Complex (C)

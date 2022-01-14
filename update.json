@@ -1,30 +1,8 @@
 {
     "updateLog" : [
-        "ALERT TO MODDERS : createAfterGf is deprecated. Please use \"PlayState.add(PlayState.gf);\" in create() then put the createAfterGf code after it.",
-        "ALERT TO MODDERS : Cutscenes are now loaded via their full path (\"cutscenes/cutscene\") instead of their file name (\"cutscene\")",
-        "- New skin system (converter included)",
-        "- Separated Cutscenes and End Cutscenes",
-        "- Custom Instrumentals and vocals for difficulties (Name the files \"Inst-difficulty.ogg\" and \"Voices-difficulty.ogg\")",
-        "- NEW CONFIG.JSON : Configure your mod settings !",
-        "- Fixed Widescreen camera for ratios under 16/9 like 4/3.",
-        "- The game's title bar now corresponds to the mod's name",
-        "- Custom mod icons : Drop a \"icon.png\" file in the root of your mod's directory for the engine to change the window icon to it when played.",
-        "- Custom Death Screens : Change Death Screen characters and SFX (check GameOverSubstate.hx in Source Code)",
-        "- song_conf.hx : Added a new \"scripts\" variables, which allows you to add multiple scripts (modchart and stage still works)",
-        "  (ex : scripts = [\"modcharts/script1.hx\", \"modcharts/script2\", \"Friday Night Funkin':modcharts/script3\"])",
-        "- Remastered arrow colors : Now they truly look like base game notes.",
-        "- Added health bar colors",
-        "- Added custom colors for all base game characters",
-        "- Added proper categories in options",
-        "- Fixed a charter bug that'd prevent the charter current section from being updated as the song plays",
-        "- Fixed a bug that'd make arrow tails spawn half a step later.",
-        "- CPU strums now lighten",
-        "- Added a FPS cap option",
-        "- Fixed freeze after \"Go\"",
-        "- Added an error message when the engine crashes.",
-        "",
-        "I'm surprised this managed to fit in the screen."
+        "/!\\ Fixed Story Mode Menu crash",
+        "- Added middlescroll support"
     ],
-    "version" : [1,2,0],
+    "version" : [1,2,1],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"
 }

@@ -21,7 +21,7 @@ function create() {
             note.animation.addByPrefix('holdpiece', "purple hold piece");
         case 1:
             note.animation.addByPrefix('scroll', "blue0");
-            note.animation.addByPrefix('holdend', "blue end hold");
+            note.animation.addByPrefix('holdend', "blue hold end");
             note.animation.addByPrefix('holdpiece', "blue hold piece");
         case 2:
             note.animation.addByPrefix('scroll', "green0");

@@ -1,5 +1,7 @@
 package;
 
+import flixel.FlxState;
+import flixel.FlxSprite;
 import sys.FileSystem;
 import flixel.FlxG;
 import haxe.DynamicAccess;
@@ -13,6 +15,13 @@ class CoolUtil
 	* Array for difficulty names
 	*/
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
+
+	public static function addBG(f:FlxState) {
+		var bg = new FlxSprite(0,0).loadGraphic(Paths.image("menuBGYoshi", "preload"));
+		bg.setGraphicSize(Std.int(bg.width * 1.1));
+		bg.screenCenter();
+		f.add(bg);
+	}
 
 	/**
 	* Copies folder. Used to copy default skins to prevent crashes

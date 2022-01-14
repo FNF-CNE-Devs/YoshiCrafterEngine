@@ -38,8 +38,16 @@ class MainMenuState extends MusicBeatState
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
 
+	var factor(get, never):Float;
+	function get_factor() {
+		return 650 / optionShit.length;
+	}
+
 	override function create()
 	{
+		// if (Settings.engineSettings.data.developerMode) {
+		// 	optionShit.insert(4, 'toolbox');
+		// }
 		if (Settings.engineSettings.data.memoryOptimization) {
 			// Paths.clearCache();
 			openfl.utils.Assets.cache.clear();
@@ -108,12 +116,14 @@ class MainMenuState extends MusicBeatState
 			menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
 			menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
 			menuItem.animation.play('idle');
+			menuItem.updateHitbox();
 			menuItem.ID = i;
 			menuItem.screenCenter(X);
-			menuItems.add(menuItem);
-			menuItem.scrollFactor.set();
+			menuItem.scrollFactor.set(0, 1 / (optionShit.length));
+			menuItem.setGraphicSize(Std.int(factor / menuItem.height * menuItem.width), Std.int(factor));
 			menuItem.y -= menuItem.height / 2;
 			menuItem.antialiasing = true;
+			menuItems.add(menuItem);
 		}
 
 		FlxG.camera.follow(camFollow, null, 0.06 * 60 / Settings.engineSettings.data.fpsCap);
@@ -240,6 +250,10 @@ class MainMenuState extends MusicBeatState
 								case 'credits':
 									FlxG.switchState(new CreditsState());
 									trace ("Credits Menu Selected");
+								
+								case 'toolbox':
+									FlxG.switchState(new dev_toolbox.ToolboxMain());
+									trace ("Developer Toolbox Selected");
 
 								case 'options':
 									FlxTransitionableState.skipNextTransIn = true;
@@ -265,9 +279,11 @@ class MainMenuState extends MusicBeatState
 		menuItems.forEach(function(spr:FlxSprite)
 		{
 			spr.animation.play('idle');
+			spr.offset.set(0,0);
 
 			if (spr.ID == curSelected)
 			{
+				// spr.offset.set(0,-(Math.max(0, spr.height - spr.frames.getByIndex(spr.animation.getByName("idle").frames[0]).sourceSize.y)) / FlxG.height * spr.y);
 				spr.animation.play('selected');
 				camFollow.setPosition(spr.getGraphicMidpoint().x, spr.getGraphicMidpoint().y);
 			}

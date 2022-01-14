@@ -1178,6 +1178,8 @@ class PlayState extends MusicBeatState
 				FlxTween.tween(timerBG, {y : 25 + (guiOffset.y / 2), alpha : 1}, 0.5, {ease : FlxEase.circInOut});
 				FlxTween.tween(timerBar, {y : 29 + (guiOffset.y / 2), alpha : 1}, 0.5, {ease : FlxEase.circInOut});
 			}
+			if (members.contains(msScoreLabel)) remove(msScoreLabel);
+			add(msScoreLabel);
 		}
 
 		FlxG.sound.music.onComplete = endSong;
@@ -1511,6 +1513,17 @@ class PlayState extends MusicBeatState
 			
 			babyArrow.scale.x *= Math.min(1, 5 / (PlayState.SONG.keyNumber == null ? 5 : PlayState.SONG.keyNumber));
 			babyArrow.scale.y *= Math.min(1, 5 / (PlayState.SONG.keyNumber == null ? 5 : PlayState.SONG.keyNumber));
+
+			if (engineSettings.middleScroll) {
+				if (player == 0) {
+					babyArrow.x = -Note.swagWidth;
+					babyArrow.visible = false;
+					babyArrow.notes_alpha = 0;
+				}
+				if (player == 1) {
+					babyArrow.x = 640 + ((i - (SONG.keyNumber / 2)) * Note.swagWidth);
+				}
+			}
 
 			strumLineNotes.add(babyArrow);
 		}
