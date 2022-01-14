@@ -3,7 +3,7 @@ package;
 // import sys.io.File;
 import sys.FileSystem;
 import sys.io.File;
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 import PlayState.PlayState;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -50,10 +50,19 @@ class Character extends FlxSprite
 	public var curCharacter:String = 'bf';
 
 	public var holdTimer:Float = 0;
+
+	public var longAnims:Array<String> = [];
 	/**
 	 * If the character is a variant of Boyfriend, or Boyfriend itself.
 	 */
 	public var isaBF:Bool = false;
+
+	public var healthIcon(default, set):HealthIcon;
+	public function set_healthIcon(h:HealthIcon):HealthIcon {
+		healthIcon = h;
+		if (characterScript != null) characterScript.executeFunc("healthIcon", [h]);
+		return h;
+	}
 
 	public static var customBFAnims:Array<String> = [];
 	public static var customBFOffsets:Array<String> = [];
@@ -202,12 +211,30 @@ class Character extends FlxSprite
 			Settings.engineSettings.data.arrowColor2,
 			Settings.engineSettings.data.arrowColor3
 		];
-
-		for (i in 1...c.length) {
-			if (c[i] == 0) {
-				c[i] = defNoteColors[(i - 1) % defNoteColors.length];
+		if (c.length < 5) {
+			for (i in c.length...5) {
+				c.push(switch(i) {
+					case 0:
+						(this.isPlayer ? 0xFF66FF33 : 0xFFFF0000);
+					case 1:
+						Settings.engineSettings.data.arrowColor0;
+					case 2:
+						Settings.engineSettings.data.arrowColor1;
+					case 3:
+						Settings.engineSettings.data.arrowColor2;
+					case 4:
+						Settings.engineSettings.data.arrowColor3;
+					default:
+						0xFFFFFFFF;
+				});
 			}
 		}
+
+		// for (i in 1...c.length) {
+		// 	if (c[i] == 0) {
+		// 		c[i] = defNoteColors[(i - 1) % defNoteColors.length];
+		// 	}
+		// }
 
 		return c;
 	}
@@ -215,9 +242,8 @@ class Character extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		if (!debugMode && animation.curAnim != null) {
-			if (isPlayer && (lastHit <= Conductor.songPosition - 500 || lastHit == 0) && animation.curAnim.name != "idle" && !isaBF)
-				playAnim('idle');
-			// if (!curCharacter.startsWith('bf')) // Ok, what the fuck ?
+			// if (isPlayer && (lastHit <= Conductor.songPosition - 500 || lastHit == 0) && animation.curAnim.name != "idle" && !isPlayer)
+			// 	dance();
 			if (!isPlayer)
 			{
 					if (animation.curAnim.name.startsWith('sing'))
@@ -393,7 +419,7 @@ class Character extends FlxSprite
 // import sys.FileSystem;
 // #end
 // import lime.utils.Assets;
-// import LoadSettings.Settings;
+// import EngineSettings.Settings;
 // import PlayState.PlayState;
 // import flixel.FlxG;
 // import flixel.FlxSprite;

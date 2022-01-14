@@ -21,10 +21,10 @@ function create() {
 
 function getColors(altAnim) {
     return [
-        new FlxColor(0xFFEE1536),
-        new FlxColor(0xFF2B263C),
-        new FlxColor(0xFFEE1536),
-        new FlxColor(0xFFEE1536),
-        new FlxColor(0xFF2B263C)
+        0xFFD8558E,
+        0xFF2B263C,
+        0xFFEE1536,
+        0xFFEE1536,
+        0xFF2B263C
     ];
 }

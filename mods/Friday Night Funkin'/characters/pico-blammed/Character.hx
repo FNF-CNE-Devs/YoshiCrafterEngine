@@ -50,3 +50,12 @@ function getColors(altAnim) {
         new FlxColor(0xFFFD6922)
     ];
 }
+function getColors(altAnim) {
+    return [
+        0xFFB7D855,
+        0xFFFD6922,
+        0xFF55E858,
+        0xFF55E858,
+        0xFFFD6922
+    ];
+}

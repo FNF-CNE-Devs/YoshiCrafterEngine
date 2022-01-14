@@ -40,10 +40,6 @@ class Boyfriend extends Character
 				dance();
 			}
 
-			if (animation.curAnim.name == 'firstDeath' && animation.curAnim.finished)
-			{
-				playAnim('deathLoop');
-			}
 		}
 
 		super.update(elapsed);

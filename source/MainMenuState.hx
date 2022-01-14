@@ -1,7 +1,8 @@
 package;
 
+import lime.utils.Assets;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileCircle;
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -39,11 +40,15 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
-		if (Settings.engineSettings.data.memoryOptimization) 
+		if (Settings.engineSettings.data.memoryOptimization) {
+			// Paths.clearCache();
 			openfl.utils.Assets.cache.clear();
+			Assets.cache.clear();
+		}
+			
 		#if desktop
 		// Updating Discord Rich Presence
-		DiscordClient.changePresence("In the Menus", null);
+		DiscordClient.changePresence("In the Main Menu", null);
 		#end
 
 		transIn = FlxTransitionableState.defaultTransIn;
@@ -111,7 +116,7 @@ class MainMenuState extends MusicBeatState
 			menuItem.antialiasing = true;
 		}
 
-		FlxG.camera.follow(camFollow, null, 0.06);
+		FlxG.camera.follow(camFollow, null, 0.06 * 60 / Settings.engineSettings.data.fpsCap);
 
 		var fnfVer = Application.current.meta.get('version');
 		var yoshiEngineVer = Main.engineVer.join(".");
@@ -230,17 +235,16 @@ class MainMenuState extends MusicBeatState
 									trace("Story Menu Selected");
 								case 'freeplay':
 									FlxG.switchState(new FreeplayState());
-
 									trace("Freeplay Menu Selected");
 								
 								case 'credits':
 									FlxG.switchState(new CreditsState());
-
 									trace ("Credits Menu Selected");
 
 								case 'options':
 									FlxTransitionableState.skipNextTransIn = true;
 									FlxTransitionableState.skipNextTransOut = true;
+									OptionsMenu.fromFreeplay = false;
 									FlxG.switchState(new OptionsMenu(0, -camFollow.y * 0.18));
 							}
 						});

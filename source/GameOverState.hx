@@ -1,5 +1,6 @@
 package;
 
+import EngineSettings.Settings;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionableState;
@@ -12,6 +13,12 @@ class GameOverState extends FlxTransitionableState
 {
 	var bfX:Float = 0;
 	var bfY:Float = 0;
+
+	public var char = "Friday Night Funkin':bf";
+	public var firstDeathSFX = "Friday Night Funkin':fnf_loss_sfx";
+	public var gameOverMusic = "Friday Night Funkin':gameOver";
+	public var gameOverMusicBPM = 100;
+	public var retrySFX = "Friday Night Funkin':gameOverEnd";
 
 	public function new(x:Float, y:Float)
 	{
@@ -31,13 +38,13 @@ class GameOverState extends FlxTransitionableState
 			// add(loser); */
 
 		var bf:Boyfriend = new Boyfriend(bfX, bfY);
-		bf.x -= bf.charGlobalOffset.x;
-		bf.y -= bf.charGlobalOffset.y;
+		// bf.x -= bf.charGlobalOffset.x;
+		// bf.y -= bf.charGlobalOffset.y;
 		// bf.scrollFactor.set();
 		add(bf);
 		bf.playAnim('firstDeath');
 
-		FlxG.camera.follow(bf, LOCKON, 0.001);
+		FlxG.camera.follow(bf, LOCKON, 0.001 * 60 / Settings.engineSettings.data.fpsCap);
 		/* 
 			var restart:FlxSprite = new FlxSprite(500, 50).loadGraphic(AssetPaths.restart.png);
 			restart.setGraphicSize(Std.int(restart.width * 0.6));

@@ -31,10 +31,10 @@ function dance() {
 
 function getColors(altAnim) {
     return [
-        0xFFAF66CE,
-        0xFFAF66CE,
-        0xFFAF66CE,
-        0xFFAF66CE,
-        0xFFAF66CE
+        0xFFD57E00,
+        0xFFCEE4FF,
+        0xFFD57E00,
+        0xFFCEE4FF,
+        0xFFD57E00
     ];
 }

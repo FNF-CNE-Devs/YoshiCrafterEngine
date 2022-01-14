@@ -461,6 +461,12 @@ Ends the song
 
 
 ---
+**`endSong2():Void`** - (`PlayState`)
+
+Switches to the next song or goes back to the Freeplay menu. Used by ending cutscenes as `end()`. Do not use since it doesn't save the player's score.
+
+
+---
 **`popUpScore(strumTime:Float):Void`** - (`PlayState`)
 
 Creates a rating based on the difference between `strumTime` and `Conductor.songPosition`.

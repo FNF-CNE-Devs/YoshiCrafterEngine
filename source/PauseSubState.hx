@@ -1,7 +1,7 @@
 package;
 
 import ControlsSettingsSubState.ControlsSettingsSub;
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 import Controls.Control;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -126,7 +126,8 @@ class PauseSubState extends MusicBeatSubstate
 					var s = new LogSubState();
 					openSubState(s);
 				case "Options":
-					FlxG.switchState(new OptionsMenu(0, 0, true));
+					OptionsMenu.fromFreeplay = true;
+					FlxG.switchState(new OptionsMenu(0, 0));
 				case "Exit to menu":
 					FlxG.switchState(new MainMenuState());
 			}

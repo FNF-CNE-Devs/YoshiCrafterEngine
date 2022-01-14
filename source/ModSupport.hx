@@ -1,3 +1,4 @@
+import Shaders.ColorShader;
 import cpp.Lib;
 import flixel.util.FlxSave;
 import lime.app.Application;
@@ -24,7 +25,7 @@ import flixel.util.FlxColor;
 import sys.io.File;
 import lime.utils.Assets;
 import flixel.system.FlxAssets;
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 import flixel.FlxSprite;
 import openfl.display.BitmapData;
 import flixel.FlxG;
@@ -83,166 +84,6 @@ class MP4Video {
     }
 }
 
-class Paths_Mod {
-    private var mod:String;
-    public var copyBitmap:Bool = false;
-    public function new(mod:String, settings:Dynamic) {
-        this.mod = mod;
-        trace(settings);
-        if (settings.cloneBitmap != null) {
-            if (Std.is(settings.cloneBitmap, Bool)) {
-                copyBitmap = settings.cloneBitmap;
-            }
-        }
-    }
-
-    public function getModsFolder() {
-        return Paths.getModsFolder();
-    }
-
-    private function readTextFile(path:String) {
-        if (FileSystem.exists(path)) {
-            return File.getContent(path);
-        } else {
-            PlayState.log.push('Paths : File at "$path" does not exist');
-            return "";
-        }
-    }
-
-    public function file(file:String) {
-        var mFolder = Paths.getModsFolder();
-        var path = '$mFolder/$mod/$file';
-        if (!FileSystem.exists(path)) {
-            PlayState.log.push('Paths : File at "$path" does not exist');
-        }
-    }
-
-    public function txt(file:String):String {
-        var mFolder = Paths.getModsFolder();
-        return readTextFile('$mFolder/$mod/data/$file.txt');
-    }
-
-    public function xml(file:String):String {
-        var mFolder = Paths.getModsFolder();
-        return readTextFile('$mFolder/$mod/data/$file.xml');
-    }
-
-    public function json(file:String):String {
-        var mFolder = Paths.getModsFolder();
-        return readTextFile('$mFolder/$mod/data/$file.json');
-    }
-
-    // No support for it yet, sorry
-    // public function getAnimateManager(path:String, onFinish:AssetManager->Void) {
-    //     var mFolder = Paths.getModsFolder();
-    //     var path = '$mFolder/$mod/images/$path/';
-    //     var assets:AssetManager = new AssetManager();
-    //     assets.enqueue(path);
-    //     assets.loadQueue(onFinish);
-    // }
-
-    public function parseJson(file:String) {
-        return Json.parse(json(file));
-    }
-
-    public function video(key:String) {
-        return 'mods/$mod/videos/$key.mp4';
-    }
-
-    public function soundRandom(file:String, min:Int, max:Int):Sound {
-        var r = FlxG.random.int(min, max);
-        return sound('$file$r');
-    }
-    public function sound(file:String):Sound {
-        var mFolder = Paths.getModsFolder();
-        #if web
-            return Sound.fromFile('$mFolder/$mod/sounds/$file.mp3');
-        #else
-            return Sound.fromFile('$mFolder/$mod/sounds/$file.ogg');
-        #end
-    }
-
-    public function music(file:String):Sound {
-        var mFolder = Paths.getModsFolder();
-        #if web
-            return Sound.fromFile('$mFolder/$mod/music/$file.mp3');
-        #else
-            return Sound.fromFile('$mFolder/$mod/music/$file.ogg');
-        #end
-    }
-
-    public function image(key:String):BitmapData {
-        var mFolder = Paths.getModsFolder();
-        var p = '$mFolder/$mod/images/$key.png';
-        if (FileSystem.exists(p)) {
-            if (copyBitmap) {
-                return Paths.getBitmapOutsideAssets(p).clone();
-            } else {
-                return Paths.getBitmapOutsideAssets(p);
-            }
-        } else {
-            PlayState.log.push('Paths : Image at "$p" does not exist');
-            return null;
-        }
-    }
-
-    public function getSparrowAtlas(key:String):FlxAtlasFrames {
-        var mFolder = Paths.getModsFolder();
-        var png = '$mFolder/$mod/images/$key.png';
-        var xml = '$mFolder/$mod/images/$key.xml';
-        if (FileSystem.exists(png) && FileSystem.exists(xml)) {
-            var b:BitmapData;
-            if (copyBitmap) {
-                b = Paths.getBitmapOutsideAssets(png).clone();
-            } else {
-                b = Paths.getBitmapOutsideAssets(png);
-            }
-            return FlxAtlasFrames.fromSparrow(b, Paths.getTextOutsideAssets(xml));
-        } else {
-            PlayState.log.push('Paths : Sparrow Atlas at "$mFolder/$mod/images/$key" does not exist. Make sure there is an XML and a PNG file');
-            return null;
-        }
-    }
-
-    public function getCharacterPacker(char:String):FlxAtlasFrames {
-        var mFolder = Paths.getModsFolder();
-        var m = mod;
-        var c = char;
-        var splitChar = char.split(":");
-        if (splitChar.length > 1) {
-            m = splitChar[0];
-            c = splitChar[1];
-        }
-        var png = '$mFolder/$m/characters/$c/spritesheet.png';
-        var txt = '$mFolder/$m/characters/$c/spritesheet.txt';
-        if (FileSystem.exists(png) && FileSystem.exists(txt)) {
-            var b = Paths.getBitmapOutsideAssets(png);
-            if (copyBitmap) b = b.clone();
-            return FlxAtlasFrames.fromSpriteSheetPacker(b, Paths.getTextOutsideAssets(txt));
-        } else {
-            PlayState.log.push('Paths : Sprite Sheet Packer at "$mFolder/$m/characters/$c/spritesheet" does not exist. Make sure there is an TXT and a PNG file');
-            return null;
-        }
-    }
-
-    public function getCharacter(char:String) {
-        return Paths.getModCharacter(char);
-    }
-
-    public function getPackerAtlas(key:String) {
-        var mFolder = Paths.getModsFolder();
-        var png = '$mFolder/$mod/images/$key.png';
-        var txt = '$mFolder/$mod/images/$key.txt';
-        if (FileSystem.exists(png) && FileSystem.exists(txt)) {
-            var b = Paths.getBitmapOutsideAssets(png);
-            if (copyBitmap) b = b.clone();
-            return FlxAtlasFrames.fromSpriteSheetPacker(b, Paths.getTextOutsideAssets(txt));
-        } else {
-            PlayState.log.push('Paths : Packer Atlas at "$mFolder/$mod/images/$key" does not exist. Make sure there is an XML and a PNG file');
-            return null;
-        }
-    }
-}
 
 class FlxColor_Helper {
     var fc:FlxColor;
@@ -356,15 +197,75 @@ class FlxColor_Helper {
     }
 }
 
+typedef CharacterSkin = {
+    var name:String;
+    var char:String;
+}
+typedef ModConfig = {
+    var name:String;
+    var description:String;
+    var titleBarName:String;
+    var skinnableBFs:Array<String>;
+    var skinnableGFs:Array<String>;
+    var BFskins:Array<CharacterSkin>;
+    var GFskins:Array<CharacterSkin>;
+    var keyNumbers:Array<Int>;
+}
+typedef ModScript = {
+    var path:String;
+    var mod:String;
+}
+
 class ModSupport {
     public static var song_config_parser:hscript.Interp;
     public static var song_modchart_path:String = "";
     public static var song_stage_path:String = "";
     public static var song_cutscene_path:String = "";
+
+    public static var song_cutscene:ModScript = null;
+    public static var song_end_cutscene:ModScript = null;
     public static var currentMod:String = "Friday Night Funkin'";
 
-    public static var modSaves:Map<String, FlxSave> = [];
+    public static var scripts:Array<ModScript> = [];
 
+    public static var modConfig:Map<String, ModConfig> = null;
+
+    public static var modSaves:Map<String, FlxSave> = [];
+    public static var mFolder = Paths.getModsFolder();
+
+    public static function getMods():Array<String> {
+        var modFolder = Paths.getModsFolder();
+        var a = FileSystem.readDirectory(modFolder);
+        var finalArray = [];
+        for (e in a) {
+            if (FileSystem.isDirectory('$modFolder\\$e')) finalArray.push(e);
+        }
+        return finalArray;
+    }
+    public static function reloadModsConfig() {
+        modConfig = [];
+        for(mod in getMods()) {
+            var json:ModConfig = null;
+            if (FileSystem.exists('$mFolder\\$mod\\config.json')) {
+                try {
+                    json = Json.parse(Paths.getTextOutsideAssets('$mFolder\\$mod\\config.json'));
+                } catch(e) {
+                    for (e in ('Failed to parse mod config for $mod.').split('\n')) PlayState.log.push(e);
+                }
+            }
+            if (json == null) json = {
+                name: null,
+                description: null,
+                titleBarName: null,
+                skinnableGFs: null,
+                skinnableBFs: null,
+                BFskins: null,
+                GFskins: null,
+                keyNumbers: null
+            };
+            modConfig[mod] = json;
+        }
+    }
     #if windows
     public static function changeWindowIcon(iconPath:String) {
         
@@ -470,9 +371,26 @@ class ModSupport {
 		hscript.variables.set("Rectangle", Rectangle);
 		hscript.variables.set("Point", Point);
 		hscript.variables.set("Window", Application.current.window);
+		hscript.variables.set("ColorShader", Shaders.ColorShader);
+		hscript.variables.set("BlammedShader", Shaders.BlammedShader);
+		hscript.variables.set("GameOverSubstate", GameOverSubstate);
+		hscript.variables.set("ModSupport", null);
+
+        // SHADERS
+
+		// hscript.variables.set("CustomShader", CustomShader);
 		// hscript.setVariable("FlxColor", Int);
     }
 
+    public static function getModName(mod:String):String {
+        var name = mod;
+        if (modConfig[mod] != null) {
+            if (modConfig[mod].name != null) {
+                name = modConfig[mod].name.trim();
+            }
+        }
+        return name;
+    }
     public static function setScriptDefaultVars(script:Script, mod:String, settings:Dynamic) {
 		script.setVariable("mod", mod);
 		script.setVariable("PlayState", PlayState.current);
@@ -537,43 +455,14 @@ class ModSupport {
 		script.setVariable("Rectangle", Rectangle);
 		script.setVariable("Point", Point);
 		script.setVariable("Window", Application.current.window);
-    }
-    // public static function executeFunc(hscript:hscript.Interp, funcName:String, ?args:Array<Dynamic>):Dynamic {
-    //     if (hscript == null) {
-    //         trace("hscript is null");
-    //         return null;
-    //     }
-	// 	if (hscript.variables.exists(funcName)) {
-    //         var f = hscript.getVariable(funcName);
-    //         if (args == null) {
-    //             var result = null;
-    //             try {
-    //                 result = f();
-    //             } catch(e) {
-    //                 var s = e.stack;
-    //                 var details = e.details();
-                    
-    //                 hTrace('$e at $s\r\n$details', hscript);
-    //             }
-    //             Paths.copyBitmap = false;
-    //             return result;
-    //         } else {
-    //             var result = null;
-    //             try {
-    //                 result = Reflect.callMethod(null, f, args);
-    //             } catch(e) {
-    //                 var s = e.stack;
-    //                 var details = e.details();
 
-    //                 hTrace('$e at $s\r\n$details', hscript);
-    //             }
-    //             Paths.copyBitmap = false;
-    //             return result;
-    //         }
-	// 		// f();
-	// 	}
-    //     return null;
-    // }
+		script.setVariable("ColorShader", Shaders.ColorShader);
+		script.setVariable("BlammedShader", Shaders.BlammedShader);
+		script.setVariable("GameOverSubstate", GameOverSubstate);
+		script.setVariable("ModSupport", null);
+
+
+    }
     public static function parseSongConfig() {
         var songName = PlayState._SONG.song.toLowerCase();
         var songCodePath = Paths.getModsFolder() + '/$currentMod/song_conf';
@@ -586,31 +475,106 @@ class ModSupport {
         var interp = Script.create(songCodePath);
         interp.setVariable("song", songName);
         interp.setVariable("difficulty", PlayState.storyDifficulty);
-        interp.setVariable("stage", "default_stage");
+        interp.setVariable("stage", "");
         interp.setVariable("cutscene", "");
+        interp.setVariable("end_cutscene", "");
         interp.setVariable("modchart", "");
+        interp.setVariable("scripts", []);
         interp.loadFile(songCodePath);
 
-        var stage = interp.getVariable("stage");
-        var modchart = interp.getVariable("modchart");
-        var cutscene = interp.getVariable("cutscene");
-        trace(stage);
-        if (stage == "default_stage")
-            song_stage_path = Paths.getModsFolder() + '/Friday Night Funkin\'/stages/$stage'; // fallback
-        else
-            song_stage_path = Paths.getModsFolder() + '/$currentMod/stages/$stage';
+        var stage:String = interp.getVariable("stage");
+        var modchart:String = interp.getVariable("modchart");
+        var cutscene:String = interp.getVariable("cutscene");
+        var end_cutscene:String = interp.getVariable("end_cutscene");
+        var sc:Array<String> = interp.getVariable("scripts");
+        scripts = [];
+        scripts.push(getModScriptFromValue('stages\\$stage'));
+        if (modchart.trim() != "") scripts.push(getModScriptFromValue('$currentMod:modcharts\\$modchart'));
+        for (s in sc) {
+            scripts.push(getModScriptFromValue(s));
+        }
+        if (scripts.length == 0) {
+            scripts = [
+                {
+                    path : "Friday Night Funkin'/stages/default_stage",
+                    mod : "Friday Night Funkin'"
+                }
+            ];
+        }
 
-        if (modchart != "")
-            song_modchart_path = Paths.getModsFolder() + '/$currentMod/modcharts/$modchart';
-        else
-            song_modchart_path = "";
+        // OUTDATED CODE, HOW TF DID I WROTE THIS IN RELEASE
+        // if (stage == "default_stage")
+        //     song_stage_path = Paths.getModsFolder() + '/Friday Night Funkin\'/stages/$stage'; // fallback
+        // else
+        //     song_stage_path = Paths.getModsFolder() + '/$currentMod/stages/$stage';
+
+        // if (modchart != "")
+        //     song_modchart_path = Paths.getModsFolder() + '/$currentMod/modcharts/$modchart';
+        // else
+        //     song_modchart_path = "";
 
         if (cutscene != "")
-            song_cutscene_path = Paths.getModsFolder() + '/$currentMod/cutscenes/$cutscene';
+            song_cutscene = getModScriptFromValue(cutscene);
         else
-            song_cutscene_path = "";
-        trace(song_stage_path);
+            song_cutscene = null;
+        
+        if (end_cutscene != "")
+            song_end_cutscene = getModScriptFromValue(end_cutscene);
+        else
+            song_end_cutscene = null;
+
+        trace(scripts);
+        // trace(song_stage_path);
         trace(song_modchart_path);
+    }
+
+    public static function getModScriptFromValue(value:String):ModScript {
+        var splitValue = value.split(":");
+        if (splitValue[0] == "") {
+            PlayState.log.push('Script not found for $value.');
+            return {mod : "Friday Night Funkin'", path : "Friday Night Funkin'/modcharts/unknown"};
+        }
+        if (splitValue.length == 1) {
+            var scriptPath = splitValue[0];
+            if (FileSystem.exists('$mFolder\\$currentMod\\$scriptPath')) {
+                splitValue.insert(0, currentMod);
+            } else {
+                var valid = false;
+                for (ext in Main.supportedFileTypes) {
+                    if (FileSystem.exists('$mFolder\\$currentMod\\$scriptPath.$ext')) {
+                        splitValue.insert(0, currentMod);
+                        valid = true;
+                        break;
+                    }
+                }
+                if (!valid) {
+                    if (FileSystem.exists('$mFolder\\Friday Night Funkin\'\\$scriptPath')) {
+                        splitValue.insert(0, "Friday Night Funkin'");
+                    } else {
+                        var valid = false;
+                        for (ext in Main.supportedFileTypes) {
+                            if (FileSystem.exists('$mFolder\\Friday Night Funkin\'\\$scriptPath.$ext')) {
+                                splitValue.insert(0, "Friday Night Funkin'");
+                                valid = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!valid) {
+                            PlayState.log.push('Script not found for $value.');
+                            return {mod : "Friday Night Funkin'", path : "Friday Night Funkin'/modcharts/unknown"};
+                        }
+                    }
+                }
+            }
+        }
+
+        var m = splitValue[0];
+        var path = splitValue[1];
+        return {
+            mod : m,
+            path : '$m\\$path'
+        }
     }
 
     // UNUSED

@@ -1,3 +1,4 @@
+import NoteShader.ColoredNoteShader;
 import flixel.math.FlxPoint;
 import flixel.FlxCamera;
 import flixel.tweens.FlxEase;
@@ -8,7 +9,7 @@ import flixel.util.FlxColor;
 import flixel.text.FlxText;
 import Note.NoteDirection;
 import flixel.input.keyboard.FlxKey;
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.FlxG;
@@ -59,16 +60,16 @@ class ControlsSettingsSub extends MusicBeatSubstate {
         "numpadmultiply" => "Numpad *"
     ];
     public static var customKeybindsNameOverrideSimple:Map<String, String> = [
-        "numpadone" => "1",
-        "numpadtwo" => "2",
-        "numpadthree" => "3",
-        "numpadfour" => "4",
-        "numpadfive" => "5",
-        "numpadsix" => "6",
-        "numpadseven" => "7",
-        "numpadeight" => "8",
-        "numpadnine" => "9",
-        "numpadzero" => "0",
+        "numpadone" => "#1",
+        "numpadtwo" => "#2",
+        "numpadthree" => "#3",
+        "numpadfour" => "#4",
+        "numpadfive" => "#5",
+        "numpadsix" => "#6",
+        "numpadseven" => "#7",
+        "numpadeight" => "#8",
+        "numpadnine" => "#9",
+        "numpadzero" => "#0",
         "one" => "1",
         "two" => "2",
         "three" => "3",
@@ -79,9 +80,9 @@ class ControlsSettingsSub extends MusicBeatSubstate {
         "eight" => "8",
         "nine" => "9",
         "zero" => "0",
-        "numpadplus" => "Numpad +",
-        "numpadminus" => "Numpad -",
-        "numpadmultiply" => "Numpad *"
+        "numpadplus" => "#+",
+        "numpadminus" => "#-",
+        "numpadmultiply" => "#*"
     ];
 
     public function mouseOverlaps(f:FlxSprite):Bool {
@@ -137,16 +138,23 @@ class ControlsSettingsSub extends MusicBeatSubstate {
                 return;
             }
             for (i => value in currentControls) {
-                var isPressed:Bool = FlxG.keys.anyPressed([value]);
-                if (isPressed && arrows[i].animation.curAnim.name != "pressed") {
-                    arrows[i].animation.play("pressed");
-                    arrows[i].centerOffsets();
-                    arrows[i].centerOrigin();
-                }
-                if (!isPressed && arrows[i].animation.curAnim.name != "static") {
-                    arrows[i].animation.play("static");
-                    arrows[i].centerOffsets();
-                    arrows[i].centerOrigin();
+                try {
+
+                    var isPressed:Bool = FlxG.keys.anyPressed([value]);
+                    if (isPressed && arrows[i].animation.curAnim.name != "pressed") {
+                        arrows[i].animation.play("pressed");
+                        arrows[i].centerOffsets();
+                        arrows[i].centerOrigin();
+                        cast(arrows[i].shader, ColoredNoteShader).enabled.value = [true];
+                    }
+                    if (!isPressed && arrows[i].animation.curAnim.name != "static") {
+                        arrows[i].animation.play("static");
+                        arrows[i].centerOffsets();
+                        arrows[i].centerOrigin();
+                        cast(arrows[i].shader, ColoredNoteShader).enabled.value = [false];
+                    }
+                } catch(e) {
+
                 }
             }
             for (index => value in arrows) {
@@ -234,12 +242,20 @@ class ControlsSettingsSub extends MusicBeatSubstate {
         for(i in 0...arrowNumber) {
             var babyArrow = new FlxSprite((1280 / 2) + size * (-(arrowNumber / 2) + i - 0.5), 50);
             
-            babyArrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getSparrowAtlas(Settings.engineSettings.data.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets', 'shared') : Paths.getSparrowAtlas_Custom("skins/notes/" + Settings.engineSettings.data.customArrowSkin.toLowerCase());
+            babyArrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas_Custom("skins/notes/" + Settings.engineSettings.data.customArrowSkin.toLowerCase());
 					
             babyArrow.animation.addByPrefix('up', 'arrowUP');
             babyArrow.animation.addByPrefix('down', 'arrowDOWN');
             babyArrow.animation.addByPrefix('left', 'arrowLEFT');
             babyArrow.animation.addByPrefix('right', 'arrowRIGHT');
+            var color = [
+                new FlxColor(Settings.engineSettings.data.arrowColor0),
+                new FlxColor(Settings.engineSettings.data.arrowColor1),
+                new FlxColor(Settings.engineSettings.data.arrowColor2),
+                new FlxColor(Settings.engineSettings.data.arrowColor3)
+            ][i % 4];
+            babyArrow.shader = new ColoredNoteShader(color.red, color.green, color.blue);
+            cast(babyArrow.shader, ColoredNoteShader).enabled.value = [false];
 
             var noteNumberScheme:Array<NoteDirection> = Note.noteNumberSchemes[arrowNumber];
             if (noteNumberScheme == null) noteNumberScheme = Note.noteNumberSchemes[4];

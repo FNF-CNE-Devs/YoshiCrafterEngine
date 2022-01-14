@@ -1,61 +1,58 @@
 switch(song) {
     // TUTORIAL
     case "tutorial":
-        modchart = "tutorial";
+        scripts = ["stages/default_stage", "modcharts/tutorial"];
 
     // WEEK 1
     case "bopeebo":
-        modchart = "bopeebo";
+        scripts = ["stages/default_stage", "modcharts/bopeebo"];
     case "fresh":
-        modchart = "fresh";
+        scripts = ["stages/default_stage", "modcharts/fresh"];
+    case "dadbattle":
+        scripts = ["stages/default_stage"];
 
     // WEEK 2
     case "spookeez":
-        stage = "halloween";
+        scripts = ["stages/halloween"];
     case "south":
-        stage = "halloween";
+        scripts = ["stages/halloween"];
     case "monster":
-        stage = "halloween";
+        scripts = ["stages/halloween"];
 
     // WEEK 3
     case "pico":
-        stage = "philly";
+        scripts = ["stages/philly"];
     case "philly":
-        stage = "philly";
+        scripts = ["stages/philly"];
     case "blammed":
-        stage = "philly";
-        modchart = "blammed";
+        scripts = ["stages/philly", "modcharts/blammed"];
 
     // WEEK 4
     case "satin-panties":
-        stage = "limo";
+        scripts = ["stages/limo"];
     case "high":
-        stage = "limo";
+        scripts = ["stages/limo"];
     case "milf":
-        stage = "limo";
-        modchart = "milf";
+        scripts = ["stages/limo", "modcharts/milf"];
 
     // WEEK 5
     case "cocoa":
-        stage = "mall";
+        scripts = ["stages/mall"];
     case "eggnog":
-        stage = "mall";
-        cutscene = "week5-eggnog";
+        scripts = ["stages/mall"];
+        end_cutscene = "cutscenes/week5-eggnog";
     case "winter-horrorland":
-        stage = "mall-evil";
-        cutscene = "week5-monster";
+        scripts = ["stages/mall-evil"];
+        cutscene = "cutscenes/week5-monster";
 
     // WEEK 6
     case "senpai":
-        stage = "school";
-        cutscene = "weeb-dialogue";
-        modchart = "week6";
+        scripts = ["stages/school"];
+        cutscene = "cutscenes/weeb-dialogue";
     case "roses":
-        stage = "school";
-        cutscene = "weeb-dialogue";
-        modchart = "week6";
+        scripts = ["stages/school"];
+        cutscene = "cutscenes/weeb-dialogue";
     case "thorns":
-        stage = "school-evil";
-        cutscene = "weeb-dialogue";
-        modchart = "week6";
+        scripts = ["stages/school-evil"];
+        cutscene = "cutscenes/weeb-dialogue";
 }

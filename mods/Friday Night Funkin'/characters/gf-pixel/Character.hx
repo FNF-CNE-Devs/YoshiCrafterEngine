@@ -16,6 +16,7 @@ function create() {
     
     character.antialiasing = false;
     character.playAnim('danceRight');
+    character.charGlobalOffset.x -= 150;
 }
 
 danced = false;

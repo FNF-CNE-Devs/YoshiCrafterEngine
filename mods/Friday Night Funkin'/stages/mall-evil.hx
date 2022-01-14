@@ -1,3 +1,5 @@
+gfVersion = "gf-christmas";
+
 function createAfterChars() {
     PlayState.boyfriend.x += 320;
     PlayState.dad.y -= 80;
@@ -5,7 +7,6 @@ function createAfterChars() {
 
 function create()
 {
-    gfVersion = "gf-christmas";
     var bg:FlxSprite = new FlxSprite(-400, -500).loadGraphic(Paths.image('christmas/evilBG'));
     bg.antialiasing = true;
     bg.scrollFactor.set(0.2, 0.2);

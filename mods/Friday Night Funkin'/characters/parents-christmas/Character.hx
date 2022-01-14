@@ -30,18 +30,18 @@ function create() {
 function getColors(altAnim) {
     if (altAnim) // Mom
         return [
-            new FlxColor(0xFFD8558E),
-            new FlxColor(0xFFD8558E),
-            new FlxColor(0xFFD8558E),
-            new FlxColor(0xFFD8558E),
-            new FlxColor(0xFFD8558E)
+            0xFFD8558E,
+            0xFFD8558E,
+            0xFFD8558E,
+            0xFFD8558E,
+            0xFFD8558E
         ];
     else // Dad
         return [
-            new FlxColor(0xFFAF66CE),
-            new FlxColor(0xFFAF66CE),
-            new FlxColor(0xFFAF66CE),
-            new FlxColor(0xFFAF66CE),
-            new FlxColor(0xFFAF66CE)
+            0xFFAF66CE,
+            0xFFAF66CE,
+            0xFFAF66CE,
+            0xFFAF66CE,
+            0xFFAF66CE
         ];
 }

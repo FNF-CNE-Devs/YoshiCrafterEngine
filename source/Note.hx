@@ -1,7 +1,8 @@
 package;
 
+import NoteShader.ColoredNoteShader;
 import flixel.math.FlxPoint;
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
@@ -42,6 +43,8 @@ class Note extends FlxSprite
 	public var noteScore:Float = 1;
 
 	public var noteType:Int = 0;
+
+	public var colored:Bool = false;
 	// #if secret
 	// 	var c:FlxColor = new FlxColor(0xFFFF0000);
 	// 	c.hue = (strumTime / 100) % 359;
@@ -225,6 +228,14 @@ class Note extends FlxSprite
 		// createNote();
 		script.setVariable("note", this);
 		script.executeFunc("create");
+		if (colored) {
+			var customColors = mustPress ? PlayState.current.boyfriend.getColors(altAnim) : PlayState.current.dad.getColors(altAnim);
+			var c = customColors[(noteData % (customColors.length - 1)) + 1];
+			this.shader = new ColoredNoteShader(c.red, c.green, c.blue);
+		} else {
+			this.shader = new ColoredNoteShader(255, 255, 255);
+			cast(this.shader, ColoredNoteShader).enabled.value = [false];
+		}
 
 		scale.x *= swagWidth / _swagWidth;
 		if (!isSustainNote) {

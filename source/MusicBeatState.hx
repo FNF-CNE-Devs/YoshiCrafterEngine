@@ -4,7 +4,7 @@ import lime.graphics.Image;
 import openfl.display.Application;
 import flixel.system.scaleModes.RatioScaleMode;
 import flixel.addons.transition.TransitionData;
-import LoadSettings.Settings;
+import EngineSettings.Settings;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
 import flixel.addons.transition.FlxTransitionableState;
@@ -59,6 +59,10 @@ class MusicBeatState extends FlxUIState
 			trace('reg ' + transIn.region);
 
 		super.create();
+		if (EngineSettings.Settings.engineSettings != null) {
+			FlxG.drawFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
+			FlxG.updateFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
+		}
 	}
 
 	override function update(elapsed:Float)
@@ -77,7 +81,11 @@ class MusicBeatState extends FlxUIState
 
 	private function updateBeat():Void
 	{
-		curBeat = Std.int(Math.max(curBeat, Math.floor(curStep / 4)));
+		if (Std.is(FlxG.state, ChartingState_New) || Std.is(FlxG.state, ChartingState)) {
+			curBeat = Std.int(Math.floor(curStep / 4));
+		} else {
+			curBeat = Std.int(Math.max(curBeat, Math.floor(curStep / 4)));
+		}
 	}
 
 	private function updateCurStep():Void

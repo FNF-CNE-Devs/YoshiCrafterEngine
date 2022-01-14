@@ -71,7 +71,7 @@ class CreditsState extends MusicBeatState {
 
                 if (json != null) {
                     y++;
-                    var modTitle:Alphabet = new Alphabet(0, 125 * y, (mod == "../assets/") ? "Yoshi Engine" : mod, true, false);
+                    var modTitle:Alphabet = new Alphabet(0, 125 * y, (mod == "../assets/") ? "Yoshi Engine" : ModSupport.getModName(mod), true, false);
                     modTitle.x = 640 - (modTitle.width / 2);
                     add(modTitle);
                     y++;

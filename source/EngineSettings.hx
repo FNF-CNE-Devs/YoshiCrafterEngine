@@ -1,173 +1,118 @@
-// import flixel.util.FlxSave;
-// import flixel.FlxG;
 
-// class Settings {
-// 	public static var config:FlxSave;
-// 	public static var save_bind_name:String;
-// 	public static var save_bind_path:String;
-
-//     public static function configure() {
-// 		config = new FlxSave();
-// 		config.bind("Settings", "YoshiCrafter29/Yoshi Engine");
-
-// 		if (config.blammedEffect == null)
-// 			config.blammedEffect = true;
-		
-// 		if (config.memoryOptimization == null)
-// 			config.memoryOptimization = true;
-
-// 		if (config.textQualityLevel == null)
-// 			config.textQualityLevel = 1;
-		
-// 		if (config.customGFSkin == null)
-// 			config.customGFSkin = "default";
-
-// 		if (config.customBFSkin == null)
-// 			config.customBFSkin = "default";
-
-// 		if (config.accuracyMode == null)
-// 			config.accuracyMode = 0;
-
-// 		if (config.downscroll == null)
-// 			config.downscroll = false;
-
-// 		if (config.rainbowNotes == null)
-// 			config.rainbowNotes = false;
-
-// 		if (config.emptySkinCache == null)
-// 			config.emptySkinCache = true;
-
-// 		if (config.customArrowSkin == null)
-// 			config.customArrowSkin = "default";
-
-// 		if (config.scrollSpeed == null)
-// 			config.scrollSpeed = 2.5;
-
-// 		if (config.customScrollSpeed == null)
-// 			config.customScrollSpeed = false;
-
-// 		if (config.animateInfoBar == null)
-// 			config.animateInfoBar = true;
-
-// 		if (config.transparentSubstains == null)
-// 			config.transparentSubstains = true;
-
-// 		if (config.showMisses == null)
-// 			config.showMisses = true;
-
-// 		if (config.showAccuracy == null)
-// 			config.showAccuracy = true;
-
-// 		if (config.showAverageDelay == null)
-// 			config.showAverageDelay = false;
-
-// 		if (config.showPressDelay == null)
-// 			config.showPressDelay = true;
-
-// 		if (config.showRating == null)
-// 			config.showRating = true;
-
-// 		if (config.greenScreenMode == null)
-// 			config.greenScreenMode = false;
-
-// 		if (config.smoothHealthbar == null)
-// 			config.smoothHealthbar = true;
-
-// 		if (config.customArrowColors == null)
-// 			config.customArrowColors = false;
-
-// 		if (config.customArrowColors_allChars == null)
-// 			config.customArrowColors_allChars = false;
-
-// 		if (config.arrowColor0 == null)
-// 			config.arrowColor0 = 0xFFC24B99;
-
-// 		if (config.arrowColor1 == null)
-// 			config.arrowColor1 = 0xFF00FFFF;
-
-// 		if (config.arrowColor2 == null)
-// 			config.arrowColor2 = 0xFF12FA05;
-
-// 		if (config.arrowColor3 == null)
-// 			config.arrowColor3 = 0xFFF9393F;
-//     }
-// }
-
-
-
-// import std.Reflect;
 import flixel.text.FlxText;
 import flixel.util.FlxSave;
 import flixel.input.keyboard.FlxKey;
 import flixel.FlxG;
 
-class Settings {
-	/**
-	* Save bind name.
-	* The file will be located in `%AppData%\save_bind_path\save_bind_name.sol`
-	*/
-	@:keep public static var save_bind_name:String = "Save";
-	/**
-	* Save bind location.
-	* The file will be located in `%AppData%\save_bind_path\save_bind_name.sol`
-	*/
-	@:keep public static var save_bind_path:String = "YoshiCrafter29/Yoshi Engine";
-
-	/**
-	 * `FlxSave` that contains all of the engine settings.
-	 */
-	@:keep public static var engineSettings:FlxSave;
-
+@:keep class SuperCoolSettings {
+	// Left arrow color
 	@:keep public static var arrowColor0:Int = 0xFFC24B99;
+
+	// Down arrow color
 	@:keep public static var arrowColor1:Int = 0xFF00FFFF;
+
+	// Up arrow color
 	@:keep public static var arrowColor2:Int = 0xFF12FA05;
+
+	// Right arrow color
 	@:keep public static var arrowColor3:Int = 0xFFF9393F;
+
+	// Whenever the engine will apply your arrow colors to every character, or only you.
 	@:keep public static var customArrowColors_allChars:Bool = false;
+
+	// If true, will enable arrow colors;
 	@:keep public static var customArrowColors:Bool = false;
+
+	// Unused for now
 	@:keep public static var smoothHealthbar:Bool = true;
+
+	// If true, will set camHUD's bgColor to #FF00FF00
 	@:keep public static var greenScreenMode:Bool = false;
+
+	// If true, will show rating in the bottom score bar.
 	@:keep public static var showRating:Bool = true;
+
+	// If true, will show player's press delay above the strums.
 	@:keep public static var showPressDelay:Bool = true;
+
+	// If true, will show player's average delay in the info bar. (Average: 15ms)
 	@:keep public static var showAverageDelay:Bool = true;
+
+	// If true, will show player's accuracy in the info bar. (Accuracy: 100%)
 	@:keep public static var showAccuracy:Bool = true;
+
+	// If true, will show player's misses in the info bar. (Misses: 2)
 	@:keep public static var showMisses:Bool = true;
+
+	// If true, will make substains arrows transparent. Currently doesn't work with custom arrow colors.
 	@:keep public static var transparentSubstains:Bool = true;
+
+	// If true, the info bar will do an animation whenever you hit a note.
 	@:keep public static var animateInfoBar:Bool = true;
+	
+	// If true, player's custom scroll speed will be used instead of the chart's scroll speed.
 	@:keep public static var customScrollSpeed:Bool = false;
+	
+	// Player's custom scroll speed
 	@:keep public static var scrollSpeed:Float = 2.5;
-	@:keep public static var freeplayCooldown:Float = 2;
+	
+	// If true, will show the timer at the top of the screen.
 	@:keep public static var showTimer:Bool = true;
+	
+	// Player's custom arrow skin. Set to "default" to disable it.
 	@:keep public static var customArrowSkin:String = "default";
+	
+	// If true, downscroll is enabled.
+	// Setting this in the middle of a song wont change the strums position.
+	// Use PlayState.setDownscroll(true, true) to enable downscroll and reposition the strums.
+	@:keep public static var downscroll:Bool = false;
+	
+	
+	// Current accuracy mode.
+	// 0 : Complex (C)
+	// 1 : Simple (S)
+	@:keep public static var accuracyMode:Int = 1;
+	
+	// Player's custom Boyfriend skin. Set to "default" to disable it.
+	@:keep public static var customBFSkin:String = "default";
+	
+	// Player's custom Girlfriend skin. Set to "default" to disable it.
+	@:keep public static var customGFSkin:String = "default";
+	
+	// If true, botplay is on. Can be enabled mid song without disabling saving score.
+	@:keep public static var botplay:Bool = false;
+	
+	// If true, video will have an antialiasing effect applied.
+	@:keep public static var videoAntialiasing:Bool = true;
+	
+	// If true, will show the ratings at the bottom left of the screen like this :
+	// Sick: 0
+	// Good: 0
+	// Bad: 0
+	// Shit: 0
+	@:keep public static var showRatingTotal:Bool = false;
+
+	// If true, will glow CPU strums like the player's strums when they press a note.
+	@:keep public static var glowCPUStrums:Bool = true;
+
+	
+	// USELESS IN SCRIPTS
+	@:keep public static var autoplayInFreeplay:Bool = false;
+	@:keep public static var freeplayCooldown:Float = 2;
+	@:keep public static var fpsCap:Int = 120;
 	@:keep public static var emptySkinCache:Bool = false;
 	@:keep public static var rainbowNotes:Bool = false; //Unused
-	@:keep public static var downscroll:Bool = false;
-	@:keep public static var accuracyMode:Int = 0;
-	@:keep public static var customBFSkin:String = "default";
-	@:keep public static var customGFSkin:String = "default";
-	@:keep public static var textQualityLevel:Int = 1;
 	@:keep public static var memoryOptimization:Bool = true;
-	@:keep public static var botplay:Bool = false;
 	@:keep public static var blammedEffect:Bool = true;
 	@:keep public static var yoshiEngineCharter:Bool = true;
 	@:keep public static var developerMode:Bool = false;
-	@:keep public static var videoAntialiasing:Bool = true;
 	@:keep public static var hideOriginalGame:Bool = false;
-	@:keep public static var showRatingTotal:Bool = false;
-
-	@:keep public static var control_LEFT:FlxKey = FlxKey.LEFT;
-	@:keep public static var control_LEFT_alt:FlxKey = FlxKey.A;
-	@:keep public static var control_UP:FlxKey = FlxKey.UP;
-	@:keep public static var control_UP_alt:FlxKey = FlxKey.W;
-	@:keep public static var control_DOWN:FlxKey = FlxKey.DOWN;
-	@:keep public static var control_DOWN_alt:FlxKey = FlxKey.S;
-	@:keep public static var control_RIGHT:FlxKey = FlxKey.RIGHT;
-	@:keep public static var control_RIGHT_alt:FlxKey = FlxKey.D;
 
 	// ========================================================
 	// PER KEY SET CONTROLS
 	// SYNTAX = control_(NUMBER OF KEYS)_(NOTE INDEX)
 	//
-	// IF YOU'RE ADDING NEW KEYS SHIT, ADD DEFAULT VALUES HERE, OR THE GAME ISNT GOING TO LIKE IT THAT MUCH
+	// IF YOU'RE ADDING NEW KEYS SHIT, ADD DEFAULT VALUES HERE, OR IN THE MODCHART, OR THE GAME ISNT GOING TO LIKE IT THAT MUCH
 	//
 	@:keep public static var control_1_0:FlxKey = FlxKey.UP;
 
@@ -223,6 +168,29 @@ class Settings {
 	@:keep public static var control_9_7:FlxKey = FlxKey.K;
 	@:keep public static var control_9_8:FlxKey = FlxKey.L;
 	// ========================================================
+}
+
+class Settings {
+	/**
+	* Save bind name.
+	* The file will be located in `%AppData%\save_bind_path\save_bind_name.sol`
+	*/
+	@:keep public static var save_bind_name:String = "Save";
+	/**
+	* Save bind location.
+	* The file will be located in `%AppData%\save_bind_path\save_bind_name.sol`
+	*/
+	@:keep public static var save_bind_path:String = "YoshiCrafter29/Yoshi Engine";
+
+
+
+
+	/**
+	 * `FlxSave` that contains all of the engine settings.
+	 */
+	@:keep public static var engineSettings:FlxSave;
+
+	
 
 	@:keep public static var noteScale:Float = 1;
 
@@ -249,19 +217,16 @@ class Settings {
 			engineSettings.bind("Settings", "YoshiCrafter29/Yoshi Engine");
 		#end
 
-		for(k in Type.getClassFields(Settings)) {
-			var bannedEntries:Array<String> = ["save_bind_name", "save_bind_path", "engineSettings", "loadDefault"];
-			if (!bannedEntries.contains(k)) {
-				var ogVal:Dynamic = std.Reflect.field(engineSettings.data, k);
-				if (ogVal == null) {
-					std.Reflect.setField(engineSettings.data, k, std.Reflect.field(Settings, k));
-					
-				}
-				// var thingy:Dynamic = std.Reflect.field(engineSettings, k);
-				// if (thingy == null) {
-				// 	std.Reflect.setField(Settings, k, thingy);
-				// }
+		for(k in Type.getClassFields(SuperCoolSettings)) {
+			var ogVal:Dynamic = std.Reflect.field(engineSettings.data, k);
+			if (ogVal == null) {
+				std.Reflect.setField(engineSettings.data, k, std.Reflect.field(SuperCoolSettings, k));
+				
 			}
+			// var thingy:Dynamic = std.Reflect.field(engineSettings, k);
+			// if (thingy == null) {
+			// 	std.Reflect.setField(Settings, k, thingy);
+			// }
 		}
 		engineSettings.flush();
     }

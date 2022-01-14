@@ -42,3 +42,15 @@ function dance() {
         character.playAnim('idle');
     }
 }
+
+function getColors(altAnim) {
+    return [
+        0xFF7BD6F6
+    ];
+}
+
+function healthIcon(icon) {
+    icon.antialiasing = false;
+    // [[Min health, Frame index (grid)]]
+    icon.frameIndexes = [[0, 0]];
+}

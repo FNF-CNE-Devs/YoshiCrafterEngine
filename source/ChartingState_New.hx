@@ -1,5 +1,6 @@
 package;
 
+import flixel.addons.ui.StrNameLabel;
 import haxe.io.Path;
 import haxe.iterators.StringIterator;
 import flixel.addons.ui.FlxButtonPlus;
@@ -124,6 +125,8 @@ class ChartingState_New extends MusicBeatState
 		bg.scrollFactor.set();
 		add(bg);
 
+		
+
 		curSection = lastSection;
 		if (FlxG.sound.music == null)
 			curSection = 0;
@@ -148,6 +151,9 @@ class ChartingState_New extends MusicBeatState
 				noteTypes : ["Friday Night Funkin':Default Note"]
 			};
 		}
+		if (_song.player1.split(":").length < 2) _song.player1 = CoolUtil.getCharacterFullString(_song.player1, PlayState.songMod);
+		if (_song.player2.split(":").length < 2) _song.player2 = CoolUtil.getCharacterFullString(_song.player2, PlayState.songMod);
+		for (k=>e in _song.noteTypes) if (e.split(":").length < 2) _song.noteTypes[k] = CoolUtil.getNoteTypeFullString(e, PlayState.songMod);
 		
 		Assets.loadLibrary("shared");
 		Assets.loadLibrary("characters");
@@ -188,7 +194,7 @@ class ChartingState_New extends MusicBeatState
 		// sections = _song.notes;
 
 
-		loadSong(_song.song);
+		loadSong(_song.song, PlayState.storyDifficulty.toLowerCase().replace(" ", "-"));
 		updateGrid();
 		Conductor.changeBPM(_song.bpm);
 		Conductor.mapBPMChanges(_song);
@@ -240,10 +246,28 @@ class ChartingState_New extends MusicBeatState
 		var UI_songTitle = new FlxUIInputText(10, 10, 70, _song.song, 8);
 		typingShit = UI_songTitle;
 
+		var difficulties:Array<StrNameLabel> = [];
+		var basePath = '${Paths.getModsFolder()}\\${PlayState.songMod}\\data\\${_song.song}\\';
+		for (f in FileSystem.readDirectory(basePath)) {
+			if (!FileSystem.isDirectory('$basePath\\$f')) {
+				if (Path.extension(f).toLowerCase() == "json") {
+					if (f.toLowerCase().startsWith(_song.song.toLowerCase())) {
+						var subShit = Path.withoutExtension(f).substr(_song.song.length);
+						if (subShit.trim() == "") {
+							difficulties.push(new StrNameLabel("", "Normal"));
+						} else {
+							difficulties.push(new StrNameLabel(subShit, CoolUtil.prettySong(subShit)));
+						}
+					}
+				}
+			}
+		}
+		var songDifficulty = new FlxUIDropDownMenu(UI_songTitle.x, UI_songTitle.y + UI_songTitle.height + 10, difficulties);
+
 		
 		var reloadSong:FlxButton = new FlxButton(290, 10, "Reload Audio", function()
 		{
-			loadSong(_song.song);
+			loadSong(_song.song, songDifficulty.selectedId);
 		});
 		reloadSong.x -= reloadSong.width;
 
@@ -340,6 +364,7 @@ class ChartingState_New extends MusicBeatState
 		check_voices.callback = function()
 		{
 			_song.needsVoices = check_voices.checked;
+			vocals.volume = _song.needsVoices ? 1 : 0;
 			trace('CHECKED!');
 		};
 
@@ -380,15 +405,19 @@ class ChartingState_New extends MusicBeatState
 
 		
 
+		var thingyCheck:FlxUICheckBox = null;
 		var saveButton:FlxButton = new FlxButton(10, stepperBPM.y + stepperBPM.height + 10, "Save", function()
 		{
-			saveLevel();
+			saveLevel(thingyCheck.checked);
 		});
-		var saveButton2:FlxButtonPlus = new FlxButtonPlus(saveButton.x, saveButton.y + saveButton.height + 10, function()
+		var saveButton2:FlxUIButton = new FlxUIButton(saveButton.x, saveButton.y + saveButton.height + 10, "Save with\npretty print", function()
 		{
-			saveLevel("\t");
-		}, "Save with\npretty print", 100, 50);
-		
+			saveLevel(thingyCheck.checked, "\t");
+		});
+		saveButton2.resize(80, 30);		
+		thingyCheck = new FlxUICheckBox(saveButton2.x + saveButton2.width + 10, saveButton2.y, null, null, "Save with mod references");
+		thingyCheck.checked = true;
+		var thingyCheckDef = new FlxUIText(thingyCheck.x, thingyCheck.y + thingyCheck.height + 10, 170, 'If unchecked, will save the chart without the ${PlayState.songMod}: or Friday Night Funkin\' in front of the character\'s names. This allows easy renaming of the mod folder without any problems. Same goes for the note types.');
 
 
 		var refresh:FlxButton = new FlxButton(saveButton.x + saveButton.width + 10, saveButton.y, "Refresh", function()
@@ -410,17 +439,43 @@ class ChartingState_New extends MusicBeatState
 		
 
 
-		var fixChartButton = new FlxButton(10, 654, "Fix Chart", function() {
-			for (s in _song.notes) {
-				for (n in s.sectionNotes) {
-					s.sectionNotes.remove(n);
-					_song.notes[Math.floor(Math.max(0, n[0] + Conductor.stepCrochet) / (Conductor.crochet * 4))].sectionNotes.push(n);
-				}
-			}
-		});
-		fixChartButton.y -= fixChartButton.height;
-		var fixChartLabel = new FlxUIText(10, fixChartButton.y - 10, 280, "Pressing this button will fix chart's note section problem, where notes are in the wrong section and off the grid. This operation may take a while depending on the size on the chart. Continue at your own risk.");
-		fixChartLabel.y -= fixChartLabel.height;
+		// BROKEN, NEED FIX
+		// var fixChartButton = new FlxButton(10, 654, "Fix Chart", function() {
+		// 	for (s in _song.notes) {
+		// 		for (n in s.sectionNotes) {
+		// 			s.sectionNotes.remove(n);
+		// 			var newSection = Math.floor(Math.max(0, n[0] / (Conductor.crochet * 4)));
+		// 			if (_song.notes[newSection] == null) _song.notes[newSection] = {
+		// 				typeOfSection: 0,
+		// 				mustHitSection: true,
+		// 				sectionNotes: [],
+		// 				bpm: _song.bpm,
+		// 				changeBPM: false,
+		// 				lengthInSteps: 16,
+		// 				altAnim: false
+		// 			}; 
+		// 			var mustHit = (n[1] % (_song.keyNumber * 2)) < _song.keyNumber;
+		// 			if (s.mustHitSection) mustHit != mustHit;
+		// 			// Gets note type
+		// 			var noteType = Math.floor(n[1] / (_song.keyNumber * 2));
+		// 			// Gets strum ID
+		// 			var no = n[1] % _song.keyNumber;
+		// 			var id = 0;
+
+		// 			if ((_song.notes[newSection].mustHitSection && mustHit) || (!_song.notes[newSection].mustHitSection && !mustHit)) {
+		// 				id = Std.int(no + (noteType * _song.keyNumber * 2));
+		// 			} else {
+		// 				id = Std.int((no + _song.keyNumber) % (_song.keyNumber * 2) + (noteType * _song.keyNumber * 2));
+		// 			}
+		// 			n[1] = id;
+					
+		// 			_song.notes[newSection].sectionNotes.push(n);
+		// 		}
+		// 	}
+		// });
+		// fixChartButton.y -= fixChartButton.height;
+		// var fixChartLabel = new FlxUIText(10, fixChartButton.y - 10, 280, "Pressing this button will fix chart's note section problem, where notes are in the wrong section and off the grid. This operation may take a while depending on the size on the chart. Continue at your own risk.");
+		// fixChartLabel.y -= fixChartLabel.height;
 
 
 
@@ -430,9 +485,12 @@ class ChartingState_New extends MusicBeatState
 		tab_group_song.add(check_voices);
 		tab_group_song.add(check_mute_inst);
 		tab_group_song.add(saveButton);
+		tab_group_song.add(saveButton2);
 		tab_group_song.add(refresh);
 		tab_group_song.add(reloadSong);
 		tab_group_song.add(reloadSongJson);
+		tab_group_song.add(thingyCheck);
+		tab_group_song.add(thingyCheckDef);
 		tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperBPMLabel);
@@ -449,8 +507,8 @@ class ChartingState_New extends MusicBeatState
 		tab_group_song.add(player1CharDropDown);
 		tab_group_song.add(player1ModDropDown);
 
-		tab_group_song.add(fixChartLabel);
-		tab_group_song.add(fixChartButton);
+		// tab_group_song.add(fixChartLabel);
+		// tab_group_song.add(fixChartButton);
 
 		UI_box.addGroup(tab_group_song);
 		UI_box.scrollFactor.set();
@@ -515,7 +573,8 @@ class ChartingState_New extends MusicBeatState
 				for (i in 0..._song.notes[curSection].sectionNotes.length)
 				{
 					var note = _song.notes[curSection].sectionNotes[i];
-					note[1] = (note[1] + _song.keyNumber) % (_song.keyNumber * 2);
+					var noteOffset = Math.floor(note[1] / (_song.keyNumber * 2));
+					note[1] = ((note[1] + _song.keyNumber) % (_song.keyNumber * 2)) + (noteOffset * _song.keyNumber * 2);
 					_song.notes[curSection].sectionNotes[i] = note;
 					updateGrid();
 				}
@@ -630,7 +689,7 @@ class ChartingState_New extends MusicBeatState
 		UI_box.addGroup(tab_group_note);
 	}
 
-	function loadSong(daSong:String):Void
+	function loadSong(daSong:String, difficulty:String):Void
 	{
 		if (FlxG.sound.music != null)
 		{
@@ -638,11 +697,11 @@ class ChartingState_New extends MusicBeatState
 			// vocals.stop();
 		}
 
-		FlxG.sound.playMusic(Paths.modInst(daSong, PlayState.songMod), 0.6);
+		FlxG.sound.playMusic(Paths.modInst(daSong, PlayState.songMod, difficulty), 0.6);
 		if (curSection * 4 * Conductor.crochet > FlxG.sound.music.length) curSection = 0;
 
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
-		vocals = new FlxSound().loadEmbedded(Paths.modVoices(daSong, PlayState.songMod));
+		vocals = new FlxSound().loadEmbedded(Paths.modVoices(daSong, PlayState.songMod, difficulty));
 		FlxG.sound.list.add(vocals);
 
 		FlxG.sound.music.pause();
@@ -766,6 +825,12 @@ class ChartingState_New extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.sound.music.playing) {
+			var sec = Math.floor(Conductor.songPosition / (Conductor.crochet * 4));
+			if (sec != curSection) {
+				changeSection(sec, false);
+			}
+		}
 		var r = noteTypeRadioGroup.getRadios();
 		for(i in 0...r.length) {
 			if (i > 0) {
@@ -900,6 +965,7 @@ class ChartingState_New extends MusicBeatState
 				}
 				else
 				{
+					vocals.time = FlxG.sound.music.time;
 					vocals.play();
 					FlxG.sound.music.play();
 				}
@@ -1396,11 +1462,29 @@ class ChartingState_New extends MusicBeatState
 		FlxG.save.flush();
 	}
 
-	private function saveLevel(?space:String)
+	private function saveLevel(references:Bool = true, ?space:String)
 	{
 		var json = {
 			"song": _song
 		};
+		var oldArray = _song.noteTypes;
+		if (!references) {
+			var player1split = json.song.player1.split(":");
+			if (player1split[0] == PlayState.songMod || player1split[0] == "Friday Night Funkin'")
+				json.song.player1 = player1split[1];
+
+			var player2split = json.song.player2.split(":");
+			if (player2split[0] == PlayState.songMod || player2split[0] == "Friday Night Funkin'")
+				json.song.player2 = player2split[1];
+
+			oldArray = [];
+			for (k=>v in json.song.noteTypes) {
+				oldArray[k] = v;
+				var typeSplit = v.split(":");
+				if ((typeSplit[0] == PlayState.songMod || typeSplit[0] == "Friday Night Funkin'") && typeSplit.length > 1)
+					json.song.noteTypes[k] = typeSplit[1];
+			}
+		}
 
 		var data:String = Json.stringify(json, space);
 
@@ -1412,6 +1496,8 @@ class ChartingState_New extends MusicBeatState
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 			_file.save(data.trim(), _song.song.toLowerCase() + ".json");
 		}
+
+		_song.noteTypes = oldArray;
 	}
 
 	function onSaveComplete(_):Void
