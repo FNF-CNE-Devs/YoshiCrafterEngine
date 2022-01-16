@@ -715,7 +715,7 @@ class OptionsMenu extends MusicBeatState
 			
 		#end
 
-		#if cpp
+		#if desktop
 		customisation.options.push({
 			text : "Open skin folder",
 			description : "Select this to open the skins folder.",

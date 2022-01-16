@@ -412,6 +412,7 @@ class PlayState extends MusicBeatState
 		}
 		trace(ex);
 	}
+	var p2isGF:Bool = false;
 
 	var actualModConfig:ModConfig;
 	override public function create()
@@ -454,7 +455,7 @@ class PlayState extends MusicBeatState
 		var modFolder = Paths.getModsFolder();
 		trace('$modFolder/$songMod/icon.ico');
 		/*
-		#if cpp
+		#if desktop
 		if (FileSystem.exists('$modFolder/$songMod/icon.ico')) {
 			// Application
 			
@@ -521,19 +522,23 @@ class PlayState extends MusicBeatState
 		var p1 = CoolUtil.getCharacterFull(SONG.player1, songMod);
 		if (ModSupport.modConfig[p1[0]] != null && engineSettings.customBFSkin != "default") {
 			if (ModSupport.modConfig[p1[0]].skinnableBFs != null)
-				if (ModSupport.modConfig[p1[0]].skinnableBFs.contains(p1[1]))
-					// YOOO CUSTOM SKIN POGGERS
-					p1 = ['~', 'bf/${engineSettings.customBFSkin}'];
+				for (skin in ModSupport.modConfig[p1[0]].skinnableBFs)
+					if (skin.toLowerCase() == p1[1].toLowerCase())
+						// YOOO CUSTOM SKIN POGGERS
+						p1 = ['~', 'bf/${engineSettings.customBFSkin}'];
 			
 		}
 		SONG.player1 = p1.join(":");
 
 		var p2 = CoolUtil.getCharacterFull(SONG.player2, songMod);
-		if (ModSupport.modConfig[p2[0]] != null && engineSettings.customBFSkin != "default") {
+		if (ModSupport.modConfig[p2[0]] != null && engineSettings.customGFSkin != "default") {
 			if (ModSupport.modConfig[p2[0]].skinnableBFs != null)
-				if (ModSupport.modConfig[p2[0]].skinnableBFs.contains(p2[1]))
-					// YOOO CUSTOM SKIN POGGERS
-					p2 = ['~', 'bf/${engineSettings.customBFSkin}'];
+				for (skin in ModSupport.modConfig[p2[0]].skinnableGFs)
+					if (skin.toLowerCase() == p2[1].toLowerCase()) {
+						// YOOO CUSTOM SKIN POGGERS
+						p2 = ['~', 'gf/${engineSettings.customGFSkin}'];
+						p2isGF = true;
+					}
 			
 			
 		}
@@ -760,9 +765,10 @@ class PlayState extends MusicBeatState
 		var girlfried = CoolUtil.getCharacterFull(gfVersion, songMod);
 		if (ModSupport.modConfig[girlfried[0]] != null && engineSettings.customGFSkin != "default" && engineSettings.customGFSkin != null) {
 			if (ModSupport.modConfig[girlfried[0]].skinnableGFs != null)
-				if (ModSupport.modConfig[girlfried[0]].skinnableGFs.contains(girlfried[1]))
-					// YOOO CUSTOM SKIN POGGERS
-					girlfried = ['~', 'gf/${engineSettings.customGFSkin}'];
+				for (skin in ModSupport.modConfig[girlfried[0]].skinnableGFs)
+					if (skin.toLowerCase() == girlfried[1].toLowerCase())
+						// YOOO CUSTOM SKIN POGGERS
+						girlfried = ['~', 'gf/${engineSettings.customGFSkin}'];
 				
 		}
 		SONG.player1 = p1.join(":");
@@ -770,6 +776,10 @@ class PlayState extends MusicBeatState
 		gf.scrollFactor.set(0.95, 0.95);
 
 		dad = new Character(100, 100, SONG.player2);
+		if (p2isGF) {
+			dad.setPosition(gf.x, gf.y);
+			gf.visible = false;
+		}
 
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 

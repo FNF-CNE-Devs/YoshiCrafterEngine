@@ -1,5 +1,6 @@
 package;
 
+import EngineSettings.Settings;
 import openfl.media.Sound;
 import flixel.system.FlxSound;
 import flixel.FlxG;
@@ -30,7 +31,16 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		Conductor.songPosition = 0;
 
-		bf = new Boyfriend(x, y, CoolUtil.getCharacterFullString(char, PlayState.songMod));
+		var p1 = CoolUtil.getCharacterFull(char, PlayState.songMod);
+		if (ModSupport.modConfig[p1[0]] != null && Settings.engineSettings.data.customBFSkin != "default") {
+			if (ModSupport.modConfig[p1[0]].skinnableBFs != null)
+				if (ModSupport.modConfig[p1[0]].skinnableBFs.contains(p1[1]))
+					// YOOO CUSTOM SKIN POGGERS
+					p1 = ['~', 'bf/${Settings.engineSettings.data.customBFSkin}'];
+			
+		}
+
+		bf = new Boyfriend(x, y, p1.join(":"));
 		add(bf);
 
 		camFollow = new FlxObject(bf.getGraphicMidpoint().x, bf.getGraphicMidpoint().y, 1, 1);

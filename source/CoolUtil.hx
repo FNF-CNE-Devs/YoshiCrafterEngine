@@ -1,5 +1,7 @@
 package;
 
+import lime.ui.FileDialogType;
+import lime.ui.FileDialog;
 import flixel.FlxState;
 import flixel.FlxSprite;
 import sys.FileSystem;
@@ -23,6 +25,20 @@ class CoolUtil
 		f.add(bg);
 	}
 
+	public static function addWhiteBG(f:FlxState) {
+		var bg = new FlxSprite(0,0).loadGraphic(Paths.image("menuDesat", "preload"));
+		bg.setGraphicSize(Std.int(bg.width * 1.1));
+		bg.screenCenter();
+		bg.scrollFactor.set();
+		f.add(bg);
+	}
+
+	public static function openDialogue(t:FileDialogType, name:String, callback:String->Void) {
+		var fDial = new FileDialog();
+		fDial.onSelect.add(callback);
+		
+		fDial.browse(t, null, null, name);
+	}
 	/**
 	* Copies folder. Used to copy default skins to prevent crashes
 	* 

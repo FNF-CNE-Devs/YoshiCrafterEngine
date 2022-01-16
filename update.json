@@ -1,7 +1,9 @@
 {
     "updateLog" : [
         "/!\\ Fixed Story Mode Menu crash",
-        "- Added middlescroll support"
+        "WHOLE NEW DEV TOOLBOX : Create your mods easily !",
+        "- Added middlescroll support",
+        "- Fixed Tutorial"
     ],
     "version" : [1,2,1],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"

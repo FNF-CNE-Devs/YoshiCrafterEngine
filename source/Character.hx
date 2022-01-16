@@ -1,6 +1,8 @@
 package;
 
 // import sys.io.File;
+import haxe.macro.ExprTools.ExprArrayTools;
+import haxe.Json;
 import sys.FileSystem;
 import sys.io.File;
 import EngineSettings.Settings;
@@ -56,6 +58,11 @@ class Character extends FlxSprite
 	 * If the character is a variant of Boyfriend, or Boyfriend itself.
 	 */
 	public var isaBF:Bool = false;
+
+	/**
+	 * DO NOT USE, always results to null unless loadJSON is called.
+	 */
+	public var json:dev_toolbox.CharacterJSON = null;
 
 	public var healthIcon(default, set):HealthIcon;
 	public function set_healthIcon(h:HealthIcon):HealthIcon {
@@ -192,6 +199,89 @@ class Character extends FlxSprite
 	 * @param character			The character (`bf`, `gf`...)
 	 * @param altAnim			Y position of the character
 	 */
+
+	public function loadJSON(overrideFuncs:Bool) {
+		
+		var charFull = CoolUtil.getCharacterFull(curCharacter, PlayState.songMod);
+		var path = '${Paths.getModsFolder()}\\${charFull[0]}\\characters\\${charFull[1]}\\Character.json';
+		if (!FileSystem.exists(path)) return;
+		try {
+			json = Json.parse(Paths.getTextOutsideAssets(path));
+		} catch(e) {
+			return;
+		}
+		if (json == null) return;
+		load(overrideFuncs);
+	}
+
+	public function load(overrideFuncs:Bool) {
+		if (overrideFuncs) {
+			var anims = [];
+			@:privateAccess
+			var it = animation._animations.keys();
+			while (it.hasNext()) {
+				anims.push(it.next());
+			}
+			for(a in anims) animation.remove(a);
+		}
+		this.antialiasing = json.antialiasing;
+		if (json.camOffset != null) {
+			this.camOffset.x = json.camOffset.x;
+			this.camOffset.y = json.camOffset.y;
+		}
+		if (json.globalOffset != null) {
+			this.charGlobalOffset.x = json.globalOffset.x;
+			this.charGlobalOffset.y = json.globalOffset.y;
+		}
+		if (json.danceSteps != null) json.danceSteps = ["idle"];
+		if (overrideFuncs) {
+			var i = 0;
+			characterScript.setVariable("dance", function() {
+				playAnim(json.danceSteps[i]);
+				i++;
+				i = i % json.danceSteps.length;
+			});
+		}
+		if (healthIcon != null) healthIcon.frameIndexes = json.healthIconSteps != null ? json.healthIconSteps : [[20, 0], [0, 1]];
+		for (anim in json.anims) {
+			if (anim.indices == null || anim.indices.length == 0) {
+				animation.addByPrefix(anim.name, anim.anim, anim.framerate, anim.loop);
+			} else {
+				animation.addByIndices(anim.name, anim.anim, anim.indices, "", anim.framerate, anim.loop);
+			}
+			addOffset(anim.name, anim.x, anim.y);
+		}
+		playAnim(json.danceSteps[0]);
+		if (json.scale != 1) setGraphicSize(Std.int(width * json.scale));
+		if (json.flipX) flipX = !flipX;
+		if (overrideFuncs && PlayState.current != null) {
+			var healthColor = json.healthbarColor == null ? 0xFFFF0000 : FlxColor.fromString(json.healthbarColor);
+			if (healthColor == null) healthColor = 0xFFFF0000;
+			var returnArray = [healthColor];
+			var array = [
+				PlayState.current.engineSettings.arrowColor0,
+				PlayState.current.engineSettings.arrowColor1,
+				PlayState.current.engineSettings.arrowColor2,
+				PlayState.current.engineSettings.arrowColor3
+			];
+			if (json.arrowColors != null) {
+				if (json.arrowColors.length > 0) {
+					array = [];
+					for (c in json.arrowColors) {
+						var nC = FlxColor.fromString(c);
+						array.push(nC != null ? nC : 0xFFFFFFFF);
+					}
+				}
+			}
+			for (e in array) {
+				returnArray.push(e);
+			}
+			
+			characterScript.setVariable("getColors", function(altAnim) {
+				return returnArray;
+			});
+		}
+	}
 	public function getColors(altAnim:Bool = false):Array<FlxColor>
 	{
 		var defNoteColors = [
@@ -293,7 +383,8 @@ class Character extends FlxSprite
 	public function dance(left:Bool = false, down:Bool = false, up:Bool = false, right:Bool = false)
 	{
 		if (lastNoteHitTime + 250 > Conductor.songPosition) return; // 250 ms until dad dances
-		
+		var dontDance = ["firstDeath", "deathLoop", "deathConfirm"];
+		if (animation.curAnim != null) if (dontDance.contains(animation.curAnim.name) || (longAnims.contains(animation.curAnim.name) && !animation.curAnim.finished)) return;
 		if (!debugMode)
 		{
 			characterScript.executeFunc("dance");

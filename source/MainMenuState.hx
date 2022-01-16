@@ -45,9 +45,9 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
-		// if (Settings.engineSettings.data.developerMode) {
-		// 	optionShit.insert(4, 'toolbox');
-		// }
+		if (Settings.engineSettings.data.developerMode) {
+			optionShit.insert(4, 'toolbox');
+		}
 		if (Settings.engineSettings.data.memoryOptimization) {
 			// Paths.clearCache();
 			openfl.utils.Assets.cache.clear();
