@@ -267,9 +267,9 @@ class Character extends FlxSprite
 			if (json.arrowColors != null) {
 				if (json.arrowColors.length > 0) {
 					array = [];
-					for (c in json.arrowColors) {
+					for (k=>c in json.arrowColors) {
 						var nC = FlxColor.fromString(c);
-						array.push(nC != null ? nC : 0xFFFFFFFF);
+						if (nC != null) array[k] = nC;
 					}
 				}
 			}

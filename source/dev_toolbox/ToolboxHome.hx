@@ -197,10 +197,10 @@ class ToolboxHome extends MusicBeatState {
                 openSubState(ToolboxMessage.showMessage("Error", "No character was selected."));
                 return;
             }
-            if (!FileSystem.exists('${Paths.getModsFolder()}\\$selectedMod\\characters\\${radios.selectedId}\\Character.json')) {
-                openSubState(ToolboxMessage.showMessage("Error", "Character editor currently only works with characters with JSON files."));
-                return;
-            }
+            // if (!FileSystem.exists('${Paths.getModsFolder()}\\$selectedMod\\characters\\${radios.selectedId}\\Character.json')) {
+            //     openSubState(ToolboxMessage.showMessage("Error", "Character editor currently only works with characters with JSON files."));
+            //     return;
+            // }
             FlxG.switchState(new dev_toolbox.character_editor.CharacterEditor(radios.selectedId));
         });
         tab.add(createButton);

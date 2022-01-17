@@ -34,6 +34,7 @@ class CharacterEditor extends MusicBeatState {
     var flipCheckbox:FlxUICheckBox = null;
     var globalOffsetX:FlxUINumericStepper = null;
     var globalOffsetY:FlxUINumericStepper = null;
+    var healthBar:FlxUISprite;
     var c:String = "";
 
     var isPlayer:Bool = false;
@@ -93,7 +94,7 @@ class CharacterEditor extends MusicBeatState {
             danceSteps: ['idle'],
             healthIconSteps: [[20, 0], [0, 1]],
             flipX: isPlayer ? !character.flipX : character.flipX,
-            healthbarColor: cast(character.getColors()[0], FlxColor).toWebString(),
+            healthbarColor: healthBar.color.toString(),
             arrowColors: [for (k=>c in character.getColors()) if (k > 0) cast(k, FlxColor).toWebString()]
         }
         File.saveContent('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\characters\\$c\\Character.json', Json.stringify(json, "\t"));
@@ -254,7 +255,7 @@ class CharacterEditor extends MusicBeatState {
         var healthSettings = new FlxUI(null, characterSettingsTabs);
         healthSettings.name = "health";
 
-        var healthBar:FlxUISprite = new FlxUISprite(10, 35);
+        healthBar = new FlxUISprite(10, 35);
         healthBar.makeGraphic(255, 10, 0xFFFFFFFF);
         healthBar.pixels.lock();
         for (x in 0...healthBar.pixels.width) {
