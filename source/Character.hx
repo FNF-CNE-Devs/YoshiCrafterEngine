@@ -254,29 +254,39 @@ class Character extends FlxSprite
 		playAnim(json.danceSteps[0]);
 		if (json.scale != 1) setGraphicSize(Std.int(width * json.scale));
 		if (json.flipX) flipX = !flipX;
-		if (overrideFuncs && PlayState.current != null) {
-			var healthColor = json.healthbarColor == null ? 0xFFFF0000 : FlxColor.fromString(json.healthbarColor);
-			if (healthColor == null) healthColor = 0xFFFF0000;
-			var returnArray = [healthColor];
+		
+		var healthColor = FlxColor.fromString(json.healthbarColor);
+		if (healthColor == null) healthColor = 0xFFFF0000;
+		var returnArray = [healthColor];
+		var array = [];
+		if (PlayState.current != null) {
 			var array = [
 				PlayState.current.engineSettings.arrowColor0,
 				PlayState.current.engineSettings.arrowColor1,
 				PlayState.current.engineSettings.arrowColor2,
 				PlayState.current.engineSettings.arrowColor3
 			];
-			if (json.arrowColors != null) {
-				if (json.arrowColors.length > 0) {
-					array = [];
-					for (k=>c in json.arrowColors) {
-						var nC = FlxColor.fromString(c);
-						if (nC != null) array[k] = nC;
-					}
+		} else {
+			var array = [
+				Settings.engineSettings.data.arrowColor0,
+				Settings.engineSettings.data.arrowColor1,
+				Settings.engineSettings.data.arrowColor2,
+				Settings.engineSettings.data.arrowColor3
+			];
+		}
+		if (json.arrowColors != null) {
+			if (json.arrowColors.length > 0) {
+				array = [];
+				for (k=>c in json.arrowColors) {
+					var nC = FlxColor.fromString(c);
+					if (nC != null) array[k] = nC;
 				}
 			}
-			for (e in array) {
-				returnArray.push(e);
-			}
-			
+		}
+		for (e in array) {
+			returnArray.push(e);
+		}
+		if (overrideFuncs) {
 			characterScript.setVariable("getColors", function(altAnim) {
 				return returnArray;
 			});

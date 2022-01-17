@@ -1,5 +1,8 @@
 package dev_toolbox.character_editor;
 
+import flixel.ui.FlxSpriteButton;
+import flixel.ui.FlxButton;
+import NoteShader.ColoredNoteShader;
 import haxe.Json;
 import sys.io.File;
 import sys.FileSystem;
@@ -32,10 +35,15 @@ class CharacterEditor extends MusicBeatState {
     var indices:FlxUIInputText;
     var framerate:FlxUINumericStepper;
     var flipCheckbox:FlxUICheckBox = null;
+    var canBeBFSkinned:FlxUICheckBox = null;
+    var isBFskin:FlxUICheckBox = null;
+    var canBeGFSkinned:FlxUICheckBox = null;
+    var isGFskin:FlxUICheckBox = null;
     var globalOffsetX:FlxUINumericStepper = null;
     var globalOffsetY:FlxUINumericStepper = null;
     var healthBar:FlxUISprite;
     var c:String = "";
+    var arrows:Array<FlxClickableSprite> = [];
 
     var isPlayer:Bool = false;
 
@@ -94,10 +102,59 @@ class CharacterEditor extends MusicBeatState {
             danceSteps: ['idle'],
             healthIconSteps: [[20, 0], [0, 1]],
             flipX: isPlayer ? !character.flipX : character.flipX,
-            healthbarColor: healthBar.color.toString(),
-            arrowColors: [for (k=>c in character.getColors()) if (k > 0) cast(k, FlxColor).toWebString()]
+            healthbarColor: healthBar.color.toWebString(),
+            arrowColors: [
+                for (c in arrows) {
+                    var shader = cast(c.shader, ColoredNoteShader);
+                    FlxColor.fromRGBFloat(shader.r.value[0], shader.g.value[0], shader.b.value[0]).toWebString();
+                }]
         }
         File.saveContent('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\characters\\$c\\Character.json', Json.stringify(json, "\t"));
+        // if (isBFskin.checked) {
+        //     if (ModSupport.modConfig[ToolboxHome.selectedMod].BFskins == null) ModSupport.modConfig[ToolboxHome.selectedMod].BFskins = [];
+        //     var exists = false;
+        //     for (e in ModSupport.modConfig[ToolboxHome.selectedMod].BFskins) {
+        //         if (e.char == c) {
+        //             exists = true;
+        //             break;
+        //         }
+        //     }
+        //     if (!exists) {
+        //         ModSupport.modConfig[ToolboxHome.selectedMod].BFskins.push({
+                    
+        //         });
+        //     }
+        //     if (!ModSupport.modConfig[ToolboxHome.selectedMod].BFskins.contains(c)) {
+        //         ModSupport.saveModData(ToolboxHome.selectedMod);
+        //     }
+        // } else {
+        //     if (ModSupport.modConfig[ToolboxHome.selectedMod].BFskins.contains(c)) {
+        //         ModSupport.modConfig[ToolboxHome.selectedMod].BFskins.remove(c);
+        //         ModSupport.saveModData(ToolboxHome.selectedMod);
+        //     }
+        // }
+        if (canBeBFSkinned.checked) {
+            if (!ModSupport.modConfig[ToolboxHome.selectedMod].skinnableBFs.contains(c)) {
+                ModSupport.modConfig[ToolboxHome.selectedMod].skinnableBFs.push(c);
+                ModSupport.saveModData(ToolboxHome.selectedMod);
+            }
+        } else {
+            if (ModSupport.modConfig[ToolboxHome.selectedMod].skinnableBFs.contains(c)) {
+                ModSupport.modConfig[ToolboxHome.selectedMod].skinnableBFs.remove(c);
+                ModSupport.saveModData(ToolboxHome.selectedMod);
+            }
+        }
+        if (canBeGFSkinned.checked) {
+            if (!ModSupport.modConfig[ToolboxHome.selectedMod].skinnableGFs.contains(c)) {
+                ModSupport.modConfig[ToolboxHome.selectedMod].skinnableGFs.push(c);
+                ModSupport.saveModData(ToolboxHome.selectedMod);
+            }
+        } else {
+            if (ModSupport.modConfig[ToolboxHome.selectedMod].skinnableGFs.contains(c)) {
+                ModSupport.modConfig[ToolboxHome.selectedMod].skinnableGFs.remove(c);
+                ModSupport.saveModData(ToolboxHome.selectedMod);
+            }
+        }
     }
     public function new(char:String) {
         super();
@@ -223,6 +280,10 @@ class CharacterEditor extends MusicBeatState {
             {
                 name: "health",
                 label: "Health Color"
+            },
+            {
+                name: "arrow",
+                label: "Arrow Colors"
             }
         ], true);
         var charSettings = new FlxUI(null, characterSettingsTabs);
@@ -239,10 +300,20 @@ class CharacterEditor extends MusicBeatState {
         characterSettingsTabs.y = animSettingsTabs.y + animSettingsTabs.height + 10;
         globalOffsetX = new FlxUINumericStepper(10, 36, 10, 0, -999, 999, 0);
         globalOffsetY = new FlxUINumericStepper(globalOffsetX.x + globalOffsetX.width + 5, 36, 10, 0, -999, 999, 0);
+        
+        isBFskin = new FlxUICheckBox(10, globalOffsetX.y + globalOffsetX.height + 10, null, null, "Is a BF skin", 250);
+        canBeBFSkinned = new FlxUICheckBox(10, isBFskin.y + isBFskin.height + 10, null, null, "Can be skinned (BF)", 250);
+        isGFskin = new FlxUICheckBox(canBeBFSkinned.x + 145, globalOffsetX.y + globalOffsetX.height + 10, null, null, "Is a GF skin", 250);
+        canBeGFSkinned = new FlxUICheckBox(canBeBFSkinned.x + 145, isGFskin.y + isGFskin.height + 10, null, null, "Can be skinned (GF)", 250);
+
+        
         charSettings.add(flipCheckbox);
         charSettings.add(globalOffsetX);
         charSettings.add(globalOffsetY);
-
+        charSettings.add(canBeGFSkinned);
+        charSettings.add(isGFskin);
+        charSettings.add(canBeBFSkinned);
+        charSettings.add(isBFskin);
         
         globalOffsetX.value = character.charGlobalOffset.x;
         globalOffsetY.value = character.charGlobalOffset.y;
@@ -286,9 +357,98 @@ class CharacterEditor extends MusicBeatState {
         healthSettings.add(healthBar);
         healthSettings.add(icon);
 
+        var changeHealthColorButton = new FlxUIButton(10, healthBar.y + healthBar.height + 20, "Edit", function() {
+            openSubState(new ColorPicker(healthBar.color, function(newColor) {
+                healthBar.color = newColor;
+            }));
+        });
+        changeHealthColorButton.resize(30, 20);
+        healthSettings.add(changeHealthColorButton);
+
+        var autoGenerateHealthColor = new FlxUIButton(changeHealthColorButton.x + changeHealthColorButton.width + 10, healthBar.y + healthBar.height + 20, "Autogenerate #1", function() {
+            var r:Float = 0;
+            var g:Float = 0;
+            var b:Float = 0;
+            var t:Float = 0;
+            for (x in 0...icon.pixels.width) {
+                for (y in 0...icon.pixels.height) {
+                    var c:FlxColor = icon.pixels.getPixel32(x, y);
+                    r += c.redFloat * c.lightness * c.alpha;
+                    g += c.greenFloat * c.lightness * c.alpha;
+                    b += c.blueFloat * c.lightness * c.alpha;
+                    t += c.lightness * c.alpha;
+                }
+            }
+            if (t == 0) {
+                healthBar.color = 0xFF000000;
+            } else {
+                healthBar.color = FlxColor.fromRGBFloat(r / t, g / t, b / t);
+            }
+        });
+        autoGenerateHealthColor.resize(115, 20);
+
+        var autoGenerateHealthColor2 = new FlxUIButton(autoGenerateHealthColor.x + autoGenerateHealthColor.width + 10, healthBar.y + healthBar.height + 20, "Autogenerate #2", function() {
+            var r:Float = 0;
+            var g:Float = 0;
+            var b:Float = 0;
+            var t:Float = 0;
+            for (x in 0...icon.pixels.width) {
+                for (y in 0...icon.pixels.height) {
+                    var c:FlxColor = icon.pixels.getPixel32(x, y);
+                    r += c.redFloat * c.alpha;
+                    g += c.greenFloat * c.alpha;
+                    b += c.blueFloat * c.alpha;
+                    t += c.alpha;
+                }
+            }
+            if (t == 0) {
+                healthBar.color = 0xFF000000;
+            } else {
+                healthBar.color = FlxColor.fromRGBFloat(r / t, g / t, b / t);
+            }
+        });
+        autoGenerateHealthColor2.resize(115, 20);
+        healthSettings.add(autoGenerateHealthColor);
+        healthSettings.add(autoGenerateHealthColor2);
+
         characterSettingsTabs.addGroup(healthSettings);
         add(saveButton);
         add(closeButton);
+
+        
+        
+        var arrowSettings = new FlxUI(null, characterSettingsTabs);
+        arrowSettings.name = "arrow";
+        if (character.animation.curAnim != null) {
+            currentAnim = character.animation.curAnim.name;
+        }
+        for (i in 0...4) {
+            var note:FlxClickableSprite = null;
+            note = new FlxClickableSprite(150 + (50 * (i - 2)), 10);
+            note.onClick = function() {
+                var shader = cast(note.shader, ColoredNoteShader);
+                openSubState(new ColorPicker(FlxColor.fromRGBFloat(shader.r.value[0], shader.g.value[0], shader.b.value[0]), function(col) {
+                    shader.r.value = [col.redFloat];
+                    shader.g.value = [col.greenFloat];
+                    shader.b.value = [col.blueFloat];
+                }));
+            };
+            note.frames = Paths.getSparrowAtlas("NOTE_assets_colored", "shared");
+            var anims = ["purple", "blue", "green", "red"];
+            note.animation.addByPrefix("arrow", anims[i], 0, true);
+            note.animation.play("arrow");
+            note.setGraphicSize(50);
+            note.updateHitbox();
+            note.antialiasing = true;
+            var c:FlxColor = charColors[i + 1];
+            if (c == 0) {
+                c = 0xFFFFFFFF;
+            }
+            note.shader = new ColoredNoteShader(c.red, c.green, c.blue);
+            arrowSettings.add(note);
+            arrows.push(note);
+        }
+        characterSettingsTabs.addGroup(arrowSettings);
     }
 
     public function addAnim(name:String, anim:String):Bool {
