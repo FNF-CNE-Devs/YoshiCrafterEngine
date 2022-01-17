@@ -1,13 +1,15 @@
+import openfl.display.ShaderParameter;
 import haxe.Exception;
 import sys.FileSystem;
 import sys.io.File;
 import flixel.system.FlxAssets.FlxShader;
 import haxe.io.Path;
 
+// DOESNT WORKS !!!!
 class CustomShader extends FlxFixedShader {
-    @:glFragmentSource('')
 
     public function new(shader:String, values:Map<String, Any>) {
+        super();
         var splittedShaderPath = shader.split(":");
         if (splittedShaderPath.length == 1) {
             splittedShaderPath.insert(0, "Friday Night Funkin'");
@@ -21,6 +23,13 @@ class CustomShader extends FlxFixedShader {
         if (Path.extension(path) == "") path += '.glsl';
         if (FileSystem.exists(path)) {
             var fileContent = Paths.getTextOutsideAssets(path, true);
+            @:privateAccess
+            if (program != null) program.dispose();
+            @:privateAccess
+            program = null;
+            @:privateAccess
+            __initGL();
+
             glFragmentSource = fileContent;
         } else {
             trace('Shader at "$path" not found.');
@@ -32,7 +41,6 @@ class CustomShader extends FlxFixedShader {
             }';
         }
 
-        super();
 
         setValues(values);
     }
@@ -47,7 +55,8 @@ class CustomShader extends FlxFixedShader {
         //     }
         // }
         if (Reflect.hasField(data, name)) {
-            Reflect.setField(Reflect.field(data, name), "value", [value]);
+            var d:ShaderParameter<Dynamic> = Reflect.field(data, name);
+            Reflect.setField(d, "value", [value]);
         }
     }
 

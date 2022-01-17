@@ -380,7 +380,7 @@ class ModSupport {
 
         // SHADERS
 
-		// hscript.variables.set("CustomShader", CustomShader);
+		hscript.variables.set("CustomShader", CustomShader);
 		// hscript.setVariable("FlxColor", Int);
     }
 
@@ -474,6 +474,7 @@ class ModSupport {
 		script.setVariable("BlammedShader", Shaders.BlammedShader);
 		script.setVariable("GameOverSubstate", GameOverSubstate);
 		script.setVariable("ModSupport", null);
+		script.setVariable("CustomShader", CustomShader);
 
 
     }

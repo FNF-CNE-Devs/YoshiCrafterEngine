@@ -204,10 +204,10 @@ class CharacterEditor extends MusicBeatState {
         animSettings.add(offsetY);
         loopCheckBox = new FlxUICheckBox(10, offsetX.y + offsetX.height + 10, null, null, "Loop Animation", 250);
         animSettings.add(loopCheckBox);
-        var label:FlxUIText = new FlxUIText(10, loopCheckBox.y + loopCheckBox.height + 10, 280, "Indices (separate by \",\", leave blank for no indices)");
-        animSettings.add(label);
-        indices = new FlxUIInputText(10, label.y + label.height, 280, "");
-        animSettings.add(indices);
+        // var label:FlxUIText = new FlxUIText(10, loopCheckBox.y + loopCheckBox.height + 10, 280, "Indices (separate by \",\", leave blank for no indices)");
+        // animSettings.add(label);
+        // indices = new FlxUIInputText(10, label.y + label.height, 280, "");
+        // animSettings.add(indices);
 
 
         animSettingsTabs.addGroup(animSettings);
@@ -217,7 +217,11 @@ class CharacterEditor extends MusicBeatState {
         var characterSettingsTabs = new FlxUITabMenu(null, [
             {
                 name: "char",
-                label: "Character Settings"
+                label: "Char. Settings"
+            },
+            {
+                name: "health",
+                label: "Health Color"
             }
         ], true);
         var charSettings = new FlxUI(null, characterSettingsTabs);
@@ -246,6 +250,42 @@ class CharacterEditor extends MusicBeatState {
         add(animSettingsTabs);
         add(anim);
 
+        
+        var healthSettings = new FlxUI(null, characterSettingsTabs);
+        healthSettings.name = "health";
+
+        var healthBar:FlxUISprite = new FlxUISprite(10, 35);
+        healthBar.makeGraphic(255, 10, 0xFFFFFFFF);
+        healthBar.pixels.lock();
+        for (x in 0...healthBar.pixels.width) {
+            healthBar.pixels.setPixel(x, 0, 0xFF000000);
+            healthBar.pixels.setPixel(x, 1, 0xFF000000);
+            healthBar.pixels.setPixel(x, 8, 0xFF000000);
+            healthBar.pixels.setPixel(x, 9, 0xFF000000);
+        }
+        for (y in 0...healthBar.pixels.height) {
+            healthBar.pixels.setPixel(0, y, 0xFF000000);
+            healthBar.pixels.setPixel(1, y, 0xFF000000);
+            healthBar.pixels.setPixel(253, y, 0xFF000000);
+            healthBar.pixels.setPixel(254, y, 0xFF000000);
+        }
+        healthBar.pixels.unlock();
+        var icon = new HealthIcon(character.curCharacter, false, ToolboxHome.selectedMod);
+        icon.setGraphicSize(50, 50);
+        icon.updateHitbox();
+        icon.x = healthBar.x + healthBar.width - 25;
+        icon.y = healthBar.y + (healthBar.height / 2) - 25;
+
+        var color = 0xFFFFFFFF;
+        var charColors = character.getColors();
+        if (charColors.length > 0) {
+            color = charColors[0];
+        }
+        healthBar.color = color;
+        healthSettings.add(healthBar);
+        healthSettings.add(icon);
+
+        characterSettingsTabs.addGroup(healthSettings);
         add(saveButton);
         add(closeButton);
     }
@@ -281,8 +321,8 @@ class CharacterEditor extends MusicBeatState {
         if (FlxG.keys.pressed.UP) move.y -= 1;
         if (FlxG.keys.pressed.LEFT) move.x -= 1;
         if (FlxG.keys.pressed.DOWN) move.y += 1;
-        FlxG.camera.scroll.x += move.x * 200 * elapsed * (FlxG.keys.pressed.SHIFT ? 2.5 : 1);
-        FlxG.camera.scroll.y += move.y * 200 * elapsed * (FlxG.keys.pressed.SHIFT ? 2.5 : 1);
+        FlxG.camera.scroll.x += move.x * 400 * elapsed * (FlxG.keys.pressed.SHIFT ? 2.5 : 1);
+        FlxG.camera.scroll.y += move.y * 400 * elapsed * (FlxG.keys.pressed.SHIFT ? 2.5 : 1);
         character.x = 100 + globalOffsetX.value;
         character.y = 100 + globalOffsetY.value;
 

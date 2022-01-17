@@ -3,7 +3,8 @@
         "/!\\ Fixed Story Mode Menu crash",
         "WHOLE NEW DEV TOOLBOX : Create your mods easily !",
         "- Added middlescroll support",
-        "- Fixed Tutorial"
+        "- Fixed Tutorial",
+        "- Fixed shaders loading GLSL 1.10 instead of 1.50 (no more crashes)"
     ],
     "version" : [1,2,1],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"
