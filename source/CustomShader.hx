@@ -4,7 +4,7 @@ import sys.io.File;
 import flixel.system.FlxAssets.FlxShader;
 import haxe.io.Path;
 
-class CustomShader extends FlxFixedShader {
+class CustomShader extends FlxShader {
     @:glFragmentSource('')
 
     public function new(shader:String, values:Map<String, Any>) {
@@ -25,9 +25,7 @@ class CustomShader extends FlxFixedShader {
         } else {
             trace('Shader at "$path" not found.');
             PlayState.log.push('Shader at "$path" not found.');
-            glFragmentSource = '
-            
-            #pragma header
+            glFragmentSource = '#pragma header
             
             void main() {
                 gl_FragColor = flixel_texture2D(bitmap, openfl_TextureCoordv);
