@@ -1,7 +1,6 @@
 import flixel.system.FlxAssets.FlxShader;
 
-class ColoredNoteShader extends FlxShader {
-    @:glVertexHeader('#version 120')
+class ColoredNoteShader extends FlxFixedShader {
     @:glFragmentSource('#pragma header
 
         uniform float r;

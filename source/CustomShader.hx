@@ -4,7 +4,7 @@ import sys.io.File;
 import flixel.system.FlxAssets.FlxShader;
 import haxe.io.Path;
 
-class CustomShader extends FlxShader {
+class CustomShader extends FlxFixedShader {
     @:glFragmentSource('')
 
     public function new(shader:String, values:Map<String, Any>) {

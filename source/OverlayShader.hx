@@ -2,7 +2,7 @@ package;
 
 import flixel.system.FlxAssets.FlxShader;
 
-class OverlayShader extends FlxShader
+class OverlayShader extends FlxFixedShader
 {
 	@:glFragmentSource('
 		#pragma header

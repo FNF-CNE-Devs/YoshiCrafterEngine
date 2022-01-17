@@ -1,6 +1,6 @@
 import flixel.system.FlxAssets.FlxShader;
 
-class BlammedShader extends FlxShader {
+class BlammedShader extends FlxFixedShader {
     @:glFragmentSource('
         
         #pragma header
@@ -43,7 +43,7 @@ class BlammedShader extends FlxShader {
     }
 }
 
-class ColorShader extends FlxShader {
+class ColorShader extends FlxFixedShader {
     @:glFragmentSource('
         
         #pragma header
