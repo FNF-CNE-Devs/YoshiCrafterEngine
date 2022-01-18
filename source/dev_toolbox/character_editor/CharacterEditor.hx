@@ -1,5 +1,7 @@
 package dev_toolbox.character_editor;
 
+import flixel.animation.FlxAnimation;
+import flixel.graphics.frames.FlxFrame;
 import flixel.ui.FlxSpriteButton;
 import flixel.ui.FlxButton;
 import NoteShader.ColoredNoteShader;
@@ -23,6 +25,7 @@ class CharacterEditor extends MusicBeatState {
     var animSelection:FlxUIDropDownMenu;
     var anim:FlxUITabMenu;
     var dad:Character;
+    var bf:Character;
     var animationTab:FlxUI;
     var closeButton:FlxUIButton;
     var saveButton:FlxUIButton;
@@ -39,6 +42,7 @@ class CharacterEditor extends MusicBeatState {
     var canBeBFSkinned:FlxUICheckBox = null;
     var isBFskin:FlxUICheckBox = null;
     var canBeGFSkinned:FlxUICheckBox = null;
+    var editAsPlayer:FlxUICheckBox = null;
     var isGFskin:FlxUICheckBox = null;
     var globalOffsetX:FlxUINumericStepper = null;
     var globalOffsetY:FlxUINumericStepper = null;
@@ -65,11 +69,11 @@ class CharacterEditor extends MusicBeatState {
         if (anim == null) return;
         framerate.value = anim.frameRate;
         loopCheckBox.checked = anim.looped;
+        character.playAnim(currentAnim);
         var offsets = character.animOffsets[currentAnim];
         if (offsets == null) offsets = [0, 0];
         offsetX.value = offsets[0];
         offsetY.value = offsets[1];
-        character.playAnim(currentAnim);
     }
 
     public function save() {
@@ -80,11 +84,29 @@ class CharacterEditor extends MusicBeatState {
             var anim = it.next();
             var a = character.animation.getByName(anim);
             var animName = character.frames.getByIndex(a.frames[0]).name;
+            var realAnimName = animName;
+            for (i in 0...4) {
+                var animFrames:Array<FlxFrame> = new Array<FlxFrame>();
+                @:privateAccess
+                character.animation.findByPrefix(animFrames, realAnimName); // adds valid frames to animFrames
+
+                if (animFrames.length > 0)
+                {
+                    var frameIndices:Array<Int> = new Array<Int>();
+                    @:privateAccess
+                    character.animation.byPrefixHelper(frameIndices, animFrames, realAnimName); // finds frames and appends them to the blank array
+
+                    if (frameIndices.length == a.frames.length) {
+                        break;
+                    }
+                }
+                realAnimName = realAnimName.substr(0, realAnimName.length - 1);
+            }
             var offset = character.animOffsets[anim];
             @:privateAccess
             anims.push({
                 name: anim,
-                anim: animName.substr(0, animName.length - 4),
+                anim: realAnimName,
                 framerate: Std.int(a.frameRate),
                 x: offset[0],
                 y: offset[1],
@@ -191,7 +213,14 @@ class CharacterEditor extends MusicBeatState {
         add(stageCurtains);
 
         dad = new Character(100, 100, "Friday Night Funkin':dad");
+        dad.color = 0xFF000000;
+        dad.alpha = 1 / 3;
         add(dad);
+
+        bf = new Boyfriend(770, 100, "Friday Night Funkin':bf");
+        bf.color = 0xFF000000;
+        bf.alpha = 1 / 3;
+        add(bf);
 
 
 
@@ -211,7 +240,7 @@ class CharacterEditor extends MusicBeatState {
         ], true);
         anim.scrollFactor.set();
         anim.resize(300, 80);
-        anim.x = 1280 - anim.width - 10;
+        anim.x = 10;
         anim.y = 10;
 
         
@@ -318,7 +347,15 @@ class CharacterEditor extends MusicBeatState {
 
         animSettingsTabs.addGroup(animSettings);
         animSettingsTabs.resize(300, 200);
-        animSettingsTabs.setPosition(anim.x, anim.y + anim.height + 10);
+        animSettingsTabs.setPosition(1280 - animSettingsTabs.width - 10, 10);
+        editAsPlayer = new FlxUICheckBox(320, 10, null, null, "Edit as player", 250, null, function() {
+            character.flipX = flipCheckbox.checked;
+            if (editAsPlayer.checked) {
+                character.flipX = !character.flipX;
+            }
+        });
+        editAsPlayer.scrollFactor.set();
+        add(editAsPlayer);
 
         var characterSettingsTabs = new FlxUITabMenu(null, [
             {
@@ -338,12 +375,14 @@ class CharacterEditor extends MusicBeatState {
         characterSettingsTabs.resize(300, 200);
         charSettings.name = "char";
         characterSettingsTabs.scrollFactor.set();
+        
 
         flipCheckbox = new FlxUICheckBox(10, 10, null, null, "Flip Character", 280, null, function() {
             character.flipX = flipCheckbox.checked;
             if (isPlayer) character.flipX = !character.flipX;
         });
         flipCheckbox.checked = character.flipX;
+        add(flipCheckbox);
         characterSettingsTabs.addGroup(charSettings);
         characterSettingsTabs.x = 1280 - characterSettingsTabs.width - 10;
         characterSettingsTabs.y = animSettingsTabs.y + animSettingsTabs.height + 10;
@@ -528,6 +567,7 @@ class CharacterEditor extends MusicBeatState {
 
     public override function update(elapsed:Float) {
         super.update(elapsed);
+        isPlayer = editAsPlayer.checked;
         var move:FlxPoint = new FlxPoint(0, 0);
         if (FlxG.keys.pressed.RIGHT) move.x += 1;
         if (FlxG.keys.pressed.UP) move.y -= 1;
@@ -535,7 +575,7 @@ class CharacterEditor extends MusicBeatState {
         if (FlxG.keys.pressed.DOWN) move.y += 1;
         FlxG.camera.scroll.x += move.x * 400 * elapsed * (FlxG.keys.pressed.SHIFT ? 2.5 : 1);
         FlxG.camera.scroll.y += move.y * 400 * elapsed * (FlxG.keys.pressed.SHIFT ? 2.5 : 1);
-        character.x = 100 + globalOffsetX.value;
+        character.x = (isPlayer ? 770 : 100) + globalOffsetX.value;
         character.y = 100 + globalOffsetY.value;
 
         if (character.animation.curAnim != null) {

@@ -292,6 +292,7 @@ class Character extends FlxSprite
 			});
 		}
 	}
+
 	public function getColors(altAnim:Bool = false):Array<FlxColor>
 	{
 		var defNoteColors = [
