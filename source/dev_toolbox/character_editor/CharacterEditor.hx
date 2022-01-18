@@ -219,9 +219,15 @@ class CharacterEditor extends MusicBeatState {
         });
         animSelection.cameras = [camHUD];
 
-        addAnimButton = new FlxUIButton(10, 32, "Add", function() {
+        addAnimButton = new FlxUIButton(animSelection.x + animSelection.width + 10, 10, "Add", function() {
             openSubState(new NewAnimDialogue());
         });
+        addAnimButton.resize(50, 20);
+
+        removeAnimButton = new FlxUIButton(addAnimButton.x + addAnimButton.width + 10, 10, "Remove", function() {
+            openSubState(new NewAnimDialogue());
+        });
+        removeAnimButton.resize(50, 20);
         animationTab.add(addAnimButton);
         animationTab.add(animSelection);
         updateAnimSelection();
@@ -295,6 +301,7 @@ class CharacterEditor extends MusicBeatState {
             character.flipX = flipCheckbox.checked;
             if (isPlayer) character.flipX = !character.flipX;
         });
+        flipCheckbox.checked = character.flipX;
         characterSettingsTabs.addGroup(charSettings);
         characterSettingsTabs.x = 1280 - characterSettingsTabs.width - 10;
         characterSettingsTabs.y = animSettingsTabs.y + animSettingsTabs.height + 10;
@@ -303,8 +310,10 @@ class CharacterEditor extends MusicBeatState {
         
         isBFskin = new FlxUICheckBox(10, globalOffsetX.y + globalOffsetX.height + 10, null, null, "Is a BF skin", 250);
         canBeBFSkinned = new FlxUICheckBox(10, isBFskin.y + isBFskin.height + 10, null, null, "Can be skinned (BF)", 250);
+        canBeBFSkinned.checked = ModSupport.modConfig[ToolboxHome.selectedMod].skinnableBFs.contains(c);
         isGFskin = new FlxUICheckBox(canBeBFSkinned.x + 145, globalOffsetX.y + globalOffsetX.height + 10, null, null, "Is a GF skin", 250);
         canBeGFSkinned = new FlxUICheckBox(canBeBFSkinned.x + 145, isGFskin.y + isGFskin.height + 10, null, null, "Can be skinned (GF)", 250);
+        canBeGFSkinned.checked = ModSupport.modConfig[ToolboxHome.selectedMod].skinnableGFs.contains(c);
 
         
         charSettings.add(flipCheckbox);
