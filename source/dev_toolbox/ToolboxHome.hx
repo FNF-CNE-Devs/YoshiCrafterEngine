@@ -201,6 +201,7 @@ class ToolboxHome extends MusicBeatState {
             //     openSubState(ToolboxMessage.showMessage("Error", "Character editor currently only works with characters with JSON files."));
             //     return;
             // }
+            dev_toolbox.character_editor.CharacterEditor.fromFreeplay = false;
             FlxG.switchState(new dev_toolbox.character_editor.CharacterEditor(radios.selectedId));
         });
         tab.add(createButton);

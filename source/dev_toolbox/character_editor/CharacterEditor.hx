@@ -49,6 +49,9 @@ class CharacterEditor extends MusicBeatState {
     var isPlayer:Bool = false;
 
     var currentAnim(default, set):String = "";
+
+    public static var fromFreeplay:Bool = false;
+
     public function set_currentAnim(v:String) {
         currentAnim = v;
         updateAnim();
@@ -249,7 +252,11 @@ class CharacterEditor extends MusicBeatState {
         updateAnimSelection();
 
         closeButton = new FlxUIButton(1257, 3, "X", function() {
-            FlxG.switchState(new ToolboxHome(ToolboxHome.selectedMod));
+            if (fromFreeplay) {
+                FlxG.switchState(new PlayState());
+            } else {
+                FlxG.switchState(new ToolboxHome(ToolboxHome.selectedMod));
+            }
         });
         closeButton.color = 0xFFFF4444;
         closeButton.resize(20, 20);
@@ -257,7 +264,26 @@ class CharacterEditor extends MusicBeatState {
 
         saveButton = new FlxUIButton(1167, 3, "Save", function() {
             save();
-            openSubState(ToolboxMessage.showMessage("Success", "Character successfully saved."));
+            if (character.json != null) {
+                openSubState(ToolboxMessage.showMessage("Success", "Character successfully saved."));
+            } else {
+                openSubState(new ToolboxMessage("Success", "Your character have been successfully saved. However, your character don't seems to load any JSON file, so that means these modifications won't have effects. Do you want the engine to fix the problem ? A backup of your Character.hx will be created.", [
+                    {
+                        label : "Yes",
+                        onClick : function(e) {
+                            var p = '${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\characters\\$c';
+                            sys.io.File.copy('$p\\Character.hx', '$p\\Character-old.hx');
+                            sys.io.File.saveContent('$p\\Character.hx', 'function create() {\r\n\tcharacter.frames = Paths.getCharacter(character.curCharacter);\r\n\tcharacter.loadJSON(true); // Setting to true will override getColors() and dance().\r\n}');
+                            FlxG.switchState(new CharacterEditor(this.c));
+                        }
+                    },
+                    {
+                        label : "No",
+                        onClick : function(e) {}
+                    }
+                ]));
+            }
+            
         });
         saveButton.resize(80, 20);
 
