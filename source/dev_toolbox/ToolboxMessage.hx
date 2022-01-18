@@ -22,7 +22,7 @@ class ToolboxMessage extends FlxUIPopup {
         {
             if (id == "click_button")
             {
-                buttons[params[0]].onClick(this);
+                buttons[Std.int(params[0])].onClick(this);
                 close();
             }
         }

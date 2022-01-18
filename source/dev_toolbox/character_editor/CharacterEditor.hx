@@ -27,6 +27,7 @@ class CharacterEditor extends MusicBeatState {
     var closeButton:FlxUIButton;
     var saveButton:FlxUIButton;
     var addAnimButton:FlxUIButton;
+    var removeAnimButton:FlxUIButton;
     var animSettingsTabs:FlxUITabMenu;
     var animSettings:FlxUI;
     var offsetX:FlxUINumericStepper;
@@ -58,6 +59,7 @@ class CharacterEditor extends MusicBeatState {
 
     public function updateAnim() {
         var anim = character.animation.getByName(currentAnim);
+        if (anim == null) return;
         framerate.value = anim.frameRate;
         loopCheckBox.checked = anim.looped;
         var offsets = character.animOffsets[currentAnim];
@@ -225,10 +227,24 @@ class CharacterEditor extends MusicBeatState {
         addAnimButton.resize(50, 20);
 
         removeAnimButton = new FlxUIButton(addAnimButton.x + addAnimButton.width + 10, 10, "Remove", function() {
-            openSubState(new NewAnimDialogue());
+            if (character.animation.curAnim == null) return;
+            openSubState(new ToolboxMessage("Remove Animation", 'Are you sure you want to remove the ${character.animation.curAnim.name} animation ?', [
+                {
+                    label : "Yes",
+                    onClick : function(e) {
+                        character.animation.remove(character.animation.curAnim.name);
+                        updateAnimSelection();
+                    }
+                },
+                {
+                    label : "No",
+                    onClick : function(e) {}
+                }
+            ]));
         });
-        removeAnimButton.resize(50, 20);
+        removeAnimButton.resize(76, 20);
         animationTab.add(addAnimButton);
+        animationTab.add(removeAnimButton);
         animationTab.add(animSelection);
         updateAnimSelection();
 
@@ -499,14 +515,15 @@ class CharacterEditor extends MusicBeatState {
         if (character.animation.curAnim != null) {
             // YOU CANT STOP ME HAXEFLIXEL
             var anim = character.animation.getByName(character.animation.curAnim.name);
-            @:privateAccess
-            anim.looped = loopCheckBox.checked;
-            @:privateAccess
-            anim.frameRate = framerate.value;
+            if (anim != null) {
+                @:privateAccess
+                anim.looped = loopCheckBox.checked;
+                @:privateAccess
+                anim.frameRate = framerate.value;
 
-            character.animOffsets[character.animation.curAnim.name] = [offsetX.value, offsetY.value];
-            character.offset.set(character.animOffsets[character.animation.curAnim.name][0], character.animOffsets[character.animation.curAnim.name][1]);
-
+                character.animOffsets[character.animation.curAnim.name] = [offsetX.value, offsetY.value];
+                character.offset.set(character.animOffsets[character.animation.curAnim.name][0], character.animOffsets[character.animation.curAnim.name][1]);
+            }
         }
         // var midpoint = character.getGraphicMidpoint();
         // FlxG.camera.scroll.x = midpoint.x + character.camOffset.x + 150 - 640;
