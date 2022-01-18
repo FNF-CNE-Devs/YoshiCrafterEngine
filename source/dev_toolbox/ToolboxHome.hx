@@ -32,7 +32,7 @@ class ToolboxHome extends MusicBeatState {
     // Info tab
     var card:ModCard;
     public override function new(mod:String) {
-        selectedMod = mod;
+        if (mod != null) selectedMod = mod;
         super();
         if (ModSupport.modConfig[mod] == null) {
             var conf:ModConfig = {

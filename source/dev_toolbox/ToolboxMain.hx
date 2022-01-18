@@ -113,6 +113,7 @@ class ToolboxMain extends MusicBeatState {
         var it = ModSupport.modConfig.keys();
         while (it.hasNext()) {
             var k = it.next();
+            if (k == null || k == "null") continue;
             var mName = ModSupport.modConfig[k].name;
             if (mName == null || mName == "") mName = k;
             mods.push(new StrNameLabel(k, mName));
