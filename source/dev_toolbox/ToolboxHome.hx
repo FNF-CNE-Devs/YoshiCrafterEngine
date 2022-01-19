@@ -1,5 +1,6 @@
 package dev_toolbox;
 
+import dev_toolbox.song_editor.SongCreator;
 import FreeplayState.FreeplaySongList;
 import openfl.display.PNGEncoderOptions;
 import sys.io.File;
@@ -143,6 +144,11 @@ class ToolboxHome extends MusicBeatState {
         }, 25, 300, 640);
         tab.add(songsRadioList);
         refreshSongs();
+
+        
+        var createButton = new FlxUIButton(10, 670, "Add", function() {
+            openSubState(new SongCreator());
+        });
 
         UI_Tabs.addGroup(tab);
     }
@@ -293,7 +299,7 @@ class ToolboxHome extends MusicBeatState {
         tab.add(anims_text);
 
 		UI_Tabs.addGroup(tab);
-        charLayer = members.indexOf(lagend);
+        charLayer = 1;
     }
 
     public function onChangeTab(tab:String) {

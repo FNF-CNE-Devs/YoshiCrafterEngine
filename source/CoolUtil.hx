@@ -23,6 +23,7 @@ class CoolUtil
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
 		bg.screenCenter();
 		f.add(bg);
+		return bg;
 	}
 
 	public static function addWhiteBG(f:FlxState) {
@@ -31,6 +32,7 @@ class CoolUtil
 		bg.screenCenter();
 		bg.scrollFactor.set();
 		f.add(bg);
+		return bg;
 	}
 
 	public static function openDialogue(t:FileDialogType, name:String, callback:String->Void) {
