@@ -34,6 +34,7 @@ class CharacterEditor extends MusicBeatState {
     var animSettingsTabs:FlxUITabMenu;
     var animSettings:FlxUI;
     var offsetX:FlxUINumericStepper;
+    var scale:FlxUINumericStepper;
     var offsetY:FlxUINumericStepper;
     var loopCheckBox:FlxUICheckBox;
     var indices:FlxUIInputText;
@@ -44,8 +45,11 @@ class CharacterEditor extends MusicBeatState {
     var canBeGFSkinned:FlxUICheckBox = null;
     var editAsPlayer:FlxUICheckBox = null;
     var isGFskin:FlxUICheckBox = null;
+    var antialiasing:FlxUICheckBox = null;
     var globalOffsetX:FlxUINumericStepper = null;
     var globalOffsetY:FlxUINumericStepper = null;
+    var camOffsetX:FlxUINumericStepper = null;
+    var camOffsetY:FlxUINumericStepper = null;
     var healthBar:FlxUISprite;
     var c:String = "";
     var arrows:Array<FlxClickableSprite> = [];
@@ -339,6 +343,7 @@ class CharacterEditor extends MusicBeatState {
         animSettings.add(offsetY);
         loopCheckBox = new FlxUICheckBox(10, offsetX.y + offsetX.height + 10, null, null, "Loop Animation", 250);
         animSettings.add(loopCheckBox);
+
         // var label:FlxUIText = new FlxUIText(10, loopCheckBox.y + loopCheckBox.height + 10, 280, "Indices (separate by \",\", leave blank for no indices)");
         // animSettings.add(label);
         // indices = new FlxUIInputText(10, label.y + label.height, 280, "");
@@ -377,36 +382,62 @@ class CharacterEditor extends MusicBeatState {
         characterSettingsTabs.scrollFactor.set();
         
 
-        flipCheckbox = new FlxUICheckBox(10, 10, null, null, "Flip Character", 280, null, function() {
+        flipCheckbox = new FlxUICheckBox(10, 10, null, null, "Flip Character", 120, null, function() {
             character.flipX = flipCheckbox.checked;
             if (isPlayer) character.flipX = !character.flipX;
         });
         flipCheckbox.checked = character.flipX;
-        add(flipCheckbox);
+        // add(flipCheckbox);
+
+        antialiasing = new FlxUICheckBox(flipCheckbox.x + 145, 10, null, null, "Anti-Aliasing", 120, null, function() {
+            character.antialiasing = antialiasing.checked;
+        });
+        antialiasing.checked = character.antialiasing;
+        // add(antialiasing);
         characterSettingsTabs.addGroup(charSettings);
         characterSettingsTabs.x = 1280 - characterSettingsTabs.width - 10;
         characterSettingsTabs.y = animSettingsTabs.y + animSettingsTabs.height + 10;
         globalOffsetX = new FlxUINumericStepper(10, 36, 10, 0, -999, 999, 0);
         globalOffsetY = new FlxUINumericStepper(globalOffsetX.x + globalOffsetX.width + 5, 36, 10, 0, -999, 999, 0);
         
-        isBFskin = new FlxUICheckBox(10, globalOffsetX.y + globalOffsetX.height + 10, null, null, "Is a BF skin", 250);
-        canBeBFSkinned = new FlxUICheckBox(10, isBFskin.y + isBFskin.height + 10, null, null, "Can be skinned (BF)", 250);
+        isBFskin = new FlxUICheckBox(10, globalOffsetX.y + globalOffsetX.height + 10, null, null, "Is a BF skin", 120);
+        canBeBFSkinned = new FlxUICheckBox(10, isBFskin.y + isBFskin.height + 10, null, null, "Can be skinned (BF)", 120);
         canBeBFSkinned.checked = ModSupport.modConfig[ToolboxHome.selectedMod].skinnableBFs.contains(c);
-        isGFskin = new FlxUICheckBox(canBeBFSkinned.x + 145, globalOffsetX.y + globalOffsetX.height + 10, null, null, "Is a GF skin", 250);
-        canBeGFSkinned = new FlxUICheckBox(canBeBFSkinned.x + 145, isGFskin.y + isGFskin.height + 10, null, null, "Can be skinned (GF)", 250);
+        isGFskin = new FlxUICheckBox(canBeBFSkinned.x + 145, globalOffsetX.y + globalOffsetX.height + 10, null, null, "Is a GF skin", 120);
+        canBeGFSkinned = new FlxUICheckBox(canBeBFSkinned.x + 145, isGFskin.y + isGFskin.height + 10, null, null, "Can be skinned (GF)", 120);
         canBeGFSkinned.checked = ModSupport.modConfig[ToolboxHome.selectedMod].skinnableGFs.contains(c);
 
         
+        var label:FlxUIText = new FlxUIText(globalOffsetY.x + globalOffsetY.width + 10, globalOffsetY.y + (globalOffsetY.height / 2), 32, "Scale:");
+        label.y -= (label.height / 2);
+        scale = new FlxUINumericStepper(10 + label.x + label.width, globalOffsetY.y, 0.1, 1, 0.1, 10, 1);
+
+        
+        var label2:FlxUIText = new FlxUIText(10, canBeGFSkinned.y + canBeGFSkinned.height + 10, 32, "Camera Offset");
+        
+        camOffsetX = new FlxUINumericStepper(10, label2.y + label2.height, 10, 0, -999, 999, 0);
+        camOffsetY = new FlxUINumericStepper(camOffsetX.x + camOffsetX.width + 5, label2.y + label2.height36, 10, 0, -999, 999, 0);
+
+        
+        charSettings.add(label);
+        charSettings.add(scale);
         charSettings.add(flipCheckbox);
+        charSettings.add(antialiasing);
         charSettings.add(globalOffsetX);
         charSettings.add(globalOffsetY);
         charSettings.add(canBeGFSkinned);
         charSettings.add(isGFskin);
         charSettings.add(canBeBFSkinned);
         charSettings.add(isBFskin);
+        charSettings.add(label2);
+        charSettings.add(camOffsetX);
+        charSettings.add(camOffsetY);
+
+        
         
         globalOffsetX.value = character.charGlobalOffset.x;
         globalOffsetY.value = character.charGlobalOffset.y;
+        scale.value = (character.scale.x + character.scale.y) / 2;
 
         add(characterSettingsTabs);
         add(animSettingsTabs);
@@ -587,6 +618,7 @@ class CharacterEditor extends MusicBeatState {
                 @:privateAccess
                 anim.frameRate = framerate.value;
 
+                character.scale.set(scale.value, scale.value);
                 character.animOffsets[character.animation.curAnim.name] = [offsetX.value, offsetY.value];
                 character.offset.set(character.animOffsets[character.animation.curAnim.name][0], character.animOffsets[character.animation.curAnim.name][1]);
             }

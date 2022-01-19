@@ -135,7 +135,7 @@ typedef Option = {
 	public var description:String;
 	public var updateOnSelected:(Float,FNFOption)->Void;
 	public var checkbox:Bool;
-	public var checkboxChecked:Bool;
+	public var checkboxChecked:Void->Bool;
 	public var value:Void->String;
 }
 class OptionsMenu extends MusicBeatState
@@ -172,7 +172,7 @@ class OptionsMenu extends MusicBeatState
 				
 			},
 			checkbox: false,
-			checkboxChecked: false,
+			checkboxChecked: function() {return false;},
 			value: function() {return "";}
 		});
 		var controlKeys:Array<Int> = [];
@@ -204,7 +204,7 @@ class OptionsMenu extends MusicBeatState
 					}
 				},
 				checkbox: false,
-				checkboxChecked: false,
+				checkboxChecked: function() {return false;},
 				value: function() {return [for(i in 0...value) ControlsSettingsSub.getKeyName(cast(Reflect.field(Settings.engineSettings.data, 'control_' + value + '_$i'), FlxKey), true)].join(" ");}
 			});
 		}
@@ -216,7 +216,7 @@ class OptionsMenu extends MusicBeatState
 				
 			},
 			checkbox: false,
-			checkboxChecked: false,
+			checkboxChecked: function() {return false;},
 			value: function() {return "";}
 		});
 		settings.push(kBinds);
@@ -237,7 +237,7 @@ class OptionsMenu extends MusicBeatState
 				
 			},
 			checkbox: false,
-			checkboxChecked: false,
+			checkboxChecked: function() {return false;},
 			value: function() {return "";}
 		});
 		gameplay.options.push({
@@ -251,7 +251,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.downscroll,
+			checkboxChecked: function() {return Settings.engineSettings.data.downscroll;},
 			value: function() {return "";}
 		});
 		gameplay.options.push({
@@ -265,7 +265,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.middleScroll,
+			checkboxChecked: function() {return Settings.engineSettings.data.middleScroll;},
 			value: function() {return "";}
 		});
 		gameplay.options.push({
@@ -297,7 +297,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.customScrollSpeed,
+			checkboxChecked: function() {return Settings.engineSettings.data.customScrollSpeed;},
 			value: function() {return Std.string(Settings.engineSettings.data.scrollSpeed).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.scrollSpeed) + ".0" : Std.string(Settings.engineSettings.data.scrollSpeed);}
 		});
 		gameplay.options.push({
@@ -311,7 +311,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.botplay,
+			checkboxChecked: function() {return Settings.engineSettings.data.botplay;},
 			value: function() {return "";}
 		});
 		gameplay.options.push({
@@ -338,7 +338,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: false,
-			checkboxChecked: false,
+			checkboxChecked: function() {return false;},
 			value: function() {return Std.string(Settings.engineSettings.data.noteScale).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.noteScale) + ".0" : Std.string(Settings.engineSettings.data.noteScale);}
 		});
 		gameplay.options.push({
@@ -353,7 +353,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: false,
-			checkboxChecked: false,
+			checkboxChecked: function() {return false;},
 			value: function() {return ScoreText.accuracyTypesText[Settings.engineSettings.data.accuracyMode];}
 		});
 		gameplay.options.push({
@@ -363,7 +363,7 @@ class OptionsMenu extends MusicBeatState
 				
 			},
 			checkbox: false,
-			checkboxChecked: false,
+			checkboxChecked: function() {return false;},
 			value: function() {return "";}
 		});
 
@@ -385,7 +385,7 @@ class OptionsMenu extends MusicBeatState
 				
 			},
 			checkbox: false,
-			checkboxChecked: false,
+			checkboxChecked: function() {return false;},
 			value: function() {return "";}
 		});
 		guiOptions.options.push({
@@ -399,7 +399,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.showTimer,
+			checkboxChecked: function() {return Settings.engineSettings.data.showTimer;},
 			value: function() {return "";}
 		});
 		guiOptions.options.push({
@@ -413,7 +413,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.showPressDelay,
+			checkboxChecked: function() {return Settings.engineSettings.data.showPressDelay;},
 			value: function() {return "";}
 		});
 		guiOptions.options.push({
@@ -427,7 +427,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.showAccuracy,
+			checkboxChecked: function() {return Settings.engineSettings.data.showAccuracy;},
 			value: function() {return "";}
 		});
 		guiOptions.options.push({
@@ -441,7 +441,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.showMisses,
+			checkboxChecked: function() {return Settings.engineSettings.data.showMisses;},
 			value: function() {return "";}
 		});
 		guiOptions.options.push({
@@ -455,7 +455,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.showRatingTotal,
+			checkboxChecked: function() {return Settings.engineSettings.data.showRatingTotal;},
 			value: function() {return "";}
 		});
 		guiOptions.options.push({
@@ -469,7 +469,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.showAverageDelay,
+			checkboxChecked: function() {return Settings.engineSettings.data.showAverageDelay;},
 			value: function() {return "";}
 		});
 		guiOptions.options.push({
@@ -483,7 +483,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.showRating,
+			checkboxChecked: function() {return Settings.engineSettings.data.showRating;},
 			value: function() {return "";}
 		});
 		guiOptions.options.push({
@@ -497,7 +497,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.animateInfoBar,
+			checkboxChecked: function() {return Settings.engineSettings.data.animateInfoBar;},
 			value: function() {return "";}
 		});
 		
@@ -508,7 +508,7 @@ class OptionsMenu extends MusicBeatState
 				
 			},
 			checkbox: false,
-			checkboxChecked: false,
+			checkboxChecked: function() {return false;},
 			value: function() {return "";}
 		});
 
@@ -530,7 +530,7 @@ class OptionsMenu extends MusicBeatState
 				
 			},
 			checkbox: false,
-			checkboxChecked: false,
+			checkboxChecked: function() {return false;},
 			value: function() {return "";}
 		});
 		customisation.options.push({
@@ -544,7 +544,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.glowCPUStrums,
+			checkboxChecked: function() {return Settings.engineSettings.data.glowCPUStrums;},
 			value: function() {return "";}
 		});
 		customisation.options.push({
@@ -558,7 +558,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.customArrowColors,
+			checkboxChecked: function() {return Settings.engineSettings.data.customArrowColors;},
 			value: function() {return "";}
 		});
 		customisation.options.push({
@@ -572,7 +572,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.transparentSubstains,
+			checkboxChecked: function() {return Settings.engineSettings.data.transparentSubstains;},
 			value: function() {return "";}
 		});
 		customisation.options.push({
@@ -586,7 +586,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.customArrowColors_allChars,
+			checkboxChecked: function() {return Settings.engineSettings.data.customArrowColors_allChars;},
 			value: function() {return "";}
 		});
 		
@@ -600,7 +600,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: false,
-			checkboxChecked: false,
+			checkboxChecked: function() {return false;},
 			value: function() {return "";}
 		});
 
@@ -642,7 +642,7 @@ class OptionsMenu extends MusicBeatState
 						}
 					},
 					checkbox: false,
-					checkboxChecked: false,
+					checkboxChecked: function() {return false;},
 					value: function() {return Settings.engineSettings.data.customArrowSkin;}
 				});
 			}
@@ -675,7 +675,7 @@ class OptionsMenu extends MusicBeatState
 					}
 				},
 				checkbox: false,
-				checkboxChecked: false,
+				checkboxChecked: function() {return false;},
 				value: function() {return Settings.engineSettings.data.customBFSkin;}
 			});
 		
@@ -709,7 +709,7 @@ class OptionsMenu extends MusicBeatState
 					}
 				},
 				checkbox: false,
-				checkboxChecked: false,
+				checkboxChecked: function() {return false;},
 				value: function() {return Settings.engineSettings.data.customGFSkin;}
 			});
 			
@@ -733,7 +733,7 @@ class OptionsMenu extends MusicBeatState
 				
 			},
 			checkbox: false,
-			checkboxChecked: false,
+			checkboxChecked: function() {return false;},
 			value: function() {return "";}
 		});
 		#end
@@ -745,7 +745,7 @@ class OptionsMenu extends MusicBeatState
 				
 			},
 			checkbox: false,
-			checkboxChecked: false,
+			checkboxChecked: function() {return false;},
 			value: function() {return "";}
 		});
 
@@ -766,7 +766,7 @@ class OptionsMenu extends MusicBeatState
 				
 			},
 			checkbox: false,
-			checkboxChecked: false,
+			checkboxChecked: function() {return false;},
 			value: function() {return "";}
 		});
 		
@@ -799,7 +799,7 @@ class OptionsMenu extends MusicBeatState
 					}
 				},
 				checkbox: true,
-				checkboxChecked: Settings.engineSettings.data.autoplayInFreeplay,
+				checkboxChecked: function() {return Settings.engineSettings.data.autoplayInFreeplay;},
 				value: function() {return Std.string(Settings.engineSettings.data.freeplayCooldown).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.freeplayCooldown) + ".0" : Std.string(Settings.engineSettings.data.freeplayCooldown);}
 			});
 		
@@ -826,7 +826,7 @@ class OptionsMenu extends MusicBeatState
 					}
 				},
 				checkbox: false,
-				checkboxChecked: false,
+				checkboxChecked: function() {return false;},
 				value: function() {return Settings.engineSettings.data.fpsCap;}
 			});
 		performance.options.push({
@@ -840,7 +840,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.videoAntialiasing,
+			checkboxChecked: function() {return Settings.engineSettings.data.videoAntialiasing;},
 			value: function() {return "";}
 		});
 		performance.options.push({
@@ -854,7 +854,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.memoryOptimization,
+			checkboxChecked: function() {return Settings.engineSettings.data.memoryOptimization;},
 			value: function() {return "";}
 		});
 		#if sys
@@ -869,7 +869,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.emptySkinCache,
+			checkboxChecked: function() {return Settings.engineSettings.data.emptySkinCache;},
 			value: function() {return "";}
 		});
 		performance.options.push({
@@ -882,7 +882,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: false,
-			checkboxChecked: false,
+			checkboxChecked: function() {return false;},
 			value: function() {return "";}
 		});
 		#end
@@ -893,7 +893,7 @@ class OptionsMenu extends MusicBeatState
 				
 			},
 			checkbox: false,
-			checkboxChecked: false,
+			checkboxChecked: function() {return false;},
 			value: function() {return "";}
 		});
 		settings.push(performance);
@@ -913,7 +913,7 @@ class OptionsMenu extends MusicBeatState
 				
 			},
 			checkbox: false,
-			checkboxChecked: false,
+			checkboxChecked: function() {return false;},
 			value: function() {return "";}
 		});
 		misc.options.push({
@@ -927,7 +927,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.greenScreenMode,
+			checkboxChecked: function() {return Settings.engineSettings.data.greenScreenMode;},
 			value: function() {return "";}
 		});
 		misc.options.push({
@@ -944,7 +944,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.hideOriginalGame,
+			checkboxChecked: function() {return Settings.engineSettings.data.hideOriginalGame;},
 			value: function() {return "";}
 		});
 		// misc.options.push({
@@ -957,7 +957,7 @@ class OptionsMenu extends MusicBeatState
 		// 		}
 		// 	},
 		// 	checkbox: true,
-		// 	checkboxChecked: Settings.engineSettings.data.yoshiEngineCharter,
+		// 	checkboxChecked: function() {return Settings.engineSettings.data.yoshiEngineCharter,
 		// 	value: ""
 		// });
 		misc.options.push({
@@ -967,7 +967,7 @@ class OptionsMenu extends MusicBeatState
 				
 			},
 			checkbox: false,
-			checkboxChecked: false,
+			checkboxChecked: function() {return false;},
 			value: function() {return "";}
 		});
 		settings.push(misc);
@@ -987,7 +987,7 @@ class OptionsMenu extends MusicBeatState
 				
 			},
 			checkbox: false,
-			checkboxChecked: false,
+			checkboxChecked: function() {return false;},
 			value: function() {return "";}
 		});
 		dev.options.push({
@@ -1000,7 +1000,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.developerMode,
+			checkboxChecked: function() {return Settings.engineSettings.data.developerMode;},
 			value: function() {return "";}
 		});
 		dev.options.push({
@@ -1014,7 +1014,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			},
 			checkbox: true,
-			checkboxChecked: Settings.engineSettings.data.debugMode,
+			checkboxChecked: function() {return Settings.engineSettings.data.debugMode;},
 			value: function() {return "";}
 		});
 		settings.push(dev);
@@ -1038,7 +1038,7 @@ class OptionsMenu extends MusicBeatState
 					text : mc.name,
 					description : mc.description,
 					value : function() {return "";},
-					checkboxChecked: false,
+					checkboxChecked: function() {return false;},
 					checkbox: false,
 					updateOnSelected: function(elapsed, option) {
 						if (controls.ACCEPT) {
@@ -1070,7 +1070,7 @@ class OptionsMenu extends MusicBeatState
 			}
 			op = new FNFOption(0, 0 + (i * 80), text, function(elapsed:Float) {
 				o.updateOnSelected(elapsed, op);
-			}, o.checkbox, o.checkboxChecked, "");
+			}, o.checkbox, o.checkboxChecked(), "");
 			for (i in 0...op.length) {
 				var a = op.members[i];
 				if (a != op.checkbox) {
