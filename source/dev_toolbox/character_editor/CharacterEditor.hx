@@ -51,6 +51,7 @@ class CharacterEditor extends MusicBeatState {
     var camOffsetX:FlxUINumericStepper = null;
     var camOffsetY:FlxUINumericStepper = null;
     var healthBar:FlxUISprite;
+    var cross:FlxSprite;
     var c:String = "";
     var arrows:Array<FlxClickableSprite> = [];
 
@@ -121,7 +122,7 @@ class CharacterEditor extends MusicBeatState {
         var json:CharacterJSON = {
             anims: anims,
             globalOffset: {
-                x: character.x - 100,
+                x: character.x - (isPlayer ? 770 : 100),
                 y: character.y - 100
             },
             camOffset: {
@@ -235,6 +236,9 @@ class CharacterEditor extends MusicBeatState {
         character.setPosition(100 + character.charGlobalOffset.x, 100 + character.charGlobalOffset.y);
         
         add(character);
+
+        cross = new FlxSprite(0, 0).loadGraphic(Paths.image("cross", "preload"));
+        add(cross);
 
         anim = new FlxUITabMenu(null, [
             {
@@ -413,11 +417,12 @@ class CharacterEditor extends MusicBeatState {
         scale = new FlxUINumericStepper(10 + label.x + label.width, globalOffsetY.y, 0.1, 1, 0.1, 10, 1);
 
         
-        var label2:FlxUIText = new FlxUIText(10, canBeGFSkinned.y + canBeGFSkinned.height + 10, 32, "Camera Offset");
+        var label2:FlxUIText = new FlxUIText(10, canBeGFSkinned.y + canBeGFSkinned.height + 10, 280, "Camera Offset");
         
         camOffsetX = new FlxUINumericStepper(10, label2.y + label2.height, 10, 0, -999, 999, 0);
-        camOffsetY = new FlxUINumericStepper(camOffsetX.x + camOffsetX.width + 5, label2.y + label2.height36, 10, 0, -999, 999, 0);
-
+        camOffsetY = new FlxUINumericStepper(camOffsetX.x + camOffsetX.width + 5, label2.y + label2.height, 10, 0, -999, 999, 0);
+        camOffsetX.value = character.camOffset.x;
+        camOffsetY.value = character.camOffset.y;
         
         charSettings.add(label);
         charSettings.add(scale);
@@ -608,6 +613,10 @@ class CharacterEditor extends MusicBeatState {
         FlxG.camera.scroll.y += move.y * 400 * elapsed * (FlxG.keys.pressed.SHIFT ? 2.5 : 1);
         character.x = (isPlayer ? 770 : 100) + globalOffsetX.value;
         character.y = 100 + globalOffsetY.value;
+        character.camOffset.x = camOffsetX.value;
+        character.camOffset.y = camOffsetY.value;
+
+
 
         if (character.animation.curAnim != null) {
             // YOU CANT STOP ME HAXEFLIXEL
@@ -623,7 +632,9 @@ class CharacterEditor extends MusicBeatState {
                 character.offset.set(character.animOffsets[character.animation.curAnim.name][0], character.animOffsets[character.animation.curAnim.name][1]);
             }
         }
-        // var midpoint = character.getGraphicMidpoint();
+        var midpoint = character.getGraphicMidpoint();
+        cross.x = -25 + midpoint.x + 150 + character.camOffset.x;
+        cross.y = -25 + midpoint.y - 100 + character.camOffset.y;
         // FlxG.camera.scroll.x = midpoint.x + character.camOffset.x + 150 - 640;
         // FlxG.camera.scroll.y = midpoint.y + character.camOffset.y - 100 - 360;
     }

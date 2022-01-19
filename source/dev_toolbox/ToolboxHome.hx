@@ -1,5 +1,6 @@
 package dev_toolbox;
 
+import FreeplayState.FreeplaySongList;
 import openfl.display.PNGEncoderOptions;
 import sys.io.File;
 import openfl.display.BitmapData;
@@ -9,6 +10,8 @@ import sys.FileSystem;
 import flixel.util.FlxColor;
 import flixel.addons.ui.*;
 import flixel.FlxG;
+import haxe.Json;
+import FreeplayState;
 
 using StringTools;
 
@@ -31,6 +34,10 @@ class ToolboxHome extends MusicBeatState {
 
     // Info tab
     var card:ModCard;
+
+    // Songs tab
+    var songsRadioList:FlxUIRadioGroup;
+
     public override function new(mod:String) {
         if (mod != null) selectedMod = mod;
         super();
@@ -50,6 +57,7 @@ class ToolboxHome extends MusicBeatState {
         CoolUtil.addWhiteBG(this);
         var tabs = [
             {name: "info", label: 'Mod Info'},
+			{name: "songs", label: 'Songs'},
 			{name: "chars", label: 'Characters'},
 		];
         UI_Tabs = new FlxUITabMenu(null, tabs, true);
@@ -61,6 +69,7 @@ class ToolboxHome extends MusicBeatState {
 
         addInfo();
         addChars();
+        addSongs();
 
         var closeButton = new FlxUIButton(FlxG.width - 23, 3, "X", function() {
             FlxG.switchState(new ToolboxMain());
@@ -71,6 +80,71 @@ class ToolboxHome extends MusicBeatState {
         add(closeButton);
        
 		// tab.add(modDropDown);
+    }
+
+    public var freeplaySongs:Map<String, ToolboxFreeplaySong> = [];
+
+    public function refreshSongs() {
+        FileSystem.createDirectory('${Paths.getModsFolder()}\\$selectedMod\\songs\\');   
+        FileSystem.createDirectory('${Paths.getModsFolder()}\\$selectedMod\\data\\');
+        if (!FileSystem.exists('${Paths.getModsFolder()}\\$selectedMod\\data\\freeplaySonglist.json')) {
+            var json:FreeplaySongList = {
+                songs : []
+            };
+            File.saveContent('${Paths.getModsFolder()}\\$selectedMod\\data\\freeplaySonglist.json', Json.stringify(json));
+        }
+        var songs = [for (s in FileSystem.readDirectory('${Paths.getModsFolder()}\\$selectedMod\\songs\\')) if (FileSystem.isDirectory('${Paths.getModsFolder()}\\$selectedMod\\songs\\$s\\')) s];
+        var displayNames = [];
+        var freeplaySonglist:FreeplaySongList = try {Json.parse(File.getContent('${Paths.getModsFolder()}\\$selectedMod\\data\\freeplaySonglist.json'));} catch(e) {null;};
+        if (freeplaySonglist.songs == null) freeplaySonglist.songs = [];
+        freeplaySongs = [];
+        for (s in songs) {
+            var freeplayThingy:FreeplaySong = null;
+            for (entry in freeplaySonglist.songs) {
+                if (entry.name == s) {
+                    freeplayThingy = entry;
+                    break;
+                }
+            }
+            var isInFreeplay = freeplayThingy != null;
+            if (!isInFreeplay) {
+                freeplayThingy = {
+                    name : s,
+                    char : "dad",
+                    displayName : null,
+                    difficulties : ["Easy", "Normal", "Hard"],
+                    color : "#FFFFFF"
+                }
+            }
+            var json:ToolboxFreeplaySong = {
+                char: "dad",
+                displayName: null,
+                difficulties: "Easy,Normal,Hard",
+                color: 0xFFFFFFFF,
+                inFreeplayMenu: isInFreeplay
+            };
+            if (freeplayThingy.char != null) json.char = freeplayThingy.char;
+            if (freeplayThingy.displayName != null) json.displayName = freeplayThingy.displayName;
+            if (freeplayThingy.difficulties != null) json.difficulties = freeplayThingy.difficulties.join(",");
+            if (freeplayThingy.color != null) json.color = FlxColor.fromString(freeplayThingy.color);
+
+            freeplaySongs[s] = json;
+            displayNames.push(freeplayThingy.displayName != null ? freeplayThingy.displayName : s);
+        }
+
+        songsRadioList.updateRadios(songs, displayNames);
+    }
+    public function addSongs() {
+        var tab = new FlxUI(null, UI_Tabs);
+        tab.name = "songs";
+
+        songsRadioList = new FlxUIRadioGroup(10, 10, [], [], function(id) {
+            
+        }, 25, 300, 640);
+        tab.add(songsRadioList);
+        refreshSongs();
+
+        UI_Tabs.addGroup(tab);
     }
     public function addInfo() {
 		var tab = new FlxUI(null, UI_Tabs);
@@ -170,13 +244,14 @@ class ToolboxHome extends MusicBeatState {
         var radios = new FlxUIRadioGroup(10, 10, chars, chars, function(char) {
             
         }, 25, 300, 640);
+        var charLayer = 0;
         var previewButton = new FlxUIButton(10, 670, "Preview", function() {
             if (character != null) {
                 remove(character);
                 character.destroy();
             }
             character = new Character(0, 0, CoolUtil.getCharacterFullString(radios.selectedLabel, selectedMod));
-            add(character);
+            insert(charLayer, character);
             character.screenCenter(Y);
             character.x = 320 + ((1280 - 320) / 2) - (character.width / 2);
             character.setPosition(character.x - character.camOffset.x, character.y - character.camOffset.y);
@@ -218,6 +293,7 @@ class ToolboxHome extends MusicBeatState {
         tab.add(anims_text);
 
 		UI_Tabs.addGroup(tab);
+        charLayer = members.indexOf(lagend);
     }
 
     public function onChangeTab(tab:String) {
@@ -286,6 +362,10 @@ class ToolboxHome extends MusicBeatState {
                     if (character.animation.curAnim == null || character.animation.curAnim.name != anims[selectedAnim - 1]) {
                         character.playAnim(anims[selectedAnim - 1]);
                     }
+                }
+
+                if (FlxG.keys.justPressed.SPACE && selectedAnim > 0) {
+                    character.playAnim(anims[selectedAnim - 1], true);
                 }
                 
         }
