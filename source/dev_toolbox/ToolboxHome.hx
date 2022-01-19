@@ -149,6 +149,7 @@ class ToolboxHome extends MusicBeatState {
         var createButton = new FlxUIButton(10, 670, "Add", function() {
             openSubState(new SongCreator());
         });
+        tab.add(createButton);
 
         UI_Tabs.addGroup(tab);
     }
