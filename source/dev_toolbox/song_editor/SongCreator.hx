@@ -1,5 +1,7 @@
 package dev_toolbox.song_editor;
 
+import haxe.Json;
+import sys.io.File;
 import haxe.io.Path;
 import flixel.FlxSprite;
 import flixel.addons.ui.*;
@@ -54,7 +56,7 @@ class SongCreator extends MusicBeatSubstate {
         });
         songInst.resize(480, 20);
 
-        var label = new FlxUIText(10, songInst.y + songInst.height + 10, 480, "Song Voices (optionnal but recommended)");
+        var label = new FlxUIText(10, songInst.y + songInst.height + 10, 480, "Song Voices (optional but recommended)");
         labels.push(label);
         var songVoices:FlxUIButton = null;
         var voicesPath = "";
@@ -95,11 +97,13 @@ class SongCreator extends MusicBeatSubstate {
             colorPanel.pixels.setPixel32(28, y, 0xFF000000);
             colorPanel.pixels.setPixel32(29, y, 0xFF000000);
         }
-        var editButton = new FlxUIButton(colorPanel.x + colorPanel.width + 10, colorPanel.y, "Edit", function() {
+        var editButton = new FlxUIButton(colorPanel.x + colorPanel.width + 10, colorPanel.y, "Select Color", function() {
             openSubState(new dev_toolbox.ColorPicker(colorPanel.color, function(c) {
                 colorPanel.color = c;
             }));
         });
+
+        var bpm = new FlxUINumericStepper(editButton.x + editButton.width + 10, editButton.y, 1, 150, 1, 999);
 
         var validateButton = new FlxUIButton(250, editButton.y + editButton.height + 10, "Create", function() {
             if (songName.text.trim() == "") {
@@ -130,6 +134,37 @@ class SongCreator extends MusicBeatSubstate {
                 difficulties: [for(e in difficulties.text.split(",")) e.trim()],
                 color: colorPanel.color.toWebString()
             };
+            FileSystem.createDirectory('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\songs\\${json.name}\\');
+            File.copy(instPath.trim(), '${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\songs\\${json.name}\\Inst.ogg');
+            if (voicesPath.trim() != "") File.copy(voicesPath.trim(), '${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\songs\\${json.name}\\Voices.ogg');
+
+            
+            FileSystem.createDirectory('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\data\\${json.name}\\');
+            var _song = {
+                song : {
+                    song: json.name,
+                    notes: [],
+                    bpm: Std.int(bpm.value),
+                    needsVoices: true,
+                    player1: 'bf',
+                    player2: 'dad',
+                    speed: 1,
+                    validScore: true,
+                    keyNumber: 4,
+                    noteTypes : ["Friday Night Funkin':Default Note"]
+                }
+			};
+
+            for (diff in json.difficulties) {
+                if (diff.toLowerCase() == "normal")
+                    File.saveContent('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\data\\${json.name}\\${json.name}.json', Json.stringify(_song));
+                else
+                    File.saveContent('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\data\\${json.name}\\${json.name}-${diff.trim().toLowerCase().replace(" ", "-")}.json', Json.stringify(_song));
+                
+                
+            }
+            
+            // ${json.name}
             home.freeplaySonglist.songs.push(json);
             close();
             home.save();
@@ -146,6 +181,7 @@ class SongCreator extends MusicBeatSubstate {
         tab.add(colorPanel);
         tab.add(editButton);
         tab.add(fpIcon);
+        tab.add(bpm);
         tab.add(validateButton);
 
         tabMenu.resize(500, 30 + validateButton.y + validateButton.height);

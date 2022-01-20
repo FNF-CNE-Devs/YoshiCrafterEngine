@@ -1,5 +1,6 @@
 package dev_toolbox;
 
+import openfl.geom.Rectangle;
 import openfl.desktop.ClipboardTransferMode;
 import flixel.tweens.FlxTween;
 import openfl.desktop.ClipboardFormats;
@@ -19,6 +20,7 @@ import flixel.FlxSprite;
 using StringTools;
 
 class ColorPicker extends MusicBeatSubstate {
+    var colorPickerSprite:FlxUISprite;
     public override function new(color:FlxColor, callback:FlxColor->Void) {
         super();
         var bg:FlxSprite = new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000);
@@ -76,7 +78,7 @@ class ColorPicker extends MusicBeatSubstate {
             color.blue = Std.int(blueNumeric.value);
             colorSprite.color = color;
         };
-        redNumeric.onChange(0);
+        redNumeric.onChange(redNumeric.value);
 
         var flashTween:FlxTween = null;
         var pasteFromClipboard:FlxUIButton = null;
@@ -109,13 +111,28 @@ class ColorPicker extends MusicBeatSubstate {
         });
         pasteFromClipboard.resize(280 - (blueNumeric.x + blueNumeric.width + 10), 20);
 
+
+        colorPickerSprite = new FlxUISprite(10, blueNumeric.y + blueNumeric.height + 10);
+        colorPickerSprite.makeGraphic(102, 102, 0xFF000000);
+
+        var colorSliderSprite = new FlxUISprite(colorPickerSprite.x + colorPickerSprite.width + 10, colorPickerSprite.y);
+        colorSliderSprite.makeGraphic(22, 102, 0xFF000000);
+        colorSliderSprite.pixels.lock();
+        for(y in 1...101) {
+            colorSliderSprite.pixels.fillRect(new Rectangle(1, y, 20, 1), FlxColor.fromHSL(360 / 100 * (y - 1), 1, 0.5));
+        }
+        colorSliderSprite.pixels.unlock();
+        updatePicker();
+
         tab.add(label);
         tab.add(redNumeric);
         tab.add(greenNumeric);
         tab.add(blueNumeric);
         tab.add(pasteFromClipboard);
+        tab.add(colorPickerSprite);
+        tab.add(colorSliderSprite);
 
-        var okButton = new FlxUIButton(0, redNumeric.y + redNumeric.height + 10, "OK", function() {
+        var okButton = new FlxUIButton(10, colorSliderSprite.y + colorSliderSprite.height + 10, "OK", function() {
             close();
             callback(color);
         });
@@ -132,5 +149,6 @@ class ColorPicker extends MusicBeatSubstate {
         add(closeButton);
 
         UI_Tabs.addGroup(tab);
+        UI_Tabs.screenCenter();
     }
 }
