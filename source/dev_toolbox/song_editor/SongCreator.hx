@@ -80,8 +80,28 @@ class SongCreator extends MusicBeatSubstate {
         var label = new FlxUIText(10, difficulties.y + difficulties.height + 10, 480, "Freeplay Character Icon");
         labels.push(label);
         var fpIcon = new FlxUIInputText(10, label.y + label.height, 480, "bf");
+        var colorPanel = new FlxUISprite(10, fpIcon.y + fpIcon.height + 10);
+        colorPanel.makeGraphic(30, 20, 0xFFFFFFFF);
+        colorPanel.pixels.lock();
+        for (x in 0...colorPanel.pixels.width) {
+            colorPanel.pixels.setPixel32(x, 0, 0xFF000000);
+            colorPanel.pixels.setPixel32(x, 1, 0xFF000000);
+            colorPanel.pixels.setPixel32(x, 18, 0xFF000000);
+            colorPanel.pixels.setPixel32(x, 19, 0xFF000000);
+        }
+        for (y in 0...colorPanel.pixels.height) {
+            colorPanel.pixels.setPixel32(0, y, 0xFF000000);
+            colorPanel.pixels.setPixel32(1, y, 0xFF000000);
+            colorPanel.pixels.setPixel32(28, y, 0xFF000000);
+            colorPanel.pixels.setPixel32(29, y, 0xFF000000);
+        }
+        var editButton = new FlxUIButton(colorPanel.x + colorPanel.width + 10, colorPanel.y, "Edit", function() {
+            openSubState(new dev_toolbox.ColorPicker(colorPanel.color, function(c) {
+                colorPanel.color = c;
+            }));
+        });
 
-        var validateButton = new FlxUIButton(250, fpIcon.y + fpIcon.height + 10, "Create", function() {
+        var validateButton = new FlxUIButton(250, editButton.y + editButton.height + 10, "Create", function() {
             if (songName.text.trim() == "") {
                 openSubState(ToolboxMessage.showMessage("Error", "The song name cannot be empty."));
                 return;
@@ -94,7 +114,7 @@ class SongCreator extends MusicBeatSubstate {
                 openSubState(ToolboxMessage.showMessage("Error", "You haven't selected any instrumental OGG file or the file is invalid."));
                 return;
             }
-            if (fpIcon.trim() == "") {
+            if (fpIcon.text.trim() == "") {
                 openSubState(ToolboxMessage.showMessage("Error", "A Freeplay icon character is required."));
                 return;
             }
@@ -103,15 +123,19 @@ class SongCreator extends MusicBeatSubstate {
                 return;
             }
             var home = cast(FlxG.state, dev_toolbox.ToolboxHome);
-            home.freeplaySongs[songName] = {
+            var json:FreeplayState.FreeplaySong = {
+                name: songName.text.trim(),
                 char: fpIcon.text,
                 displayName: songDisplayName.text.trim() == "" ? null : songDisplayName.text.trim(),
-                difficulties: difficulties.text,
-                color: 0xFFFFFFFF,
-                inFreeplayMenu: true
+                difficulties: [for(e in difficulties.text.split(",")) e.trim()],
+                color: colorPanel.color.toWebString()
             };
+            home.freeplaySonglist.songs.push(json);
             close();
+            home.save();
+            home.refreshSongs();
         });
+        validateButton.x -= validateButton.width / 2;
 
         for (l in labels) tab.add(l);
         tab.add(songName);
@@ -119,6 +143,9 @@ class SongCreator extends MusicBeatSubstate {
         tab.add(songInst);
         tab.add(songVoices);
         tab.add(difficulties);
+        tab.add(colorPanel);
+        tab.add(editButton);
+        tab.add(fpIcon);
         tab.add(validateButton);
 
         tabMenu.resize(500, 30 + validateButton.y + validateButton.height);

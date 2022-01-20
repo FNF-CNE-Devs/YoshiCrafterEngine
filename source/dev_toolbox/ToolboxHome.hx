@@ -83,8 +83,12 @@ class ToolboxHome extends MusicBeatState {
 		// tab.add(modDropDown);
     }
 
-    public var freeplaySongs:Map<String, ToolboxFreeplaySong> = [];
-
+    public var freeplaySonglist:FreeplaySongList = {
+        songs : []
+    }
+    public function save() {
+        File.saveContent('${Paths.getModsFolder()}\\$selectedMod\\data\\freeplaySonglist.json', Json.stringify(freeplaySonglist, "\t"));
+    }
     public function refreshSongs() {
         FileSystem.createDirectory('${Paths.getModsFolder()}\\$selectedMod\\songs\\');   
         FileSystem.createDirectory('${Paths.getModsFolder()}\\$selectedMod\\data\\');
@@ -94,46 +98,19 @@ class ToolboxHome extends MusicBeatState {
             };
             File.saveContent('${Paths.getModsFolder()}\\$selectedMod\\data\\freeplaySonglist.json', Json.stringify(json));
         }
-        var songs = [for (s in FileSystem.readDirectory('${Paths.getModsFolder()}\\$selectedMod\\songs\\')) if (FileSystem.isDirectory('${Paths.getModsFolder()}\\$selectedMod\\songs\\$s\\')) s];
+        // var songs = [for (s in FileSystem.readDirectory('${Paths.getModsFolder()}\\$selectedMod\\songs\\')) if (FileSystem.isDirectory('${Paths.getModsFolder()}\\$selectedMod\\songs\\$s\\')) s];
         var displayNames = [];
-        var freeplaySonglist:FreeplaySongList = try {Json.parse(File.getContent('${Paths.getModsFolder()}\\$selectedMod\\data\\freeplaySonglist.json'));} catch(e) {null;};
+        freeplaySonglist = try {Json.parse(File.getContent('${Paths.getModsFolder()}\\$selectedMod\\data\\freeplaySonglist.json'));} catch(e) {null;};
+        if (freeplaySonglist == null) freeplaySonglist = {songs : []};
         if (freeplaySonglist.songs == null) freeplaySonglist.songs = [];
-        freeplaySongs = [];
-        for (s in songs) {
-            var freeplayThingy:FreeplaySong = null;
-            for (entry in freeplaySonglist.songs) {
-                if (entry.name == s) {
-                    freeplayThingy = entry;
-                    break;
-                }
-            }
-            var isInFreeplay = freeplayThingy != null;
-            if (!isInFreeplay) {
-                freeplayThingy = {
-                    name : s,
-                    char : "dad",
-                    displayName : null,
-                    difficulties : ["Easy", "Normal", "Hard"],
-                    color : "#FFFFFF"
-                }
-            }
-            var json:ToolboxFreeplaySong = {
-                char: "dad",
-                displayName: null,
-                difficulties: "Easy,Normal,Hard",
-                color: 0xFFFFFFFF,
-                inFreeplayMenu: isInFreeplay
-            };
-            if (freeplayThingy.char != null) json.char = freeplayThingy.char;
-            if (freeplayThingy.displayName != null) json.displayName = freeplayThingy.displayName;
-            if (freeplayThingy.difficulties != null) json.difficulties = freeplayThingy.difficulties.join(",");
-            if (freeplayThingy.color != null) json.color = FlxColor.fromString(freeplayThingy.color);
 
-            freeplaySongs[s] = json;
-            displayNames.push(freeplayThingy.displayName != null ? freeplayThingy.displayName : s);
+        for (e in freeplaySonglist.songs) {
+            var freeplayThingy:FreeplayState.FreeplaySong = e;
+
+            displayNames.push(freeplayThingy.displayName != null ? freeplayThingy.displayName : freeplayThingy.name);
         }
 
-        songsRadioList.updateRadios(songs, displayNames);
+        songsRadioList.updateRadios([for (e in freeplaySonglist.songs) e.name], displayNames);
     }
     public function addSongs() {
         var tab = new FlxUI(null, UI_Tabs);
