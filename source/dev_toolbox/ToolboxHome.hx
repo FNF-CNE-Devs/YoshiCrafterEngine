@@ -18,26 +18,26 @@ using StringTools;
 
 class ToolboxHome extends MusicBeatState {
 
-    var nonEditableMods:Array<String> = ["Friday Night Funkin'", "YoshiEngine"];
+    public var nonEditableMods:Array<String> = ["Friday Night Funkin'", "YoshiEngine"];
 
     public static var selectedMod:String = "Friday Night Funkin'";
-    var oldTab:String = "";
+    public var oldTab:String = "";
 
     // Characters tab
-    var character:Character = null;
-    var danceTime:Float = 0;
-    var UI_Tabs:FlxUITabMenu;
-    var legend:FlxUIText;
-    var anims_text:FlxUIText;
+    public var character:Character = null;
+    public var danceTime:Float = 0;
+    public var UI_Tabs:FlxUITabMenu;
+    public var legend:FlxUIText;
+    public var anims_text:FlxUIText;
 
-    var anims:Array<String> = [];
-    var selectedAnim:Int = 0;
+    public var anims:Array<String> = [];
+    public var selectedAnim:Int = 0;
 
     // Info tab
-    var card:ModCard;
+    public var card:ModCard;
 
     // Songs tab
-    var songsRadioList:FlxUIRadioGroup;
+    public var songsRadioList:FlxUIRadioGroup;
 
     public override function new(mod:String) {
         if (mod != null) selectedMod = mod;
