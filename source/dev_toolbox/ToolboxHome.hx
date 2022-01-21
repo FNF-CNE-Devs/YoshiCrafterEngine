@@ -21,6 +21,8 @@ import flixel.addons.ui.*;
 import flixel.FlxG;
 import haxe.Json;
 import FreeplayState;
+import StoryMenuState.WeeksJson;
+import flixel.text.FlxText;
 
 using StringTools;
 
@@ -96,6 +98,7 @@ class ToolboxHome extends MusicBeatState {
             {name: "info", label: 'Mod Info'},
 			{name: "songs", label: 'Songs'},
 			{name: "chars", label: 'Characters'},
+			{name: "weeks", label: 'Weeks'},
 		];
         UI_Tabs = new FlxUITabMenu(null, tabs, true);
         UI_Tabs.x = 0;
@@ -107,6 +110,7 @@ class ToolboxHome extends MusicBeatState {
         addInfo();
         addChars();
         addSongs();
+        addWeeks();
 
         var closeButton = new FlxUIButton(FlxG.width - 23, 3, "X", function() {
             FlxG.switchState(new ToolboxMain());
@@ -312,6 +316,45 @@ class ToolboxHome extends MusicBeatState {
         tab.add(createButton);
 
 
+        UI_Tabs.addGroup(tab);
+    }
+
+    public function addWeeks() {
+        var weekJson:WeeksJson = {
+            weeks : []
+        };
+        var weeksPath = '${Paths.getModsFolder()}\\$selectedMod\\weeks.json';
+        if (FileSystem.exists(weeksPath)) {
+            weekJson = Json.parse(File.getContent(weeksPath));
+        } else {
+            File.saveContent(weeksPath, Json.stringify(weekJson));
+        }
+        
+        var tab = new FlxUI(null, UI_Tabs);
+        tab.name = "weeks";
+
+        var radioList = new FlxUIRadioGroup(10, 10, [for (i in 0...weekJson.weeks.length) Std.string(i)], [for(w in weekJson.weeks) w.name.trim() == "" ? "(Untitled)" : w.name], function(id) {
+            trace(id);
+        },  25, 280);
+
+        var x = UI_Tabs.x + UI_Tabs.width;
+        var blackBG = new FlxSprite(x, 0).makeGraphic(Std.int(1280 - UI_Tabs.width), 720, 0xFF000000);
+        add(blackBG);
+        
+        var scoreText = new FlxText(x + 10, 10, 0, "SCORE: 0", 36);
+		scoreText.setFormat("VCR OSD Mono", 32);
+        add(scoreText);
+
+        var txtWeekTitle = new FlxText(FlxG.width * 0.7 , 10, 0, "Select a week...", 32);
+		txtWeekTitle.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
+		txtWeekTitle.alpha = 0.7;
+        add(txtWeekTitle);
+
+        var yellowBG = new FlxSprite(x + 0, 56).makeGraphic(Std.int(FlxG.width - x), 400, FlxColor.WHITE);
+		yellowBG.color = 0xFFF9CF51;
+        add(yellowBG);
+
+        tab.add(radioList);
         UI_Tabs.addGroup(tab);
     }
     public function addInfo() {
