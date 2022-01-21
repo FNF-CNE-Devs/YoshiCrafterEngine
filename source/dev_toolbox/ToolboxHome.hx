@@ -333,9 +333,7 @@ class ToolboxHome extends MusicBeatState {
         var tab = new FlxUI(null, UI_Tabs);
         tab.name = "weeks";
 
-        var radioList = new FlxUIRadioGroup(10, 10, [for (i in 0...weekJson.weeks.length) Std.string(i)], [for(w in weekJson.weeks) w.name.trim() == "" ? "(Untitled)" : w.name], function(id) {
-            trace(id);
-        },  25, 280);
+        
 
         var x = UI_Tabs.x + UI_Tabs.width;
         var blackBG = new FlxSprite(x, 0).makeGraphic(Std.int(1280 - UI_Tabs.width), 720, 0xFF000000);
@@ -345,7 +343,7 @@ class ToolboxHome extends MusicBeatState {
 		scoreText.setFormat("VCR OSD Mono", 32);
         add(scoreText);
 
-        var txtWeekTitle = new FlxText(FlxG.width * 0.7 , 10, 0, "Select a week...", 32);
+        var txtWeekTitle = new FlxText(x, 10, FlxG.width - x, "Select a week...", 32);
 		txtWeekTitle.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
 		txtWeekTitle.alpha = 0.7;
         add(txtWeekTitle);
@@ -353,6 +351,37 @@ class ToolboxHome extends MusicBeatState {
         var yellowBG = new FlxSprite(x + 0, 56).makeGraphic(Std.int(FlxG.width - x), 400, FlxColor.WHITE);
 		yellowBG.color = 0xFFF9CF51;
         add(yellowBG);
+
+        var bf:MenuCharacter = new MenuCharacter(x + (FlxG.width * 0.25) * (2 + 0) - 150, "bf");
+        bf.y += 70;
+        bf.antialiasing = true;
+        bf.setGraphicSize(Std.int(bf.width * 0.9));
+        bf.updateHitbox();
+        bf.x -= 80;
+        add(bf);
+
+        var weekButton:FlxSprite = new FlxSprite(0, yellowBG.y + yellowBG.height + 10);
+        weekButton.antialiasing = true;
+
+        var labels:Array<FlxUIText> = [];
+        var label = new FlxUIText(10, FlxG.height / 2, 300, "Week Name");
+        var weekName:FlxUIInputText = new FlxUIInputText(10, label.y + label.height, 300, "");
+        
+
+        var radioList = new FlxUIRadioGroup(10, 10, [for (i in 0...weekJson.weeks.length) Std.string(i)], [for(w in weekJson.weeks) w.name.trim() == "" ? "(Untitled)" : w.name], function(id) {
+            trace(id);
+            var w = weekJson.weeks[Std.parseInt(id)];
+            var b = null;
+            try {
+                b = Paths.getBitmapOutsideAssets('${Paths.getModsFolder()}\\$selectedMod\\${w.buttonSprite}');
+            } catch(e) {
+                trace(e);
+            }
+            if (b == null) b = new BitmapData(1, 1, 0x00000000);
+            weekButton.loadGraphic(b);
+            weekButton.x = (2*x) + (((FlxG.width - (2*x)) / 2) - (weekButton.width / 2));
+            add(weekButton);
+        },  25, 280);
 
         tab.add(radioList);
         UI_Tabs.addGroup(tab);
