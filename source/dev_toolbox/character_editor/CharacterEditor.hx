@@ -632,7 +632,7 @@ class CharacterEditor extends MusicBeatState {
                 character.offset.set(character.animOffsets[character.animation.curAnim.name][0], character.animOffsets[character.animation.curAnim.name][1]);
             }
         }
-        var midpoint = character.getGraphicMidpoint();
+        var midpoint = character.getMidpoint();
         cross.x = -25 + midpoint.x + 150 + character.camOffset.x;
         cross.y = -25 + midpoint.y - 100 + character.camOffset.y;
         // FlxG.camera.scroll.x = midpoint.x + character.camOffset.x + 150 - 640;

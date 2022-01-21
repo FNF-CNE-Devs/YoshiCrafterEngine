@@ -1742,7 +1742,7 @@ class PlayState extends MusicBeatState
 
 		for (frameIndex in iconP1.frameIndexes) {
 			if (frameIndex.length == 2) {
-				if (healthBar.percent > frameIndex[0]) {
+				if (healthBar.percent >= frameIndex[0]) {
 					iconP1.animation.curAnim.curFrame = frameIndex[1];
 					break;
 				}
@@ -1750,7 +1750,7 @@ class PlayState extends MusicBeatState
 		}
 		for (frameIndex in iconP2.frameIndexes) {
 			if (frameIndex.length == 2) {
-				if ((100 - healthBar.percent) > frameIndex[0]) {
+				if ((100 - healthBar.percent) >= frameIndex[0]) {
 					iconP2.animation.curAnim.curFrame = frameIndex[1];
 					break;
 				}

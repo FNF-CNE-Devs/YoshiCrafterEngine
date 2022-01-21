@@ -16,6 +16,14 @@ class HealthIcon extends FlxSprite
 	private function set_frameIndexes(f:Array<Array<Int>>):Array<Array<Int>> {
 		frameIndexes = f;
 		animation.curAnim.reset();
+		if (PlayState.current != null) {
+			for(i in frameIndexes) {
+				if ((i[0] >= PlayState.current.healthBar.percent && animation.curAnim.flipX) || (i[0] >= (100 - PlayState.current.healthBar.percent) && !animation.curAnim.flipX)) {
+					animation.curAnim.curFrame = i[1];
+					break;
+				}
+			}
+		}
 		return frameIndexes;
 	}
 
