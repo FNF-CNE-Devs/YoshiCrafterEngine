@@ -20,9 +20,48 @@ import flixel.FlxSprite;
 using StringTools;
 
 class ColorPicker extends MusicBeatSubstate {
+    var colorSprite:FlxUISprite;
     var colorPickerSprite:FlxUISprite;
-    public override function new(color:FlxColor, callback:FlxColor->Void) {
+    var colorSliderSprite:FlxUISprite;
+    var colorSliderThing:FlxUISprite;
+    var colorPickerThing:FlxUISprite;
+    var color:FlxColor;
+    var redNumeric:FlxUINumericStepperPlus;
+    var greenNumeric:FlxUINumericStepperPlus;
+    var blueNumeric:FlxUINumericStepperPlus;
+
+    public function updatePicker(c:FlxColor) {
+        colorPickerSprite.pixels.lock();
+        var hue = c.hue;
+        for (x in 0...100) {
+            for (y in 0...100) {
+                colorPickerSprite.pixels.setPixel32(x + 1, y + 1, FlxColor.fromHSL(hue, x / 100, y / 100));
+            }
+        }
+        colorPickerSprite.pixels.unlock();
+        
+        
+        color.hue = hue;
+        updateColor(null, false);
+
+        colorPickerThing.visible = true;
+        colorPickerThing.setPosition(colorPickerSprite.x + (color.saturation * 100) - 4, colorPickerSprite.y + (color.lightness * 100) - 5);
+        colorSliderThing.visible = true;
+        colorSliderThing.y = colorSliderSprite.y + (c.hue / 3.6) - 3;
+
+    }
+
+    public function updateColor(?e:Dynamic, pick:Bool = true) {
+        colorSprite.color = color;
+        if (e != redNumeric) redNumeric.value = color.red;
+        if (e != greenNumeric) greenNumeric.value = color.green;
+        if (e != blueNumeric) blueNumeric.value = color.blue;
+        if (pick) updatePicker(color);
+    }
+    
+    public override function new(color2:FlxColor, callback:FlxColor->Void) {
         super();
+        color = color2;
         var bg:FlxSprite = new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000);
         bg.scrollFactor.set();
         add(bg);
@@ -40,7 +79,7 @@ class ColorPicker extends MusicBeatSubstate {
 		var tab = new FlxUI(null, UI_Tabs);
 		tab.name = "colorPicker";
 
-        var colorSprite:FlxUISprite = new FlxUISprite(10, 10);
+        colorSprite = new FlxUISprite(10, 10);
         colorSprite.makeGraphic(70, 55, 0xFFFFFFFF);
         colorSprite.pixels.lock();
         for (x in 0...colorSprite.pixels.width) {
@@ -59,26 +98,25 @@ class ColorPicker extends MusicBeatSubstate {
         colorSprite.x = 175;
         tab.add(colorSprite);
 		var label = new FlxUIText(10, 75, 400, "RGB");
-        var redNumeric:FlxUINumericStepperPlus = new FlxUINumericStepperPlus(10, 75 + label.height, 1, 0, 0, 255, 0);
-        var greenNumeric:FlxUINumericStepperPlus = new FlxUINumericStepperPlus(20 + redNumeric.width, 75 + label.height, 1, 0, 0, 255, 0);
-        var blueNumeric:FlxUINumericStepperPlus = new FlxUINumericStepperPlus(30 + greenNumeric.width + redNumeric.width, 75 + label.height, 1, 0, 0, 255, 0);
+        redNumeric = new FlxUINumericStepperPlus(10, 75 + label.height, 1, 0, 0, 255, 0);
+        greenNumeric = new FlxUINumericStepperPlus(20 + redNumeric.width, 75 + label.height, 1, 0, 0, 255, 0);
+        blueNumeric = new FlxUINumericStepperPlus(30 + greenNumeric.width + redNumeric.width, 75 + label.height, 1, 0, 0, 255, 0);
         redNumeric.value = color.red;
         greenNumeric.value = color.green;
         blueNumeric.value = color.blue;
         tab.add(label);
         redNumeric.onChange = function(value) {
             color.red = Std.int(redNumeric.value);
-            colorSprite.color = color;
+            updateColor(redNumeric);
         };
         greenNumeric.onChange = function(value) {
             color.green = Std.int(greenNumeric.value);
-            colorSprite.color = color;
+            updateColor(greenNumeric);
         };
         blueNumeric.onChange = function(value) {
             color.blue = Std.int(blueNumeric.value);
-            colorSprite.color = color;
+            updateColor(blueNumeric);
         };
-        redNumeric.onChange(redNumeric.value);
 
         var flashTween:FlxTween = null;
         var pasteFromClipboard:FlxUIButton = null;
@@ -115,14 +153,24 @@ class ColorPicker extends MusicBeatSubstate {
         colorPickerSprite = new FlxUISprite(10, blueNumeric.y + blueNumeric.height + 10);
         colorPickerSprite.makeGraphic(102, 102, 0xFF000000);
 
-        var colorSliderSprite = new FlxUISprite(colorPickerSprite.x + colorPickerSprite.width + 10, colorPickerSprite.y);
+
+        colorSliderSprite = new FlxUISprite(colorPickerSprite.x + colorPickerSprite.width + 10, colorPickerSprite.y);
         colorSliderSprite.makeGraphic(22, 102, 0xFF000000);
         colorSliderSprite.pixels.lock();
+
+        colorSliderThing = new FlxUISprite(colorSliderSprite.x + colorSliderSprite.width + 1);
+        colorSliderThing.loadGraphic(Paths.image("ui/colorHueSelector", "shared"));
+        colorSliderThing.visible = false;
+
+        colorPickerThing = new FlxUISprite(0, 0);
+        colorPickerThing.loadGraphic(Paths.image("ui/colorSelector", "shared"));
+        colorPickerThing.visible = false;
+
         for(y in 1...101) {
             colorSliderSprite.pixels.fillRect(new Rectangle(1, y, 20, 1), FlxColor.fromHSL(360 / 100 * (y - 1), 1, 0.5));
         }
         colorSliderSprite.pixels.unlock();
-        updatePicker();
+        updateColor();
 
         tab.add(label);
         tab.add(redNumeric);
@@ -131,6 +179,8 @@ class ColorPicker extends MusicBeatSubstate {
         tab.add(pasteFromClipboard);
         tab.add(colorPickerSprite);
         tab.add(colorSliderSprite);
+        tab.add(colorPickerThing);
+        tab.add(colorSliderThing);
 
         var okButton = new FlxUIButton(10, colorSliderSprite.y + colorSliderSprite.height + 10, "OK", function() {
             close();
@@ -138,10 +188,13 @@ class ColorPicker extends MusicBeatSubstate {
         });
         tab.add(okButton);
 
+        UI_Tabs.resize(420, okButton.y + 50);
+        UI_Tabs.screenCenter();
+        UI_Tabs.y -= UI_Tabs.y % 1;
+
         var closeButton = new FlxUIButton(UI_Tabs.x + UI_Tabs.width - 23, UI_Tabs.y + 3, "X", function() {
             close();
         });
-        UI_Tabs.resize(420, okButton.y + 50);
         closeButton.color = 0xFFFF4444;
         closeButton.resize(20, 20);
         closeButton.label.color = FlxColor.WHITE;
@@ -149,6 +202,39 @@ class ColorPicker extends MusicBeatSubstate {
         add(closeButton);
 
         UI_Tabs.addGroup(tab);
-        UI_Tabs.screenCenter();
+    }
+
+    public override function update(elapsed:Float) {
+        super.update(elapsed);
+            var screenPos = FlxG.mouse.getScreenPosition(FlxG.camera);
+        if (FlxG.mouse.pressed) {
+            if (
+                screenPos.x > colorPickerSprite.x &&
+                screenPos.y > colorPickerSprite.y &&
+                screenPos.x < colorPickerSprite.x + colorPickerSprite.width &&
+                screenPos.y < colorPickerSprite.y + colorPickerSprite.height) {
+                    var x = Std.int(screenPos.x - colorPickerSprite.x);
+                    var y = Std.int(screenPos.y - colorPickerSprite.y);
+                    var c = colorPickerSprite.pixels.getPixel32(x, y);
+                    if (c == color) return;
+                    color = colorPickerSprite.pixels.getPixel32(x, y);
+
+                    
+                    colorPickerThing.visible = true;
+                    colorPickerThing.setPosition(Std.int(colorPickerSprite.x + x - 6), Std.int(colorPickerSprite.y + y - 5));
+
+                    updateColor(null, false);
+            }
+            if (
+                screenPos.x > colorSliderSprite.x &&
+                screenPos.y > colorSliderSprite.y &&
+                screenPos.x < colorSliderSprite.x + colorSliderSprite.width &&
+                screenPos.y < colorSliderSprite.y + colorSliderSprite.height) {
+                    var x = Std.int(screenPos.x - colorSliderSprite.x);
+                    var y = Std.int(screenPos.y - colorSliderSprite.y);
+                    updatePicker(colorSliderSprite.pixels.getPixel32(x,y));
+            }
+        }
+        
     }
 }

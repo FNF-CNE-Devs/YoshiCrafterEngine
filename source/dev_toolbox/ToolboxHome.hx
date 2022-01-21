@@ -1,5 +1,13 @@
 package dev_toolbox;
 
+import Song.SwagSong;
+import haxe.io.Path;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.math.FlxMath;
+import flixel.FlxSprite;
+import flixel.util.FlxCollision;
+import flixel.addons.transition.FlxTransitionableState;
 import dev_toolbox.song_editor.SongCreator;
 import FreeplayState.FreeplaySongList;
 import openfl.display.PNGEncoderOptions;
@@ -22,6 +30,21 @@ class ToolboxHome extends MusicBeatState {
 
     public static var selectedMod:String = "Friday Night Funkin'";
     public var oldTab:String = "";
+    public var bg:FlxSprite;
+    public var bgColorTween:FlxTween;
+    public var bgTweenColor(default, set):Null<FlxColor>;
+    private function set_bgTweenColor(c:Null<FlxColor>) {
+        bgTweenColor = c;
+        if (bgTweenColor == null) bgTweenColor = 0xFFFFFFFF;
+        if (bgColorTween != null) {
+            bgColorTween.cancel();
+            bgColorTween.destroy();
+        }
+        bgColorTween = FlxTween.color(bg, 1, bg.color, bgTweenColor, {
+            ease : FlxEase.quartInOut
+        });
+        return c;
+    }
 
     // Characters tab
     public var character:Character = null;
@@ -38,6 +61,18 @@ class ToolboxHome extends MusicBeatState {
 
     // Songs tab
     public var songsRadioList:FlxUIRadioGroup;
+    public var displayHealthIcon:HealthIcon;
+    public var displayAlphabet:Alphabet;
+    // var songName:FlxUIInputText;
+    var songDisplayName:FlxUIInputText;
+    var difficulties:FlxUIInputText;
+    var fpIcon:FlxUIInputText;
+    var colorPanel:FlxUISprite;
+    var songTabThingy:FlxUITabMenu;
+    var fpSongToEdit:FreeplaySong;
+    public var freeplaySonglist:FreeplaySongList = {
+        songs : []
+    }
 
     public override function new(mod:String) {
         if (mod != null) selectedMod = mod;
@@ -55,7 +90,8 @@ class ToolboxHome extends MusicBeatState {
             };
             ModSupport.modConfig[mod] = conf;
         }
-        CoolUtil.addWhiteBG(this);
+        bg = CoolUtil.addWhiteBG(this);
+        bgTweenColor = 0xFFFFFFFF;
         var tabs = [
             {name: "info", label: 'Mod Info'},
 			{name: "songs", label: 'Songs'},
@@ -83,9 +119,6 @@ class ToolboxHome extends MusicBeatState {
 		// tab.add(modDropDown);
     }
 
-    public var freeplaySonglist:FreeplaySongList = {
-        songs : []
-    }
     public function save() {
         File.saveContent('${Paths.getModsFolder()}\\$selectedMod\\data\\freeplaySonglist.json', Json.stringify(freeplaySonglist, "\t"));
     }
@@ -112,12 +145,162 @@ class ToolboxHome extends MusicBeatState {
 
         songsRadioList.updateRadios([for (e in freeplaySonglist.songs) e.name], displayNames);
     }
+
+    function updateSongTab(s:FreeplaySong, ?replace:Bool = true) {
+        if (replace) fpSongToEdit = s;
+        if (displayAlphabet != null) {
+            remove(displayAlphabet);
+            displayAlphabet.destroy();
+        }
+        if (displayHealthIcon != null) {
+            remove(displayHealthIcon);
+            displayHealthIcon.destroy();
+        }
+
+        songDisplayName.text = s.displayName == null ? "" : s.displayName;
+        difficulties.text = s.difficulties.join(", ");
+        fpIcon.text = s.char;
+        var c:Null<FlxColor> = FlxColor.fromString(s.color);
+        if (c == null) c = 0xFFFFFFFF;
+        colorPanel.color = c;
+
+        displayAlphabet = new Alphabet(0, 0, s.displayName == null ? s.name : s.displayName, true);
+        add(displayAlphabet);
+        displayAlphabet.x = 500;
+        displayAlphabet.y = 50;
+        bgTweenColor = FlxColor.fromString(s.color);
+        if (bgTweenColor == null) bgTweenColor = 0xFFFFFFFF;
+
+        displayHealthIcon = new HealthIcon(s.char == null ? "unknown" : s.char, false, selectedMod);
+        displayHealthIcon.x = displayAlphabet.x + displayAlphabet.width;
+        displayHealthIcon.y = displayAlphabet.y + (displayAlphabet.height / 2) - (displayHealthIcon.height / 2);
+        add(displayHealthIcon);
+    }
     public function addSongs() {
         var tab = new FlxUI(null, UI_Tabs);
         tab.name = "songs";
+        
+        songTabThingy = new FlxUITabMenu(null, [
+            {
+                label: "Song Settings",
+                name: "settings"
+            }
+        ], true);
+        songTabThingy.resize(500, 350);
+        songTabThingy.x = 320 + ((1280 - 320) / 2) - 250;
+
+        var songSettings = new FlxUI(null, songTabThingy);
+        songSettings.name = "settings";
+
+        var labels:Array<FlxUIText> = [];
+
+        // var label = new FlxUIText(10, 10, 480, "Song Name");
+        // labels.push(label);
+        // songName = new FlxUIInputText(10, label.y + label.height, 480, "");
+
+        var label = new FlxUIText(10, 10, 480, "Song Display Name (leave blank for none)");
+        labels.push(label);
+        songDisplayName = new FlxUIInputText(10, label.y + label.height, 480, "");
+
+        var label = new FlxUIText(10, songDisplayName.y + songDisplayName.height + 10, 480, "Song Difficulties (seperate using \",\")");
+        labels.push(label);
+        difficulties = new FlxUIInputText(10, label.y + label.height, 480, "Easy, Normal, Hard");
+
+        var label = new FlxUIText(10, difficulties.y + difficulties.height + 10, 480, "Freeplay Character Icon");
+        labels.push(label);
+        fpIcon = new FlxUIInputText(10, label.y + label.height, 480, "bf");
+        colorPanel = new FlxUISprite(10, fpIcon.y + fpIcon.height + 10);
+        colorPanel.makeGraphic(30, 20, 0xFFFFFFFF);
+        colorPanel.pixels.lock();
+        for (x in 0...colorPanel.pixels.width) {
+            colorPanel.pixels.setPixel32(x, 0, 0xFF000000);
+            colorPanel.pixels.setPixel32(x, 1, 0xFF000000);
+            colorPanel.pixels.setPixel32(x, 18, 0xFF000000);
+            colorPanel.pixels.setPixel32(x, 19, 0xFF000000);
+        }
+        for (y in 0...colorPanel.pixels.height) {
+            colorPanel.pixels.setPixel32(0, y, 0xFF000000);
+            colorPanel.pixels.setPixel32(1, y, 0xFF000000);
+            colorPanel.pixels.setPixel32(28, y, 0xFF000000);
+            colorPanel.pixels.setPixel32(29, y, 0xFF000000);
+        }
+        var editButton = new FlxUIButton(colorPanel.x + colorPanel.width + 10, colorPanel.y, "Select Color", function() {
+            openSubState(new dev_toolbox.ColorPicker(colorPanel.color, function(c) {
+                colorPanel.color = c;
+            }));
+        });
+        var applyButton = new FlxUIButton(editButton.x + editButton.width + 10, colorPanel.y, "Apply & Save", function() {
+            fpSongToEdit.displayName = songDisplayName.text.trim() == "" ? null : songDisplayName.text.trim();
+            var diffs = difficulties.text.split(",");
+            var bpm = 100;
+            try {
+                for (f in FileSystem.readDirectory('${Paths.getModsFolder()}\\$selectedMod\\data\\${fpSongToEdit.name}\\')) {
+                    if (f.toLowerCase().startsWith('${fpSongToEdit.name.toLowerCase()}') && f.toLowerCase().endsWith('.json')) {
+                        trace('$f is a chart.');
+                        var chart:SwagSong = Json.parse('${Paths.getModsFolder()}\\$selectedMod\\data\\${fpSongToEdit.name}\\$f');
+                        bpm = chart.bpm;
+                        break;
+                    }
+                }
+            } catch(e) {
+
+            }
+            var _song = {
+                song : {
+                    song: fpSongToEdit.name,
+                    notes: [],
+                    bpm: bpm,
+                    needsVoices: true,
+                    player1: 'bf',
+                    player2: 'dad',
+                    speed: 1,
+                    validScore: true,
+                    keyNumber: 4,
+                    noteTypes : ["Friday Night Funkin':Default Note"]
+                }
+			};
+            for(d in diffs) {
+                var diff = d.trim().toLowerCase().replace(" ", "-");
+                var path = '${Paths.getModsFolder()}\\$selectedMod\\data\\${fpSongToEdit.name}\\${fpSongToEdit.name}-${d.trim().toLowerCase()}.json';
+                if (diff == "normal") {
+                    path = '${Paths.getModsFolder()}\\$selectedMod\\data\\${fpSongToEdit.name}\\${fpSongToEdit.name}.json';
+                }
+                if (!FileSystem.exists(path)) {
+                    File.saveContent(path, Json.stringify(_song, "\t"));
+                }
+            }
+            fpSongToEdit.difficulties = [for(t in diffs) t.trim()];
+            fpSongToEdit.color = colorPanel.color.toWebString();
+            fpSongToEdit.char = fpIcon.text.trim();
+            
+            save();
+            refreshSongs();
+            for(s in freeplaySonglist.songs) {
+                if (s.name == fpSongToEdit.name) {
+                    fpSongToEdit = s;
+                }
+            }
+            updateSongTab(fpSongToEdit, false);
+        });
+
+        songTabThingy.resize(500, applyButton.y + applyButton.height + 30);
+        songTabThingy.y = 710 - songTabThingy.height;
+
+
+        for (l in labels) songSettings.add(l);
+        songSettings.add(songDisplayName);
+        songSettings.add(difficulties);
+        songSettings.add(colorPanel);
+        songSettings.add(fpIcon);
+        songSettings.add(editButton);
+        songSettings.add(applyButton);
+        songTabThingy.addGroup(songSettings);
 
         songsRadioList = new FlxUIRadioGroup(10, 10, [], [], function(id) {
-            
+            var s:FreeplaySong = null;
+            for(so in freeplaySonglist.songs) if (so.name == id) s = so;
+            updateSongTab(s);
+            add(songTabThingy);
         }, 25, 300, 640);
         tab.add(songsRadioList);
         refreshSongs();
@@ -127,6 +310,7 @@ class ToolboxHome extends MusicBeatState {
             openSubState(new SongCreator());
         });
         tab.add(createButton);
+
 
         UI_Tabs.addGroup(tab);
     }
@@ -247,10 +431,12 @@ class ToolboxHome extends MusicBeatState {
             }
             anims.sort(function(a, b) {return (a.toUpperCase() < b.toUpperCase()) ? -1 : ((a.toUpperCase() > b.toUpperCase()) ? 1 : 0);});
         });
+        previewButton.resize(67, 20);
         tab.add(previewButton);
         var createButton = new FlxUIButton(previewButton.x + previewButton.width + 10, 670, "Create", function() {
             openSubState(new CharacterCreator());
         });
+        createButton.resize(67, 20);
         var editButton = new FlxUIButton(createButton.x + createButton.width + 10, 670, "Edit", function() {
             if (radios.selectedId == null || radios.selectedId == "") {
                 openSubState(ToolboxMessage.showMessage("Error", "No character was selected."));
@@ -263,8 +449,35 @@ class ToolboxHome extends MusicBeatState {
             dev_toolbox.character_editor.CharacterEditor.fromFreeplay = false;
             FlxG.switchState(new dev_toolbox.character_editor.CharacterEditor(radios.selectedId));
         });
+        editButton.resize(67, 20);
+        var deleteButton = new FlxUIButton(editButton.x + editButton.width + 10, 670, "Delete", function() {
+            if (radios.selectedId == null || radios.selectedId == "") {
+                openSubState(ToolboxMessage.showMessage("Error", "No character was selected."));
+                return;
+            }
+            openSubState(new ToolboxMessage("Delete Character", 'Are you sure you want to delete ${radios.selectedId} ? This operation is irreversible.', [
+                {
+                    label: "Yes",
+                    onClick: function(t) {
+                        CoolUtil.deleteFolder('${Paths.getModsFolder()}\\$selectedMod\\characters\\${radios.selectedId}\\');
+                        FileSystem.deleteDirectory('${Paths.getModsFolder()}\\$selectedMod\\characters\\${radios.selectedId}\\');
+                        openSubState(ToolboxMessage.showMessage("Success", '${radios.selectedId} was successfully deleted.', function() {
+                            FlxTransitionableState.skipNextTransIn = true;
+                            FlxTransitionableState.skipNextTransOut = true;
+                            FlxG.resetState();
+                        }));
+                    }
+                },
+                {
+                    label: "No",
+                    onClick: function(t) {}
+                }
+            ]));
+        });
+        deleteButton.resize(67, 20);
         tab.add(createButton);
         tab.add(editButton);
+        tab.add(deleteButton);
         tab.add(radios);
         legend = new FlxUIText(330, 666, FlxG.width - 330, "[Up/Down] Change animation | [Space] Play Animation | [Enter] Flip");
         legend.size = 20;
@@ -290,6 +503,19 @@ class ToolboxHome extends MusicBeatState {
                     remove(character);
                     character = null;
                 }
+            case "songs":
+                bgTweenColor = 0xFFFFFFFF;
+                if (displayAlphabet != null) {
+                    remove(displayAlphabet);
+                    displayAlphabet.destroy();
+                    displayAlphabet = null;
+                }
+                if (displayHealthIcon != null) {
+                    remove(displayHealthIcon);
+                    displayHealthIcon.destroy();
+                    displayHealthIcon = null;
+                }
+                remove(songTabThingy);
         }
         switch(tab) {
             case "info":
@@ -300,6 +526,10 @@ class ToolboxHome extends MusicBeatState {
     }
     public override function update(elapsed:Float) {
         super.update(elapsed);
+
+        FlxMath.lerp(bg.color.redFloat, bgTweenColor.redFloat, 0.2);
+        FlxMath.lerp(bg.color.greenFloat, bgTweenColor.greenFloat, 0.2);
+        FlxMath.lerp(bg.color.blueFloat, bgTweenColor.blueFloat, 0.2);
 
         if (UI_Tabs.selected_tab_id != oldTab) {
             onChangeTab(UI_Tabs.selected_tab_id);

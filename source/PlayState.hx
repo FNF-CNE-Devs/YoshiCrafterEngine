@@ -1240,15 +1240,22 @@ class PlayState extends MusicBeatState
 		
 		if (PlayState.SONG.keyNumber == 0 || PlayState.SONG.keyNumber == null) PlayState.SONG.keyNumber = 4;
 		for(t in PlayState.SONG.noteTypes) {
-			var noteScriptName = "Default Note";
-			var noteScriptMod = "Friday Night Funkin'";
 			var splittedThingy = t.split(":");
 			if (splittedThingy.length < 2) {
-				noteScriptName = splittedThingy[0];
-			} else {
-				noteScriptName = splittedThingy[1];
-				noteScriptMod = splittedThingy[0];
+				for(ext in Main.supportedFileTypes) {
+					if (FileSystem.exists('${Paths.getModsFolder()}/${PlayState.songMod}/notes/${splittedThingy[0]}.$ext')) {
+						splittedThingy.insert(0, PlayState.songMod);
+						break;
+					}
+				}
+				
+				if (splittedThingy.length < 2) {
+					splittedThingy.insert(0, "Friday Night Funkin'");
+				}
 			}
+
+			var noteScriptName = splittedThingy[1];
+			var noteScriptMod = splittedThingy[0];
 			var p = Paths.getModsFolder() + '/$noteScriptMod/notes/$noteScriptName';
 			var script = Script.create(p);
 			script.setVariable("enableRating", true);

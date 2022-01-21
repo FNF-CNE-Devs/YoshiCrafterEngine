@@ -103,7 +103,11 @@ class SongCreator extends MusicBeatSubstate {
             }));
         });
 
-        var bpm = new FlxUINumericStepper(editButton.x + editButton.width + 10, editButton.y, 1, 150, 1, 999);
+        var label = new FlxUIText(editButton.x + editButton.width + 10, editButton.y + (editButton.height / 2), 0, "BPM: ");
+        labels.push(label);
+        var bpm = new FlxUINumericStepper(label.x + label.width, label.y, 1, 150, 1, 999);
+        label.y -= label.height / 2;
+        bpm.y -= bpm.height / 2;
 
         var validateButton = new FlxUIButton(250, editButton.y + editButton.height + 10, "Create", function() {
             if (songName.text.trim() == "") {

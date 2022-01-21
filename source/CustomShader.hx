@@ -9,7 +9,6 @@ import haxe.io.Path;
 class CustomShader extends FlxFixedShader {
 
     public function new(shader:String, values:Map<String, Any>) {
-        super();
         var splittedShaderPath = shader.split(":");
         if (splittedShaderPath.length == 1) {
             splittedShaderPath.insert(0, "Friday Night Funkin'");
@@ -23,12 +22,6 @@ class CustomShader extends FlxFixedShader {
         if (Path.extension(path) == "") path += '.glsl';
         if (FileSystem.exists(path)) {
             var fileContent = Paths.getTextOutsideAssets(path, true);
-            @:privateAccess
-            if (program != null) program.dispose();
-            @:privateAccess
-            program = null;
-            @:privateAccess
-            __initGL();
 
             glFragmentSource = fileContent;
         } else {
@@ -40,6 +33,7 @@ class CustomShader extends FlxFixedShader {
                 gl_FragColor = flixel_texture2D(bitmap, openfl_TextureCoordv);
             }';
         }
+        super();
 
 
         setValues(values);
