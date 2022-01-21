@@ -381,7 +381,7 @@ class ToolboxHome extends MusicBeatState {
             weekButton.loadGraphic(b);
             weekButton.x = (2*x) + (((FlxG.width - (2*x)) / 2) - (weekButton.width / 2));
             add(weekButton);
-        },  25, 280);
+        }, 25, 280);
 
         tab.add(radioList);
         UI_Tabs.addGroup(tab);
