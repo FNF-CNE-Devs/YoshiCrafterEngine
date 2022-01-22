@@ -2011,8 +2011,9 @@ class PlayState extends MusicBeatState
 					var strum = (daNote.mustPress ? playerStrums.members : cpuStrums.members)[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber];
 					if (engineSettings.downscroll) {
 						
+						var strumPos = strum.y + (Note.swagWidth / 2);
 						var idk = daNote.isSustainNote
-						&& (daNote.y - daNote.offset.y >= strum.y + Note.swagWidth / 2);
+						&& (daNote.y + daNote.offset.y - daNote.frameHeight >= strum.y + Note.swagWidth / 2);
 						if (daNote.prevNote != null) {
 							idk = idk && (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit)));
 						} else {
@@ -2020,15 +2021,12 @@ class PlayState extends MusicBeatState
 						}
 						if (idk)
 						{
-							// TODO : I tried many many times and i don't fucking know how to figure this out. Help would be appreciated.
-							if (daNote.strumTime + (Conductor.stepCrochet / 2) < Conductor.songPosition) daNote.visible = false;
-
-							// var swagRect = new FlxRect(0, strum.y + Note.swagWidth / 2 - daNote.y, daNote.width * 2, daNote.height * 2);
-							// swagRect.y /= daNote.scale.y;
-							// swagRect.height -= swagRect.y;
-							// swagRect.y -= swagRect.y;
-		
-							// daNote.clipRect = swagRect;
+							
+							var swagRect = new FlxRect(0, 0, daNote.frameWidth, daNote.frameHeight);
+							swagRect.height *= (strumPos - daNote.y) / daNote.frameHeight;
+							swagRect.y = 0;
+							// swagRect.y = daNote.frameHeight - swagRect.height;
+							daNote.clipRect = swagRect;
 						}
 					} else {
 						
@@ -2050,7 +2048,7 @@ class PlayState extends MusicBeatState
 						}
 					}
 					
-					if (!daNote.mustPress && daNote.wasGoodHit)
+					if (!daNote.mustPress && daNote.wasGoodHit && (!daNote.isSustainNote || (daNote.isSustainNote && daNote.strumTime + Conductor.stepCrochet < Conductor.songPosition)))
 					{
 						if (SONG.song != 'Tutorial')
 							camZooming = true;
@@ -2073,7 +2071,7 @@ class PlayState extends MusicBeatState
 						if (engineSettings.glowCPUStrums) {
 							var strum = cpuStrums.members[daNote.noteData % _SONG.keyNumber % SONG.keyNumber];
 							strum.cpuRemainingGlowTime = Conductor.stepCrochet * 1.5 / 1000;
-							strum.animation.play("confirm");
+							strum.animation.play("confirm", true);
 							strum.centerOffsets();
 							strum.centerOrigin();
 							strum.toggleColor(true);
