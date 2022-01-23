@@ -38,7 +38,6 @@ class FileExplorerElement extends FlxSpriteGroup {
         add(icon);
         add(text);
 
-        selectionThingy.visible = false;
         this.callback = callback;
     }
 
@@ -57,5 +56,6 @@ class FileExplorerElement extends FlxSpriteGroup {
                 select(false);
              }
         }
+        selectionThingy.visible = selected;
     }
 }

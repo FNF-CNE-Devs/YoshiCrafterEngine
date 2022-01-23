@@ -1,5 +1,6 @@
 package dev_toolbox.file_explorer;
 
+import sys.io.Process;
 import haxe.io.Path;
 import sys.FileSystem;
 import flixel.FlxSprite;
@@ -44,8 +45,14 @@ class FileExplorer extends MusicBeatSubstate {
 
     var pathText:FlxUIText;
     var tab:FlxUI;
+    var tabThingy:FlxUITabMenu;
 
     var spawnedElems:Array<FileExplorerElement> = [];
+
+    var fileExt:String = "";
+    var fileType:String = "";
+
+    var callback:String->Void;
 
     public function navigateTo(path:String) {
         for (e in spawnedElems) {
@@ -98,23 +105,58 @@ class FileExplorer extends MusicBeatSubstate {
                 case "mp4":             MP4;
                 default:                Unknown;
             }
-            var el = new FileExplorerElement(f, t, () -> {}, maxLength);
+            var el = new FileExplorerElement(f, t, () -> {
+                if (fileExt != "") {
+                    switch(type) {
+                        case SparrowAtlas:
+                            var ext = Path.extension(f).toLowerCase();
+                            if (!fileExt.split(";").contains(ext)) {
+                                openSubState(ToolboxMessage.showMessage("Error", 'You must select a ${fileType}.'));
+                                return;
+                            }
+                            if (ext == "png") {
+                                if (!FileSystem.exists('$p\\${Path.withoutExtension(f)}.xml')) {
+                                    openSubState(ToolboxMessage.showMessage("Error", 'The selected Sparrow Atlas doesn\'t have a corresponding XML file.'));
+                                    return;
+                                }
+                            } else {
+                                if (!FileSystem.exists('$p\\${Path.withoutExtension(f)}.png')) {
+                                    openSubState(ToolboxMessage.showMessage("Error", 'The selected Sparrow Atlas doesn\'t have a corresponding PNG file.'));
+                                    return;
+                                }
+                            }
+                            callback('$path\\${Path.withoutExtension(f)}');
+                            close();
+                        
+                        default:
+                            if (!fileExt.split(";").contains(Path.extension(f).toLowerCase())) {
+                                openSubState(ToolboxMessage.showMessage("Error", 'You must select a ${fileType}.'));
+                                return;
+                            }
+                            callback('$path\\$f');
+                            close();
+                    }
+                }
+            }, maxLength);
             el.x = 10 + (maxLength * Math.floor((dirs.length + k) / 27));
             el.y = 30 + (16 * ((dirs.length + k) % 27));
             tab.add(el);
             spawnedElems.push(el);
         }
         pathText.text = '$path\\';
+
     }
 
     public override function new(mod:String, type:FileExplorerType, ?defaultFolder:String = "", callback:String->Void) {
         super();
         path = defaultFolder;
         this.mod = mod;
+        this.callback = callback;
 
         add(new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000));
 
-        var fileType = switch(type) {
+        this.type = type;
+        fileType = switch(type) {
             case Any:
                 "file";
             case SparrowAtlas:
@@ -132,7 +174,26 @@ class FileExplorer extends MusicBeatSubstate {
             case OGG:
                 "OGG sound";
         }
-        var tabThingy = new FlxUITabMenu(null, [
+
+        fileExt = switch(type) {
+            case Any:
+                "";
+            case SparrowAtlas:
+                "png;xml";
+            case Bitmap:
+                "png";
+            case XML:
+                "xml";
+            case JSON:
+                "json";
+            case HScript:
+                "hx;hscript";
+            case Lua:
+                "lua";
+            case OGG:
+                "ogg";
+        }
+        tabThingy = new FlxUITabMenu(null, [
             {
                 label: 'Select a $fileType.',
                 name: 'explorer'
@@ -171,6 +232,25 @@ class FileExplorer extends MusicBeatSubstate {
         refreshIcon.animation.play("icon");
         refreshIcon.x = refreshButton.x + (refreshButton.width / 2) - (upIcon.width / 2);
         refreshIcon.y = refreshButton.y + (refreshButton.height / 2) - (upIcon.height / 2);
+
+        
+        var buttons:Array<FlxUIButton> = [];
+        buttons.push(new FlxUIButton(0, 0, "Cancel", function() {
+            close();
+        }));
+        #if windows
+            buttons.push(new FlxUIButton(0, 0, "Open Folder", function() {
+                var p = ('explorer "${Paths.getModsFolder()}\\$mod\\$path"').replace("/", "\\").replace("\\\\", "\\");
+                trace(p);
+                new Process(p);
+            }));
+        #end
+
+        for(k=>b in buttons) {
+            b.y = tabThingy.height - 50;
+            b.x = (1280 * 0.325) + ((k - (buttons.length / 2) + 1) * 90);
+            tab.add(b);
+        }
 
         tab.add(upButton);
         tab.add(upIcon);

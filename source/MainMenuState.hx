@@ -151,7 +151,7 @@ class MainMenuState extends MusicBeatState
 	// }
 	override function update(elapsed:Float)
 	{
-		if (FlxG.mouse.getScreenPosition().x != oldPos.x && FlxG.mouse.getScreenPosition().y != oldPos.y && !selectedSomethin) {
+		if (FlxG.mouse.getScreenPosition().x != oldPos.x || FlxG.mouse.getScreenPosition().y != oldPos.y && !selectedSomethin) {
 			oldPos = FlxG.mouse.getScreenPosition();
 			for (i in 0...menuItems.length) {
 				// if (FlxG.mouse.overlaps(menuItems.members[i])) {
