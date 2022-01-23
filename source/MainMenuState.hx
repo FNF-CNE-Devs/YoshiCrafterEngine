@@ -45,9 +45,9 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
-		// if (Settings.engineSettings.data.developerMode) {
-		// 	optionShit.insert(4, 'toolbox');
-		// }
+		if (Settings.engineSettings.data.developerMode) {
+			optionShit.insert(4, 'toolbox');
+		}
 		if (Settings.engineSettings.data.memoryOptimization) {
 			// Paths.clearCache();
 			openfl.utils.Assets.cache.clear();
@@ -151,7 +151,7 @@ class MainMenuState extends MusicBeatState
 	// }
 	override function update(elapsed:Float)
 	{
-		if (FlxG.mouse.getScreenPosition().x != oldPos.x && FlxG.mouse.getScreenPosition().y != oldPos.y && !selectedSomethin) {
+		if ((FlxG.mouse.getScreenPosition().x != oldPos.x || FlxG.mouse.getScreenPosition().y != oldPos.y) && !selectedSomethin) {
 			oldPos = FlxG.mouse.getScreenPosition();
 			for (i in 0...menuItems.length) {
 				// if (FlxG.mouse.overlaps(menuItems.members[i])) {

@@ -219,7 +219,7 @@ Girlfriend's dancing speed
 ---
 **`health:Float`** - (`PlayState`)
 
-Player's health (ranges from 0 to 2)
+Player's health (ranges from 0 to maxHealth)
 
 __**Example usages:**__
 ```haxe
@@ -229,6 +229,35 @@ PlayState.health = 0;
 ```haxe
 // Puts the health to the max
 PlayState.health = 2;
+```
+
+---
+**`maxHealth:Float`** - (`PlayState`)
+
+Player's maximum health (defaults to 2).
+Setting it to 0 or lower will enable OHKO (not a darkviperau reference)
+
+__**Example usages:**__
+```haxe
+/*
+    Hello and welcome to what is hopefully
+    my final attempt at completing Friday
+    Night Funkin' without taking any damage.
+    I have a max HP of 1 so any damage from
+    an source will immediatly kill me. I also
+    want this to be a no hit run, so Boyfriend's
+    ability to restore health is disabled. I have
+    successfully completed every Friday Night Funkin'
+    songs without taking any damage. I just yet have
+    to do it in one go. My current personal best is
+    1 shit rating and therefore 1 blueball.
+*/
+// Enables OHKO
+PlayState.health = 0;
+```
+```haxe
+// Sets BF's maximum health to 0.75, making health draining and gaining faster (like it used to be)
+PlayState.health = 0.75;
 ```
 
 ---

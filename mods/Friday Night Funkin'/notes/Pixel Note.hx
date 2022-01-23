@@ -100,7 +100,7 @@ function onMiss(direction) {
             PlayState.boyfriend.playAnim("singRIGHTmiss", true);
     }
     PlayState.noteMiss(note.noteData);
-    PlayState.health -= note.isSustainNote ? 0.03125 : 0.125;
+    PlayState.health -= note.isSustainNote ? 0.01 : 0.0475;
 }
 
 function generateStaticArrow(babyArrow:FlxSprite, i:Int) {

@@ -149,7 +149,7 @@ function onPlayerHit(noteData) {
 function onMiss(noteData) {
     for (bf in PlayState.boyfriends) bf.playAnim(noteSchemes[PlayState.song.keyNumber][noteData % PlayState.song.keyNumber][4] + "miss", true);
     PlayState.noteMiss(note.noteData);
-    PlayState.health -= note.isSustainNote ? 0.03125 : 0.125;
+    PlayState.health -= note.isSustainNote ? 0.01 : 0.0475;
 }
 
 function onDadHit(noteData) {

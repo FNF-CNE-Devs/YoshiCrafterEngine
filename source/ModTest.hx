@@ -1,5 +1,5 @@
 import haxe.macro.Compiler;
-#if cpp
+#if desktop
 import cpp.Lib;
 #end
 import flixel.FlxState;
@@ -8,7 +8,7 @@ class ModTest extends FlxState {
     public override function create() {
         super.create();
         var func:Dynamic;
-        #if cpp
+        #if desktop
         func = Lib.load(Paths.getModsFolder() + "/Friday Night Funkin'/mod.ndll", "template_mod_main", 0);
         #end
         func();

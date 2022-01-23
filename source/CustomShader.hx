@@ -1,11 +1,12 @@
+import openfl.display.ShaderParameter;
 import haxe.Exception;
 import sys.FileSystem;
 import sys.io.File;
 import flixel.system.FlxAssets.FlxShader;
 import haxe.io.Path;
 
-class CustomShader extends FlxShader {
-    @:glFragmentSource('')
+// DOESNT WORKS !!!!
+class CustomShader extends FlxFixedShader {
 
     public function new(shader:String, values:Map<String, Any>) {
         var splittedShaderPath = shader.split(":");
@@ -21,6 +22,7 @@ class CustomShader extends FlxShader {
         if (Path.extension(path) == "") path += '.glsl';
         if (FileSystem.exists(path)) {
             var fileContent = Paths.getTextOutsideAssets(path, true);
+
             glFragmentSource = fileContent;
         } else {
             trace('Shader at "$path" not found.');
@@ -31,8 +33,8 @@ class CustomShader extends FlxShader {
                 gl_FragColor = flixel_texture2D(bitmap, openfl_TextureCoordv);
             }';
         }
-
         super();
+
 
         setValues(values);
     }
@@ -47,7 +49,8 @@ class CustomShader extends FlxShader {
         //     }
         // }
         if (Reflect.hasField(data, name)) {
-            Reflect.setField(Reflect.field(data, name), "value", [value]);
+            var d:ShaderParameter<Dynamic> = Reflect.field(data, name);
+            Reflect.setField(d, "value", [value]);
         }
     }
 

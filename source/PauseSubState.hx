@@ -19,8 +19,8 @@ class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Options', 'Change Keybinds'];
-	var devMenuItems:Array<String> = ['Logs'];
+	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Change Keybinds', 'Options'];
+	var devMenuItems:Array<String> = ['Logs', 'Edit Opponent', 'Edit Player'];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
@@ -125,6 +125,16 @@ class PauseSubState extends MusicBeatSubstate
 				case "Logs":
 					var s = new LogSubState();
 					openSubState(s);
+				case "Edit Player":
+					var split = PlayState.SONG.player1.split(":");
+					dev_toolbox.character_editor.CharacterEditor.fromFreeplay = true;
+					dev_toolbox.ToolboxHome.selectedMod = split[0];
+					FlxG.switchState(new dev_toolbox.character_editor.CharacterEditor(split[1]));
+				case "Edit Opponent":
+					var split = PlayState.SONG.player2.split(":");
+					dev_toolbox.character_editor.CharacterEditor.fromFreeplay = true;
+					dev_toolbox.ToolboxHome.selectedMod = split[0];
+					FlxG.switchState(new dev_toolbox.character_editor.CharacterEditor(split[1]));
 				case "Options":
 					OptionsMenu.fromFreeplay = true;
 					FlxG.switchState(new OptionsMenu(0, 0));

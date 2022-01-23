@@ -12,7 +12,20 @@ class HealthIcon extends FlxSprite
 	 * Used for FreeplayState! If you use it elsewhere, prob gonna annoying
 	 */
 	public var sprTracker:FlxSprite;
-	public var frameIndexes:Array<Array<Int>> = [[20, 0], [0, 1]];
+	public var frameIndexes(default, set):Array<Array<Int>> = [[20, 0], [0, 1]];
+	private function set_frameIndexes(f:Array<Array<Int>>):Array<Array<Int>> {
+		frameIndexes = f;
+		animation.curAnim.reset();
+		if (PlayState.current != null) {
+			for(i in frameIndexes) {
+				if ((i[0] >= PlayState.current.healthBar.percent && animation.curAnim.flipX) || (i[0] >= (100 - PlayState.current.healthBar.percent) && !animation.curAnim.flipX)) {
+					animation.curAnim.curFrame = i[1];
+					break;
+				}
+			}
+		}
+		return frameIndexes;
+	}
 
 	public static var redirects:Map<String, String> = null;
 	public function new(char:String = 'bf', isPlayer:Bool = false, ?mod:String)

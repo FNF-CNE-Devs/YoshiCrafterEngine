@@ -1,5 +1,7 @@
 import Shaders.ColorShader;
+#if desktop
 import cpp.Lib;
+#end
 import flixel.util.FlxSave;
 import lime.app.Application;
 import haxe.PosInfos;
@@ -378,10 +380,19 @@ class ModSupport {
 
         // SHADERS
 
-		// hscript.variables.set("CustomShader", CustomShader);
+		hscript.variables.set("CustomShader", CustomShader);
 		// hscript.setVariable("FlxColor", Int);
     }
 
+    public static function saveModData(mod:String):Bool {
+        if (FileSystem.exists('${Paths.getModsFolder()}\\$mod\\')) {
+            if (modConfig[mod] != null) {
+                File.saveContent('${Paths.getModsFolder()}\\$mod\\config.json', Json.stringify(modConfig[mod], "\t"));
+                return true;
+            }
+        }
+        return false;
+    }
     public static function getModName(mod:String):String {
         var name = mod;
         if (modConfig[mod] != null) {
@@ -394,7 +405,6 @@ class ModSupport {
     public static function setScriptDefaultVars(script:Script, mod:String, settings:Dynamic) {
 		script.setVariable("mod", mod);
 		script.setVariable("PlayState", PlayState.current);
-		script.setVariable("EngineSettings", PlayState.current.engineSettings);
         // script.setVariable("include", function(path:String) {
         //     var splittedPath = path.split(":");
         //     if (splittedPath.length < 2) splittedPath.insert(0, mod);
@@ -407,7 +417,11 @@ class ModSupport {
         // });
 
         if (PlayState.current != null) {
+            script.setVariable("EngineSettings", PlayState.current.engineSettings);
             script.setVariable("global", PlayState.current.vars);
+        } else {
+            script.setVariable("EngineSettings", {});
+            script.setVariable("global", {});
         }
         script.setVariable("trace", function(text) {
             try {
@@ -460,6 +474,7 @@ class ModSupport {
 		script.setVariable("BlammedShader", Shaders.BlammedShader);
 		script.setVariable("GameOverSubstate", GameOverSubstate);
 		script.setVariable("ModSupport", null);
+		script.setVariable("CustomShader", CustomShader);
 
 
     }

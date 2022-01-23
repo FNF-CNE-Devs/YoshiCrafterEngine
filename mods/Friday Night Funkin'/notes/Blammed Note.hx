@@ -90,7 +90,7 @@ function onMiss(noteData) {
         }
     }
     PlayState.noteMiss(note.noteData);
-    PlayState.health -= note.isSustainNote ? 0.03125 : 0.125;
+    PlayState.health -= note.isSustainNote ? 0.01 : 0.0475;
 }
 
 function onDadHit(noteData) {
