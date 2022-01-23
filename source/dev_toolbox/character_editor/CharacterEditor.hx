@@ -431,9 +431,9 @@ class CharacterEditor extends MusicBeatState {
         charSettings.add(globalOffsetX);
         charSettings.add(globalOffsetY);
         charSettings.add(canBeGFSkinned);
-        charSettings.add(isGFskin);
+        // charSettings.add(isGFskin);
         charSettings.add(canBeBFSkinned);
-        charSettings.add(isBFskin);
+        // charSettings.add(isBFskin);
         charSettings.add(label2);
         charSettings.add(camOffsetX);
         charSettings.add(camOffsetY);

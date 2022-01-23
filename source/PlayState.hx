@@ -209,6 +209,38 @@ class PlayState extends MusicBeatState
 	
 	public var gfSpeed:Int = 1;
 	public var health:Float = 1;
+	public var maxHealth(default, set):Float = 2;
+	private function set_maxHealth(health:Float):Float {
+		maxHealth = health;
+		if (health <= 0) {
+			/*
+				Hello and welcome to what is hopefully
+				my final attempt at completing Friday
+				Night Funkin' without taking any damage.
+				I have a max HP of 1 so any damage from
+				an source will immediatly kill me. I also
+				want this to be a no hit run, so Boyfriend's
+				ability to restore health is disabled. I have
+				successfully completed every Friday Night Funkin'
+				songs without taking any damage. I just yet have
+				to do it in one go. My current personal best is
+				1 shit rating and therefore 1 blueball.
+			*/
+			maxHealth = 0.0001; // VERY SMALL.
+			health = 0; // Take any damage and you DIE
+			if (healthBar != null) {
+				healthBar.visible = false;
+			}
+		}
+
+		if (healthBar != null) {
+			@:privateAccess
+			healthBar.max = maxHealth;
+			healthBar.dirty = true;
+		}
+		
+		return maxHealth;
+	}
 	public var combo:Int = 0;
 	
 	public var healthBarBG:FlxSprite;
@@ -532,7 +564,7 @@ class PlayState extends MusicBeatState
 
 		var p2 = CoolUtil.getCharacterFull(SONG.player2, songMod);
 		if (ModSupport.modConfig[p2[0]] != null && engineSettings.customGFSkin != "default") {
-			if (ModSupport.modConfig[p2[0]].skinnableBFs != null)
+			if (ModSupport.modConfig[p2[0]].skinnableGFs != null)
 				for (skin in ModSupport.modConfig[p2[0]].skinnableGFs)
 					if (skin.toLowerCase() == p2[1].toLowerCase()) {
 						// YOOO CUSTOM SKIN POGGERS
@@ -542,6 +574,14 @@ class PlayState extends MusicBeatState
 			
 			
 		}
+		if (ModSupport.modConfig[p2[0]] != null)
+			if (ModSupport.modConfig[p2[0]].skinnableGFs != null)
+				for (skin in ModSupport.modConfig[p2[0]].skinnableGFs)
+					if (skin.toLowerCase() == p2[1].toLowerCase()) {
+						p2isGF = true;
+						break;
+					}
+
 		SONG.player2 = p2.join(":");
 			
 		if (engineSettings.botplay || !SONG.validScore)
@@ -653,8 +693,8 @@ class PlayState extends MusicBeatState
 				name : "Sick",
 				image : "Friday Night Funkin':ratings/sick",
 				accuracy : 1,
-				health : 0.10,
-				maxDiff : 50,
+				health : 0.035,
+				maxDiff : (166 + (2/3)) * 0.2,
 				score : 350,
 				color : "#24DEFF"                                                                                                                                                                        
 			},
@@ -662,8 +702,8 @@ class PlayState extends MusicBeatState
 				name : "Good",
 				image : "Friday Night Funkin':ratings/good",
 				accuracy : 2 / 3,
-				health : 0.06,
-				maxDiff : 100,
+				health : 0.025,
+				maxDiff : (166 + (2/3)) * 0.60,
 				score : 200,
 				color : "#3FD200"
 			},
@@ -671,8 +711,8 @@ class PlayState extends MusicBeatState
 				name : "Bad",
 				image : "Friday Night Funkin':ratings/bad",
 				accuracy : 1 / 3,
-				health : 0.0,
-				maxDiff : 150,
+				health : 0.010,
+				maxDiff : (166 + (2/3)) * 0.80,
 				score : 50,
 				color : "#D70000"
 			},
@@ -681,7 +721,7 @@ class PlayState extends MusicBeatState
 				image : "Friday Night Funkin':ratings/shit",
 				accuracy : 1 / 6,
 				health : 0.0,
-				maxDiff : 1000,
+				maxDiff : 99999,
 				score : -150,
 				color : "#804913",
 				miss : true
@@ -862,7 +902,7 @@ class PlayState extends MusicBeatState
 		add(healthBarBG);
 
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
-			'health', 0, 2);
+			'health', 0, maxHealth);
 		healthBar.scrollFactor.set();
 		healthBar.cameras = [camHUD];
 		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
@@ -1007,7 +1047,15 @@ class PlayState extends MusicBeatState
 		generateStaticArrows(0);
 		generateStaticArrows(1);
 
-		msScoreLabel = new FlxText(playerStrums.members[0].x, playerStrums.members[0].y - 25, playerStrums.members[playerStrums.members.length - 1].width + playerStrums.members[playerStrums.members.length - 1].x - playerStrums.members[0].x, "0ms", 20);
+		var spawnUnder:Bool = engineSettings.downscroll;
+		if (engineSettings.middleScroll) {
+			spawnUnder = !spawnUnder;
+		}
+		msScoreLabel = new FlxText(
+			playerStrums.members[0].x,
+			spawnUnder ? (playerStrums.members[0].y + Note.swagWidth) : (playerStrums.members[0].y - 25),
+			playerStrums.members[playerStrums.members.length - 1].width + playerStrums.members[playerStrums.members.length - 1].x - playerStrums.members[0].x,
+			"0ms", 20);
 		msScoreLabel.setFormat(Paths.font("vcr.ttf"), Std.int(30), FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		msScoreLabel.antialiasing = true;
 		msScoreLabel.visible = false;
@@ -1734,11 +1782,16 @@ class PlayState extends MusicBeatState
 		iconP1.offset.x = -75;
 		iconP2.offset.x = -75;
 		// iconP1.offset.y = -iconOffset;
-		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) + iconP1.offset.x;
-		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset) + iconP2.offset.x;
+		if (maxHealth <= 0.0001) {
+			iconP1.x = 640 - iconOffset + iconP1.offset.x;
+			iconP2.x = 640 - (iconP2.width - iconOffset) + iconP2.offset.x;
+		} else {
+			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) + iconP1.offset.x;
+			iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset) + iconP2.offset.x;
+		}
 
-		if (health > 2)
-			health = 2;
+		if (health > maxHealth)
+			health = maxHealth;
 
 		for (frameIndex in iconP1.frameIndexes) {
 			if (frameIndex.length == 2) {
@@ -1902,7 +1955,7 @@ class PlayState extends MusicBeatState
 			trace("User is cheating!");
 		}
 
-		if (health <= 0)
+		if (health < 0)
 		{
 			boyfriend.stunned = true;
 

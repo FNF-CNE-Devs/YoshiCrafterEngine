@@ -38,13 +38,13 @@ class FNFOption extends Alphabet {
 			checkbox.frames = Paths.getSparrowAtlas("checkboxThingie", "preload");
 			checkbox.animation.addByPrefix("checked", "Check Box Selected Static", 30, false);
 			checkbox.animation.addByPrefix("unchecked", "Check Box unselected", 30, false);
-			checkbox.animation.addByPrefix("check", "Check Box selecting animation", 30, false);
 			checkbox.animation.play("unchecked");
-			checkbox.setGraphicSize(Std.int(checkbox.width * 0.4));
+			checkbox.scale.x = checkbox.scale.y = 0.6;
+			checkbox.updateHitbox();
 			checkbox.animation.play(checkBoxChecked ? "checked" : "unchecked");
 			checkbox.antialiasing = true;
-			checkbox.x = -checkbox.width / 1.5;
-			checkbox.y = -(members[0].height / 2) - 10;
+			checkbox.x = -checkbox.width * 1.25;
+			// checkbox.y = -(members[0].height / 2);
 			add(checkbox);
 			this.checkboxChecked = checkBoxChecked;
 		}

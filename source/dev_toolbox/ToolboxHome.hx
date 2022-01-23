@@ -409,10 +409,12 @@ class ToolboxHome extends MusicBeatState {
         */
 
         var createWeekButton = new FlxUIButton(10, 670, "Create", function() {
-            openSubState(new CreateWeekWizard());
+            openSubState(new CreateWeekWizard(function() {
+                radioList.updateRadios([for (i in 0...weekJson.weeks.length) Std.string(i)], [for(w in weekJson.weeks) w.name.trim() == "" ? "(Untitled)" : w.name]);
+            }));
         });
         var deleteWeekButton = new FlxUIButton(createWeekButton.x + createWeekButton.width + 10, 670, "Delete", function() {
-            openSubState(new ToolboxMessage("Delete a week", 'Are you sure you want to delete the ${selectedWeek.name} week ? This operation is irreversible.', [
+            openSubState(new ToolboxMessage("Delete Week", 'Are you sure you want to delete the ${selectedWeek.name} week ? This operation is irreversible.', [
                 {
                     label: "Yes",
                     onClick: function(e) {
@@ -789,8 +791,9 @@ class ToolboxHome extends MusicBeatState {
                 if (selectedAnim == 0) {
                     danceTime += elapsed;
                     if (danceTime > 0.5) {
-                        danceTime -= 0.5;
+                        danceTime = danceTime % 0.5;
                         if (character != null) {
+                            character.lastNoteHitTime = -500;
                             character.dance();
                         }
                     }

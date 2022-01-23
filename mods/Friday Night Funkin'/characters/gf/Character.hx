@@ -9,16 +9,20 @@ function create() {
     character.animation.addByIndices('hairBlow', "GF Dancing Beat Hair blowing", [0, 1, 2, 3], "", 24);
     character.animation.addByIndices('hairFall', "GF Dancing Beat Hair Landing", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "", 24, false);
     character.animation.addByPrefix('scared', 'GF FEAR', 24);
+    character.animation.addByPrefix('singLEFT', 'GF left note', 24, false);
+    character.animation.addByPrefix('singRIGHT', 'GF Right Note', 24, false);
+    character.animation.addByPrefix('singUP', 'GF Up Note', 24, false);
+    character.animation.addByPrefix('singDOWN', 'GF Down Note', 24, false);
 
     character.addOffset('cheer');
     character.addOffset('sad', -2, -2);
     character.addOffset('danceLeft', 0, -9);
     character.addOffset('danceRight', 0, -9);
 
-    character.addOffset("singUP", 0, 4);
-    character.addOffset("singRIGHT", 0, -20);
-    character.addOffset("singLEFT", 0, -19);
-    character.addOffset("singDOWN", 0, -20);
+    character.addOffset('singUP', 0, 4);
+    character.addOffset('singRIGHT', 0, -20);
+    character.addOffset('singLEFT', 0, -19);
+    character.addOffset('singDOWN', 0, -20);
     character.addOffset('hairBlow', 45, -8);
     character.addOffset('hairFall', 0, -9);
 

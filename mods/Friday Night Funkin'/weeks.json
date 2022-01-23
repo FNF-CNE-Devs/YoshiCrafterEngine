@@ -73,7 +73,7 @@
             {
                 "file" : "images/storymenu/campaign_menu_UI_characters",
                 "animation" : "Parent Christmas Idle",
-                "scale" : 0.9,
+                "scale" : 0.5,
                 "flipX" : false,
                 "offset" : [400,200]
             }

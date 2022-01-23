@@ -251,7 +251,8 @@ class StoryMenuState extends MusicBeatState
 			menuCharacter.animation.addByPrefix("char", week.dad.animation, 24);
 			menuCharacter.animation.play("char");
 			menuCharacter.flipX = (week.dad.flipX == true ? true : false); //prevents null error shit
-			menuCharacter.setGraphicSize(Std.int(menuCharacter.width * week.dad.scale));
+			// menuCharacter.setGraphicSize(Std.int(menuCharacter.width * week.dad.scale));
+			menuCharacter.scale.x = menuCharacter.scale.y = week.dad.scale;
 			menuCharacter.updateHitbox();
 			if (week.dad.offset != null) {
 				menuCharacter.offset.x = week.dad.offset.length > 0 ? week.dad.offset[0] : 0;

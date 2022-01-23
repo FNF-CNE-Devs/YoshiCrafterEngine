@@ -53,9 +53,12 @@ class ColorPicker extends MusicBeatSubstate {
 
     public function updateColor(?e:Dynamic, pick:Bool = true) {
         colorSprite.color = color;
-        if (e != redNumeric) redNumeric.value = color.red;
-        if (e != greenNumeric) greenNumeric.value = color.green;
-        if (e != blueNumeric) blueNumeric.value = color.blue;
+        var ignore = [redNumeric, greenNumeric, blueNumeric];
+        if (!ignore.contains(e)) {
+            redNumeric.value = color.red;
+            greenNumeric.value = color.green;
+            blueNumeric.value = color.blue;
+        }
         if (pick) updatePicker(color);
     }
     

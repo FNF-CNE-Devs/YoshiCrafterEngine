@@ -1,5 +1,6 @@
 package dev_toolbox.week_editor;
 
+import StoryMenuState.FNFWeek;
 import openfl.desktop.ClipboardTransferMode;
 import openfl.desktop.ClipboardFormats;
 import openfl.desktop.Clipboard;
@@ -13,7 +14,7 @@ using StringTools;
 
 class CreateWeekWizard extends MusicBeatSubstate {
     var state:ToolboxHome;
-    public override function new() {
+    public override function new(whenDone:Void->Void) {
         super();
         state = cast(FlxG.state, ToolboxHome);
 
@@ -78,7 +79,7 @@ class CreateWeekWizard extends MusicBeatSubstate {
         labels.push(label);
         var charFilePath:String = "";
         var charFile:FlxUIButton = null;
-        charFile = new FlxUIButton(10, label.y + label.height, "(Browse...) None", function() {
+        charFile = new FlxUIButton(colorThingy.x + colorThingy.width + 10, label.y + label.height, "(Browse...) None", function() {
             openSubState(new FileExplorer(ToolboxHome.selectedMod, FileExplorerType.SparrowAtlas, "", function(p) {
                 charFilePath = p;
                 charFile.label.text = '(Browse...) $p';
@@ -114,9 +115,39 @@ class CreateWeekWizard extends MusicBeatSubstate {
                 openSubState(ToolboxMessage.showMessage("Error", "You haven't selected any button sprite."));
                 return;
             }
+            if (charFilePath.trim() == "") {
+                openSubState(ToolboxMessage.showMessage("Error", "You haven't selected any character menu spritesheet."));
+                return;
+            }
+            if (charAnimName.text.trim() == "") {
+                openSubState(ToolboxMessage.showMessage("Error", "You haven't passed any character animation name."));
+                return;
+            }
+            var w:FNFWeek = {
+                name: weekName.text.trim(),
+                songs: songs,
+                mod: ToolboxHome.selectedMod,
+                buttonSprite: bSpritePath,
+                color: colorThingy.color.toWebString(),
+                dad: {
+                    file: charFilePath,
+                    animation: charAnimName.text.trim(),
+                    scale: 1,
+                    flipX: false,
+                    offset: [0, 0]
+                },
+                difficulties: [
+                    {name: "Easy",   sprite: "Friday Night Funkin':storymenu/easy"},
+                    {name: "Normal", sprite: "Friday Night Funkin':storymenu/normal"},
+                    {name: "Hard",   sprite: "Friday Night Funkin':storymenu/hard"}
+                ]
+            };
+            state.weekJson.weeks.push(w);
             var color = colorThingy.color.toWebString();
-            
+            close();
+            whenDone();
         });
+        addButton.x -= addButton.width / 2;
 
         for(l in labels) tab.add(l);
         tab.add(weekName);
@@ -127,9 +158,10 @@ class CreateWeekWizard extends MusicBeatSubstate {
         tab.add(charFile);
         tab.add(charAnimName);
         tab.add(animPaste);
+        tab.add(addButton);
 
         tabs.addGroup(tab);
-        tabs.resize(640, 360);
+        tabs.resize(640, addButton.y + 50);
         tabs.screenCenter();
         add(tabs);
 
