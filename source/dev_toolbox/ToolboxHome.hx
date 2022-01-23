@@ -1,5 +1,6 @@
 package dev_toolbox;
 
+import dev_toolbox.week_editor.CreateWeekWizard;
 import dev_toolbox.week_editor.WeekCharacterSettings;
 import dev_toolbox.file_explorer.FileExplorer;
 import StoryMenuState.FNFWeek;
@@ -406,10 +407,32 @@ class ToolboxHome extends MusicBeatState {
         changeColorButton.y = 1230;
         tab.add(changeColorButton);
         */
+
+        var createWeekButton = new FlxUIButton(10, 670, "Create", function() {
+            openSubState(new CreateWeekWizard());
+        });
+        var deleteWeekButton = new FlxUIButton(createWeekButton.x + createWeekButton.width + 10, 670, "Delete", function() {
+            openSubState(new ToolboxMessage("Delete a week", 'Are you sure you want to delete the ${selectedWeek.name} week ? This operation is irreversible.', [
+                {
+                    label: "Yes",
+                    onClick: function(e) {
+                        weekJson.weeks.remove(selectedWeek);
+                        radioList.updateRadios([for (i in 0...weekJson.weeks.length) Std.string(i)], [for(w in weekJson.weeks) w.name.trim() == "" ? "(Untitled)" : w.name]);
+                        selectedWeek = null;
+                    }
+                },
+                {
+                    label: "No",
+                    onClick: function(e) {}
+                }
+            ]));
+        });
         menuCharacter = new FlxSprite(0, 0).makeGraphic(1, 1, 0);
         add(menuCharacter);
 
         tab.add(radioList);
+        tab.add(createWeekButton);
+        tab.add(deleteWeekButton);
         UI_Tabs.addGroup(tab);
     }
 
@@ -473,7 +496,7 @@ class ToolboxHome extends MusicBeatState {
         menuCharacter.animation.play("char");
         menuCharacter.flipX = (w.dad.flipX == true); // To prevent null exception thingy
         if (w.dad.scale == 0) w.dad.scale = 1;
-        menuCharacter.setGraphicSize(Std.int(menuCharacter.width * w.dad.scale));
+        menuCharacter.scale.set(w.dad.scale, w.dad.scale);
         menuCharacter.updateHitbox();
         if (d.offset == null) d.offset = [];
         for(k=>v in d.offset) {
