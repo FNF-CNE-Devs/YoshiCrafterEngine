@@ -205,7 +205,7 @@ class HScript extends Script {
         try {
             hscript.execute(ModSupport.getExpressionFromPath(p, false));
         } catch(e) {
-
+            this.trace('${e.message}\n\n${e.stack}');
         }
     }
 

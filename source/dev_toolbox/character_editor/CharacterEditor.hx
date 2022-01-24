@@ -193,6 +193,12 @@ class CharacterEditor extends MusicBeatState {
         current = this;
         this.c = char;
 
+        var conf = ModSupport.modConfig[ToolboxHome.selectedMod];
+        if (conf.BFskins == null) conf.BFskins = [];
+        if (conf.GFskins == null) conf.GFskins = [];
+        if (conf.skinnableGFs == null) conf.skinnableGFs = [];
+        if (conf.skinnableBFs == null) conf.skinnableBFs = [];
+
         // CREATES STAGE
         
         var bg = new FlxSprite(-600, -200).loadGraphic(Paths.image('default_stage/stageback', 'shared'));
