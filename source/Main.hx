@@ -1,5 +1,6 @@
 package;
 
+import lime.utils.Log;
 import haxe.CallStack;
 import openfl.events.ErrorEvent;
 import haxe.Exception;

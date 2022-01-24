@@ -165,8 +165,9 @@ class HScript extends Script {
                 } catch(e) {
                     var s = e.stack;
                     var details = e.details();
+                    var stackTrace = e.stack;
                     
-                    this.trace('$e at $s\r\n$details');
+                    this.trace('$e at $s\r\n$details\r\n$stackTrace');
                 }
                 Paths.copyBitmap = false;
                 return result;
