@@ -5,12 +5,10 @@ import dev_toolbox.week_editor.WeekCharacterSettings;
 import dev_toolbox.file_explorer.FileExplorer;
 import StoryMenuState.FNFWeek;
 import Song.SwagSong;
-import haxe.io.Path;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.math.FlxMath;
 import flixel.FlxSprite;
-import flixel.util.FlxCollision;
 import flixel.addons.transition.FlxTransitionableState;
 import dev_toolbox.song_editor.SongCreator;
 import FreeplayState.FreeplaySongList;
@@ -523,7 +521,7 @@ class ToolboxHome extends MusicBeatState {
         var desc = ModSupport.modConfig[selectedMod].description;
         if (desc == null) desc = "(No description)";
         var title = ModSupport.modConfig[selectedMod].titleBarName;
-        if (title == null) title = "(No description)";
+        if (title == null) title = 'Friday Night Funkin\' ${selectedMod}';
         
         card = new ModCard(selectedMod, ModSupport.modConfig[selectedMod]);
         card.screenCenter(Y);
