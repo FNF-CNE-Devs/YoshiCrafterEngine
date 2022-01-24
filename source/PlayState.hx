@@ -218,7 +218,7 @@ class PlayState extends MusicBeatState
 				my final attempt at completing Friday
 				Night Funkin' without taking any damage.
 				I have a max HP of 1 so any damage from
-				an source will immediatly kill me. I also
+				any source will immediatly kill me. I also
 				want this to be a no hit run, so Boyfriend's
 				ability to restore health is disabled. I have
 				successfully completed every Friday Night Funkin'
