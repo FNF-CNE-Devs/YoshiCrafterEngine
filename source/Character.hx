@@ -27,7 +27,7 @@ class Character extends FlxSprite
 	/**
 	 * If true, character's animations will be disabled, preventing the game from crashing and allowing debugging of the sprite
 	 */
-	public var debugMode:Bool = Settings.engineSettings.data.debugMode;
+	public var debugMode:Bool = false;
 	/**
 	 * Character's global offset
 	 */

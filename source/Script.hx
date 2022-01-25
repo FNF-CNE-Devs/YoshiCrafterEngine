@@ -163,10 +163,7 @@ class HScript extends Script {
                 try {
                     result = f();
                 } catch(e) {
-                    var s = e.stack;
-                    var details = e.details();
-                    
-                    this.trace('$e at $s\r\n$details');
+                    this.trace('$e');
                 }
                 Paths.copyBitmap = false;
                 return result;
@@ -175,10 +172,7 @@ class HScript extends Script {
                 try {
                     result = Reflect.callMethod(null, f, args);
                 } catch(e) {
-                    var s = e.stack;
-                    var details = e.details();
-
-                    this.trace('$e at $s\r\n$details');
+                    this.trace('$e');
                 }
                 Paths.copyBitmap = false;
                 return result;
@@ -205,7 +199,7 @@ class HScript extends Script {
         try {
             hscript.execute(ModSupport.getExpressionFromPath(p, false));
         } catch(e) {
-            this.trace('${e.message}\n\n${e.stack}');
+            this.trace('${e.message}');
         }
     }
 

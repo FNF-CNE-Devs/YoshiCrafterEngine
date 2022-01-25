@@ -1,5 +1,6 @@
 package;
 
+import lime.utils.Log;
 import haxe.CallStack;
 import openfl.events.ErrorEvent;
 import haxe.Exception;
@@ -25,12 +26,13 @@ class Main extends Sprite
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
 	// YOSHI ENGINE STUFF
-	public static var engineVer:Array<Int> = [1,3,1];
+	public static var engineVer:Array<Int> = [1,3,2];
 	public static var buildVer:String = "";
 
 	public static var supportedFileTypes = ["lua", "hx", "hscript"];
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
+	// HAHA no.
 
 	public static function main():Void
 	{

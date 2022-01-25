@@ -36,6 +36,10 @@ class FreeplayGraph {
             var pos2 = new FlxPoint(
                 center.x + 2,
                 center.y - (height / 4));
+            // var pos2 = new FlxPoint(
+            //     center.x + ((Math.sin(current / total * maxAngle) * ((width) / 2)) * 0.9),
+            //     center.y + (Math.cos(current / total * maxAngle) * ((height) / 2) * 0.9)
+            // );
             bData.floodFill(Std.int(pos2.x), Std.int(pos2.y), g.color);
             colorToReplace = g.color;
 
