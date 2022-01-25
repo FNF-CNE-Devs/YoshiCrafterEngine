@@ -484,7 +484,12 @@ class FreeplayState extends MusicBeatState
 		trace(poop);
 
 		// PlayState._SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
-		PlayState._SONG = Song.loadModFromJson(poop, songs[curSelected].mod, songs[curSelected].songName.toLowerCase());
+		try {
+			PlayState._SONG = Song.loadModFromJson(poop, songs[curSelected].mod, songs[curSelected].songName.toLowerCase());
+		} catch(e) {
+			openSubState(new MenuMessage('Error while loading the chart. Make sure the ${songs[curSelected].difficulties[curDifficulty]} chart for ${songs[curSelected].songName} exists in the ${songs[curSelected].mod} mod.'));
+			return;
+		}
 		PlayState._SONG.validScore = true;
 		PlayState.isStoryMode = false;
 		PlayState.songMod = songs[curSelected].mod;

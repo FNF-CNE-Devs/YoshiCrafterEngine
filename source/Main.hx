@@ -32,6 +32,7 @@ class Main extends Sprite
 	public static var supportedFileTypes = ["lua", "hx", "hscript"];
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
+	// HAHA no.
 
 	public static function main():Void
 	{
