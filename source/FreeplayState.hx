@@ -266,6 +266,15 @@ class FreeplayState extends MusicBeatState
 			trace(md);
 		 */
 
+		 
+		advancedBG.visible = false;
+		accuracyText.visible = false;
+		missesText.visible = false;
+		graph.visible = false;
+		for(t in ratingTexts) {
+			t.visible = false;
+		}
+
 		super.create();
 	}
 
