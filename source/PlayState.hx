@@ -1051,18 +1051,19 @@ class PlayState extends MusicBeatState
 		if (guiElemsPopped) return;
 		guiElemsPopped = true;
 		for (elem in [healthBar, iconP1, iconP2, scoreTxt, msScoreLabel, healthBarBG, hitCounter]) {
-			if (elem == null) continue;
-			var oldElemY = elem.y;
-			var oldAlpha = elem.alpha;
-			elem.alpha = 0;
-			if (elem.y < Std.int(PlayState.current.guiSize.y / 2)) {
-				elem.y = elem.y - Std.int(PlayState.current.guiSize.y / 2);
-				FlxTween.tween(elem, {y : oldElemY, alpha : oldAlpha}, 0.75, {ease : FlxEase.quartInOut});
-			} else {
-				elem.y = elem.y + Std.int(PlayState.current.guiSize.y / 2);
-				FlxTween.tween(elem, {y : oldElemY, alpha : oldAlpha}, 0.75, {ease : FlxEase.quartInOut});
+			if (elem != null) {
+				var oldElemY = elem.y;
+				var oldAlpha = elem.alpha;
+				elem.alpha = 0;
+				if (elem.y < Std.int(PlayState.current.guiSize.y / 2)) {
+					elem.y = elem.y - Std.int(PlayState.current.guiSize.y / 2);
+					FlxTween.tween(elem, {y : oldElemY, alpha : oldAlpha}, 0.75, {ease : FlxEase.quartInOut});
+				} else {
+					elem.y = elem.y + Std.int(PlayState.current.guiSize.y / 2);
+					FlxTween.tween(elem, {y : oldElemY, alpha : oldAlpha}, 0.75, {ease : FlxEase.quartInOut});
+				}
+				elem.visible = true;
 			}
-			elem.visible = true;
 		}
 	}
 	public function startCountdown():Void

@@ -21,7 +21,7 @@ import flixel.FlxG;
 	@:keep public static var customArrowColors_allChars:Bool = false;
 
 	// If true, will enable arrow colors;
-	@:keep public static var customArrowColors:Bool = false;
+	@:keep public static var customArrowColors:Bool = true;
 
 	// Unused for now
 	@:keep public static var smoothHealthbar:Bool = true;
@@ -97,6 +97,12 @@ import flixel.FlxG;
 
 	// If true, will glow CPU strums like the player's strums when they press a note.
 	@:keep public static var glowCPUStrums:Bool = true;
+	
+	/**
+	 * Sets the GUI scale. Defaults to 1
+	 */
+	 @:keep public static var noteScale:Float = 1;
+
 
 	
 	// USELESS IN SCRIPTS
@@ -196,10 +202,6 @@ class Settings {
 
 	
 
-	/**
-	 * Sets the GUI scale. Defaults to 1
-	 */
-	@:keep public static var noteScale:Float = 1;
 
 	// public static function save(bind:Bool = true) {
 	// 	if (bind) FlxG.save.bind("Settings", "YoshiCrafter29/Yoshi Engine");
