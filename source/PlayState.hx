@@ -534,16 +534,31 @@ class PlayState extends MusicBeatState
 
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
-		camHUD = new FlxCamera();
+		camHUD = new FlxCamera(0, 0, 1280, 720, engineSettings.noteScale);
 		WideScreenScale.updatePlayStateHUD();
 		if (engineSettings.greenScreenMode) {
 			camHUD.bgColor = new FlxColor(0xFF00FF00);
 		} else {
 			camHUD.bgColor.alpha = 0;
 		}
+		camHUD.setSize(Std.int(guiSize.x), Std.int(guiSize.y));
 
-		camHUD.zoom = engineSettings.noteScale;
-		camHUD.scroll.x = (-(guiOffset.x / 2));
+		// @:privateAccess
+		// var oldViewOffset = camHUD.viewOffsetX;
+		// camHUD.zoom = engineSettings.noteScale;
+		// camHUD.setSize(Std.int(guiSize.x, guiSize.y));
+		// camHUD.setScale(engineSettings.noteScale, engineSettings.noteScale);
+		// @:privateAccess
+		//  = 0;
+
+		// @:privateAccess
+		// camHUD.viewOffsetWidth = camHUD.width - camHUD.viewOffsetX;
+
+		// @:privateAccess
+		// camHUD.viewWidth = camHUD.width - 2 * camHUD.viewOffsetX;
+		// camHUD.scroll.x = (-(guiOffset.x / 2));
+		// camHUD.height = Std.int(guiSize.y);
+		// camHUD.y -= 720 - guiSize.y;
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD);
 
@@ -900,7 +915,7 @@ class PlayState extends MusicBeatState
 		FlxG.fixedTimestep = false;
 
 		if (engineSettings.showRatingTotal) {
-			hitCounter = new FlxText(20, guiSize.y - ((ratings.length + 1) * 16), 1280, "Misses : 0", 12);
+			hitCounter = new FlxText(20, guiSize.y - ((ratings.length + 1) * 16), guiSize.x, "Misses : 0", 12);
 			hitCounter.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			hitCounter.antialiasing = true;
 			hitCounter.cameras = [camHUD];
@@ -923,7 +938,7 @@ class PlayState extends MusicBeatState
 		add(healthBar);
 
 		// scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
-		scoreTxt = new FlxText(0, healthBarBG.y + 30, 1280 , "", 20);
+		scoreTxt = new FlxText(0, healthBarBG.y + 30, guiSize.x , "", 20);
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), Std.int(16), FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.scale.x = 1;
 		scoreTxt.scale.y = 1;
@@ -1040,11 +1055,11 @@ class PlayState extends MusicBeatState
 			var oldElemY = elem.y;
 			var oldAlpha = elem.alpha;
 			elem.alpha = 0;
-			if (elem.y < 360) {
-				elem.y = elem.y - 360;
+			if (elem.y < Std.int(PlayState.current.guiSize.y / 2)) {
+				elem.y = elem.y - Std.int(PlayState.current.guiSize.y / 2);
 				FlxTween.tween(elem, {y : oldElemY, alpha : oldAlpha}, 0.75, {ease : FlxEase.quartInOut});
 			} else {
-				elem.y = elem.y + 360;
+				elem.y = elem.y + Std.int(PlayState.current.guiSize.y / 2);
 				FlxTween.tween(elem, {y : oldElemY, alpha : oldAlpha}, 0.75, {ease : FlxEase.quartInOut});
 			}
 			elem.visible = true;
@@ -1503,7 +1518,7 @@ class PlayState extends MusicBeatState
 
 					if (sustainNote.mustPress)
 					{
-						sustainNote.x += 1280 / 2; // general offset
+						sustainNote.x += guiSize.x / 2; // general offset
 					}
 				}
 
@@ -1514,7 +1529,7 @@ class PlayState extends MusicBeatState
 
 				if (swagNote.mustPress)
 				{
-					swagNote.x += 1280 / 2; // general offset
+					swagNote.x += guiSize.x / 2; // general offset
 				}
 				else {}
 
@@ -1587,7 +1602,7 @@ class PlayState extends MusicBeatState
 			} else if (PlayState.SONG.keyNumber >= 6) {
 				babyArrow.x += 10;
 			}
-			babyArrow.x += ((1280 / 2) * player);
+			babyArrow.x += ((guiSize.x / 2) * player);
 			
 			babyArrow.scale.x *= Math.min(1, 5 / (PlayState.SONG.keyNumber == null ? 5 : PlayState.SONG.keyNumber));
 			babyArrow.scale.y *= Math.min(1, 5 / (PlayState.SONG.keyNumber == null ? 5 : PlayState.SONG.keyNumber));
@@ -1599,7 +1614,7 @@ class PlayState extends MusicBeatState
 					babyArrow.notes_alpha = 0;
 				}
 				if (player == 1) {
-					babyArrow.x = 640 + ((i - (SONG.keyNumber / 2)) * Note.swagWidth);
+					babyArrow.x = Std.int(PlayState.current.guiSize.x / 2) + ((i - (SONG.keyNumber / 2)) * Note.swagWidth);
 				}
 			}
 
@@ -1796,8 +1811,8 @@ class PlayState extends MusicBeatState
 		iconP2.offset.x = -75;
 		// iconP1.offset.y = -iconOffset;
 		if (maxHealth <= 0.0001) {
-			iconP1.x = 640 - iconOffset + iconP1.offset.x;
-			iconP2.x = 640 - (iconP2.width - iconOffset) + iconP2.offset.x;
+			iconP1.x = Std.int(PlayState.current.guiSize.x / 2) - iconOffset + iconP1.offset.x;
+			iconP2.x = Std.int(PlayState.current.guiSize.x / 2) - (iconP2.width - iconOffset) + iconP2.offset.x;
 		} else {
 			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) + iconP1.offset.x;
 			iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset) + iconP2.offset.x;
