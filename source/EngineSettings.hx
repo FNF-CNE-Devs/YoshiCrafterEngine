@@ -115,7 +115,8 @@ import flixel.FlxG;
 	// PER KEY SET CONTROLS
 	// SYNTAX = control_(NUMBER OF KEYS)_(NOTE INDEX)
 	//
-	// IF YOU'RE ADDING NEW KEYS SHIT, ADD DEFAULT VALUES HERE, OR IN THE MODCHART, OR THE GAME ISNT GOING TO LIKE IT THAT MUCH
+	// IF YOU'RE ADDING NEW KEYS SHIT, ADD DEFAULT VALUES HERE, OR IN THE MODCHART, OR THE GAME ISNT GOING TO LIKE IT THAT MUCH.
+	// CHECK : https://api.haxeflixel.com/flixel/input/keyboard/FlxKey.html
 	//
 	@:keep public static var control_1_0:FlxKey = FlxKey.UP;
 
@@ -195,6 +196,9 @@ class Settings {
 
 	
 
+	/**
+	 * Sets the GUI scale. Defaults to 1
+	 */
 	@:keep public static var noteScale:Float = 1;
 
 	// public static function save(bind:Bool = true) {
@@ -210,7 +214,7 @@ class Settings {
 	// }
 
 		/**
-	 * Load the engine's settings. Use `engineSettings.data` to get access to values
+	 * Load the engine's settings. Use `EngineSettings` in your modcharts to get access to values
 	 */
     public static function loadDefault() {
 		engineSettings = new FlxSave();

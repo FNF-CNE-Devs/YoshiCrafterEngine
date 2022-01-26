@@ -374,6 +374,10 @@ class PlayState extends MusicBeatState
 	public function get_guiOffset():FlxPoint {
 		return new FlxPoint((1280 - (1280 / engineSettings.noteScale)), (720 - (720 / engineSettings.noteScale)));
 	}
+	public var guiSize(get, null):FlxPoint;
+	public function get_guiSize():FlxPoint {
+		return new FlxPoint(1280 / engineSettings.noteScale, 720 / engineSettings.noteScale);
+	}
 
 	public function setDownscroll(downscroll:Bool, autoPos:Bool) {
 		var p:Bool = autoPos;
@@ -381,7 +385,7 @@ class PlayState extends MusicBeatState
 		if (p) {
 			
 			var oldStrumLinePos = strumLine.y;
-			strumLine.y = (engineSettings.downscroll ? FlxG.height - 150 : 50) * (1 / engineSettings.noteScale) + (guiOffset.y / 2);
+			strumLine.y = (engineSettings.downscroll ? guiSize.y - 150 : 50);
 			for (strum in playerStrums.members) {
 				strum.y = strum.y - oldStrumLinePos + strumLine.y;
 			}
@@ -410,6 +414,14 @@ class PlayState extends MusicBeatState
 	public static var bfList:Array<String> = ["bf", "bf-car", "bf-christmas", "bf-pixel", "bf-pixel-dead"];
 
 	public var numberOfExceptionsShown:Int = 0;
+
+	public function setDefaultControl(noteAmount:Int, index:Int, key:FlxKey) {
+		var thingy = 'controls_${noteAmount}_$index';
+		if (!Reflect.hasField(engineSettings, thingy))
+			Reflect.setField(engineSettings, thingy, key);
+		if (!Reflect.hasField(engineSettings, thingy))
+			Reflect.setField(EngineSettings.Settings.engineSettings.data, thingy, key);
+	}
 	public static function showException(ex:String) {
 		if (PlayState.current != null) {
 			var warningSign = new FlxSprite(0, FlxG.height - (25 + (90 * PlayState.current.numberOfExceptionsShown))).loadGraphic(Paths.image("warning", "preload"));
@@ -531,6 +543,7 @@ class PlayState extends MusicBeatState
 		}
 
 		camHUD.zoom = engineSettings.noteScale;
+		camHUD.scroll.x = (-(guiOffset.x / 2));
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD);
 
@@ -855,7 +868,7 @@ class PlayState extends MusicBeatState
 
 		Conductor.songPosition = -5000;
 
-		strumLine = new FlxSprite(0, (engineSettings.downscroll ? FlxG.height - 150 : 50) * (1 / engineSettings.noteScale) + (guiOffset.y / 2)).makeGraphic(FlxG.width, 10);
+		strumLine = new FlxSprite(0, (engineSettings.downscroll ? guiSize.y - 150 : 50)).makeGraphic(FlxG.width, 10);
 		strumLine.scrollFactor.set();
 
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
@@ -887,14 +900,14 @@ class PlayState extends MusicBeatState
 		FlxG.fixedTimestep = false;
 
 		if (engineSettings.showRatingTotal) {
-			hitCounter = new FlxText(-(guiOffset.x / 2) + 20,720 + (guiOffset.y / 2) - ((ratings.length + 1) * 16), 1280, "Misses : 0", 12);
+			hitCounter = new FlxText(20, guiSize.y - ((ratings.length + 1) * 16), 1280, "Misses : 0", 12);
 			hitCounter.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			hitCounter.antialiasing = true;
 			hitCounter.cameras = [camHUD];
 			add(hitCounter);
 		}
 
-		healthBarBG = new FlxSprite(0, FlxG.height * (engineSettings.downscroll ? 0.075 : 0.9) * (1 / engineSettings.noteScale) + (guiOffset.y / 2)).loadGraphic(Paths.image('healthBar'));
+		healthBarBG = new FlxSprite(0, guiSize.y * (engineSettings.downscroll ? 0.075 : 0.9)).loadGraphic(Paths.image('healthBar'));
 		healthBarBG.cameras = [camHUD];
 		healthBarBG.cameraCenter(X);
 		healthBarBG.scrollFactor.set();
@@ -1207,9 +1220,9 @@ class PlayState extends MusicBeatState
 		
 
 		if (engineSettings.showTimer) {
-			var apparitionPos = -25 - (guiOffset.y / 2);
+			var apparitionPos:Float = -25;
 			if (engineSettings.downscroll) {
-				apparitionPos = 720 + (guiOffset.y / 2) + 25;
+				apparitionPos = guiSize.y + 25;
 			}
 			timerBG = new FlxSprite(0, apparitionPos).makeGraphic(300, 25, 0xFF222222);
 			timerBG.alpha = 0;
@@ -1230,11 +1243,11 @@ class PlayState extends MusicBeatState
 			add(timerBar);
 
 			if (engineSettings.downscroll) {
-				FlxTween.tween(timerBG, {y : 720 - 29 + (guiOffset.y / 2), alpha : 1}, 0.5, {ease : FlxEase.circInOut});
-				FlxTween.tween(timerBar, {y : 720 - 25 + (guiOffset.y / 2), alpha : 1}, 0.5, {ease : FlxEase.circInOut});
+				FlxTween.tween(timerBG, {y : guiSize.y - 29, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
+				FlxTween.tween(timerBar, {y : guiSize.y - 25, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
 			} else {
-				FlxTween.tween(timerBG, {y : 25 + (guiOffset.y / 2), alpha : 1}, 0.5, {ease : FlxEase.circInOut});
-				FlxTween.tween(timerBar, {y : 29 + (guiOffset.y / 2), alpha : 1}, 0.5, {ease : FlxEase.circInOut});
+				FlxTween.tween(timerBG, {y : 25, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
+				FlxTween.tween(timerBar, {y : 29, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
 			}
 			if (members.contains(msScoreLabel)) remove(msScoreLabel);
 			add(msScoreLabel);
@@ -1735,7 +1748,7 @@ class PlayState extends MusicBeatState
 				if (!hitIterator.hasNext()) break;
 			}
 			hitCounter.text = hitsText;
-			hitCounter.y = 700 + (guiOffset.y / 2) - hitCounter.height;
+			hitCounter.y = guiSize.y - 20 - hitCounter.height;
 		}
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
