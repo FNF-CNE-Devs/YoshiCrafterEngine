@@ -299,7 +299,7 @@ class FreeplayState extends MusicBeatState
 	// }
 
 	function updateAdvancedData() {
-		var mod = songs[curSelected].mod;
+		var mod = ModSupport.getModName(songs[curSelected].mod);
 		var song = songs[curSelected].songName;
 		var diff = songs[curSelected].difficulties[curDifficulty];
 		var daSong = 'advanced/' + Highscore.formatSong('$mod:$song', diff);
