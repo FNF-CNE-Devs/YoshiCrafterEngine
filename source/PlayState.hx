@@ -1986,7 +1986,7 @@ class PlayState extends MusicBeatState
 		// RESET = Quick Game Over Screen
 		if (controls.RESET)
 		{
-			health = 0;
+			health = -1;
 			trace("oh no he died");
 		}
 

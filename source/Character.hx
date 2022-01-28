@@ -391,12 +391,12 @@ class Character extends FlxSprite
 	 * @param up				Unused.
 	 * @param right				Unused.
 	 */
-	public function dance(left:Bool = false, down:Bool = false, up:Bool = false, right:Bool = false)
+	public function dance(force:Bool = false, left:Bool = false, down:Bool = false, up:Bool = false, right:Bool = false)
 	{
 		if (lastNoteHitTime + 250 > Conductor.songPosition) return; // 250 ms until dad dances
 		var dontDance = ["firstDeath", "deathLoop", "deathConfirm"];
 		// if (animation.curAnim != null) if (dontDance.contains(animation.curAnim.name) || (longAnims.contains(animation.curAnim.name) && !animation.curAnim.finished)) return;
-		if (animation.curAnim != null) if (!animation.curAnim.name.startsWith("sing") &&!animation.curAnim.name.startsWith("dance") && !animation.curAnim.finished) return;
+		if (animation.curAnim != null && !force) if (!animation.curAnim.name.startsWith("sing") &&!animation.curAnim.name.startsWith("dance") && !animation.curAnim.finished) return;
 		if (!debugMode)
 		{
 			characterScript.executeFunc("dance");
