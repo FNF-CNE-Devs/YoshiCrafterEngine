@@ -88,6 +88,7 @@ class CharacterEditor extends MusicBeatState {
         while(it.hasNext()) {
             var anim = it.next();
             var a = character.animation.getByName(anim);
+            if (a == null) continue;
             var animName = character.frames.getByIndex(a.frames[0]).name;
             var realAnimName = animName;
             for (i in 0...4) {
@@ -108,6 +109,9 @@ class CharacterEditor extends MusicBeatState {
                 realAnimName = realAnimName.substr(0, realAnimName.length - 1);
             }
             var offset = character.animOffsets[anim];
+            if (offset == null) offset = [0, 0];
+            if (offset.length == 0) offset = [0, 0];
+            if (offset.length == 1) offset = [offset[0], 0];
             @:privateAccess
             anims.push({
                 name: anim,
@@ -585,7 +589,7 @@ class CharacterEditor extends MusicBeatState {
 
     public function addAnim(name:String, anim:String):Bool {
         character.animation.addByPrefix(name, anim, 24, false);
-        updateAnimSelection();
+        updateAnimSelection(name);
         if (character.animation.getByName(name) != null) {
             return true;
         } else {
@@ -593,7 +597,7 @@ class CharacterEditor extends MusicBeatState {
         }
     }
 
-    public function updateAnimSelection() {
+    public function updateAnimSelection(?newAnimName:String) {
         var oldSelec = animSelection.selectedLabel;
         var anims:Array<StrNameLabel> = [];
         @:privateAccess
@@ -604,7 +608,12 @@ class CharacterEditor extends MusicBeatState {
         }
         if (anims.length == 0) anims.push(new StrNameLabel("", "")); // Since bitchass drop down menu crashes with no elements
         animSelection.setData(anims);
-        animSelection.selectedLabel = oldSelec;
+        if (newAnimName != null) {
+            animSelection.selectedLabel = newAnimName;
+            currentAnim = newAnimName;
+        } else {
+            animSelection.selectedLabel = oldSelec;
+        }
     }
 
     public override function update(elapsed:Float) {

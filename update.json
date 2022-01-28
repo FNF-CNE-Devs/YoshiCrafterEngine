@@ -8,7 +8,15 @@
         "- Fixed the \"y\" is not a numeric value error. No more crashes on new saves",
         "- Fixed Simple accuracy not working.",
         "- Options menu now shows descriptions",
-        "- Freeplay now shows the correct mod name"
+        "- Freeplay now shows the correct mod name",
+        "- Added \"Checking for updates\" and prevented engine from freezing while checking for updates",
+        "- Middlescroll now allows more big notes from 5 to 10 keys.",
+        "- Keybinds settings doesn't break anymore when game is in widescreen.",
+        "- Fixed Pause Menu going off screen when the window was widescreen vertically.",
+        "- Fixed weird colors on CPU's strum lines when custom colors were disabled.",
+        "- Fixed Downscroll strums going offscreen when game's window was wide vertically.",
+        "- Fixed the \"Apply Note Colors on Everyone\" option",
+        "- Fixed transparent note tails"
     ],
     "version" : [1,3,2],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"

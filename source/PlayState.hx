@@ -260,6 +260,7 @@ class PlayState extends MusicBeatState
 	public var songScore:Int = 0;
 	public var scoreTxt:FlxText;
 	public var scoreTxtTween:FlxTween;
+	public var watermark:FlxText;
 	
 	static public var campaignScore:Int = 0;
 	
@@ -948,6 +949,17 @@ class PlayState extends MusicBeatState
 		scoreTxt.scrollFactor.set();
 		scoreTxt.visible = false;
 
+		if (engineSettings.watermark) {
+			watermark = new FlxText(0, guiSize.y, guiSize.x, '${ModSupport.getModName(songMod)} - ${SONG.song} - Yoshi Engine v${Main.engineVer.join(".")}');
+			watermark.setFormat(Paths.font("vcr.ttf"), Std.int(16), FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			watermark.antialiasing = true;
+			watermark.cameras = [camHUD];
+			watermark.y -= watermark.height;
+			watermark.visible = false;
+			add(watermark);
+		}
+		
+
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		iconP1.visible = false;
@@ -1050,7 +1062,7 @@ class PlayState extends MusicBeatState
 	public function popUpGUIelements() {
 		if (guiElemsPopped) return;
 		guiElemsPopped = true;
-		for (elem in [healthBar, iconP1, iconP2, scoreTxt, msScoreLabel, healthBarBG, hitCounter]) {
+		for (elem in [healthBar, iconP1, iconP2, scoreTxt, msScoreLabel, healthBarBG, hitCounter, watermark]) {
 			if (elem != null) {
 				var oldElemY = elem.y;
 				var oldAlpha = elem.alpha;
@@ -1513,6 +1525,7 @@ class PlayState extends MusicBeatState
 					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * (susNote)), daNoteData, oldNote, true, gottaHitNote, section.altAnim);
 					sustainNote.scrollFactor.set();
 					sustainNote.noteOffset.y -= Note.swagWidth / 2;
+					sustainNote.alpha *= (engineSettings.transparentSubstains) ? 0.6 : 1;
 					unspawnNotes.push(sustainNote);
 
 					sustainNote.mustPress = gottaHitNote;
@@ -1558,7 +1571,7 @@ class PlayState extends MusicBeatState
 		{
 			// FlxG.log.add(i);
 			var babyArrow:StrumNote = new StrumNote(0, strumLine.y);
-			var colors = player == 0 ? dad.getColors() : boyfriend.getColors();
+			var colors = player == 0 && !engineSettings.customArrowColors_allChars ? dad.getColors() : boyfriend.getColors();
 			var strumColor = colors[(i % (colors.length - 1)) + 1];
 			babyArrow.shader = new ColoredNoteShader(strumColor.red, strumColor.green, strumColor.blue);
 			babyArrow.toggleColor(false);
@@ -1605,8 +1618,8 @@ class PlayState extends MusicBeatState
 			}
 			babyArrow.x += ((guiSize.x / 2) * player);
 			
-			babyArrow.scale.x *= Math.min(1, 5 / (PlayState.SONG.keyNumber == null ? 5 : PlayState.SONG.keyNumber));
-			babyArrow.scale.y *= Math.min(1, 5 / (PlayState.SONG.keyNumber == null ? 5 : PlayState.SONG.keyNumber));
+			babyArrow.scale.x *= Note.widthRatio;
+			babyArrow.scale.y *= Note.widthRatio;
 
 			if (engineSettings.middleScroll) {
 				if (player == 0) {
@@ -2065,7 +2078,7 @@ class PlayState extends MusicBeatState
 						daNote.velocity.y = 0;
 					}
 
-					daNote.alpha = strum.notes_alpha;
+					daNote.alpha = strum.notes_alpha * (daNote.isSustainNote && engineSettings.transparentSubstains ? 0.6 : 1);
 
 					if (engineSettings.downscroll) {
 						// daNote.y = (strumLine.y + (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(engineSettings.customScrollSpeed ? engineSettings.scrollSpeed : SONG.speed, 2)));
@@ -2156,7 +2169,7 @@ class PlayState extends MusicBeatState
 							strum.animation.play("confirm", true);
 							strum.centerOffsets();
 							strum.centerOrigin();
-							strum.toggleColor(true);
+							strum.toggleColor(strum.colored);
 						}
 						remove(daNote);
 						daNote.kill();
@@ -3239,7 +3252,7 @@ class PlayState extends MusicBeatState
 			if (Reflect.hasField(z, "game"))
 				FlxG.camera.zoom = Math.min(FlxG.camera.zoom + z.game, 1.35);
 			if (Reflect.hasField(z, "hud"))
-				camHUD.zoom = Math.min(camHUD.zoom + z.hud, 1.35);
+				camHUD.zoom = Math.min(camHUD.zoom + z.hud, 1.35 * engineSettings.noteScale);
 		}
 
 		iconP1.setGraphicSize(Std.int(iconP1.width + 30));

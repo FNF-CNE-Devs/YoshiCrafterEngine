@@ -36,7 +36,13 @@ class Main extends Sprite
 
 	public static function main():Void
 	{
+		#if cpp
+		cpp.Lib.print("main");
 		Lib.current.addChild(new Main());
+		#else
+		trace("main");
+		Lib.current.addChild(new Main());
+		#end
 	}
 
 	public function new()

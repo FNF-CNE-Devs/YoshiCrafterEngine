@@ -319,33 +319,6 @@ class OptionsMenu extends MusicBeatState
 			value: function() {return "";}
 		});
 		gameplay.options.push({
-			text : "GUI scale",
-			description : "Sets the main GUI's scale. Defaults to 1.",
-			updateOnSelected: function(elapsed:Float, o:FNFOption) {
-				if (controls.LEFT_P) {
-					Settings.engineSettings.data.noteScale = round((Settings.engineSettings.data.noteScale * 2) - 0.1, 2) / 2;
-					if (Settings.engineSettings.data.noteScale < 0.1) Settings.engineSettings.data.noteScale = 0.1;
-
-					var str = Std.string(Settings.engineSettings.data.noteScale);
-					if (str.indexOf(".") == -1) str += ".0";
-
-					o.setValue(str);
-				}
-				if (controls.RIGHT_P) {
-					Settings.engineSettings.data.noteScale = round((Settings.engineSettings.data.noteScale * 2) + 0.1, 2) / 2;
-					if (Settings.engineSettings.data.noteScale > 10) Settings.engineSettings.data.noteScale = 10;
-
-					var str = Std.string(Settings.engineSettings.data.noteScale);
-					if (str.indexOf(".") == -1) str += ".0";
-
-					o.setValue(str);
-				}
-			},
-			checkbox: false,
-			checkboxChecked: function() {return false;},
-			value: function() {return Std.string(Settings.engineSettings.data.noteScale).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.noteScale) + ".0" : Std.string(Settings.engineSettings.data.noteScale);}
-		});
-		gameplay.options.push({
 			text : "Accuracy mode",
 			description : "Sets the accuracy mode. \"Simple\" means based on the rating, \"Complex\" means based on the press delay.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
@@ -391,6 +364,33 @@ class OptionsMenu extends MusicBeatState
 			checkbox: false,
 			checkboxChecked: function() {return false;},
 			value: function() {return "";}
+		});
+		guiOptions.options.push({
+			text : "GUI scale",
+			description : "Sets the main GUI's scale. Defaults to 1.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.LEFT_P) {
+					Settings.engineSettings.data.noteScale = round((Settings.engineSettings.data.noteScale * 2) - 0.1, 2) / 2;
+					if (Settings.engineSettings.data.noteScale < 0.1) Settings.engineSettings.data.noteScale = 0.1;
+
+					var str = Std.string(Settings.engineSettings.data.noteScale);
+					if (str.indexOf(".") == -1) str += ".0";
+
+					o.setValue(str);
+				}
+				if (controls.RIGHT_P) {
+					Settings.engineSettings.data.noteScale = round((Settings.engineSettings.data.noteScale * 2) + 0.1, 2) / 2;
+					if (Settings.engineSettings.data.noteScale > 10) Settings.engineSettings.data.noteScale = 10;
+
+					var str = Std.string(Settings.engineSettings.data.noteScale);
+					if (str.indexOf(".") == -1) str += ".0";
+
+					o.setValue(str);
+				}
+			},
+			checkbox: false,
+			checkboxChecked: function() {return false;},
+			value: function() {return Std.string(Settings.engineSettings.data.noteScale).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.noteScale) + ".0" : Std.string(Settings.engineSettings.data.noteScale);}
 		});
 		guiOptions.options.push({
 			text : "Show timer",
@@ -504,18 +504,20 @@ class OptionsMenu extends MusicBeatState
 			checkboxChecked: function() {return Settings.engineSettings.data.animateInfoBar;},
 			value: function() {return "";}
 		});
-		
 		guiOptions.options.push({
-			text : "[]",
-			description : "",
+			text : "Show watermark",
+			description : "When checked, will show a watermark at the bottom left of the screen with the mod name, the mod song and the Yoshi Engine version.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
-				
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.watermark = !Settings.engineSettings.data.watermark;
+					o.checkboxChecked = Settings.engineSettings.data.watermark;
+					o.check(Settings.engineSettings.data.watermark);
+				}
 			},
-			checkbox: false,
-			checkboxChecked: function() {return false;},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.watermark;},
 			value: function() {return "";}
 		});
-
 		settings.push(guiOptions);
 	}
 
@@ -1241,7 +1243,7 @@ class OptionsMenu extends MusicBeatState
 		}
 		for(k=>op in optionsAlphabets.members) {
 			if (k == curSelected) {
-				op.alpha = 0.45;
+				op.alpha = 1;
 				desc.text = cast(op, FNFOption).desc;
 				desc.y = 700 - (desc.height);
 			} else {

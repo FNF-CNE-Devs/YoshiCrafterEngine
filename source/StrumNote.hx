@@ -16,7 +16,7 @@ class StrumNote extends FlxSprite {
                 centerOffsets();
                 centerOrigin();
             }
-            toggleColor(animation.curAnim.name != "static");
+            toggleColor(animation.curAnim.name != "static" && colored);
             
         }
         super.update(elapsed);

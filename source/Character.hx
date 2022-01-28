@@ -395,7 +395,8 @@ class Character extends FlxSprite
 	{
 		if (lastNoteHitTime + 250 > Conductor.songPosition) return; // 250 ms until dad dances
 		var dontDance = ["firstDeath", "deathLoop", "deathConfirm"];
-		if (animation.curAnim != null) if (dontDance.contains(animation.curAnim.name) || (longAnims.contains(animation.curAnim.name) && !animation.curAnim.finished)) return;
+		// if (animation.curAnim != null) if (dontDance.contains(animation.curAnim.name) || (longAnims.contains(animation.curAnim.name) && !animation.curAnim.finished)) return;
+		if (animation.curAnim != null) if (!animation.curAnim.name.startsWith("sing") &&!animation.curAnim.name.startsWith("dance") && !animation.curAnim.finished) return;
 		if (!debugMode)
 		{
 			characterScript.executeFunc("dance");
@@ -448,45 +449,47 @@ class Character extends FlxSprite
 		if (AnimName.startsWith("sing")) {
 			lastNoteHitTime = Conductor.songPosition;
 		}
-		characterScript.executeFunc("onAnim", [AnimName]);
+		var blockAnim:Null<Bool> = characterScript.executeFunc("onAnim", [AnimName]);
 
-		if (animation.getByName(AnimName) == null) {
-			trace(AnimName + " doesn't exist on character " + curCharacter);
-			PlayState.log.push('Character.playAnim: $AnimName doesn\'t exist on character $curCharacter');
-			return;
-		}
-		if (isPlayer && AnimName == "singLEFT" && flipX)
-			AnimName = "singRIGHT";
-		else if (isPlayer && AnimName == "singRIGHT" && flipX)
-			AnimName = "singLEFT";
-		animation.play(AnimName, Force, Reversed, Frame);
-
-		var daOffset = animOffsets.get(AnimName);
-		if (isPlayer && AnimName != "idle")
-		{
-			lastHit = Conductor.songPosition;
-		}
-		if (animOffsets.exists(AnimName))
-		{
-			offset.set(daOffset[0], daOffset[1]);
-		}
-		else
-			offset.set(0, 0);
-
-		if (curCharacter == 'gf')
-		{
-			if (AnimName == 'singLEFT')
-			{
-				danced = true;
+		if (blockAnim != true) {
+			if (animation.getByName(AnimName) == null) {
+				trace(AnimName + " doesn't exist on character " + curCharacter);
+				PlayState.log.push('Character.playAnim: $AnimName doesn\'t exist on character $curCharacter');
+				return;
 			}
-			else if (AnimName == 'singRIGHT')
+			if (isPlayer && AnimName == "singLEFT" && flipX)
+				AnimName = "singRIGHT";
+			else if (isPlayer && AnimName == "singRIGHT" && flipX)
+				AnimName = "singLEFT";
+			animation.play(AnimName, Force, Reversed, Frame);
+	
+			var daOffset = animOffsets.get(AnimName);
+			if (isPlayer && AnimName != "idle")
 			{
-				danced = false;
+				lastHit = Conductor.songPosition;
 			}
-
-			if (AnimName == 'singUP' || AnimName == 'singDOWN')
+			if (animOffsets.exists(AnimName))
 			{
-				danced = !danced;
+				offset.set(daOffset[0], daOffset[1]);
+			}
+			else
+				offset.set(0, 0);
+	
+			if (curCharacter == 'gf')
+			{
+				if (AnimName == 'singLEFT')
+				{
+					danced = true;
+				}
+				else if (AnimName == 'singRIGHT')
+				{
+					danced = false;
+				}
+	
+				if (AnimName == 'singUP' || AnimName == 'singDOWN')
+				{
+					danced = !danced;
+				}
 			}
 		}
 	}

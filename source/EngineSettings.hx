@@ -44,7 +44,8 @@ import flixel.FlxG;
 	// If true, will show player's misses in the info bar. (Misses: 2)
 	@:keep public static var showMisses:Bool = true;
 
-	// If true, will make substains arrows transparent. Currently doesn't work with custom arrow colors.
+	// If true, will make sustains arrows transparent. Currently doesn't work with custom arrow colors.
+	// don't mind the spelling mistake lmao
 	@:keep public static var transparentSubstains:Bool = true;
 
 	// If true, the info bar will do an animation whenever you hit a note.
@@ -58,6 +59,9 @@ import flixel.FlxG;
 	
 	// If true, will show the timer at the top of the screen.
 	@:keep public static var showTimer:Bool = true;
+	
+	// If true, will show the timer at the top of the screen.
+	@:keep public static var watermark:Bool = false;
 	
 	// Player's custom arrow skin. Set to "default" to disable it.
 	@:keep public static var customArrowSkin:String = "default";
@@ -181,16 +185,8 @@ import flixel.FlxG;
 }
 
 class Settings {
-	/**
-	* Save bind name.
-	* The file will be located in `%AppData%\save_bind_path\save_bind_name.sol`
-	*/
 	@:keep public static var save_bind_name:String = "Save";
-	/**
-	* Save bind location.
-	* The file will be located in `%AppData%\save_bind_path\save_bind_name.sol`
-	*/
-	@:keep public static var save_bind_path:String = "YoshiCrafter29/Yoshi Engine";
+	@:keep public static var save_bind_path:String = "";
 
 
 
