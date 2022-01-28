@@ -1,5 +1,7 @@
 package;
 
+import com.akifox.asynchttp.HttpResponse;
+import com.akifox.asynchttp.HttpRequest;
 import sys.FileSystem;
 import haxe.Exception;
 import haxe.Json;
@@ -49,6 +51,9 @@ class TitleState extends MusicBeatState
 
 	var wackyImage:FlxSprite;
 
+	var updateAlphabet:Alphabet;
+	var updateIcon:FlxSprite;
+	var updateRibbon:FlxSprite;
 	public static var skipOldSkinCheck = false;
 
 
@@ -144,8 +149,6 @@ class TitleState extends MusicBeatState
 		Application.current.onExit.add (function (exitCode) {
 			DiscordClient.shutdown();
 		});
-		
-
 		
 		#end
 	}
@@ -249,6 +252,36 @@ class TitleState extends MusicBeatState
 		FlxTween.tween(credTextShit, {y: credTextShit.y + 20}, 2.9, {ease: FlxEase.quadInOut, type: PINGPONG});
 
 		FlxG.mouse.visible = true;
+		
+		updateRibbon = new FlxSprite(0, FlxG.height - 75).makeGraphic(FlxG.width, 75, 0x88000000);
+		updateRibbon.visible = false;
+		updateRibbon.alpha = 0;
+		add(updateRibbon);
+
+		updateIcon = new FlxSprite(FlxG.width - 75, FlxG.height - 75);
+		updateIcon.frames = Paths.getSparrowAtlas("pauseAlt/bfLol", "shared");
+		updateIcon.animation.addByPrefix("dance", "funnyThing instance 1", 20, true);
+		updateIcon.animation.play("dance");
+		updateIcon.setGraphicSize(65);
+		updateIcon.updateHitbox();
+		updateIcon.antialiasing = true;
+		updateIcon.visible = false;
+		add(updateIcon);
+
+		updateAlphabet = new Alphabet(0, 0, "Checking for updates...", false, false, FlxColor.WHITE);
+		for(c in updateAlphabet.members) {
+			c.scale.x /= 2;
+			c.scale.y /= 2;
+			c.updateHitbox();
+			c.x /= 2;
+			c.y /= 2;
+		}
+		updateAlphabet.visible = false;
+		updateAlphabet.x = updateIcon.x - updateAlphabet.width - 10;
+		updateAlphabet.y = updateIcon.y;
+		add(updateAlphabet);
+		updateIcon.y += 15;
+		
 
 		if (initialized)
 			skipIntro();
@@ -277,6 +310,9 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (updateRibbon != null) {
+			updateRibbon.alpha = Math.min(1, updateRibbon.alpha + (elapsed / 0.2));
+		}
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
@@ -336,55 +372,32 @@ class TitleState extends MusicBeatState
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
 				// Check if version is outdated
-				var http = new Http(
-					#if pastebinTest
+				var request = new HttpRequest({
+					url: #if pastebinTest
 					"https://pastebin.com/raw/rtVtsaiB"
+					#elseif timeoutTest
+					"http://10.255.255.1/test"
 					#else
 					"https://raw.githubusercontent.com/YoshiCrafter29/YoshiEngine/main/update.json"
-					#end
-				);
-				// var http = new Http("https://pastebin.com/raw/rtVtsaiB");
-				http.onData = function(data:String) {
-					// var version:String = "v" + Application.current.meta.get('version');
-					var jsonData:YoshiEngineVersion = Json.parse(data.trim());
-					var outDated = false;
-					var amount = jsonData.version.length;
-					if (Main.engineVer.length > amount) amount = Main.engineVer.length;
-					for(i in 0...amount) {
-						var latestVer = 0;
-						var localVer = 0;
-						if (i < Main.engineVer.length)
-							localVer = Main.engineVer[i];
-						if (i < jsonData.version.length)
-							latestVer = jsonData.version[i];
-
-						if (localVer < latestVer) {
-							outDated = true;
-							break;
-						} else if (latestVer < localVer) {
-							break;
+					#end,
+					async: true,
+					callback: function(response:HttpResponse) {
+						updateIcon.visible = false;
+						updateAlphabet.visible = false;
+						updateRibbon.visible = false;
+						if (response.isOK) {
+							onUpdateData(response.content);
+						} else {
+							trace(response.status);
+							FlxG.switchState(new MainMenuState());
 						}
 					}
-					if (outDated)
-					{
-						FlxG.switchState(new OutdatedSubState(jsonData));
-						// trace('OLD VERSION!');
-						// trace('old ver');
-						// trace(version.trim());
-						// trace('cur ver');
-						//trace( NGio .GAME_VER_NUMS.trim());
-					}
-					else
-					{
-
-						FlxG.switchState(new MainMenuState());
-					}
-				}
-				http.onError = function(msg:String) {
-					trace(msg);
-					FlxG.switchState(new MainMenuState());
-				}
-				http.request();
+				});
+				updateIcon.visible = true;
+				updateAlphabet.visible = true;
+				updateRibbon.visible = true;
+				updateRibbon.alpha = 0;
+				request.send();
 				
 			});
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
@@ -398,6 +411,42 @@ class TitleState extends MusicBeatState
 		super.update(elapsed);
 	}
 
+	function onUpdateData(data:String) {
+		// var version:String = "v" + Application.current.meta.get('version');
+		var jsonData:YoshiEngineVersion = Json.parse(data.trim());
+		var outDated = false;
+		var amount = jsonData.version.length;
+		if (Main.engineVer.length > amount) amount = Main.engineVer.length;
+		for(i in 0...amount) {
+			var latestVer = 0;
+			var localVer = 0;
+			if (i < Main.engineVer.length)
+				localVer = Main.engineVer[i];
+			if (i < jsonData.version.length)
+				latestVer = jsonData.version[i];
+
+			if (localVer < latestVer) {
+				outDated = true;
+				break;
+			} else if (latestVer < localVer) {
+				break;
+			}
+		}
+		if (outDated)
+		{
+			FlxG.switchState(new OutdatedSubState(jsonData));
+			// trace('OLD VERSION!');
+			// trace('old ver');
+			// trace(version.trim());
+			// trace('cur ver');
+			//trace( NGio .GAME_VER_NUMS.trim());
+		}
+		else
+		{
+
+			FlxG.switchState(new MainMenuState());
+		}
+	}
 	function createCoolText(textArray:Array<String>)
 	{
 		for (i in 0...textArray.length)

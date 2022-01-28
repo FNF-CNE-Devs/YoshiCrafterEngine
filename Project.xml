@@ -3,7 +3,7 @@
 
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin' - Yoshi Engine" file="Yoshi Engine" packageName="com.yoshicrafter29.yoshiengine" package="com.yoshicrafter29.yoshiengine" main="Main" version="0.2.7.1" company="ninjamuffin99" />
+	<app title="Yoshi Engine" file="YoshiEngine" packageName="com.yoshicrafter29.yoshiengine" package="com.yoshicrafter29.yoshiengine" main="Main" version="0.2.7.1" company="yoshicrafter29" />
 
 	<haxedef name="HXCPP_CHECK_POINTER" if="release" />
 	<haxedef name="HXCPP_STACK_LINE" if="release" />
@@ -109,6 +109,7 @@
 	<assets path='mods' library="mods" embed='false'/>
 	<assets path='skins' rename='skins' embed='false'/>
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
+	<assets path='Launcher.exe' />
 	<!-- <assets path="documentation" rename="docs"/> -->
 	<!-- <template path='mods' /> -->
 	
@@ -136,6 +137,7 @@
 	<haxelib name="polymod"/>
 	<haxelib name="hxvm-lua"/>
 	<haxelib name="linc_lua"/>
+	<haxelib name="akifox-asynchttp"/>
 	
 	<!-- <haxelib name="flixel-animate"/> -->
 	<haxelib name="discord_rpc" if="desktop"/>

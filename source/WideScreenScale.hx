@@ -35,8 +35,8 @@ class WideScreenScale extends BaseScaleMode
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
         if (PlayState.current != null) {
             if (PlayState.current.camHUD != null) {
-                PlayState.current.camHUD.width = 1280;
-                PlayState.current.camHUD.height = 720;
+                PlayState.current.camHUD.width = Std.int(PlayState.current.guiSize.x);
+                PlayState.current.camHUD.height = Std.int(PlayState.current.guiSize.y);
                 PlayState.current.camHUD.x = (FlxG.width - 1280) / 2;
                 PlayState.current.camHUD.y = (FlxG.height - 720) / 2;
                 // PlayState.current.camHUD.setScale(Math.min(FlxG.width / 1280, 1), Math.min(FlxG.width / 1280, 1));

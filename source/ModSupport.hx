@@ -33,6 +33,7 @@ import openfl.display.BitmapData;
 import flixel.FlxG;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxTween;
+import flixel.input.keyboard.FlxKey;
 using StringTools;
 
 #if windows
@@ -428,8 +429,7 @@ class ModSupport {
                 script.trace(text);
             } catch(e) {
                 trace(e);
-            }
-            
+            } 
         });
 		script.setVariable("PlayState_", PlayState);
 		script.setVariable("FlxSprite", FlxSprite);
@@ -475,6 +475,7 @@ class ModSupport {
 		script.setVariable("GameOverSubstate", GameOverSubstate);
 		script.setVariable("ModSupport", null);
 		script.setVariable("CustomShader", CustomShader);
+		// script.setVariable("FlxKey", FlxKey);
 
 
     }

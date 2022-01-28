@@ -62,7 +62,13 @@ class Note extends FlxSprite
 	}
 	public static var widthRatio(get, null):Float;
 	static function get_widthRatio():Float {
-		return Math.min(1, 5 / (PlayState.SONG.keyNumber == null ? 5 : PlayState.SONG.keyNumber));
+		var nScale = 1;
+		var middlescroll = false;
+		if (PlayState.current != null) {
+			nScale = PlayState.current.engineSettings.noteScale;
+			middlescroll = PlayState.current.engineSettings.middleScroll;
+		}
+		return Math.min(1, (middlescroll ? 10 : 5) / ((PlayState.SONG.keyNumber == null ? (middlescroll ? 10 : 5) : PlayState.SONG.keyNumber) * nScale));
 	}
 	public static var _swagWidth:Float = 160 * 0.7;
 	public static var PURP_NOTE:Int = 0;
@@ -229,7 +235,7 @@ class Note extends FlxSprite
 		script.setVariable("note", this);
 		script.executeFunc("create");
 		if (colored) {
-			var customColors = mustPress ? PlayState.current.boyfriend.getColors(altAnim) : PlayState.current.dad.getColors(altAnim);
+			var customColors = (mustPress || engineSettings.customArrowColors_allChars) ? PlayState.current.boyfriend.getColors(altAnim) : PlayState.current.dad.getColors(altAnim);
 			var c = customColors[(noteData % (customColors.length - 1)) + 1];
 			this.shader = new ColoredNoteShader(c.red, c.green, c.blue);
 		} else {

@@ -21,7 +21,7 @@ import flixel.FlxG;
 	@:keep public static var customArrowColors_allChars:Bool = false;
 
 	// If true, will enable arrow colors;
-	@:keep public static var customArrowColors:Bool = false;
+	@:keep public static var customArrowColors:Bool = true;
 
 	// Unused for now
 	@:keep public static var smoothHealthbar:Bool = true;
@@ -44,7 +44,8 @@ import flixel.FlxG;
 	// If true, will show player's misses in the info bar. (Misses: 2)
 	@:keep public static var showMisses:Bool = true;
 
-	// If true, will make substains arrows transparent. Currently doesn't work with custom arrow colors.
+	// If true, will make sustains arrows transparent. Currently doesn't work with custom arrow colors.
+	// don't mind the spelling mistake lmao
 	@:keep public static var transparentSubstains:Bool = true;
 
 	// If true, the info bar will do an animation whenever you hit a note.
@@ -58,6 +59,9 @@ import flixel.FlxG;
 	
 	// If true, will show the timer at the top of the screen.
 	@:keep public static var showTimer:Bool = true;
+	
+	// If true, will show the timer at the top of the screen.
+	@:keep public static var watermark:Bool = false;
 	
 	// Player's custom arrow skin. Set to "default" to disable it.
 	@:keep public static var customArrowSkin:String = "default";
@@ -97,6 +101,12 @@ import flixel.FlxG;
 
 	// If true, will glow CPU strums like the player's strums when they press a note.
 	@:keep public static var glowCPUStrums:Bool = true;
+	
+	/**
+	 * Sets the GUI scale. Defaults to 1
+	 */
+	 @:keep public static var noteScale:Float = 1;
+
 
 	
 	// USELESS IN SCRIPTS
@@ -115,7 +125,8 @@ import flixel.FlxG;
 	// PER KEY SET CONTROLS
 	// SYNTAX = control_(NUMBER OF KEYS)_(NOTE INDEX)
 	//
-	// IF YOU'RE ADDING NEW KEYS SHIT, ADD DEFAULT VALUES HERE, OR IN THE MODCHART, OR THE GAME ISNT GOING TO LIKE IT THAT MUCH
+	// IF YOU'RE ADDING NEW KEYS SHIT, ADD DEFAULT VALUES HERE, OR IN THE MODCHART, OR THE GAME ISNT GOING TO LIKE IT THAT MUCH.
+	// CHECK : https://api.haxeflixel.com/flixel/input/keyboard/FlxKey.html
 	//
 	@:keep public static var control_1_0:FlxKey = FlxKey.UP;
 
@@ -174,16 +185,8 @@ import flixel.FlxG;
 }
 
 class Settings {
-	/**
-	* Save bind name.
-	* The file will be located in `%AppData%\save_bind_path\save_bind_name.sol`
-	*/
 	@:keep public static var save_bind_name:String = "Save";
-	/**
-	* Save bind location.
-	* The file will be located in `%AppData%\save_bind_path\save_bind_name.sol`
-	*/
-	@:keep public static var save_bind_path:String = "YoshiCrafter29/Yoshi Engine";
+	@:keep public static var save_bind_path:String = "";
 
 
 
@@ -195,7 +198,6 @@ class Settings {
 
 	
 
-	@:keep public static var noteScale:Float = 1;
 
 	// public static function save(bind:Bool = true) {
 	// 	if (bind) FlxG.save.bind("Settings", "YoshiCrafter29/Yoshi Engine");
@@ -210,7 +212,7 @@ class Settings {
 	// }
 
 		/**
-	 * Load the engine's settings. Use `engineSettings.data` to get access to values
+	 * Load the engine's settings. Use `EngineSettings` in your modcharts to get access to values
 	 */
     public static function loadDefault() {
 		engineSettings = new FlxSave();

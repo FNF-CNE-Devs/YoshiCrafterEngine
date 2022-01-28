@@ -7,15 +7,6 @@ var fastCarCanDrive:Bool = true;
 
 gfVersion = "gf-car";
 
-function createAfterChars()
-{
-    PlayState.boyfriend.y -= 220;
-    PlayState.boyfriend.x += 260;
-
-    resetFastCar();
-    PlayState.add(fastCar);
-}
-
 var danced = false;
 function beatHit(curBeat)
 {
@@ -80,6 +71,13 @@ function create()
     limo.antialiasing = true;
 
     fastCar = new FlxSprite(-300, 160).loadGraphic(Paths.image('limo/fastCarLol'));
+    
+    PlayState.boyfriend.y -= 220;
+    PlayState.boyfriend.x += 260;
+
+    resetFastCar();
+    PlayState.add(fastCar);
+    
     PlayState.add(PlayState.gf);
     PlayState.add(limo);
 }

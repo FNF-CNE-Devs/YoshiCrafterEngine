@@ -26,7 +26,7 @@ class Main extends Sprite
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
 	// YOSHI ENGINE STUFF
-	public static var engineVer:Array<Int> = [1,3,2];
+	public static var engineVer:Array<Int> = [1,3,3];
 	public static var buildVer:String = "";
 
 	public static var supportedFileTypes = ["lua", "hx", "hscript"];
@@ -36,7 +36,13 @@ class Main extends Sprite
 
 	public static function main():Void
 	{
+		#if cpp
+		cpp.Lib.print("main");
 		Lib.current.addChild(new Main());
+		#else
+		trace("main");
+		Lib.current.addChild(new Main());
+		#end
 	}
 
 	public function new()

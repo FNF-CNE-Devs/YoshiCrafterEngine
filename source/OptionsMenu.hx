@@ -29,9 +29,11 @@ class FNFOption extends Alphabet {
 	public var checkbox:FlxSprite;
 	public var checkboxChecked:Bool = false;
 	public var value:Array<AlphaCharacter> = [];
+	public var desc:String = "";
 
-	public function new(x:Float, y:Float, text:String, updateOnSelected:Float->Void, checkBox:Bool = false, checkBoxChecked:Bool = false, value:String = "") {
+	public function new(x:Float, y:Float, text:String, desc:String, updateOnSelected:Float->Void, checkBox:Bool = false, checkBoxChecked:Bool = false, value:String = "") {
 		super(x, y, text, true, false, FlxColor.WHITE);
+		this.desc = desc;
 		this.updateSelected = updateOnSelected;
 		if (checkBox) {
 			checkbox = new FlxSprite(0, 0);
@@ -154,6 +156,8 @@ class OptionsMenu extends MusicBeatState
 		menuBGx = x;
 		menuBGy = -y;
 	}
+
+	public var desc:FlxText;
 
 	public var settings:Array<MenuCategory> = [
 
@@ -315,33 +319,6 @@ class OptionsMenu extends MusicBeatState
 			value: function() {return "";}
 		});
 		gameplay.options.push({
-			text : "GUI scale",
-			description : "Sets the main GUI's scale. Defaults to 1.",
-			updateOnSelected: function(elapsed:Float, o:FNFOption) {
-				if (controls.LEFT_P) {
-					Settings.engineSettings.data.noteScale = round((Settings.engineSettings.data.noteScale * 2) - 0.1, 2) / 2;
-					if (Settings.engineSettings.data.noteScale < 0.1) Settings.engineSettings.data.noteScale = 0.1;
-
-					var str = Std.string(Settings.engineSettings.data.noteScale);
-					if (str.indexOf(".") == -1) str += ".0";
-
-					o.setValue(str);
-				}
-				if (controls.RIGHT_P) {
-					Settings.engineSettings.data.noteScale = round((Settings.engineSettings.data.noteScale * 2) + 0.1, 2) / 2;
-					if (Settings.engineSettings.data.noteScale > 10) Settings.engineSettings.data.noteScale = 10;
-
-					var str = Std.string(Settings.engineSettings.data.noteScale);
-					if (str.indexOf(".") == -1) str += ".0";
-
-					o.setValue(str);
-				}
-			},
-			checkbox: false,
-			checkboxChecked: function() {return false;},
-			value: function() {return Std.string(Settings.engineSettings.data.noteScale).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.noteScale) + ".0" : Std.string(Settings.engineSettings.data.noteScale);}
-		});
-		gameplay.options.push({
 			text : "Accuracy mode",
 			description : "Sets the accuracy mode. \"Simple\" means based on the rating, \"Complex\" means based on the press delay.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
@@ -387,6 +364,33 @@ class OptionsMenu extends MusicBeatState
 			checkbox: false,
 			checkboxChecked: function() {return false;},
 			value: function() {return "";}
+		});
+		guiOptions.options.push({
+			text : "GUI scale",
+			description : "Sets the main GUI's scale. Defaults to 1.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.LEFT_P) {
+					Settings.engineSettings.data.noteScale = round((Settings.engineSettings.data.noteScale * 2) - 0.1, 2) / 2;
+					if (Settings.engineSettings.data.noteScale < 0.1) Settings.engineSettings.data.noteScale = 0.1;
+
+					var str = Std.string(Settings.engineSettings.data.noteScale);
+					if (str.indexOf(".") == -1) str += ".0";
+
+					o.setValue(str);
+				}
+				if (controls.RIGHT_P) {
+					Settings.engineSettings.data.noteScale = round((Settings.engineSettings.data.noteScale * 2) + 0.1, 2) / 2;
+					if (Settings.engineSettings.data.noteScale > 10) Settings.engineSettings.data.noteScale = 10;
+
+					var str = Std.string(Settings.engineSettings.data.noteScale);
+					if (str.indexOf(".") == -1) str += ".0";
+
+					o.setValue(str);
+				}
+			},
+			checkbox: false,
+			checkboxChecked: function() {return false;},
+			value: function() {return Std.string(Settings.engineSettings.data.noteScale).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.noteScale) + ".0" : Std.string(Settings.engineSettings.data.noteScale);}
 		});
 		guiOptions.options.push({
 			text : "Show timer",
@@ -500,18 +504,20 @@ class OptionsMenu extends MusicBeatState
 			checkboxChecked: function() {return Settings.engineSettings.data.animateInfoBar;},
 			value: function() {return "";}
 		});
-		
 		guiOptions.options.push({
-			text : "[]",
-			description : "",
+			text : "Show watermark",
+			description : "When checked, will show a watermark at the bottom left of the screen with the mod name, the mod song and the Yoshi Engine version.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
-				
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.watermark = !Settings.engineSettings.data.watermark;
+					o.checkboxChecked = Settings.engineSettings.data.watermark;
+					o.check(Settings.engineSettings.data.watermark);
+				}
 			},
-			checkbox: false,
-			checkboxChecked: function() {return false;},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.watermark;},
 			value: function() {return "";}
 		});
-
 		settings.push(guiOptions);
 	}
 
@@ -1003,20 +1009,6 @@ class OptionsMenu extends MusicBeatState
 			checkboxChecked: function() {return Settings.engineSettings.data.developerMode;},
 			value: function() {return "";}
 		});
-		dev.options.push({
-			text : "Enable character debug mode",
-			description : "Disables character's dance. Please, for god's sake, do NOT post an \"My characters doesn't dance\" on the issues pages if this is checked.",
-			updateOnSelected: function(elapsed:Float, o:FNFOption) {
-				if (controls.ACCEPT) {
-					Settings.engineSettings.data.debugMode = !Settings.engineSettings.data.debugMode;
-					o.checkboxChecked = Settings.engineSettings.data.debugMode;
-					o.check(Settings.engineSettings.data.debugMode);
-				}
-			},
-			checkbox: true,
-			checkboxChecked: function() {return Settings.engineSettings.data.debugMode;},
-			value: function() {return "";}
-		});
 		settings.push(dev);
 	}
 	
@@ -1068,7 +1060,7 @@ class OptionsMenu extends MusicBeatState
 				isTitle = true;
 				disabledOptions.push(i);
 			}
-			op = new FNFOption(0, 0 + (i * 80), text, function(elapsed:Float) {
+			op = new FNFOption(0, 0 + (i * 80), text, o.description, function(elapsed:Float) {
 				o.updateOnSelected(elapsed, op);
 			}, o.checkbox, o.checkboxChecked(), "");
 			for (i in 0...op.length) {
@@ -1145,7 +1137,6 @@ class OptionsMenu extends MusicBeatState
 		// FlxTween.tween(menuBG, {"color.red" : 0x49, "color.green" : 0x49, "color.blue" : 0x49}, 0.5, {ease : FlxEase.linear, onComplete: function(t:FlxTween) {
 		// 	usable = true;
 		// }});
-		setOptions();
 		
 		// FlxTween.color(menuBG, 0.5, 0xFFFDE871, 0xFF494949, {ease : FlxEase.cubeInOut, onComplete: function(t:FlxTween) {
 		// 	usable = true;
@@ -1158,6 +1149,15 @@ class OptionsMenu extends MusicBeatState
 		// FlxTween.tween(blackSelectionBar, {alpha : 1}, 0.5, {ease : FlxEase.cubeInOut});
 
 		// controlsStrings = CoolUtil.coolTextFile(Paths.txt('controls'));
+
+		desc = new FlxText(0, 0, 1280, "Select an option...", 8);
+		desc.y = 720;
+		desc.setFormat(Paths.font("vcr.ttf"), Std.int(20), FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		desc.antialiasing = true;
+		desc.borderSize = 2;
+		add(desc);
+
+		setOptions();
 		super.create();
 
 		// openSubState(new OptionsSubState());
@@ -1242,7 +1242,13 @@ class OptionsMenu extends MusicBeatState
 			if (curSelected >= optionsAlphabets.length) curSelected = 0;
 		}
 		for(k=>op in optionsAlphabets.members) {
-			op.alpha = (k == curSelected || disabledOptions.contains(k)) ? 1 : 0.45;
+			if (k == curSelected) {
+				op.alpha = 1;
+				desc.text = cast(op, FNFOption).desc;
+				desc.y = 700 - (desc.height);
+			} else {
+				op.alpha = (disabledOptions.contains(k)) ? 1 : 0.45;
+			}
 		}
 		if (!animate) return;
 		// if (ghreuighesioghseuiogseruiogbseruigbseruiogbretgubgiobreg != null) ghreuighesioghseuiogseruiogbseruigbseruiogbretgubgiobreg.cancel();

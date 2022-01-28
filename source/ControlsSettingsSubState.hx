@@ -86,7 +86,8 @@ class ControlsSettingsSub extends MusicBeatSubstate {
     ];
 
     public function mouseOverlaps(f:FlxSprite):Bool {
-        var pos = new FlxPoint(FlxG.game.mouseX / FlxG.scaleMode.gameSize.x * 1280, FlxG.game.mouseY / FlxG.scaleMode.gameSize.y * 720);
+        // var pos = new FlxPoint(FlxG.game.mouseX / FlxG.scaleMode.gameSize.x * 1280, FlxG.game.mouseY / FlxG.scaleMode.gameSize.y * 720);
+        var pos = FlxG.mouse.getScreenPosition(PlayState.current != null ? PlayState.current.camHUD : FlxG.camera);
         // if (PlayState.current != null) {
         // }
         
