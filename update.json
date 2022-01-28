@@ -1,6 +1,7 @@
 {
     "updateLog" : [
         "1.3.3 : PATCH DAY !",
+        "First of all, sorry for the lots of updates these last days.",
         "Hopefully i won't fuck it up again.",
         "",
         "- New GUI system : Use PlayState.guiSize to get the size of the GUI instead of messing around with guiOffset.",
