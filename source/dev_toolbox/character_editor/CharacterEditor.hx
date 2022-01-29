@@ -112,16 +112,20 @@ class CharacterEditor extends MusicBeatState {
             if (offset == null) offset = [0, 0];
             if (offset.length == 0) offset = [0, 0];
             if (offset.length == 1) offset = [offset[0], 0];
-            @:privateAccess
-            anims.push({
-                name: anim,
-                anim: realAnimName,
-                framerate: Std.int(a.frameRate),
-                x: offset[0],
-                y: offset[1],
-                loop: a.looped,
-                indices: null
-                });
+            try {
+                anims.push({
+                    name: anim,
+                    anim: realAnimName,
+                    framerate: Std.int(a.frameRate),
+                    x: offset[0],
+                    y: offset[1],
+                    loop: a.looped,
+                    indices: null
+                    });
+            } catch(e) {
+                trace('Failed to save animation :');
+                trace(e);
+            }
         }
         var json:CharacterJSON = {
             anims: anims,
