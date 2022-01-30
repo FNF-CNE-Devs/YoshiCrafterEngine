@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxG;
 import lime.utils.Log;
 import haxe.CallStack;
 import openfl.events.ErrorEvent;
@@ -76,6 +77,29 @@ class Main extends Sprite
 
 	private function init(?E:Event):Void
 	{
+		stage.window.onDropFile.add(function(path:String) {
+			if (Std.is(FlxG.state, MusicBeatState)) {
+				var checkSubstate:FlxState->Void = function(state) {
+					if (Std.is(state, MusicBeatState)) {
+						var state = cast(state, MusicBeatState);
+						if (Std.is(state.subState, MusicBeatSubstate)) {
+		
+						} else {
+							state.onDropFile(path);
+						}
+					} else if (Std.is(state, MusicBeatSubstate)) {
+						var state = cast(state, MusicBeatSubstate);
+						if (Std.is(state.subState, MusicBeatSubstate)) {
+		
+						} else {
+							state.onDropFile(path);
+						}
+					}
+				};
+				var state = cast(FlxG.state, MusicBeatState);
+				checkSubstate(state);
+			}
+		});
 		if (hasEventListener(Event.ADDED_TO_STAGE))
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
@@ -110,6 +134,9 @@ class Main extends Sprite
 		#end
 		#if animate_test
 		initialState = AnimateTest;
+		#end
+		#if lua_test
+		initialState = LuaTest;
 		#end
 
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));

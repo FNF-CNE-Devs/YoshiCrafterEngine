@@ -41,6 +41,7 @@ typedef FreeplaySong = {
 	public var displayName:String;
 	public var difficulties:Array<String>;
 	public var color:String;
+	public var bpm:Null<Int>;
 }
 class FreeplayState extends MusicBeatState
 {
@@ -360,12 +361,39 @@ class FreeplayState extends MusicBeatState
 			FlxG.sound.playMusic(ost, 0);
 			FlxG.sound.music.persist = true;
 		}
+		trace(songs[curSelected].bpm);
+		if (songs[curSelected].bpm == null) {
+			iconBumping = false;
+		} else {
+			Conductor.lastSongPos = 0;
+			Conductor.songPosition = 0;
+			Conductor.bpmChangeMap = [];
+			Conductor.changeBPM(songs[curSelected].bpm);
+			iconBumping = true;
+		}
+	}
+
+	var iconBumping = true;
+
+	public override function beatHit() {
+		super.beatHit();
+		trace(selectedSongInstPath);
+		trace(currentInstPath);
+		trace(iconBumping);
+		if ((selectedSongInstPath == currentInstPath) && iconBumping) {
+			var i = iconArray[curSelected];
+			i.scale.set(1.2, 1.2);
+		}
 	}
 	var selectedSongInstPath = "";
 	override function update(elapsed:Float)
 	{
+		Conductor.songPosition = FlxG.sound.music == null ? 0 : FlxG.sound.music.time;
 		super.update(elapsed);
 		shiftCooldown += elapsed;
+		for (i in iconArray) {
+			i.scale.x = i.scale.y = FlxMath.lerp(i.scale.x, 1, 0.50 * 60 * elapsed);
+		}
 
 		if (!instPlaying && Settings.engineSettings.data.autoplayInFreeplay) {
 			instCooldown += elapsed;
@@ -637,6 +665,7 @@ class SongMetadata
 	public var songName:String = "";
 	public var displayName:String = null;
 	public var mod:String = "";
+	public var bpm:Null<Int> = null;
 	public var songCharacter:String = "";
 
 	public var difficulties:Array<String> = ["Easy", "Normal", "Hard"];
@@ -655,6 +684,7 @@ class SongMetadata
 		}
 		var parsedColor = FlxColor.fromString(song.color);
 		m.color = (parsedColor == null) ? FlxColor.fromRGB(129, 99, 223) : parsedColor;
+		m.bpm = song.bpm;
 
 		if (song.displayName != null) m.displayName = song.displayName;
 

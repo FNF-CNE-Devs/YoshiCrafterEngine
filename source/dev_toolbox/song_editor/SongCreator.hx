@@ -136,7 +136,8 @@ class SongCreator extends MusicBeatSubstate {
                 char: fpIcon.text,
                 displayName: songDisplayName.text.trim() == "" ? null : songDisplayName.text.trim(),
                 difficulties: [for(e in difficulties.text.split(",")) e.trim()],
-                color: colorPanel.color.toWebString()
+                color: colorPanel.color.toWebString(),
+                bpm: Std.int(bpm.value)
             };
             FileSystem.createDirectory('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\songs\\${json.name}\\');
             File.copy(instPath.trim(), '${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\songs\\${json.name}\\Inst.ogg');

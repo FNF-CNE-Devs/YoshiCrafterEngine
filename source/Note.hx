@@ -197,6 +197,7 @@ class Note extends FlxSprite
 	public var enableRating:Bool = true;
 	public var altAnim:Bool = true;
 	public var engineSettings:Dynamic;
+	public var splashColor:FlxColor = 0xFFFFFFFF;
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?mustHit = true, ?altAnim = false)
 	{
 		super();
@@ -238,6 +239,7 @@ class Note extends FlxSprite
 			var customColors = (mustPress || engineSettings.customArrowColors_allChars) ? PlayState.current.boyfriend.getColors(altAnim) : PlayState.current.dad.getColors(altAnim);
 			var c = customColors[(noteData % (customColors.length - 1)) + 1];
 			this.shader = new ColoredNoteShader(c.red, c.green, c.blue);
+			this.splashColor = c;
 		} else {
 			this.shader = new ColoredNoteShader(255, 255, 255);
 			cast(this.shader, ColoredNoteShader).enabled.value = [false];

@@ -1813,11 +1813,13 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
-		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, 150, 0.50 * 60 * elapsed)));
-		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, 150, 0.50 * 60 * elapsed)));
+		var icon1lerp = FlxMath.lerp(iconP1.scale.x, 1, 0.50 * 60 * elapsed);
+		iconP1.scale.set(icon1lerp, icon1lerp);
+		var icon2lerp = FlxMath.lerp(iconP2.scale.x, 1, 0.50 * 60 * elapsed);
+		iconP2.scale.set(icon2lerp, icon2lerp);
 
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
+		// iconP1.updateHitbox();
+		// iconP2.updateHitbox();
 
 		var iconOffset:Int = 26;
 
@@ -2166,6 +2168,7 @@ class PlayState extends MusicBeatState
 						if (engineSettings.glowCPUStrums) {
 							var strum = cpuStrums.members[daNote.noteData % _SONG.keyNumber % SONG.keyNumber];
 							strum.cpuRemainingGlowTime = Conductor.stepCrochet * 1.5 / 1000;
+							cast(strum.shader, ColoredNoteShader).setColors(daNote.splashColor.red, daNote.splashColor.green, daNote.splashColor.blue);
 							strum.animation.play("confirm", true);
 							strum.centerOffsets();
 							strum.centerOrigin();
@@ -3113,6 +3116,7 @@ class PlayState extends MusicBeatState
 			{
 				if (Math.abs((note.noteData % _SONG.keyNumber) % SONG.keyNumber) == spr.ID)
 				{
+					cast(spr.shader, ColoredNoteShader).setColors(note.splashColor.red, note.splashColor.green, note.splashColor.blue);
 					spr.animation.play('confirm', true);
 				}
 			});
@@ -3255,11 +3259,10 @@ class PlayState extends MusicBeatState
 				camHUD.zoom = Math.min(camHUD.zoom + z.hud, 1.35 * engineSettings.noteScale);
 		}
 
-		iconP1.setGraphicSize(Std.int(iconP1.width + 30));
-		iconP2.setGraphicSize(Std.int(iconP2.width + 30));
+		iconP1.scale.x = iconP2.scale.x = iconP1.scale.y = iconP2.scale.y = 1.2;
 
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
+		// iconP1.updateHitbox();
+		// iconP2.updateHitbox();
 
 		if (curBeat % gfSpeed == 0)
 		{

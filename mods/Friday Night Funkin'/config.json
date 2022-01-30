@@ -17,5 +17,11 @@
         }
     ],
     "keyNumbers" : [4],
-    "dependencies" : ["Yoshi Engine"]
+    "dependencies" : ["Yoshi Engine"],
+    "settings" : [
+        {
+            "name": "Blammed effects",
+            "value": "bool"
+        }
+    ]
 }

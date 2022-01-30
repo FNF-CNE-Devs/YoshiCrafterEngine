@@ -3,6 +3,7 @@
         {
             "name" : "ninjamuffin99",
             "role" : "Main game developer",
+            "icon" : "credits/ninjamuffin99",
             "urls" : [
                 {
                     "name" : "Newgrounds",
@@ -17,6 +18,7 @@
         {
             "name" : "PhantomArcade",
             "role" : "Animator",
+            "icon" : "credits/phantomarcade",
             "urls" : [
                 {
                     "name" : "Newgrounds",
@@ -31,6 +33,7 @@
         {
             "name" : "kawaisprite",
             "role" : "Musician",
+            "icon" : "credits/kawaii_sprite",
             "urls" : [
                 {
                     "name" : "Newgrounds",
@@ -45,6 +48,7 @@
         {
             "name" : "evilsk8r",
             "role" : "Artist",
+            "icon" : "credits/evilsk8r",
             "urls" : [
                 {
                     "name" : "Newgrounds",
@@ -59,6 +63,7 @@
         {
             "name" : "Tom Fulp",
             "role" : "Creator of Newgrounds and Pico",
+            "icon" : "credits/tom_fulp",
             "urls" : [
                 {
                     "name" : "Newgrounds",
@@ -73,6 +78,7 @@
         {
             "name" : "Sr Pelo",
             "role" : "Creator of Skid & Pump",
+            "icon" : "credits/sr_pelo",
             "urls" : [
                 {
                     "name" : "Newgrounds",
@@ -91,6 +97,7 @@
         {
             "name" : "BassetFilms",
             "role" : "Made Monster's soundtrack",
+            "icon" : "credits/bassetfilms",
             "urls" : [
                 {
                     "name" : "Newgrounds",
