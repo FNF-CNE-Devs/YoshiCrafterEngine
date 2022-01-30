@@ -1,3 +1,8 @@
+import cpp.Reference;
+import cpp.Lib;
+import cpp.Pointer;
+import cpp.RawPointer;
+import cpp.Callable;
 import llua.State;
 import llua.Convert;
 import ModSupport.ModScript;
@@ -233,19 +238,129 @@ class LuaScript extends Script {
     public var state:llua.State;
     public var variables:Map<String, Dynamic> = [];
 
+    function getVar(v:String) {
+        var splittedVar = v.split(".");
+        if (splittedVar.length == 0) return null;
+        var currentObj = variables[splittedVar[0]];
+        for (i in 1...splittedVar.length) {
+            var property = Reflect.getProperty(currentObj, splittedVar[i]);
+            if (property != null) {
+                currentObj = property;
+            } else {
+                this.trace('Variable $v doesn\'t exist or is equal to null.');
+                return null;
+            }
+        }
+        return currentObj;
+    }
     public function new() {
         super();
         state = LuaL.newstate();
+        Lua.init_callbacks(state);
         LuaL.openlibs(state);
         Lua_helper.register_hxtrace(state);
-        Lua.pushcfunction(state, cpp.Callable.fromFunction(function(t, e) {
-            return function(state2:StatePointer) {
-                var state = cast(state2, State);
-                Convert.toLua(state, variables[Convert.fromLua(state, Lua.gettop(state))]);
-                return 1;
+        
+        Lua_helper.add_callback(state, "set", function(v:String, value:Dynamic) {
+            var splittedVar = v.split(".");
+            if (splittedVar.length == 0) return false;
+            if (splittedVar.length == 1) {
+                variables[v] = value;
+                return true;
             }
-        }));
-        Lua.setglobal(state, "getVariable");
+            var currentObj = variables[splittedVar[0]];
+            for (i in 1...splittedVar.length - 1) {
+                var property = Reflect.getProperty(currentObj, splittedVar[i]);
+                if (property != null) {
+                    currentObj = property;
+                } else {
+                    this.trace('Variable $v doesn\'t exist or is equal to null.');
+                    return false;
+                }
+            }
+            // var property = Reflect.getProperty(currentObj, splittedVar[splittedVar.length - 1]);
+            // if (property != null) {
+            var finalVal = value;
+            if (Std.is(finalVal, String)) {
+                var str = cast(finalVal, String);
+                if (str.startsWith("$")) {
+                    var v = getVar(str.substr(1));
+                    if (v != null) {
+                        finalVal = v;
+                    }
+                }
+            }
+            try {
+                Reflect.setProperty(currentObj, splittedVar[splittedVar.length - 1], finalVal);
+                return true;
+            } catch(e) {
+                this.trace('Variable $v doesn\'t exist.');
+                return false;
+            }
+        });
+        Lua_helper.add_callback(state, "get", getVar);
+        Lua_helper.add_callback(state, "call", function(v:String, resultName:String, ?args:Array<Dynamic>) {
+            if (args == null) args = [];
+            var splittedVar = v.split(".");
+            if (splittedVar.length == 0) return false;
+            var currentObj = variables[splittedVar[0]];
+            for (i in 1...splittedVar.length - 1) {
+                var property = Reflect.getProperty(currentObj, splittedVar[i]);
+                if (property != null) {
+                    currentObj = property;
+                } else {
+                    this.trace('Variable $v doesn\'t exist or is equal to null.');
+                    return false;
+                }
+            }
+            var func = Reflect.getProperty(currentObj, splittedVar[splittedVar.length - 1]);
+
+            var finalArgs = [];
+            for (a in args) {
+                if (Std.is(a, String)) {
+                    var str = cast(a, String);
+                    if (str.startsWith("$")) {
+                        var v = getVar(str.substr(1));
+                        if (v != null) {
+                            finalArgs.push(v);
+                        } else {
+                            finalArgs.push(a);
+                        }
+                    } else {
+                        finalArgs.push(a);
+                    }
+                } else {
+                    finalArgs.push(a);
+                }
+            }
+            if (func != null) {
+                var result = null;
+                try {
+                    result = Reflect.callMethod(null, func, finalArgs);
+                } catch(e) {
+                    this.trace('$e');
+                }
+                Paths.copyBitmap = false;
+                variables[resultName] = result;
+                return true;
+            } else {
+                this.trace('Function $v doesn\'t exist or is equal to null.');
+                return false;
+            }
+        });
+        Lua_helper.add_callback(state, "createClass", function(name:String, className:String, params:Array<Dynamic>) {
+            var cl = Type.resolveClass(className);
+            if (cl == null) {
+                if (variables[className] != null) {
+                    if (Type.typeof(variables[className]) == Type.typeof(Class)) {
+                        cl = cast(variables[className], Class<Dynamic>);
+                    }
+                }
+            }
+            variables[name] = Type.createInstance(cl, params);
+        });
+        Lua_helper.add_callback(state, "print", function(toPtr:Dynamic) {
+            this.trace(Std.string(toPtr));
+        });
         // Lua_helper.add_callback(state, "trace", function(text:String) {
         //     trace(text);
         // });
@@ -254,7 +369,26 @@ class LuaScript extends Script {
     public override function loadFile(path:String) {
         // LuaL.loadfile(state, path);
         // LuaL.dostring(state, Paths.getTextOutsideAssets(path));
-        LuaL.dostring(state, File.getContent(path));
+        var p = path;
+        if (Path.extension(p) == "") {
+            p = p + ".lua";
+        }
+        if (FileSystem.exists(p)) {
+            if (LuaL.dostring(state, File.getContent(p)) != 0) {
+                var err = Lua.tostring(state, -1);
+                this.trace('$fileName: $err');
+            }
+        } else {
+            this.trace("Lua script does not exist.");
+        }
+        fileName = Path.withoutDirectory(p);
+    }
+
+    public override function trace(text:String)
+    {
+        // LuaL.error(state, "%s");
+        for(t in text.split("\n")) PlayState.log.push(t);
+        trace(text);
     }
 
     public override function getVariable(name:String) {
@@ -275,14 +409,18 @@ class LuaScript extends Script {
     public override function executeFunc(funcName:String, ?args:Array<Any>) {
         // Gets func
         // Lua.
+        
         if (args == null) args = [];
         Lua.getglobal(state, funcName);
         
         for (a in args) {
             Convert.toLua(state, a);
         }
-        if (Lua.pcall(state, args.length, 1, 0) == 1) {
-            trace(Lua.tostring(state, -1));
+        if (Lua.pcall(state, args.length, 1, 0) != 0) {
+            var err = Lua.tostring(state, -1);
+            if (err != "attempt to call a nil value") {
+                this.trace('$fileName:$funcName():$err');
+            }
         }
         return Convert.fromLua(state, Lua.gettop(state));
     }

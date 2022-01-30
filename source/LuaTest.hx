@@ -7,9 +7,7 @@ class LuaTest extends FlxState {
         super();
         var l = new LuaScript();
         // LuaL.dostring(l.state, "print(\"hey\")");
-        trace("load file");
         l.loadFile("test.lua");
-        trace("exec func");
         l.setVariable("test", "lol");
         trace(l.executeFunc("re"));
     }

@@ -205,6 +205,7 @@ class PlayState extends MusicBeatState
 	public var cpuStrums:FlxTypedGroup<StrumNote>;
 	
 	public var camZooming:Bool = false;
+	public var autoCamZooming:Bool = true;
 	public var curSong:String = "";
 	
 	public var gfSpeed:Int = 1;
@@ -3026,6 +3027,7 @@ class PlayState extends MusicBeatState
 			hits["Misses"]++;
 			misses++;
 			numberOfNotes++;
+			numberOfArrowNotes++;
 			songScore -= 10;
 
 			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
@@ -3122,6 +3124,7 @@ class PlayState extends MusicBeatState
 			});
 
 			note.wasGoodHit = true;
+			vocals.volume = 1;
 			vocals.volume = 1;
 
 			if (!note.isSustainNote)
@@ -3252,11 +3255,10 @@ class PlayState extends MusicBeatState
 
 		if (camZooming)
 		{
-			var z:Dynamic = scripts.executeFunc("getCameraZoom", [curBeat], (curBeat % 4 == 0) ? {hud : 0.03, game : 0.015} : {hud : 0, game : 0});
-			if (Reflect.hasField(z, "game"))
-				FlxG.camera.zoom = Math.min(FlxG.camera.zoom + z.game, 1.35);
-			if (Reflect.hasField(z, "hud"))
-				camHUD.zoom = Math.min(camHUD.zoom + z.hud, 1.35 * engineSettings.noteScale);
+			if (autoCamZooming && curBeat % 4 == 0) {
+				FlxG.camera.zoom += 0.015;
+				camHUD.zoom += 0.03;
+			}
 		}
 
 		iconP1.scale.x = iconP2.scale.x = iconP1.scale.y = iconP2.scale.y = 1.2;
