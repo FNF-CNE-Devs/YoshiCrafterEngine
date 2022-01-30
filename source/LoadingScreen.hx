@@ -48,7 +48,7 @@ class LoadingScreen extends FlxState {
         loadingText.screenCenter(X);
         add(loadingText);
 
-        var logoBl = new FlxSprite(-150, -100);
+        var logoBl = new FlxSprite(-150, -25);
         logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
         logoBl.antialiasing = true;
         logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);

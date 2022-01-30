@@ -20,21 +20,6 @@
             ]
         },
         {
-            "name" : "PolybiusProxy",
-            "role" : "MP4 Video Cutscene support",
-            "icon" : "credits/polybius",
-            "urls" : [
-                {
-                    "name" : "GitHub",
-                    "url" : "https://github.com/PolybiusProxy"
-                },
-                {
-                    "name" : "Twitter",
-                    "url" : "https://twitter.com/polybiusproxy"
-                }
-            ]
-        },
-        {
             "name" : "KiyuuuSama",
             "role" : "Artist - Drew the icons & the engine's logo",
             "icon" : "credits/kiyuusama",
@@ -46,6 +31,21 @@
                 {
                     "name" : "YouTube",
                     "url" : "https://www.youtube.com/channel/UC5vO3P1ZoZWrSy8upg3xBww"
+                }
+            ]
+        },
+        {
+            "name" : "PolybiusProxy",
+            "role" : "MP4 Video Cutscene support",
+            "icon" : "credits/polybius",
+            "urls" : [
+                {
+                    "name" : "GitHub",
+                    "url" : "https://github.com/PolybiusProxy"
+                },
+                {
+                    "name" : "Twitter",
+                    "url" : "https://twitter.com/polybiusproxy"
                 }
             ]
         },
