@@ -287,8 +287,8 @@ class LuaScript extends Script {
             var finalVal = value;
             if (Std.is(finalVal, String)) {
                 var str = cast(finalVal, String);
-                if (str.startsWith("$")) {
-                    var v = getVar(str.substr(1));
+                if (str.startsWith("${") && str.endsWith("}")) {
+                    var v = getVar(str.substr(2, str.length - 3));
                     if (v != null) {
                         finalVal = v;
                     }
@@ -304,13 +304,54 @@ class LuaScript extends Script {
         });
         Lua_helper.add_callback(state, "get", function(v:String, ?globalName:String) {
             var r = getVar(v);
-            if (globalName != null) {
-                variables[v] = r;
-                return true;
+            if (globalName != null && globalName != "") {
+                variables[globalName] = r;
+                return '$' + '{$globalName}';
             } else {
                 return r;
             }
         });
+        Lua_helper.add_callback(state, "getArray", function(array:String, key:Int, ?globalVar:String):Dynamic {
+            if (array == null || array == "") {
+                this.trace("getArray(): You need to type a variable name");
+                return null;
+            } else {
+                var obj = getVar(array);
+                switch(Type.typeof(obj)) {
+                    case Type.ValueType.TClass(Array):
+                        var arr:Array<Any> = obj;
+                        var elem = arr[key];
+    
+                        if (globalVar == null || globalVar == "") {
+                            return elem;
+                        } else {
+                            variables[globalVar] = elem;
+                            return null;
+                        }
+                    default:
+                        this.trace('getArray(): Variable is an ${Type.typeof(obj)} instead of an array');
+                        return null;
+                }
+            }
+        });
+        Lua_helper.add_callback(state, "setArray", function(array:String, key:Int, newVar:Dynamic):Bool {
+            if (array == null || array == "") {
+                this.trace("setArray(): You need to type a variable name");
+                return false;
+            } else {
+                var obj = getVar(array);
+                switch(Type.typeof(obj)) {
+                    case Type.ValueType.TClass(Array):
+                        var arr:Array<Any> = obj;
+                        arr[key] = newVar;
+                        return true;
+                    default:
+                        this.trace('setArray(): Variable is an ${Type.typeof(obj)} instead of an array');
+                        return false;
+                }
+            }
+        });
+        Lua_helper.add_callback(state, "v", function(c:String) {return '$' + '{$c}';});
         Lua_helper.add_callback(state, "call", function(v:String, ?resultName:String, ?args:Array<Dynamic>):Dynamic {
             if (args == null) args = [];
             var splittedVar = v.split(".");
@@ -331,8 +372,10 @@ class LuaScript extends Script {
             for (a in args) {
                 if (Std.is(a, String)) {
                     var str = cast(a, String);
-                    if (str.startsWith("$")) {
-                        var v = getVar(str.substr(1));
+                    if (str.startsWith("${") && str.endsWith("}")) {
+                        var st = str.substr(2, str.length - 3);
+                        trace(st);
+                        var v = getVar(st);
                         if (v != null) {
                             finalArgs.push(v);
                         } else {
