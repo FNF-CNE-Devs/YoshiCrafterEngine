@@ -297,8 +297,16 @@ class LuaScript extends Script {
                 return false;
             }
         });
-        Lua_helper.add_callback(state, "get", getVar);
-        Lua_helper.add_callback(state, "call", function(v:String, resultName:String, ?args:Array<Dynamic>) {
+        Lua_helper.add_callback(state, "get", function(v:String, ?globalName:String) {
+            var r = getVal(v);
+            if (globalName != null) {
+                variables[v] = r;
+                return true;
+            } else {
+                return r;
+            }
+        });
+        Lua_helper.add_callback(state, "call", function(v:String, ?resultName:String, ?args:Array<Dynamic>) {
             if (args == null) args = [];
             var splittedVar = v.split(".");
             if (splittedVar.length == 0) return false;
@@ -340,8 +348,12 @@ class LuaScript extends Script {
                     this.trace('$e');
                 }
                 Paths.copyBitmap = false;
-                variables[resultName] = result;
-                return true;
+                if (resultName == null) {
+                    return result;
+                } else {
+                    variables[resultName] = result;
+                    return true;
+                }
             } else {
                 this.trace('Function $v doesn\'t exist or is equal to null.');
                 return false;

@@ -1,9 +1,8 @@
 {
     "updateLog" : [
-        "1.3.4 : PATCH DAY 2 !",
-        "AGAIN ?",
+        "1.4.0 : LUA SUPPORT !",
         "",
-        "- /!\\ NEW LUA SUPPORT ! (Beta)",
+        "- /!\\ LUA SUPPORT ! (Beta)",
         "- /!\\ Updated the Yoshi Engine Charter to allow Real-Time charting (like friday night maker but better)",
         "- /!\\ CREDITS MENU ICONS (thanks to KiyuuuSama for drawing them!)",
         "- /!\\ Removed the launcher since some antiviruses were detecting it as a false positive and replaced it by a batch file.",
@@ -15,6 +14,6 @@
         "- Save by Reference is now unchecked by default on Chart Editor.",
         "- Fixed Reload JSON button crashing the game"
     ],
-    "version" : [1,3,2],
+    "version" : [1,4,0],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"
 }
