@@ -81,10 +81,48 @@ Syntax : `createClass(globalVar, classType, args)`
 
 Example usage :
 ```lua
-function create()
+function createInFront()
     createClass("newDad", "Character", {0, 100, "your-char"})
 
     call("PlayState.dads.push", nil, {v("newDad")})
     call("PlayState.add", nil, {v("newDad")})
+end
+```
+
+## __The `getArray` function.__
+Syntax :
+`get(path, index, ?globalValue)`
+
+`path`: "Path" to the value (ex : `"PlayState.playerStrums.members"` or `"PlayState.cpuStrums.members"`)
+
+`index`: Index of the value (ex : `1`)
+
+`?globalValue`: If set, will set the result value to the global variable of that name, and returns true. If not set, will return the final value (or `nil` if it can't be converted to lua)
+
+Example usage :
+```lua
+function musicstart()
+    getArray("PlayState.playerStrums.members", 0, "strum1");
+    set("strum1.x", 360);
+end
+```
+
+## __The `setArray` function.__
+Syntax :
+`get(path, index, value)`
+
+`path`: "Path" to the value (ex : `"PlayState.playerStrums.members"` or `"PlayState.cpuStrums.members"`)
+
+`index`: Index of the value (ex : `1`)
+
+`value`: The new value
+
+Example usage :
+```lua
+function createInFront()
+    createClass("newDad", "Character", {0, 100, "your-char"})
+
+    call("PlayState.add", nil, {v("newDad")})
+    setArray("PlayState.dads", 1, v("newDad"))
 end
 ```

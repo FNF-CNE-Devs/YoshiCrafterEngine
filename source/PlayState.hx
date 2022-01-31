@@ -204,7 +204,7 @@ class PlayState extends MusicBeatState
 	public var playerStrums:FlxTypedGroup<StrumNote>;
 	public var cpuStrums:FlxTypedGroup<StrumNote>;
 	
-	public var camZooming:Bool = false;
+	public var camZooming:Bool = true;
 	public var autoCamZooming:Bool = true;
 	public var curSong:String = "";
 	
@@ -2148,10 +2148,11 @@ class PlayState extends MusicBeatState
 					
 					if (!daNote.mustPress && daNote.wasGoodHit && (!daNote.isSustainNote || (daNote.isSustainNote && daNote.strumTime + Conductor.stepCrochet < Conductor.songPosition)))
 					{
-						if (SONG.song != 'Tutorial')
-							camZooming = true;
+						// if (SONG.song != 'Tutorial')
+						// 	camZooming = true;
 	
 						daNote.script.setVariable("note", daNote);
+						scripts.executeFunc("onDadHit", [daNote]);
 						try {
 							var script = daNote.script;
 							daNote.script.executeFunc("onDadHit", [daNote.noteData % PlayState.SONG.keyNumber]);
@@ -3113,6 +3114,7 @@ class PlayState extends MusicBeatState
 
 			note.script.setVariable("note", note);
 			note.script.executeFunc("onPlayerHit", [note.noteData % PlayState.SONG.keyNumber]);
+			scripts.executeFunc("onPlayerHit", [note]);
 
 			playerStrums.forEach(function(spr:FlxSprite)
 			{

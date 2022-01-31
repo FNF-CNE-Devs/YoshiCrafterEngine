@@ -2,12 +2,21 @@
 In each mod, every stages is located under `/mods/(Your Mod)/stages/`. Each stage is represented by a hx file.
 
 ---
-## Stage Documentation
+## Scripts Documentation
+
+/!\ NOTE : Lua functions that have parameters that Lua does not support will instead send `nil` as the parameter. To access it, use the global `parameter(number)` (ex : `parameter1`) to access it like this :
+```lua
+function onDadHit(note)
+    -- note is nil, use this instead
+    local strumTime = get("parameter1.strumTime");
+end
+```
 
 ---
 **`create():Void`**
+**`createAfterChars():Void`** (runs after create())
 
-Fired during the stage creation, **before Boyfriend, Girlfriend and Dad are created**.
+Fired first, **after GF, BF and Dad are created**.
 
 Available variables :
 - `botplay:Bool` - Whenever the player is in botplay or not.
@@ -16,6 +25,7 @@ Available variables :
 
 Example usage :
 ```haxe
+gfVersion = "gf-car";
 function create() {
     // Creates a sprite, loads a graphica and adds it.
     var sprite = new FlxSprite(100, 100);
@@ -40,6 +50,10 @@ function create() {
     PlayState.add(sprite);
 }
 ```
+---
+**`createInFront():Void`**
+Same as `create()` excepts run after GF, BF and Dad are added in stage.
+
 ---
 **`musicstart():Void`**
 
@@ -97,5 +111,35 @@ Example usage :
 function beatHit(curBeat:Int) {
     // Makes a sprite dance.
     sprite.animation.play("dance");
+}
+```
+---
+**`onDadHit(note:Note):Void`**
+
+Fired when the opponent (dad) hits a note.
+
+Available variables :
+- [All default variables](defaultVars.md)
+
+
+Example usage :
+```haxe
+function onDadHit(note:Note) {
+    // i have no example here lmao
+}
+```
+---
+**`onPlayerHit(note:Note):Void`**
+
+Fired when BF (the player) hits a note.
+
+Available variables :
+- [All default variables](defaultVars.md)
+
+
+Example usage :
+```haxe
+function onPlayerHit(note:Note) {
+    // i have no example here lmao
 }
 ```
