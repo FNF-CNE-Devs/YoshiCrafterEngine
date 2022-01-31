@@ -83,7 +83,23 @@ function update(elapsed) {
 Default camera zoom
 
 __**Example usage:**__
+```haxe
+function create() {
+    PlayState.defaultCamZoom = 0.5;
+}
+```
+---
 
+**`autoCamZooming:Bool`** - (`PlayState`)
+
+If `true`, enables automatic camera zooming every 4 beats.
+Defaults to `true`
+---
+
+**`camZooming:Bool`** - (`PlayState`)
+
+If `true`, enables automatic camera zoom management
+Defaults to `true`
 ---
 
 

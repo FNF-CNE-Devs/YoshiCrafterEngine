@@ -8,3 +8,5 @@ Welcome to Yoshi Engine's official documentation. Select a chapter below on how 
 - [Characters](doc/chars.md)
 - [PlayState](doc/playstate.md)
 
+## Language specific documentation
+- [How to use Lua](doc/lua.md)

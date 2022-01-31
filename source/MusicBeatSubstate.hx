@@ -62,4 +62,8 @@ class MusicBeatSubstate extends FlxSubState
 	{
 		//do literally nothing dumbass
 	}
+
+	public function onDropFile(path:String) {
+		
+	}
 }

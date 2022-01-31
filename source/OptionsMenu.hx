@@ -435,6 +435,20 @@ class OptionsMenu extends MusicBeatState
 			value: function() {return "";}
 		});
 		guiOptions.options.push({
+			text : "Show accuracy mode",
+			description : "When checked, will show the accuracy mode next to the accuracy.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.showAccuracyMode = !Settings.engineSettings.data.showAccuracyMode;
+					o.checkboxChecked = Settings.engineSettings.data.showAccuracyMode;
+					o.check(Settings.engineSettings.data.showAccuracyMode);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.showAccuracyMode;},
+			value: function() {return "";}
+		});
+		guiOptions.options.push({
 			text : "Show number of misses",
 			description : "If enabled, will add the amount of misses next to the score.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
@@ -518,6 +532,7 @@ class OptionsMenu extends MusicBeatState
 			checkboxChecked: function() {return Settings.engineSettings.data.watermark;},
 			value: function() {return "";}
 		});
+		
 		settings.push(guiOptions);
 	}
 

@@ -13,3 +13,7 @@
 [A/E] Remove/Add Sustain to current note
 [Ctrl + Click] Select Note
 [R] Reset Section
+
+[Hover w/ Cursor] Select the note type and character for Typing Mode.
+[Alt] Enable/Disable Typing Mode
+[Player Controls] Add notes in Typing Mode

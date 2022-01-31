@@ -64,6 +64,12 @@ class LogSubState extends MusicBeatSubstate {
 
         text.y = -Math.max(0, text.height - (720 + PlayState.current.guiOffset.y));
         released = controls.ACCEPT || controls.BACK;
+
+        bg.scrollFactor.set();
+        text.scrollFactor.set();
+        scrollSprite.scrollFactor.set();
+        clearButton.scrollFactor.set();
+        saveButton.scrollFactor.set();
         super.create();
     }
 

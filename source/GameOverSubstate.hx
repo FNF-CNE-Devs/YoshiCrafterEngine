@@ -75,7 +75,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if (controls.BACK)
 		{
-			FlxG.sound.music.stop();
+			if (FlxG.sound.music != null) FlxG.sound.music.stop();
 
 			if (PlayState.isStoryMode)
 				FlxG.switchState(new StoryMenuState());
@@ -129,7 +129,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		{
 			isEnding = true;
 			bf.playAnim('deathConfirm', true);
-			FlxG.sound.music.stop();
+			if (FlxG.sound.music != null) FlxG.sound.music.stop();
 
 			
 			var sfx = retrySFX.split(":");

@@ -2,7 +2,8 @@
     "credits" : [
         {
             "name" : "Muffichii aka YoshiCrafter29",
-            "role" : "Engine developer",
+            "role" : "Engine developer & Doge GF's n°1 fan",
+            "icon" : "credits/yoshicrafter29",
             "urls" : [
                 {
                     "name" : "YouTube",
@@ -19,8 +20,24 @@
             ]
         },
         {
+            "name" : "KiyuuuSama",
+            "role" : "Artist - Drew the icons & the engine's logo",
+            "icon" : "credits/kiyuusama",
+            "urls" : [
+                {
+                    "name" : "Twitter",
+                    "url" : "https://twitter.com/KiyuuuSama"
+                },
+                {
+                    "name" : "YouTube",
+                    "url" : "https://www.youtube.com/channel/UC5vO3P1ZoZWrSy8upg3xBww"
+                }
+            ]
+        },
+        {
             "name" : "PolybiusProxy",
             "role" : "MP4 Video Cutscene support",
+            "icon" : "credits/polybius",
             "urls" : [
                 {
                     "name" : "GitHub",
@@ -35,6 +52,7 @@
         {
             "name" : "AbnormalPoof",
             "role" : "Engine Contributor - Fixed some bugs & Chart Pretty Printing",
+            "icon" : "credits/abnormalpoof",
             "urls" : [
                 {
                     "name" : "GitHub",

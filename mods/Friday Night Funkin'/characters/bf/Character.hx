@@ -15,6 +15,7 @@ function create() {
     character.animation.addByPrefix('hey', 'BF HEY', 24, false);
     character.animation.addByPrefix('dodge', 'boyfriend dodge', 24, false);
     character.animation.addByPrefix('hit', 'BF hit', 24, false);
+    character.animation.addByPrefix('preAttack', 'bf pre attack', 24, false);
 
     character.animation.addByPrefix('scared', 'BF idle shaking', 24);
 

@@ -2,6 +2,7 @@ var halloweenBG:FlxSprite = null;
 
 var lightningStrikeBeat:Int = 0;
 var lightningOffset:Int = 8;
+var lightningStrike:Float = -5;
 
 function create()
 {
@@ -20,6 +21,10 @@ function beatHit(curBeat)
     if (FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
     {
         lightningStrikeShit();
+    }
+    if (curBeat > lightningStrikeBeat + 2) {
+        if (PlayState.gf.animation.curAnim.name == "scared") PlayState.gf.dance(true);
+        if (PlayState.boyfriend.animation.curAnim.name == "scared") PlayState.boyfriend.dance(true);
     }
 }
 function lightningStrikeShit()

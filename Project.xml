@@ -3,10 +3,16 @@
 
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Yoshi Engine" file="YoshiEngine" packageName="com.yoshicrafter29.yoshiengine" package="com.yoshicrafter29.yoshiengine" main="Main" version="0.2.7.1" company="yoshicrafter29" />
+	<app title="Friday Night Funkin' - Yoshi Engine" packageName="com.yoshicrafter29.yoshiengine" package="com.yoshicrafter29.yoshiengine" main="Main" version="0.2.7.1" company="yc29" />
+	<app file="Yoshi Engine (Windows)" if="windows" />
+	<app file="Yoshi Engine (Linux)" if="linux" />
+	<app file="Yoshi Engine (Mac)" if="mac" />
+	<!-- <app file="Yoshi Engine (x64)" unless="32bit" /> -->
+	<haxedef name="X64" unless="32bit"/>
 
 	<haxedef name="HXCPP_CHECK_POINTER" if="release" />
 	<haxedef name="HXCPP_STACK_LINE" if="release" />
+	<haxedef name="HXCPP_DEBUG_LINK" if="release" />
 	<haxedef name="hscriptPos" />
 	
 	<!--Switch Export with Unique ApplicationID and Icon-->
@@ -41,7 +47,7 @@
 
 	<set name="BUILD_DIR" value="export/debug" if="debug" />
 	<set name="BUILD_DIR" value="export/release" unless="debug" />
-	<set name="BUILD_DIR" value="export/32bit" if="32bit" />
+	<!-- <set name="BUILD_DIR" value="export/32bit" if="32bit" /> -->
 
 	<classpath name="source" />
 
@@ -109,7 +115,7 @@
 	<assets path='mods' library="mods" embed='false'/>
 	<assets path='skins' rename='skins' embed='false'/>
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
-	<assets path='Launcher.exe' />
+	<assets path='Launch.bat' />
 	<!-- <assets path="documentation" rename="docs"/> -->
 	<!-- <template path='mods' /> -->
 	
@@ -135,8 +141,9 @@
 	<haxelib name="newgrounds"/>
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="polymod"/>
-	<haxelib name="hxvm-lua"/>
-	<haxelib name="linc_lua"/>
+	<!-- <haxelib name="hxvm-lua"/>
+	<haxelib name="linc_lua"/> -->
+	<haxelib name="linc_luajit" />
 	<haxelib name="akifox-asynchttp"/>
 	
 	<!-- <haxelib name="flixel-animate"/> -->

@@ -20,7 +20,7 @@ class ScoreText {
     public static function generateAccuracy(ps:PlayState) {
         switch(Settings.engineSettings.data.accuracyMode) {
             default:
-                return Settings.engineSettings.data.showAccuracy ? (" | Accuracy:" + (ps.numberOfNotes == 0 ? "0%" : Std.string(FlxMath.roundDecimal(ps.accuracy / ps.numberOfNotes * 100, 2)) + "%") + " (" + accuracyTypesText[Settings.engineSettings.data.accuracyMode].charAt(0) + ")") : "";
+                return Settings.engineSettings.data.showAccuracy ? (" | Accuracy:" + (ps.numberOfNotes == 0 ? "0%" : Std.string(FlxMath.roundDecimal(ps.accuracy / ps.numberOfNotes * 100, 2)) + "%") + (Settings.engineSettings.data.showAccuracyMode ? " (" + accuracyTypesText[Settings.engineSettings.data.accuracyMode] + ")" : "")) : "";
             case 1:
                 var accuracyFloat:Float = 0;
 
@@ -28,7 +28,7 @@ class ScoreText {
                     accuracyFloat += PlayState.current.hits[rat.name] * rat.accuracy;
                 }
 
-                return Settings.engineSettings.data.showAccuracy ? (" | Accuracy:" + (ps.numberOfNotes == 0 ? "0%" : Std.string(FlxMath.roundDecimal(accuracyFloat / ps.numberOfArrowNotes * 100, 2)) + "%") + " (" + accuracyTypesText[Settings.engineSettings.data.accuracyMode].charAt(0) + ")") : "";
+                return Settings.engineSettings.data.showAccuracy ? (" | Accuracy:" + (ps.numberOfNotes == 0 ? "0%" : Std.string(FlxMath.roundDecimal(accuracyFloat / ps.numberOfArrowNotes * 100, 2)) + "%") + " (" + accuracyTypesText[Settings.engineSettings.data.accuracyMode] + ")") : "";
         }
         
     }

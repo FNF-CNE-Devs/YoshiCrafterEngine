@@ -72,7 +72,7 @@ class MusicBeatState extends FlxUIState
 
 		updateCurStep();
 		updateBeat();
-
+		
 		if (oldStep < curStep && curStep > 0)
 			stepHit();
 
@@ -81,11 +81,7 @@ class MusicBeatState extends FlxUIState
 
 	private function updateBeat():Void
 	{
-		if (Std.is(FlxG.state, ChartingState_New) || Std.is(FlxG.state, ChartingState)) {
-			curBeat = Std.int(Math.floor(curStep / 4));
-		} else {
-			curBeat = Std.int(Math.max(curBeat, Math.floor(curStep / 4)));
-		}
+		curBeat = Std.int(Math.floor(curStep / 4));
 	}
 
 	private function updateCurStep():Void
@@ -101,7 +97,7 @@ class MusicBeatState extends FlxUIState
 				lastChange = Conductor.bpmChangeMap[i];
 		}
 
-		curStep = Std.int(Math.max(curStep, lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet)));
+		curStep = Std.int(lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet));
 	}
 
 	public function stepHit():Void
@@ -113,5 +109,9 @@ class MusicBeatState extends FlxUIState
 	public function beatHit():Void
 	{
 		//do literally nothing dumbass
+	}
+
+	public function onDropFile(path:String) {
+		
 	}
 }

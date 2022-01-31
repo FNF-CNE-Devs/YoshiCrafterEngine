@@ -120,6 +120,7 @@ import flixel.FlxG;
 	@:keep public static var yoshiEngineCharter:Bool = true;
 	@:keep public static var developerMode:Bool = false;
 	@:keep public static var hideOriginalGame:Bool = false;
+	@:keep public static var showAccuracyMode:Bool = false;
 
 	// ========================================================
 	// PER KEY SET CONTROLS

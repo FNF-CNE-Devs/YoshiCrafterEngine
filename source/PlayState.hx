@@ -204,7 +204,8 @@ class PlayState extends MusicBeatState
 	public var playerStrums:FlxTypedGroup<StrumNote>;
 	public var cpuStrums:FlxTypedGroup<StrumNote>;
 	
-	public var camZooming:Bool = false;
+	public var camZooming:Bool = true;
+	public var autoCamZooming:Bool = true;
 	public var curSong:String = "";
 	
 	public var gfSpeed:Int = 1;
@@ -1813,11 +1814,13 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
-		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, 150, 0.50 * 60 * elapsed)));
-		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, 150, 0.50 * 60 * elapsed)));
+		var icon1lerp = FlxMath.lerp(iconP1.scale.x, 1, 0.50 * 60 * elapsed);
+		iconP1.scale.set(icon1lerp, icon1lerp);
+		var icon2lerp = FlxMath.lerp(iconP2.scale.x, 1, 0.50 * 60 * elapsed);
+		iconP2.scale.set(icon2lerp, icon2lerp);
 
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
+		// iconP1.updateHitbox();
+		// iconP2.updateHitbox();
 
 		var iconOffset:Int = 26;
 
@@ -1986,7 +1989,7 @@ class PlayState extends MusicBeatState
 		// RESET = Quick Game Over Screen
 		if (controls.RESET)
 		{
-			health = 0;
+			health = -1;
 			trace("oh no he died");
 		}
 
@@ -2145,10 +2148,11 @@ class PlayState extends MusicBeatState
 					
 					if (!daNote.mustPress && daNote.wasGoodHit && (!daNote.isSustainNote || (daNote.isSustainNote && daNote.strumTime + Conductor.stepCrochet < Conductor.songPosition)))
 					{
-						if (SONG.song != 'Tutorial')
-							camZooming = true;
+						// if (SONG.song != 'Tutorial')
+						// 	camZooming = true;
 	
 						daNote.script.setVariable("note", daNote);
+						scripts.executeFunc("onDadHit", [daNote]);
 						try {
 							var script = daNote.script;
 							daNote.script.executeFunc("onDadHit", [daNote.noteData % PlayState.SONG.keyNumber]);
@@ -2166,6 +2170,7 @@ class PlayState extends MusicBeatState
 						if (engineSettings.glowCPUStrums) {
 							var strum = cpuStrums.members[daNote.noteData % _SONG.keyNumber % SONG.keyNumber];
 							strum.cpuRemainingGlowTime = Conductor.stepCrochet * 1.5 / 1000;
+							cast(strum.shader, ColoredNoteShader).setColors(daNote.splashColor.red, daNote.splashColor.green, daNote.splashColor.blue);
 							strum.animation.play("confirm", true);
 							strum.centerOffsets();
 							strum.centerOrigin();
@@ -3023,6 +3028,7 @@ class PlayState extends MusicBeatState
 			hits["Misses"]++;
 			misses++;
 			numberOfNotes++;
+			numberOfArrowNotes++;
 			songScore -= 10;
 
 			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
@@ -3108,16 +3114,19 @@ class PlayState extends MusicBeatState
 
 			note.script.setVariable("note", note);
 			note.script.executeFunc("onPlayerHit", [note.noteData % PlayState.SONG.keyNumber]);
+			scripts.executeFunc("onPlayerHit", [note]);
 
 			playerStrums.forEach(function(spr:FlxSprite)
 			{
 				if (Math.abs((note.noteData % _SONG.keyNumber) % SONG.keyNumber) == spr.ID)
 				{
+					cast(spr.shader, ColoredNoteShader).setColors(note.splashColor.red, note.splashColor.green, note.splashColor.blue);
 					spr.animation.play('confirm', true);
 				}
 			});
 
 			note.wasGoodHit = true;
+			vocals.volume = 1;
 			vocals.volume = 1;
 
 			if (!note.isSustainNote)
@@ -3248,18 +3257,16 @@ class PlayState extends MusicBeatState
 
 		if (camZooming)
 		{
-			var z:Dynamic = scripts.executeFunc("getCameraZoom", [curBeat], (curBeat % 4 == 0) ? {hud : 0.03, game : 0.015} : {hud : 0, game : 0});
-			if (Reflect.hasField(z, "game"))
-				FlxG.camera.zoom = Math.min(FlxG.camera.zoom + z.game, 1.35);
-			if (Reflect.hasField(z, "hud"))
-				camHUD.zoom = Math.min(camHUD.zoom + z.hud, 1.35 * engineSettings.noteScale);
+			if (autoCamZooming && curBeat % 4 == 0) {
+				FlxG.camera.zoom += 0.015;
+				camHUD.zoom += 0.03;
+			}
 		}
 
-		iconP1.setGraphicSize(Std.int(iconP1.width + 30));
-		iconP2.setGraphicSize(Std.int(iconP2.width + 30));
+		iconP1.scale.x = iconP2.scale.x = iconP1.scale.y = iconP2.scale.y = 1.2;
 
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
+		// iconP1.updateHitbox();
+		// iconP2.updateHitbox();
 
 		if (curBeat % gfSpeed == 0)
 		{

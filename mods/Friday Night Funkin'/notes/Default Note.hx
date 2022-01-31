@@ -90,7 +90,7 @@ var noteSchemes:Array<Array<Array<String>>> = [
 var schemeShit:Array<String> = null;
 
 function generateStaticArrow(babyArrow:FlxSprite, i:Int) {
-    var s = noteSchemes[PlayState.song.keyNumber][i % PlayState.song.keyNumber];
+    var s = noteSchemes[PlayState.song.keyNumber][i % PlayState.song.keyNumber % noteSchemes.length];
     babyArrow.frames = (EngineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas(EngineSettings.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets') : Paths_.getSparrowAtlas_Custom(Paths_.getSkinsPath() + "/notes/" + EngineSettings.customArrowSkin.toLowerCase());
     babyArrow.antialiasing = true;
     babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
@@ -113,7 +113,7 @@ function create() {
         note.frames = (EngineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets') : Paths_.getSparrowAtlas_Custom(StringTools.replace(StringTools.replace(Paths_.getSkinsPath() + "notes/" + EngineSettings.customArrowSkin.toLowerCase(), "/", "\\"), "\r", ""));
     }
 
-    schemeShit = noteSchemes[PlayState.song.keyNumber][note.noteData % PlayState.song.keyNumber];
+    schemeShit = noteSchemes[PlayState.song.keyNumber][note.noteData % PlayState.song.keyNumber % noteSchemes.length];
 
     note.animation.addByPrefix('scroll', schemeShit[3]);
     note.animation.addByPrefix('holdend', schemeShit[5]);

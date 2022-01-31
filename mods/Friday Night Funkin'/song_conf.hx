@@ -56,3 +56,5 @@ switch(song) {
         scripts = ["stages/school-evil"];
         cutscene = "cutscenes/weeb-dialogue";
 }
+
+scripts.push("scripts/fnf");
