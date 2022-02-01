@@ -1,5 +1,6 @@
 package dev_toolbox;
 
+import lime.math.Rectangle;
 import dev_toolbox.week_editor.CreateWeekWizard;
 import dev_toolbox.week_editor.WeekCharacterSettings;
 import dev_toolbox.file_explorer.FileExplorer;
@@ -111,7 +112,8 @@ class ToolboxHome extends MusicBeatState {
             ModSupport.modConfig[mod] = conf;
         }
         bg = CoolUtil.addWhiteBG(this);
-        bgTweenColor = 0xFFFFFFFF;
+        bg.color = 0xFF8C8C8C;
+        bgTweenColor = 0xFF8C8C8C;
         var tabs = [
             {name: "info", label: 'Mod Info'},
 			{name: "songs", label: 'Songs'},
@@ -120,17 +122,26 @@ class ToolboxHome extends MusicBeatState {
 		];
         UI_Tabs = new FlxUITabMenu(null, tabs, true);
         UI_Tabs.x = 0;
-        UI_Tabs.resize(320, 720);
-        UI_Tabs.screenCenter(Y);
+        UI_Tabs.resize(1260, 22);
+        // UI_Tabs.screenCenter(Y);
         UI_Tabs.scrollFactor.set();
         add(UI_Tabs);
+        var coolTabFadeout = new FlxSprite(0, 20).makeGraphic(1280, 10, 0x00000000);
+        coolTabFadeout.pixels.lock();
+        for(y in 0...coolTabFadeout.pixels.height) {
+            var c:FlxColor = 0xFF8C8C8C;
+            c.alphaFloat = 1 - (y / coolTabFadeout.pixels.height);
+            coolTabFadeout.pixels.fillRect(new openfl.geom.Rectangle(0, y, 1280, 1), c);
+        }
+        coolTabFadeout.pixels.unlock();
+        add(coolTabFadeout);
 
         addInfo();
         addChars();
         addSongs();
         addWeeks();
 
-        closeButton = new FlxUIButton(FlxG.width - 23, 3, "X", function() {
+        closeButton = new FlxUIButton(FlxG.width - 20, 0, "X", function() {
             FlxG.switchState(new ToolboxMain());
         });
         closeButton.color = 0xFFFF4444;
@@ -192,7 +203,7 @@ class ToolboxHome extends MusicBeatState {
         displayAlphabet.x = 500;
         displayAlphabet.y = 50;
         bgTweenColor = FlxColor.fromString(s.color);
-        if (bgTweenColor == null) bgTweenColor = 0xFFFFFFFF;
+        if (bgTweenColor == null) bgTweenColor = 0xFF8C8C8C;
 
         displayHealthIcon = new HealthIcon(s.char == null ? "unknown" : s.char, false, selectedMod);
         displayHealthIcon.x = displayAlphabet.x + displayAlphabet.width;
@@ -338,6 +349,9 @@ class ToolboxHome extends MusicBeatState {
         UI_Tabs.addGroup(tab);
     }
 
+    var uiX = 190;
+    var uiY = 20;
+    var weekTab:FlxUI = null;
     public function addWeeks() {
         weekJson = {
             weeks : []
@@ -351,40 +365,39 @@ class ToolboxHome extends MusicBeatState {
         
         var tab = new FlxUI(null, UI_Tabs);
         tab.name = "weeks";
+        this.weekTab = tab;
 
         
-
-        var x = UI_Tabs.x + UI_Tabs.width;
-        blackBG = new FlxSprite(x, 0).makeGraphic(Std.int(1280 - UI_Tabs.width), 720, 0xFF000000);
+        blackBG = new FlxSprite(uiX, 2).makeGraphic(Std.int(1280 - uiX), 720, 0xFF000000);
         
-        scoreText = new FlxText(x + 10, 10, 0, "SCORE: 0", 36);
+        scoreText = new FlxText(uiX + 10, 12, 0, "SCORE: 0", 36);
 		scoreText.setFormat("VCR OSD Mono", 32);
 
-        txtWeekTitle = new FlxText(x, 10, FlxG.width - x, "Select a week...", 32);
+        txtWeekTitle = new FlxText(uiX, 12, FlxG.width - uiX, "Select a week...", 32);
 		txtWeekTitle.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
 		txtWeekTitle.alpha = 0.7;
 
-        yellowBG = new FlxSprite(x + 0, 56).makeGraphic(Std.int(FlxG.width - x), 400, FlxColor.WHITE);
+        yellowBG = new FlxSprite(uiX + 0, 58).makeGraphic(Std.int(FlxG.width - uiX), 400, FlxColor.WHITE);
 		yellowBG.color = 0xFFF9CF51;
 
-        bf = new MenuCharacter(x + (FlxG.width * 0.25) * (2 + 0) - 150, "bf");
-        bf.y += 70;
+        bf = new MenuCharacter(uiX + (FlxG.width * 0.25) * (2 + 0) - 150, "bf");
+        bf.y += 72;
         bf.antialiasing = true;
         bf.setGraphicSize(Std.int(bf.width * 0.9));
         bf.updateHitbox();
         bf.x -= 80;
 
-        weekButton = new FlxSprite(0, yellowBG.y + yellowBG.height + 10);
+        weekButton = new FlxSprite(0, yellowBG.y + yellowBG.height + 12);
         weekButton.antialiasing = true;
 
-        txtTracklist = new FlxText(x + (FlxG.width * 0.05), yellowBG.height + 100, 0, "Tracks\n", 32);
+        txtTracklist = new FlxText(uiX + (FlxG.width * 0.05), yellowBG.height + 100, 2, "Tracks\n", 32);
 		txtTracklist.alignment = CENTER;
 		txtTracklist.font = scoreText.font;
 		txtTracklist.color = 0xFFe55777;
 
-        var labels:Array<FlxUIText> = [];
-        var label = new FlxUIText(10, FlxG.height / 2, 300, "Week Name");
-        weekName = new FlxUIInputText(10, label.y + label.height, 300, "");
+        // var labels:Array<FlxUIText> = [];
+        // var label = new FlxUIText(10, FlxG.height / 2, 300, "Week Name");
+        // weekName = new FlxUIInputText(10, label.y + label.height, 300, "");
         
 
         var radioList = new FlxUIRadioGroup(10, 10, [for (i in 0...weekJson.weeks.length) Std.string(i)], [for(w in weekJson.weeks) w.name.trim() == "" ? "(Untitled)" : w.name], function(id) {
@@ -428,16 +441,33 @@ class ToolboxHome extends MusicBeatState {
             ]));
         });
         menuCharacter = new FlxSprite(0, 0).makeGraphic(1, 1, 0);
-        add(menuCharacter);
 
         tab.add(radioList);
         tab.add(createWeekButton);
         tab.add(deleteWeekButton);
+
+        blackBG.y += uiY;
+        scoreText.y += uiY;
+        txtWeekTitle.y += uiY;
+        yellowBG.y += uiY;
+        bf.y += uiY;
+        txtTracklist.y += uiY;
+        weekButton.y += uiY;
+        menuCharacter.y += uiY;
+
+        // add(blackBG);
+        // add(scoreText);
+        // add(txtWeekTitle);
+        // add(yellowBG);
+        // add(bf);
+        // cause of flixel layering problems
+        // insert(100000, txtTracklist);
+        // insert(100000, weekButton);
+        // insert(100000, menuCharacter);
         UI_Tabs.addGroup(tab);
     }
 
     public function updateWeekInfo() {
-        var x = UI_Tabs.x + UI_Tabs.width;
         var w = selectedWeek;
         var b = null;
         var path = '${Paths.getModsFolder()}\\$selectedMod\\${w.buttonSprite}';
@@ -449,7 +479,7 @@ class ToolboxHome extends MusicBeatState {
         }
         if (b == null) b = new BitmapData(10, 10, 0xFF000000);
         weekButton.loadGraphic(b);
-        weekButton.x = (2*x) + (((FlxG.width - (2*x)) / 2) - (weekButton.width / 2));
+        weekButton.x = (2*uiX) + (((FlxG.width - (2*uiX)) / 2) - (weekButton.width / 2));
         trace(weekButton.x);
         trace(weekButton.y);
 
@@ -466,7 +496,7 @@ class ToolboxHome extends MusicBeatState {
         txtTracklist.text = txtTracklist.text.toUpperCase();
 
         txtTracklist.screenCenter(X);
-        txtTracklist.x += x;
+        txtTracklist.x += uiX;
         txtTracklist.x -= FlxG.width * 0.35;
 
         
@@ -477,7 +507,7 @@ class ToolboxHome extends MusicBeatState {
         cTween = FlxTween.color(yellowBG, 1, yellowBG.color, c);
 
         if (menuCharacter != null) {
-            remove(menuCharacter);
+            weekTab.remove(menuCharacter);
             menuCharacter.destroy();
         }
         var d = w.dad;
@@ -489,7 +519,7 @@ class ToolboxHome extends MusicBeatState {
                 flipX: false
             };
 
-		menuCharacter = new FlxSprite(x + (FlxG.width * 0.25) - 150, 70);
+		menuCharacter = new FlxSprite(uiX + (FlxG.width * 0.25) - 150, 72 + uiY);
         menuCharacter.frames = Paths.getSparrowAtlas_Custom('${Paths.getModsFolder()}\\$selectedMod\\${d.file}');
         menuCharacter.antialiasing = true;
         menuCharacter.animation.addByPrefix("char", d.animation, 24);
@@ -509,6 +539,8 @@ class ToolboxHome extends MusicBeatState {
         }
 
         insert(2000000, menuCharacter);
+        insert(2000000, weekButton);
+        insert(2000000, txtTracklist);
 
         File.saveContent('${Paths.getModsFolder()}\\$selectedMod\\weeks.json', Json.stringify(weekJson, "\t"));
     }
@@ -702,7 +734,7 @@ class ToolboxHome extends MusicBeatState {
                     character = null;
                 }
             case "songs":
-                bgTweenColor = 0xFFFFFFFF;
+                bgTweenColor = 0xFF8C8C8C;
                 if (displayAlphabet != null) {
                     remove(displayAlphabet);
                     displayAlphabet.destroy();
@@ -728,7 +760,6 @@ class ToolboxHome extends MusicBeatState {
                 selectedWeek = null;
                 weekButton.makeGraphic(1, 1, 0);
                 menuCharacter.makeGraphic(1, 1, 0);
-                add(closeButton);
                 // remove(changeColorButton);
         }
         switch(tab) {
@@ -740,10 +771,9 @@ class ToolboxHome extends MusicBeatState {
                 add(txtWeekTitle);
                 add(yellowBG);
                 add(bf);
-                add(txtTracklist);
-                add(weekButton);
-                add(menuCharacter);
-                remove(closeButton);
+                // add(txtTracklist);
+                // add(weekButton);
+                // add(menuCharacter);
         }
     }
     public override function update(elapsed:Float) {
@@ -809,28 +839,29 @@ class ToolboxHome extends MusicBeatState {
                 if (selectedWeek != null) {
                     if (FlxG.mouse.justReleased) {
                         var screenPos = FlxG.mouse.getScreenPosition(FlxG.camera);
-                        if (screenPos.x > 320 && screenPos.x < 720
+                        screenPos.x -= uiX;
+                        if (screenPos.x > 0 && screenPos.x < 400
                          && screenPos.y > yellowBG.y + yellowBG.height) {
                             openSubState(new TextInput("Edit Tracks", "Set week tracks (seperate using \",\")", selectedWeek.songs.join(", "), function(t) {
                                 selectedWeek.songs = [for(s in t.split(",")) if (s.trim() != "") s.trim()];
                                 updateWeekInfo();
                             }));
-                        } else if (screenPos.x > 320
-                            && screenPos.y < yellowBG.y) {
+                        } else if (screenPos.x > 0
+                            && screenPos.y < yellowBG.y && screenPos.y > 22) {
                             openSubState(new TextInput("Edit Week Name", "Write a new week name.", selectedWeek.name, function(t) {
                                 selectedWeek.name = t.trim();
                                 updateWeekInfo();
                             }));
-                        } else if (screenPos.x > 777 && screenPos.x < 1139
+                        } else if (screenPos.x > 457 && screenPos.x < 819
                             && screenPos.y > 465 && screenPos.y < 563) {
                             openSubState(new FileExplorer(selectedMod, FileExplorerType.Bitmap, "", function(p) {
                                 selectedWeek.buttonSprite = p;
                                 updateWeekInfo();
                             }));
                         } else if (
-                            screenPos.y > yellowBG.y && screenPos.y < yellowBG.height + yellowBG.y && screenPos.x > UI_Tabs.x + UI_Tabs.width
+                            screenPos.x > 0 && screenPos.y > yellowBG.y && screenPos.y < yellowBG.height + yellowBG.y
                         ) {
-                            if (screenPos.x <= 720) {
+                            if (screenPos.x <= 400) {
                                 openSubState(new WeekCharacterSettings());
                             } else {
                                 var c = FlxColor.fromString(selectedWeek.color);
