@@ -1,5 +1,6 @@
 package dev_toolbox.week_editor;
 
+import dev_toolbox.toolbox_tabs.WeeksTab;
 import flixel.tweens.FlxTween;
 import openfl.desktop.ClipboardFormats;
 import openfl.desktop.ClipboardTransferMode;
@@ -10,7 +11,7 @@ import flixel.FlxG;
 import flixel.addons.ui.*;
 
 class WeekCharacterSettings extends MusicBeatSubstate {
-    var state:ToolboxHome;
+    var state:WeeksTab;
 
     public var offsetX:FlxUINumericStepperPlus;
     public var offsetY:FlxUINumericStepperPlus;
@@ -18,9 +19,10 @@ class WeekCharacterSettings extends MusicBeatSubstate {
 
     public var flipX:FlxUICheckBox;
 
-    public override function new() {
+    public override function new(state:WeeksTab) {
         super();
-        state = cast(FlxG.state, ToolboxHome);
+        // state = cast(FlxG.state, ToolboxHome);
+        this.state = state;
 
         var bg = new FlxSprite(0, state.yellowBG.y + state.yellowBG.height).makeGraphic(1280, Std.int(720 - state.yellowBG.y + state.yellowBG.height), 0x88000000);
         add(bg);

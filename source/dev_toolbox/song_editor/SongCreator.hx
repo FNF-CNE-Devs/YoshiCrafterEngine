@@ -1,5 +1,6 @@
 package dev_toolbox.song_editor;
 
+import dev_toolbox.toolbox_tabs.SongTab;
 import haxe.Json;
 import sys.io.File;
 import haxe.io.Path;
@@ -12,7 +13,7 @@ import dev_toolbox.ToolboxHome;
 using StringTools;
 
 class SongCreator extends MusicBeatSubstate {
-    public override function new() {
+    public override function new(home:SongTab) {
         super();
 
         add(new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000));
@@ -130,7 +131,7 @@ class SongCreator extends MusicBeatSubstate {
                 openSubState(ToolboxMessage.showMessage("Error", "The selected instrumental file does not exist."));
                 return;
             }
-            var home = cast(FlxG.state, dev_toolbox.ToolboxHome);
+            // var home = cast(FlxG.state, dev_toolbox.ToolboxHome);
             var json:FreeplayState.FreeplaySong = {
                 name: songName.text.trim(),
                 char: fpIcon.text,
