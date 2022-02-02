@@ -7,8 +7,10 @@ import cpp.Lib;
 import cpp.Pointer;
 import cpp.RawPointer;
 import cpp.Callable;
+#if ENABLE_LUA
 import llua.State;
 import llua.Convert;
+#end
 import ModSupport.ModScript;
 import haxe.Constraints.Function;
 import haxe.DynamicAccess;
@@ -107,7 +109,7 @@ class ScriptPack {
     public var scriptModScripts:Array<ModScript> = [];
     public function new(scripts:Array<ModScript>) {
         for (s in scripts) {
-            var sc = Script.create('${Paths.getModsFolder()}\\${s.path}');
+            var sc = Script.create('${Paths.getModsFolder()}/${s.path}');
             if (sc == null) continue;
             ModSupport.setScriptDefaultVars(sc, s.mod, {});
             this.scripts.push(sc);
@@ -118,7 +120,7 @@ class ScriptPack {
     public function loadFiles() {
         for (k=>sc in scripts) {
             var s = scriptModScripts[k];
-            sc.loadFile('${Paths.getModsFolder()}\\${s.path}');
+            sc.loadFile('${Paths.getModsFolder()}/${s.path}');
         }
     }
 

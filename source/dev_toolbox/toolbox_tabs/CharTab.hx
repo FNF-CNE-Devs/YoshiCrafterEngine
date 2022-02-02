@@ -31,10 +31,18 @@ class CharTab extends ToolboxTab {
     public override function new(x:Float, y:Float, home:ToolboxHome) {
         super(x, y, "chars", home);
 
-        FileSystem.createDirectory('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\characters');
+        
+        var bg = new FlxSprite(0, 0).makeGraphic(320, Std.int(FlxG.height - y), 0xFF8C8C8C);
+        bg.pixels.lock();
+        bg.pixels.fillRect(new openfl.geom.Rectangle(318, 0, 1, Std.int(FlxG.height - y)), 0xFF4C4C4C);
+        bg.pixels.fillRect(new openfl.geom.Rectangle(319, 0, 1, Std.int(FlxG.height - y)), 0xFF000000);
+        bg.pixels.unlock();
+        add(bg);
+        
+        FileSystem.createDirectory('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/characters');
         var chars =[
-            for(folder in FileSystem.readDirectory('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\characters'))
-                if (FileSystem.isDirectory('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\characters\\$folder'))
+            for(folder in FileSystem.readDirectory('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/characters'))
+                if (FileSystem.isDirectory('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/characters/$folder'))
                     folder
         ];
         var radios = new FlxUIRadioGroup(10, 10, chars, chars, function(char) {
@@ -70,7 +78,7 @@ class CharTab extends ToolboxTab {
                 state.openSubState(ToolboxMessage.showMessage("Error", "No character was selected."));
                 return;
             }
-            // if (!FileSystem.exists('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\characters\\${radios.selectedId}\\Character.json')) {
+            // if (!FileSystem.exists('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/characters/${radios.selectedId}/Character.json')) {
             //     state.openSubState(ToolboxMessage.showMessage("Error", "Character editor currently only works with characters with JSON files."));
             //     return;
             // }
@@ -87,8 +95,8 @@ class CharTab extends ToolboxTab {
                 {
                     label: "Yes",
                     onClick: function(t) {
-                        CoolUtil.deleteFolder('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\characters\\${radios.selectedId}\\');
-                        FileSystem.deleteDirectory('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\characters\\${radios.selectedId}\\');
+                        CoolUtil.deleteFolder('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/characters/${radios.selectedId}/');
+                        FileSystem.deleteDirectory('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/characters/${radios.selectedId}/');
                         state.openSubState(ToolboxMessage.showMessage("Success", '${radios.selectedId} was successfully deleted.', function() {
                             FlxTransitionableState.skipNextTransIn = true;
                             FlxTransitionableState.skipNextTransOut = true;

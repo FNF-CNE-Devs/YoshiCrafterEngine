@@ -30,7 +30,11 @@ class Main extends Sprite
 	public static var engineVer:Array<Int> = [1,4,0];
 	public static var buildVer:String = "";
 
-	public static var supportedFileTypes = ["lua", "hx", "hscript"];
+	public static var supportedFileTypes = [
+		#if ENABLE_LUA "lua", #end
+		"hx",
+		"hscript"];
+
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
 	// HAHA no.
@@ -60,6 +64,7 @@ class Main extends Sprite
 				m = '${err.text}';
 			}
 			m += '\r\n ${CallStack.toString(CallStack.exceptionStack())}';
+			trace('An error occured !\r\nYoshi Engine ver. ${engineVer.join(".")} $buildVer\r\n\r\n${m}\r\n\r\nThe engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !');
  			Application.current.window.alert('An error occured !\r\nYoshi Engine ver. ${engineVer.join(".")} $buildVer\r\n\r\n${m}\r\n\r\nThe engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !', e.error);
 			e.stopPropagation();
 			e.stopImmediatePropagation();

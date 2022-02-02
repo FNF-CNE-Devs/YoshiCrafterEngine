@@ -249,9 +249,9 @@ class ChartingState_New extends MusicBeatState
 		typingShit = UI_songTitle;
 
 		var difficulties:Array<StrNameLabel> = [];
-		var basePath = '${Paths.getModsFolder()}\\${PlayState.songMod}\\data\\${_song.song}\\';
+		var basePath = '${Paths.getModsFolder()}/${PlayState.songMod}/data/${_song.song}/';
 		for (f in FileSystem.readDirectory(basePath)) {
-			if (!FileSystem.isDirectory('$basePath\\$f')) {
+			if (!FileSystem.isDirectory('$basePath/$f')) {
 				if (Path.extension(f).toLowerCase() == "json") {
 					if (f.toLowerCase().startsWith(_song.song.toLowerCase())) {
 						var subShit = Path.withoutExtension(f).substr(_song.song.length);
@@ -1095,6 +1095,7 @@ class ChartingState_New extends MusicBeatState
 			lastSection = curSection;
 
 			PlayState._SONG = _song;
+			PlayState.fromCharter = true;
 			FlxG.sound.music.stop();
 			vocals.stop();
 			FlxG.switchState(new PlayState());

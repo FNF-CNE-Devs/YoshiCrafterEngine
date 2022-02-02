@@ -37,10 +37,18 @@ class SongTab extends ToolboxTab {
     public var freeplaySonglist:FreeplaySongList = {
         songs : []
     }
+    var twColor = 0xFF8C8C8C;
     
     public override function new(x:Float, y:Float, home:ToolboxHome) {
         super(x, y, "songs", home);
         
+        var bg = new FlxSprite(0, 0).makeGraphic(320, Std.int(FlxG.height - y), 0xFF8C8C8C);
+        bg.pixels.lock();
+        bg.pixels.fillRect(new openfl.geom.Rectangle(318, 0, 1, Std.int(FlxG.height - y)), 0xFF4C4C4C);
+        bg.pixels.fillRect(new openfl.geom.Rectangle(319, 0, 1, Std.int(FlxG.height - y)), 0xFF000000);
+        bg.pixels.unlock();
+        add(bg);
+
         songTabThingy = new FlxUITabMenu(null, [
             {
                 label: "Song Settings",
@@ -95,10 +103,10 @@ class SongTab extends ToolboxTab {
             var diffs = difficulties.text.split(",");
             var bpm = 100;
             try {
-                for (f in FileSystem.readDirectory('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\data\\${fpSongToEdit.name}\\')) {
+                for (f in FileSystem.readDirectory('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/${fpSongToEdit.name}/')) {
                     if (f.toLowerCase().startsWith('${fpSongToEdit.name.toLowerCase()}') && f.toLowerCase().endsWith('.json')) {
                         trace('$f is a chart.');
-                        var chart:SwagSong = Json.parse('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\data\\${fpSongToEdit.name}\\$f');
+                        var chart:SwagSong = Json.parse('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/${fpSongToEdit.name}/$f');
                         bpm = chart.bpm;
                         break;
                     }
@@ -122,9 +130,9 @@ class SongTab extends ToolboxTab {
 			};
             for(d in diffs) {
                 var diff = d.trim().toLowerCase().replace(" ", "-");
-                var path = '${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\data\\${fpSongToEdit.name}\\${fpSongToEdit.name}-${d.trim().toLowerCase()}.json';
+                var path = '${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/${fpSongToEdit.name}/${fpSongToEdit.name}-${d.trim().toLowerCase()}.json';
                 if (diff == "normal") {
-                    path = '${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\data\\${fpSongToEdit.name}\\${fpSongToEdit.name}.json';
+                    path = '${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/${fpSongToEdit.name}/${fpSongToEdit.name}.json';
                 }
                 if (!FileSystem.exists(path)) {
                     File.saveContent(path, Json.stringify(_song, "\t"));
@@ -145,7 +153,7 @@ class SongTab extends ToolboxTab {
         });
 
         songTabThingy.resize(500, applyButton.y + applyButton.height + 30);
-        songTabThingy.y = 710 - songTabThingy.height;
+        songTabThingy.y = 690 - songTabThingy.height;
 
 
         for (l in labels) songSettings.add(l);
@@ -175,17 +183,17 @@ class SongTab extends ToolboxTab {
 
     
     public function refreshSongs() {
-        FileSystem.createDirectory('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\songs\\');   
-        FileSystem.createDirectory('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\data\\');
-        if (!FileSystem.exists('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\data\\freeplaySonglist.json')) {
+        FileSystem.createDirectory('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/songs/');   
+        FileSystem.createDirectory('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/');
+        if (!FileSystem.exists('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/freeplaySonglist.json')) {
             var json:FreeplaySongList = {
                 songs : []
             };
-            File.saveContent('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\data\\freeplaySonglist.json', Json.stringify(json));
+            File.saveContent('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/freeplaySonglist.json', Json.stringify(json));
         }
-        // var songs = [for (s in FileSystem.readDirectory('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\songs\\')) if (FileSystem.isDirectory('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\songs\\$s\\')) s];
+        // var songs = [for (s in FileSystem.readDirectory('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/songs/')) if (FileSystem.isDirectory('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/songs/$s/')) s];
         var displayNames = [];
-        freeplaySonglist = try {Json.parse(File.getContent('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\data\\freeplaySonglist.json'));} catch(e) {null;};
+        freeplaySonglist = try {Json.parse(File.getContent('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/freeplaySonglist.json'));} catch(e) {null;};
         if (freeplaySonglist == null) freeplaySonglist = {songs : []};
         if (freeplaySonglist.songs == null) freeplaySonglist.songs = [];
 
@@ -199,7 +207,11 @@ class SongTab extends ToolboxTab {
     }
 
     public function save() {
-        File.saveContent('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\data\\freeplaySonglist.json', Json.stringify(freeplaySonglist, "\t"));
+        File.saveContent('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/freeplaySonglist.json', Json.stringify(freeplaySonglist, "\t"));
+    }
+
+    public override function onTabEnter() {
+        state.bgTweenColor = twColor;
     }
 
     public override function onTabExit() {
@@ -231,6 +243,7 @@ class SongTab extends ToolboxTab {
         displayAlphabet.y = 50;
         state.bgTweenColor = FlxColor.fromString(s.color);
         if (state.bgTweenColor == null) state.bgTweenColor = 0xFF8C8C8C;
+        twColor = state.bgTweenColor;
 
         displayHealthIcon = new HealthIcon(s.char == null ? "unknown" : s.char, false, ToolboxHome.selectedMod);
         displayHealthIcon.x = displayAlphabet.x + displayAlphabet.width;

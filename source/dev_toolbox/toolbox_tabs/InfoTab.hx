@@ -1,5 +1,6 @@
 package dev_toolbox.toolbox_tabs;
 
+import openfl.geom.Rectangle;
 import openfl.display.PNGEncoderOptions;
 import lime.ui.FileDialogType;
 import flixel.addons.transition.FlxTransitionableState;
@@ -33,23 +34,28 @@ class InfoTab extends ToolboxTab {
         var title = ModSupport.modConfig[ToolboxHome.selectedMod].titleBarName;
         if (title == null) title = 'Friday Night Funkin\' ${ToolboxHome.selectedMod}';
         
+        var bg = new FlxSprite(0, 0).makeGraphic(320, Std.int(FlxG.height - y), 0xFF8C8C8C);
+        bg.pixels.lock();
+        bg.pixels.fillRect(new Rectangle(318, 0, 1, Std.int(FlxG.height - y)), 0xFF4C4C4C);
+        bg.pixels.fillRect(new Rectangle(319, 0, 1, Std.int(FlxG.height - y)), 0xFF000000);
+        bg.pixels.unlock();
+
         card = new ModCard(ToolboxHome.selectedMod, ModSupport.modConfig[ToolboxHome.selectedMod]);
         card.screenCenter(Y);
         card.x = 320 + ((1280 - 320) / 2) - (card.width / 2);
+
+        var OHMYFUCKINGGODITSTHELABELARMY:Array<FlxUIText> = [];
         var label = new FlxUIText(10, 10, 300, "Mod name");
+        OHMYFUCKINGGODITSTHELABELARMY.push(label);
         var mod_name = new FlxUIInputText(10, label.y + label.height, 300, name);
-        add(label);
-        add(mod_name);
 
 		var label = new FlxUIText(10, mod_name.y + mod_name.height + 10, 300, "Mod description");
-        var mod_description = new FlxUIInputText(10, label.y + label.height, 300, desc.replace("\r", "").replace("\n", "\\n"));
-        add(label);
-        add(mod_description);
+        OHMYFUCKINGGODITSTHELABELARMY.push(label);
+        var mod_description = new FlxUIInputText(10, label.y + label.height, 300, desc.replace("\r", "").replace("\n", "/n"));
 
 		var label = new FlxUIText(10, mod_description.y + mod_description.height + 10, 300, "Titlebar Name");
+        OHMYFUCKINGGODITSTHELABELARMY.push(label);
         var titlebarName = new FlxUIInputText(10, label.y + label.height, 300, title);
-        add(label);
-        add(titlebarName);
 
         // var icon = new FlxUISprite(520, titlebarName.y).loadGraphic(Paths.image("defaultTitlebarIcon", "preload"));
         // icon.antialiasing = true;
@@ -73,13 +79,12 @@ class InfoTab extends ToolboxTab {
 
         var modIcon = new FlxUISprite(85, titlebarName.y + titlebarName.height + 10)
         .loadGraphic(
-            FileSystem.exists('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\modIcon.png')
-            ? BitmapData.fromFile('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\modIcon.png')
+            FileSystem.exists('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/modIcon.png')
+            ? BitmapData.fromFile('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/modIcon.png')
             : Paths.image("modEmptyIcon", "preload")
         );
         modIcon.setGraphicSize(150, 150);
         modIcon.updateHitbox();
-        add(modIcon);
 
         var chooseIconButton = new FlxUIButton(85, modIcon.y + 160, "Choose a mod icon", function() {
             CoolUtil.openDialogue(FileDialogType.OPEN, "Select an mod icon.", function(path) {
@@ -91,18 +96,27 @@ class InfoTab extends ToolboxTab {
             });
         });
         chooseIconButton.resize(150, 20);
-        add(chooseIconButton);
 
         var saveButton = new FlxUIButton(10, chooseIconButton.y + 30, "Save", function() {
             var e = ModSupport.modConfig[ToolboxHome.selectedMod];
             e.name = mod_name.text;
-            e.description = mod_description.text.replace("\\n", "\n");
+            e.description = mod_description.text.replace("/n", "\n");
             e.titleBarName = titlebarName.text;
-            File.saveBytes('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\modIcon.png', modIcon.pixels.encode(modIcon.pixels.rect, new PNGEncoderOptions(true)));
+            File.saveBytes('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/modIcon.png', modIcon.pixels.encode(modIcon.pixels.rect, new PNGEncoderOptions(true)));
             ModSupport.saveModData(ToolboxHome.selectedMod);
             card.updateMod(e);
         });
         saveButton.resize(145, 20);
+
+        add(bg);
+        
+        add(mod_name);
+        add(mod_description);
+        add(titlebarName);
+        add(modIcon);
+        add(chooseIconButton);
         add(saveButton);
+
+        add(card);
     }
 }

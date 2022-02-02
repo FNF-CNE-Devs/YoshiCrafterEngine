@@ -131,27 +131,6 @@ class FreeplayState extends MusicBeatState
 		isDebug = true;
 		#end
 
-		// if (StoryMenuState.weekUnlocked[2] || isDebug)
-		// 	addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
-
-		// if (StoryMenuState.weekUnlocked[2] || isDebug)
-		// 	addWeek(['Spookeez', 'South', 'Monster'], 2, ['spooky']);
-
-		// if (StoryMenuState.weekUnlocked[3] || isDebug)
-		// 	addWeek(['Pico', 'Philly', 'Blammed'], 3, ['pico']);
-
-		// if (StoryMenuState.weekUnlocked[4] || isDebug)
-		// 	addWeek(['Satin-Panties', 'High', 'Milf'], 4, ['mom']);
-
-		// if (StoryMenuState.weekUnlocked[5] || isDebug)
-		// 	addWeek(['Cocoa', 'Eggnog', 'Winter-Horrorland'], 5, ['parents-christmas', 'parents-christmas', 'monster-christmas']);
-
-		// if (StoryMenuState.weekUnlocked[6] || isDebug)
-		// 	addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai', 'spirit']);
-
-		// LOAD MUSIC
-
-		// LOAD CHARACTERS
 
 		// var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
@@ -237,6 +216,12 @@ class FreeplayState extends MusicBeatState
 
 		add(scoreText);
 
+		for (k=>s in songs) {
+			if ('${s.mod}:${s.songName.toLowerCase()}' == Settings.engineSettings.data.lastSelectedSong) {
+				curSelected = k;
+				break;
+			}
+		}
 		changeSelection();
 		changeDiff();
 
@@ -520,6 +505,7 @@ class FreeplayState extends MusicBeatState
 
 		trace(poop);
 
+		Settings.engineSettings.data.lastSelectedSong = '${songs[curSelected].mod}:${songs[curSelected].songName.toLowerCase()}';
 		// PlayState._SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 		try {
 			PlayState._SONG = Song.loadModFromJson(poop, songs[curSelected].mod, songs[curSelected].songName.toLowerCase());
@@ -531,6 +517,7 @@ class FreeplayState extends MusicBeatState
 		PlayState.isStoryMode = false;
 		PlayState.songMod = songs[curSelected].mod;
 		PlayState.storyDifficulty = songs[curSelected].difficulties[curDifficulty];
+		PlayState.fromCharter = false;
 
 		// PlayState.storyWeek = songs[curSelected].week;
 		trace('CUR WEEK' + PlayState.storyWeek);

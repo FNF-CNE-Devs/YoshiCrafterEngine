@@ -7,6 +7,7 @@
 	<app file="Yoshi Engine (Windows)" if="windows" />
 	<app file="Yoshi Engine (Linux)" if="linux" />
 	<app file="Yoshi Engine (Mac)" if="mac" />
+	<app file="Yoshi Engine (Android)" if="android" />
 	<!-- <app file="Yoshi Engine (x64)" unless="32bit" /> -->
 	<haxedef name="X64" unless="32bit"/>
 
@@ -14,6 +15,8 @@
 	<haxedef name="HXCPP_STACK_LINE" if="release" />
 	<haxedef name="HXCPP_DEBUG_LINK" if="release" />
 	<haxedef name="hscriptPos" />
+	<haxedef name="newgrounds" if="windows"/>
+	<!-- <haxedef name="lua" unless="android"/> -->
 	
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
@@ -138,7 +141,7 @@
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
-	<haxelib name="newgrounds"/>
+	<haxelib name="newgrounds" if="windows"/>
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="polymod"/>
 	<!-- <haxelib name="hxvm-lua"/>
@@ -189,6 +192,8 @@
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
 
+	<haxedef name="ENABLE_LUA" /> <!-- LUA -->
+
 	<!-- _________________________________ Custom _______________________________ -->
 
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
@@ -198,9 +203,18 @@
 	<icon path="art/icon64.png" size='64'/>
 	<icon path="art/icon128.png" size='128'/>
 	<icon path="art/icon256.png" size='256'/>
-	<icon path="art/iconOG.png" size='600'/>
+	<icon path="art/logo_new.png" size='1024'/>
 
 
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
 	<haxedef name="NG_LOGIN" if="newgrounds" />
+
+	<!-- Android stuff -->
+	<android permission="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<android permission="android.permission.ACCESS_NETWORK_STATE"/>
+	<android permission="android.permission.INTERNET"/>
+	<android permission="android.permission.VIBRATE"/>
+	<android permission="android.permission.READ_EXTERNAL_STORAGE"/>
+	<haxedef name="MOBILE_UI" />
+
 </project>

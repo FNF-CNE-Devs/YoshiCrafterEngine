@@ -162,6 +162,7 @@ class Character extends FlxSprite
 		} catch(ex) {
 			trace(ex);
 		}
+		this.animation.add("", [0], 24, true);
 
 		this.x += charGlobalOffset.x;
 		this.y += charGlobalOffset.y;
@@ -203,7 +204,7 @@ class Character extends FlxSprite
 	public function loadJSON(overrideFuncs:Bool) {
 		
 		var charFull = CoolUtil.getCharacterFull(curCharacter, PlayState.songMod);
-		var path = '${Paths.getModsFolder()}\\${charFull[0]}\\characters\\${charFull[1]}\\Character.json';
+		var path = '${Paths.getModsFolder()}/${charFull[0]}/characters/${charFull[1]}/Character.json';
 		if (!FileSystem.exists(path)) return;
 		try {
 			json = Json.parse(Paths.getTextOutsideAssets(path));
@@ -452,6 +453,8 @@ class Character extends FlxSprite
 		var blockAnim:Null<Bool> = characterScript.executeFunc("onAnim", [AnimName]);
 
 		if (blockAnim != true) {
+			// will obviously not play the animation and "pause it", to prevent null exception. it will keep the current frame and not set the offset.
+			animation.play(AnimName, Force, Reversed, Frame);
 			if (animation.getByName(AnimName) == null) {
 				trace(AnimName + " doesn't exist on character " + curCharacter);
 				PlayState.log.push('Character.playAnim: $AnimName doesn\'t exist on character $curCharacter');
@@ -461,7 +464,6 @@ class Character extends FlxSprite
 				AnimName = "singRIGHT";
 			else if (isPlayer && AnimName == "singRIGHT" && flipX)
 				AnimName = "singLEFT";
-			animation.play(AnimName, Force, Reversed, Frame);
 	
 			var daOffset = animOffsets.get(AnimName);
 			if (isPlayer && AnimName != "idle")

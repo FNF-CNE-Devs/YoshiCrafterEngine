@@ -247,7 +247,7 @@ class ModSupport {
         var a = FileSystem.readDirectory(modFolder);
         var finalArray = [];
         for (e in a) {
-            if (FileSystem.isDirectory('$modFolder\\$e')) finalArray.push(e);
+            if (FileSystem.isDirectory('$modFolder/$e')) finalArray.push(e);
         }
         return finalArray;
     }
@@ -255,9 +255,9 @@ class ModSupport {
         modConfig = [];
         for(mod in getMods()) {
             var json:ModConfig = null;
-            if (FileSystem.exists('$mFolder\\$mod\\config.json')) {
+            if (FileSystem.exists('$mFolder/$mod/config.json')) {
                 try {
-                    json = Json.parse(Paths.getTextOutsideAssets('$mFolder\\$mod\\config.json'));
+                    json = Json.parse(Paths.getTextOutsideAssets('$mFolder/$mod/config.json'));
                 } catch(e) {
                     for (e in ('Failed to parse mod config for $mod.').split('\n')) PlayState.log.push(e);
                 }
@@ -392,9 +392,9 @@ class ModSupport {
     }
 
     public static function saveModData(mod:String):Bool {
-        if (FileSystem.exists('${Paths.getModsFolder()}\\$mod\\')) {
+        if (FileSystem.exists('${Paths.getModsFolder()}/$mod/')) {
             if (modConfig[mod] != null) {
-                File.saveContent('${Paths.getModsFolder()}\\$mod\\config.json', Json.stringify(modConfig[mod], "\t"));
+                File.saveContent('${Paths.getModsFolder()}/$mod/config.json', Json.stringify(modConfig[mod], "\t"));
                 return true;
             }
         }
@@ -510,8 +510,8 @@ class ModSupport {
         var end_cutscene:String = interp.getVariable("end_cutscene");
         var sc:Array<String> = interp.getVariable("scripts");
         scripts = [];
-        scripts.push(getModScriptFromValue('stages\\$stage'));
-        if (modchart.trim() != "") scripts.push(getModScriptFromValue('$currentMod:modcharts\\$modchart'));
+        scripts.push(getModScriptFromValue('stages/$stage'));
+        if (modchart.trim() != "") scripts.push(getModScriptFromValue('$currentMod:modcharts/$modchart'));
         for (s in sc) {
             scripts.push(getModScriptFromValue(s));
         }
@@ -558,24 +558,24 @@ class ModSupport {
         }
         if (splitValue.length == 1) {
             var scriptPath = splitValue[0];
-            if (FileSystem.exists('$mFolder\\$currentMod\\$scriptPath')) {
+            if (FileSystem.exists('$mFolder/$currentMod/$scriptPath')) {
                 splitValue.insert(0, currentMod);
             } else {
                 var valid = false;
                 for (ext in Main.supportedFileTypes) {
-                    if (FileSystem.exists('$mFolder\\$currentMod\\$scriptPath.$ext')) {
+                    if (FileSystem.exists('$mFolder/$currentMod/$scriptPath.$ext')) {
                         splitValue.insert(0, currentMod);
                         valid = true;
                         break;
                     }
                 }
                 if (!valid) {
-                    if (FileSystem.exists('$mFolder\\Friday Night Funkin\'\\$scriptPath')) {
+                    if (FileSystem.exists('$mFolder/Friday Night Funkin\'/$scriptPath')) {
                         splitValue.insert(0, "Friday Night Funkin'");
                     } else {
                         var valid = false;
                         for (ext in Main.supportedFileTypes) {
-                            if (FileSystem.exists('$mFolder\\Friday Night Funkin\'\\$scriptPath.$ext')) {
+                            if (FileSystem.exists('$mFolder/Friday Night Funkin\'/$scriptPath.$ext')) {
                                 splitValue.insert(0, "Friday Night Funkin'");
                                 valid = true;
                                 break;
@@ -595,7 +595,7 @@ class ModSupport {
         var path = splitValue[1];
         return {
             mod : m,
-            path : '$m\\$path'
+            path : '$m/$path'
         }
     }
 

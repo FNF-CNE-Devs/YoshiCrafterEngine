@@ -115,7 +115,7 @@ class SongCreator extends MusicBeatSubstate {
                 openSubState(ToolboxMessage.showMessage("Error", "The song name cannot be empty."));
                 return;
             }
-            if (FileSystem.exists('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\songs\\${songName.text.trim()}\\')) {
+            if (FileSystem.exists('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/songs/${songName.text.trim()}/')) {
                 openSubState(ToolboxMessage.showMessage("Error", "The song already exists."));
                 return;
             }
@@ -140,12 +140,12 @@ class SongCreator extends MusicBeatSubstate {
                 color: colorPanel.color.toWebString(),
                 bpm: Std.int(bpm.value)
             };
-            FileSystem.createDirectory('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\songs\\${json.name}\\');
-            File.copy(instPath.trim(), '${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\songs\\${json.name}\\Inst.ogg');
-            if (voicesPath.trim() != "") File.copy(voicesPath.trim(), '${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\songs\\${json.name}\\Voices.ogg');
+            FileSystem.createDirectory('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/songs/${json.name}/');
+            File.copy(instPath.trim(), '${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/songs/${json.name}/Inst.ogg');
+            if (voicesPath.trim() != "") File.copy(voicesPath.trim(), '${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/songs/${json.name}/Voices.ogg');
 
             
-            FileSystem.createDirectory('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\data\\${json.name}\\');
+            FileSystem.createDirectory('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/${json.name}/');
             var _song = {
                 song : {
                     song: json.name,
@@ -163,9 +163,9 @@ class SongCreator extends MusicBeatSubstate {
 
             for (diff in json.difficulties) {
                 if (diff.toLowerCase() == "normal")
-                    File.saveContent('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\data\\${json.name}\\${json.name}.json', Json.stringify(_song));
+                    File.saveContent('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/${json.name}/${json.name}.json', Json.stringify(_song));
                 else
-                    File.saveContent('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\data\\${json.name}\\${json.name}-${diff.trim().toLowerCase().replace(" ", "-")}.json', Json.stringify(_song));
+                    File.saveContent('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/${json.name}/${json.name}-${diff.trim().toLowerCase().replace(" ", "-")}.json', Json.stringify(_song));
                 
                 
             }

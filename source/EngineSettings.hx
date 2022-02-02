@@ -121,6 +121,7 @@ import flixel.FlxG;
 	@:keep public static var developerMode:Bool = false;
 	@:keep public static var hideOriginalGame:Bool = false;
 	@:keep public static var showAccuracyMode:Bool = false;
+	@:keep public static var lastSelectedSong:String = "";
 
 	// ========================================================
 	// PER KEY SET CONTROLS

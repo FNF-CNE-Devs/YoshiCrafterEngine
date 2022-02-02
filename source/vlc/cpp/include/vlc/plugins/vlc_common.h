@@ -907,8 +907,8 @@ VLC_API const char * VLC_Compiler( void ) VLC_USED;
 #include "vlc_configuration.h"
 
 #if defined( _WIN32 ) || defined( __SYMBIAN32__ ) || defined( __OS2__ )
-#   define DIR_SEP_CHAR '\\'
-#   define DIR_SEP "\\"
+#   define DIR_SEP_CHAR '/'
+#   define DIR_SEP "/"
 #   define PATH_SEP_CHAR ';'
 #   define PATH_SEP ";"
 #else

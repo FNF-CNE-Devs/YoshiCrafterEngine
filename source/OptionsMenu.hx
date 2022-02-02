@@ -742,7 +742,7 @@ class OptionsMenu extends MusicBeatState
 			description : "Select this to open the skins folder.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
-					var p = Paths.getSkinsPath().replace("/", "\\");
+					var p = Paths.getSkinsPath().replace("/", "/");
 					trace(p);
 					#if windows
 						Sys.command('explorer "$p"');	

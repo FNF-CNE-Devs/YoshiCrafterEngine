@@ -162,10 +162,10 @@ class Note extends FlxSprite
 		// 		} else {
 		// 			if (engineSettings.customArrowColors) {
 		// 				var colors:Array<FlxColor> = (mustPress || engineSettings.customArrowColors_allChars) ? PlayState.current.boyfriend.getColors(false) : PlayState.current.boyfriend.getColors(false);
-		// 				frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored') : Paths.getSparrowAtlas_Custom((Paths.getSkinsPath() + "notes/" + engineSettings.customArrowSkin.toLowerCase()).replace("/", "\\").replace("\r", ""));
+		// 				frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored') : Paths.getSparrowAtlas_Custom((Paths.getSkinsPath() + "notes/" + engineSettings.customArrowSkin.toLowerCase()).replace("/", "/").replace("\r", ""));
 						
 		// 			} else {
-		// 				frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets') : Paths.getSparrowAtlas_Custom((Paths.getSkinsPath() + "notes/" + engineSettings.customArrowSkin.toLowerCase()).replace("/", "\\").replace("\r", ""));
+		// 				frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets') : Paths.getSparrowAtlas_Custom((Paths.getSkinsPath() + "notes/" + engineSettings.customArrowSkin.toLowerCase()).replace("/", "/").replace("\r", ""));
 		// 			}
 	
 		// 			animation.addByPrefix('greenScroll', 'green0');

@@ -18,7 +18,7 @@ static const uint8_t videolan_public_key_longid[8] = {
   0x71, 0x80, 0x71, 0x3B, 0xE5, 0x8D, 0x1A, 0xDC
 };
 
-/* gpg --export --armor "<id>"|sed -e s/^/\"/ -e s/\$/\\\\n\"/ */
+/* gpg --export --armor "<id>"|sed -e s/^/\"/ -e s/\$///n\"/ */
 static const uint8_t videolan_public_key[] = {
   "-----BEGIN PGP PUBLIC KEY BLOCK-----\n"
   "Version: GnuPG v2.0.19 (GNU/Linux)\n"

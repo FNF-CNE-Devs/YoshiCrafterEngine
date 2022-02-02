@@ -16,7 +16,7 @@ class LogSubState extends MusicBeatSubstate {
         var maxLength = Std.int(16777215 / (1280 + PlayState.current.guiOffset.x) / 30);
         trace(maxLength);
         if (list.length > maxLength) {
-            list = ["... /!\\ Due to OpenFL's bitmap limitations (16777215 pixels per bitmap), use the Save button to export and read the file yourself."];
+            list = ["... /!/ Due to OpenFL's bitmap limitations (16777215 pixels per bitmap), use the Save button to export and read the file yourself."];
             for (i in (PlayState.log.length - maxLength + 1)...PlayState.log.length) {
                 list.push(PlayState.log[i]);
             }

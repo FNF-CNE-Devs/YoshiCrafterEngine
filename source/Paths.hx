@@ -1,5 +1,7 @@
 package;
 
+import flixel.util.FlxDestroyUtil;
+import flixel.graphics.frames.FlxFramesCollection;
 import haxe.io.Bytes;
 import EngineSettings.Settings;
 import openfl.media.Sound;
@@ -13,6 +15,8 @@ import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
+
+using StringTools;
 
 class Paths
 {
@@ -30,6 +34,8 @@ class Paths
 	static public function getModsFolder() {
 		#if sourceCode
 			return './../../../../mods';
+		#elseif android
+			return '/sdcard/Yoshi Engine/mods';
 		#else
 			return './mods';
 		#end
@@ -162,7 +168,11 @@ class Paths
 	}
 	
 	inline static public function getSkinsPath() {
-		return "./skins/";
+		#if android
+			return '/sdcard/Yoshi Engine/skins/';
+		#else
+			return "./skins/";
+		#end
 	}
 	inline static public function getOldSkinsPath() {
 		return System.applicationStorageDirectory + "../../YoshiCrafter29/Yoshi Engine/skins/";
@@ -192,6 +202,7 @@ class Paths
 	public static var cacheText:Map<String, String> = new Map<String, String>();
 	public static var cacheBitmap:Map<String, BitmapData> = new Map<String, BitmapData>();
 	public static var cacheBytes:Map<String, Bytes> = new Map<String, Bytes>();
+	public static var cacheSparrow:Map<String, FlxAtlasFrames> = new Map<String, FlxAtlasFrames>();
 	#if sys	
 
 	inline static public function clearCache() {
@@ -204,6 +215,9 @@ class Paths
 		}
 		cacheBitmap.clear();
 		cacheBytes.clear();
+		for (c in cacheSparrow) 
+			FlxDestroyUtil.destroy(c);
+		cacheSparrow.clear();
 	}
 
 	inline static public function getTextOutsideAssets(path:String, log:Bool = false) {
@@ -213,11 +227,11 @@ class Paths
 				PlayState.log.push('Paths : Text file at "$path" does not exist.');
 			}
 		}
-		if (Paths.cacheText[path] == null) {
-			if (log) trace('Getting file content at "$path"');
-			Paths.cacheText[path] = sys.io.File.getContent(path);
-		}
-		return Paths.cacheText[path];
+		// if (Paths.cacheText[path] == null) {
+		// 	if (log) trace('Getting file content at "$path"');
+		// 	Paths.cacheText[path] = sys.io.File.getContent(path);
+		// }
+		return sys.io.File.getContent(path);
 	}
 
 	#end
@@ -238,7 +252,7 @@ class Paths
 		var b = Paths.cacheBitmap[path];
 		if (copyBitmap) {
 			b = b.clone();
-			for(i in 0...0x00FFFFFF) {
+			for(i in 0...0x7FFFFFFF) {
 				if (Paths.cacheBitmap[path + "/" + Std.string(i)] == null) {
 					Paths.cacheBitmap[path + "/" + Std.string(i)] = b;
 					break;
@@ -264,14 +278,26 @@ class Paths
 	{
 		// Assets.registerLibrary("custom", AssetLibrary.(key + ".png"));
 		// Assets.registerLibrary("custom", AssetLibrary.fromFile(key + ".xml"));
+		key = key.trim().replace("/", "/").replace("\\", "/");
 		#if sys
-		return FlxAtlasFrames.fromSparrow(Paths.getBitmapOutsideAssets(key + ".png"), Paths.getTextOutsideAssets(key + ".xml"));
+		if (cacheSparrow[key] != null) {
+			if (cacheSparrow[key].frames != null) {
+				return cacheSparrow[key];
+			} else {
+				var nFrames = FlxAtlasFrames.fromSparrow(Paths.getBitmapOutsideAssets(key + ".png"), Paths.getTextOutsideAssets(key + ".xml"));
+				cacheSparrow[key] = nFrames;
+				return nFrames;
+			}
+		} else {
+			return FlxAtlasFrames.fromSparrow(Paths.getBitmapOutsideAssets(key + ".png"), Paths.getTextOutsideAssets(key + ".xml"));
+		}
 		#else
 		return null;
 		#end
 	}
 	inline static public function getSparrowAtlas_Stage(key:String)
 	{
+		key = key.trim().replace("/", "/").replace("\\", "/");
 		#if sys
 		return FlxAtlasFrames.fromSparrow(Paths.getLibraryPath(ModSupport.song_stage_path), Paths.getTextOutsideAssets(ModSupport.song_stage_path + '/$key.xml'));
 		// return FlxAtlasFrames.fromSparrow(Paths.getBitmapOutsideAssets(ModSupport.song_stage_path + '/$key.png'), Paths.getTextOutsideAssets(ModSupport.song_stage_path + '/$key.xml'));
@@ -287,6 +313,7 @@ class Paths
 
 	inline static public function video(key:String, ?library:String)
 	{
+		key = key.trim().replace("/", "/").replace("\\", "/");
 		trace('assets/videos/$key.mp4');
 		return getPath('videos/$key.mp4', BINARY, library);
 	}
@@ -323,7 +350,7 @@ class Paths
 		return folder;
 	}
 	inline static public function getCharacterFolderPath_Array(character:Array<String>):String {
-		return '${Paths.getModsFolder()}\\${character[0]}\\characters\\${character[1]}';
+		return '${Paths.getModsFolder()}/${character[0]}/characters/${character[1]}';
 	}
 	inline static public function getModCharacter(characterId:String)
 	{

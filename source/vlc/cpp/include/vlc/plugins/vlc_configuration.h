@@ -214,7 +214,7 @@ VLC_API config_chain_t * config_ChainDuplicate( const config_chain_t * ) VLC_USE
  * If NULL is given as parameter nothing will be done (NULL will be returned).
  *
  * The following sequences will be unescaped (only one time):
- * \\ \' and \"
+ * / \' and \"
  */
 VLC_API char * config_StringUnescape( char *psz_string );
 

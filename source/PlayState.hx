@@ -124,6 +124,7 @@ class PlayState extends MusicBeatState
 	static public var storyDifficulty:String = "Normal";
 	public static var actualModWeek:FNFWeek;
 	public static var log:Array<String> = [];
+	public static var fromCharter:Bool = false;
 	
 	public var halloweenLevel:Bool = false;
 	public var validScore:Bool = true;
@@ -695,12 +696,12 @@ class PlayState extends MusicBeatState
 
         scripts = new ScriptPack(ModSupport.scripts);
 		if (ModSupport.song_cutscene != null) {
-			cutscene = Script.create('${Paths.getModsFolder()}\\${ModSupport.song_cutscene.path}');
+			cutscene = Script.create('${Paths.getModsFolder()}/${ModSupport.song_cutscene.path}');
 		} else {
 			cutscene = new HScript();
 		}
 		if (ModSupport.song_end_cutscene != null) {
-			end_cutscene = Script.create('${Paths.getModsFolder()}\\${ModSupport.song_end_cutscene.path}');
+			end_cutscene = Script.create('${Paths.getModsFolder()}/${ModSupport.song_end_cutscene.path}');
 		} else {
 			end_cutscene = new HScript();
 		}
@@ -796,8 +797,8 @@ class PlayState extends MusicBeatState
 
 
 		scripts.loadFiles();
-		if (ModSupport.song_cutscene != null) cutscene.loadFile('${Paths.getModsFolder()}\\${ModSupport.song_cutscene.path}');
-		if (ModSupport.song_end_cutscene != null) end_cutscene.loadFile('${Paths.getModsFolder()}\\${ModSupport.song_end_cutscene.path}');
+		if (ModSupport.song_cutscene != null) cutscene.loadFile('${Paths.getModsFolder()}/${ModSupport.song_cutscene.path}');
+		if (ModSupport.song_end_cutscene != null) end_cutscene.loadFile('${Paths.getModsFolder()}/${ModSupport.song_end_cutscene.path}');
 
 		var resultRatings:Array<Dynamic> = cast(scripts.getVariable("ratings", defaultRatings), Array<Dynamic>);
 		if (resultRatings == null) {
@@ -1364,11 +1365,11 @@ class PlayState extends MusicBeatState
 				var note:Note = script.getVariable("note");
 				if (engineSettings.customArrowColors) {
 					// var colors:Array<Int> = (note.mustPress || EngineSettings.customArrowColors_allChars) ? PlayState.boyfriend.getColors(note.altAnim) : PlayState.dad.getColors(note.altAnim);
-					note.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas_Custom(StringTools.replace(StringTools.replace(Paths.getSkinsPath() + "notes/" + engineSettings.customArrowSkin.toLowerCase(), "/", "\\"), "\r", ""));
+					note.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas_Custom(StringTools.replace(StringTools.replace(Paths.getSkinsPath() + "notes/" + engineSettings.customArrowSkin.toLowerCase(), "/", "/"), "\r", ""));
 					note.colored = true;
 					// note.color = colors[(note.noteData % 4) + 1];
 				} else {
-					note.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets', 'shared') : Paths.getSparrowAtlas_Custom(StringTools.replace(StringTools.replace(Paths.getSkinsPath() + "notes/" + engineSettings.customArrowSkin.toLowerCase(), "/", "\\"), "\r", ""));
+					note.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets', 'shared') : Paths.getSparrowAtlas_Custom(StringTools.replace(StringTools.replace(Paths.getSkinsPath() + "notes/" + engineSettings.customArrowSkin.toLowerCase(), "/", "/"), "\r", ""));
 				}
 				
 				note.animation.addByPrefix('green', 'arrowUP');
@@ -1751,6 +1752,7 @@ class PlayState extends MusicBeatState
 
 		// scoreTxt.text = "Score:" + songScore + " | Misses:" + Std.string(misses) + " | Accuracy:" + (numberOfNotes == 0 ? "0%" : Std.string((Math.round(accuracy * 10000 / numberOfNotes) / 10000) * 100) + "%");
 		scoreTxt.text = ScoreText.generate(this);
+		#if desktop
 		if (isStoryMode)
 		{
 			detailsText = 'Story Mode: $songMod\r\n${scoreTxt.text.replace(" | ", "\r\n")}';
@@ -1764,6 +1766,7 @@ class PlayState extends MusicBeatState
 			DiscordClient.changePresence(detailsText, '$songMod - ${CoolUtil.prettySong(song.song)} ($storyDifficultyText)', iconRPC);
 			discordTimer -= 2;
 		}
+		#end
 
 
 		if (hitCounter != null) {
@@ -2294,6 +2297,10 @@ class PlayState extends MusicBeatState
 	}
 
 	public function endSong2() {
+		if (fromCharter) {
+			FlxG.switchState(new ChartingState_New());
+			return;
+		}
 		if (isStoryMode)
 			{
 				campaignScore += songScore;

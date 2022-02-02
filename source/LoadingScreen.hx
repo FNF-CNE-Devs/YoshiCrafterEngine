@@ -1,3 +1,5 @@
+import sys.FileSystem;
+import lime.system.System;
 import EngineSettings.Settings;
 import flixel.addons.transition.TransitionData;
 import flixel.addons.transition.FlxTransitionableState;
@@ -26,7 +28,7 @@ class LoadingScreen extends FlxState {
 
     public override function create() {
         super.create();
-        var loadingThingy = new FlxSprite(0, 0).makeGraphic(1280, 720, FlxColor.BLACK);
+        var loadingThingy = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
         loadingThingy.pixels.lock();
         var color1 = FlxColor.fromRGB(0, 66, 119);
         var color2 = FlxColor.fromRGB(86, 0, 151);
@@ -42,7 +44,7 @@ class LoadingScreen extends FlxState {
         loadingThingy.pixels.unlock();
         add(loadingThingy);
 
-        loadingText = new FlxText(0, 0, 0, "Loading...", 48);
+        loadingText = new FlxText(0, 0, FlxG.width, "Loading...", 48);
         loadingText.setFormat(Paths.font("vcr.ttf"), Std.int(48), FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
         loadingText.y = FlxG.height - (loadingText.height * 1.5);
         loadingText.screenCenter(X);
@@ -61,6 +63,12 @@ class LoadingScreen extends FlxState {
                 "name" : "Save Data",
                 "func" : saveData
             });
+        #if android
+        loadSections.push({
+                "name" : "Base Game Installation",
+                "func" : installBaseGame
+            });
+        #end
         loadSections.push({
                 "name" : "Mod Config",
                 "func" : modConfig
@@ -76,10 +84,11 @@ class LoadingScreen extends FlxState {
 
         FlxG.autoPause = false;
     }
+    var aborted = false;
 
     public override function update(elapsed:Float) {
         super.update(elapsed);
-        if (switchin) return;
+        if (switchin || aborted) return;
 
         if (step < 0) {
             loadingText.text = "Loading " + loadSections[0].name + "... (0%)";
@@ -95,6 +104,7 @@ class LoadingScreen extends FlxState {
         } else {
             loadSections[step].func();
             step++;
+            if (aborted) return;
             if (step >= loadSections.length) {
                 loadingText.text = "Loading Complete ! (100%)";
             } else {
@@ -151,4 +161,24 @@ class LoadingScreen extends FlxState {
         // transOut = FlxTransitionableState.defaultTransOut;
 
     }
+    #if android
+    public function installBaseGame() {
+        trace("Installing base game...");
+        // trace(System.documentsDirectory);
+        trace(System.userDirectory);
+        Settings.engineSettings.data.developerMode = true;
+        FileSystem.createDirectory('${System.userDirectory}Yoshi Engine');
+        if (!FileSystem.exists('${System.userDirectory}Yoshi Engine')) {
+            aborted = true;
+            loadingText.text = "Failed to load the mods. Please follow the instructions in the readme.txt";
+            loadingText.y = FlxG.height - (loadingText.height * 1.5);
+        }
+        // if (!FileSystem.exists('${System.applicationStorageDirectory}/mods')) {
+
+        //     // System.
+        //     CoolUtil.copyFolder('${System.applicationDirectory}/mods', '${System.applicationStorageDirectory}/mods');
+        //     CoolUtil.copyFolder('${System.applicationDirectory}/skins', '${System.applicationStorageDirectory}/skins');
+        // }
+    }
+    #end
 }
