@@ -204,7 +204,7 @@ class Character extends FlxSprite
 	public function loadJSON(overrideFuncs:Bool) {
 		
 		var charFull = CoolUtil.getCharacterFull(curCharacter, PlayState.songMod);
-		var path = '${Paths.getModsFolder()}/${charFull[0]}/characters/${charFull[1]}/Character.json';
+		var path = '${Paths.modsPath}/${charFull[0]}/characters/${charFull[1]}/Character.json';
 		if (!FileSystem.exists(path)) return;
 		try {
 			json = Json.parse(Paths.getTextOutsideAssets(path));

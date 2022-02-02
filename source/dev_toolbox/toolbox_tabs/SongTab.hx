@@ -103,10 +103,10 @@ class SongTab extends ToolboxTab {
             var diffs = difficulties.text.split(",");
             var bpm = 100;
             try {
-                for (f in FileSystem.readDirectory('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/${fpSongToEdit.name}/')) {
+                for (f in FileSystem.readDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/data/${fpSongToEdit.name}/')) {
                     if (f.toLowerCase().startsWith('${fpSongToEdit.name.toLowerCase()}') && f.toLowerCase().endsWith('.json')) {
                         trace('$f is a chart.');
-                        var chart:SwagSong = Json.parse('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/${fpSongToEdit.name}/$f');
+                        var chart:SwagSong = Json.parse('${Paths.modsPath}/${ToolboxHome.selectedMod}/data/${fpSongToEdit.name}/$f');
                         bpm = chart.bpm;
                         break;
                     }
@@ -130,9 +130,9 @@ class SongTab extends ToolboxTab {
 			};
             for(d in diffs) {
                 var diff = d.trim().toLowerCase().replace(" ", "-");
-                var path = '${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/${fpSongToEdit.name}/${fpSongToEdit.name}-${d.trim().toLowerCase()}.json';
+                var path = '${Paths.modsPath}/${ToolboxHome.selectedMod}/data/${fpSongToEdit.name}/${fpSongToEdit.name}-${d.trim().toLowerCase()}.json';
                 if (diff == "normal") {
-                    path = '${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/${fpSongToEdit.name}/${fpSongToEdit.name}.json';
+                    path = '${Paths.modsPath}/${ToolboxHome.selectedMod}/data/${fpSongToEdit.name}/${fpSongToEdit.name}.json';
                 }
                 if (!FileSystem.exists(path)) {
                     File.saveContent(path, Json.stringify(_song, "\t"));
@@ -183,17 +183,17 @@ class SongTab extends ToolboxTab {
 
     
     public function refreshSongs() {
-        FileSystem.createDirectory('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/songs/');   
-        FileSystem.createDirectory('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/');
-        if (!FileSystem.exists('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/freeplaySonglist.json')) {
+        FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/songs/');   
+        FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/data/');
+        if (!FileSystem.exists('${Paths.modsPath}/${ToolboxHome.selectedMod}/data/freeplaySonglist.json')) {
             var json:FreeplaySongList = {
                 songs : []
             };
-            File.saveContent('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/freeplaySonglist.json', Json.stringify(json));
+            File.saveContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/data/freeplaySonglist.json', Json.stringify(json));
         }
-        // var songs = [for (s in FileSystem.readDirectory('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/songs/')) if (FileSystem.isDirectory('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/songs/$s/')) s];
+        // var songs = [for (s in FileSystem.readDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/songs/')) if (FileSystem.isDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/songs/$s/')) s];
         var displayNames = [];
-        freeplaySonglist = try {Json.parse(File.getContent('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/freeplaySonglist.json'));} catch(e) {null;};
+        freeplaySonglist = try {Json.parse(File.getContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/data/freeplaySonglist.json'));} catch(e) {null;};
         if (freeplaySonglist == null) freeplaySonglist = {songs : []};
         if (freeplaySonglist.songs == null) freeplaySonglist.songs = [];
 
@@ -207,7 +207,7 @@ class SongTab extends ToolboxTab {
     }
 
     public function save() {
-        File.saveContent('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/data/freeplaySonglist.json', Json.stringify(freeplaySonglist, "\t"));
+        File.saveContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/data/freeplaySonglist.json', Json.stringify(freeplaySonglist, "\t"));
     }
 
     public override function onTabEnter() {

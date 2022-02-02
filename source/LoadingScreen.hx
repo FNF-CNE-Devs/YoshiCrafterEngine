@@ -1,3 +1,4 @@
+import sys.io.File;
 import sys.FileSystem;
 import lime.system.System;
 import EngineSettings.Settings;
@@ -45,7 +46,7 @@ class LoadingScreen extends FlxState {
         add(loadingThingy);
 
         loadingText = new FlxText(0, 0, FlxG.width, "Loading...", 48);
-        loadingText.setFormat(Paths.font("vcr.ttf"), Std.int(48), FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+        loadingText.setFormat(Paths.font("vcr.ttf"), Std.int(48), FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
         loadingText.y = FlxG.height - (loadingText.height * 1.5);
         loadingText.screenCenter(X);
         add(loadingText);
@@ -164,21 +165,21 @@ class LoadingScreen extends FlxState {
     #if android
     public function installBaseGame() {
         trace("Installing base game...");
-        // trace(System.documentsDirectory);
-        trace(System.userDirectory);
         Settings.engineSettings.data.developerMode = true;
-        FileSystem.createDirectory('${System.userDirectory}Yoshi Engine');
-        if (!FileSystem.exists('${System.userDirectory}Yoshi Engine')) {
-            aborted = true;
-            loadingText.text = "Failed to load the mods. Please follow the instructions in the readme.txt";
+        if (!FileSystem.exists(Paths.modsPath)) {
+            // trace("no mods folder, creating one");;
+            loadingText.text = "Mods folder not detected. Please follow the instructions in the zip file.";
             loadingText.y = FlxG.height - (loadingText.height * 1.5);
+            aborted = true;
         }
-        // if (!FileSystem.exists('${System.applicationStorageDirectory}/mods')) {
-
-        //     // System.
-        //     CoolUtil.copyFolder('${System.applicationDirectory}/mods', '${System.applicationStorageDirectory}/mods');
-        //     CoolUtil.copyFolder('${System.applicationDirectory}/skins', '${System.applicationStorageDirectory}/skins');
-        // }
+        if (!FileSystem.exists(Paths.getSkinsPath())) {
+            // trace("no skins folder, creating one");
+            // FileSystem.createDirectory(Paths.getSkinsPath());
+            trace("copying yoshi engine skins");
+            loadingText.text = "Skins folder not detected. Please follow the instructions in the zip file.";
+            loadingText.y = FlxG.height - (loadingText.height * 1.5);
+            aborted = true;
+        }
     }
     #end
 }

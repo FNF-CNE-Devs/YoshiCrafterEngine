@@ -160,14 +160,14 @@ class CoolUtil
 		var splitChar = char.split(":");
 		if (splitChar.length == 1) {
 			for (fileExt in Main.supportedFileTypes) {
-				if (FileSystem.exists('${Paths.getModsFolder()}/$mod/characters/${splitChar[0]}/Character.$fileExt')) {
+				if (FileSystem.exists('${Paths.modsPath}/$mod/characters/${splitChar[0]}/Character.$fileExt')) {
 					splitChar.insert(0, mod);
 					break;
 				}
 			}
 			if (splitChar.length == 1) {
 				for (fileExt in Main.supportedFileTypes) {
-					if (FileSystem.exists('${Paths.getModsFolder()}/Friday Night Funkin\'/characters/${splitChar[0]}/Character.$fileExt')) {
+					if (FileSystem.exists('${Paths.modsPath}/Friday Night Funkin\'/characters/${splitChar[0]}/Character.$fileExt')) {
 						splitChar.insert(0, "Friday Night Funkin'");
 						break;
 					}
@@ -186,14 +186,14 @@ class CoolUtil
 		var splitChar = char.split(":");
 		if (splitChar.length == 1) {
 			for (fileExt in Main.supportedFileTypes) {
-				if (FileSystem.exists('${Paths.getModsFolder()}/$mod/notes/${splitChar[0]}.$fileExt')) {
+				if (FileSystem.exists('${Paths.modsPath}/$mod/notes/${splitChar[0]}.$fileExt')) {
 					splitChar.insert(0, mod);
 					break;
 				}
 			}
 			if (splitChar.length == 1) {
 				for (fileExt in Main.supportedFileTypes) {
-					if (FileSystem.exists('${Paths.getModsFolder()}/Friday Night Funkin\'/notes/${splitChar[0]}.$fileExt')) {
+					if (FileSystem.exists('${Paths.modsPath}/Friday Night Funkin\'/notes/${splitChar[0]}.$fileExt')) {
 						splitChar.insert(0, "Friday Night Funkin'");
 						break;
 					}

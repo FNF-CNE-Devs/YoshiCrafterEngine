@@ -86,16 +86,16 @@ class StoryMenuState extends MusicBeatState
 		var fnfWeekData = [];
 		var fnfWeekButtons = [];
 		
-		for (mod in FileSystem.readDirectory(Paths.getModsFolder() + "/")) {
+		for (mod in FileSystem.readDirectory(Paths.modsPath + "/")) {
 			var exists = false;
 			for (e in Main.supportedFileTypes) {
-				exists = FileSystem.exists(Paths.getModsFolder() + '/$mod/song_conf.$e');
+				exists = FileSystem.exists(Paths.modsPath + '/$mod/song_conf.$e');
 				if (exists) break;
 			}
-			if (FileSystem.exists(Paths.getModsFolder() + '/$mod/weeks.json') && exists) {
+			if (FileSystem.exists(Paths.modsPath + '/$mod/weeks.json') && exists) {
 				var json:WeeksJson = null;
 				try {
-					json = Json.parse(sys.io.File.getContent(Paths.getModsFolder() + '/$mod/weeks.json'));
+					json = Json.parse(sys.io.File.getContent(Paths.modsPath + '/$mod/weeks.json'));
 				} catch(e) {
 
 				}
@@ -115,7 +115,7 @@ class StoryMenuState extends MusicBeatState
 					trace(mod);
 					(mod == "Friday Night Funkin'" ? fnfWeekData : weekData).push(week);
 
-					var weekButton = Paths.getBitmapOutsideAssets(Paths.getModsFolder() + '/$mod/$sprite');
+					var weekButton = Paths.getBitmapOutsideAssets(Paths.modsPath + '/$mod/$sprite');
 					if (weekButton == null) {
 						weekButton = new BitmapData(443, 82, true, 0x00000000);
 					}
@@ -128,7 +128,7 @@ class StoryMenuState extends MusicBeatState
 						#end
 						var mod = week.mod;
 						var file = week.dad.file;
-						var sparrowPath = Paths.getModsFolder() + '/$mod/$file';
+						var sparrowPath = Paths.modsPath + '/$mod/$file';
 						#if debug
 							trace(sparrowPath);
 						#end
@@ -232,7 +232,7 @@ class StoryMenuState extends MusicBeatState
 		for (week in weekData) {
 			var mod = week.mod;
 			var file = week.dad.file.trim().replace("/", "/").replace("\\", "/");
-			var sparrowPath = Paths.getModsFolder() + '/$mod/$file';
+			var sparrowPath = Paths.modsPath + '/$mod/$file';
 			if (modWeekCharacters['$mod:$file'] == null) {
 				var charFrames = null;
 				try {
@@ -293,7 +293,7 @@ class StoryMenuState extends MusicBeatState
 		for(week in weekData) {
 			for (diff in week.difficulties) {
 				if (difficultySprites[diff.sprite] == null) {
-					var modsPath = Paths.getModsFolder();
+					var modsPath = Paths.modsPath;
 					sprDifficulty = new FlxSprite(1070, grpWeekText.members[0].y + 10);
 					var bitmapMod = week.mod;
 					var bitmapPath = "";

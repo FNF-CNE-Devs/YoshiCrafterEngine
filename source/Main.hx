@@ -56,10 +56,10 @@ class Main extends Sprite
 
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, function(e:UncaughtErrorEvent) {
 			var m:String = e.error;
-			if (Std.is(e.error, Error)) {
+			if (Std.isOfType(e.error, Error)) {
 				var err = cast(e.error, Error);
 				m = '${err.message}';
-			} else if (Std.is(e.error, ErrorEvent)) {
+			} else if (Std.isOfType(e.error, ErrorEvent)) {
 				var err = cast(e.error, ErrorEvent);
 				m = '${err.text}';
 			}
@@ -69,7 +69,8 @@ class Main extends Sprite
 			e.stopPropagation();
 			e.stopImmediatePropagation();
 		});
-		
+
+
 		if (stage != null)
 		{
 			init();
@@ -82,19 +83,20 @@ class Main extends Sprite
 
 	private function init(?E:Event):Void
 	{
+		lime.utils.Log.throwErrors = false;
 		stage.window.onDropFile.add(function(path:String) {
-			if (Std.is(FlxG.state, MusicBeatState)) {
+			if (Std.isOfType(FlxG.state, MusicBeatState)) {
 				var checkSubstate:FlxState->Void = function(state) {
-					if (Std.is(state, MusicBeatState)) {
+					if (Std.isOfType(state, MusicBeatState)) {
 						var state = cast(state, MusicBeatState);
-						if (Std.is(state.subState, MusicBeatSubstate)) {
+						if (Std.isOfType(state.subState, MusicBeatSubstate)) {
 		
 						} else {
 							state.onDropFile(path);
 						}
-					} else if (Std.is(state, MusicBeatSubstate)) {
+					} else if (Std.isOfType(state, MusicBeatSubstate)) {
 						var state = cast(state, MusicBeatSubstate);
-						if (Std.is(state.subState, MusicBeatSubstate)) {
+						if (Std.isOfType(state.subState, MusicBeatSubstate)) {
 		
 						} else {
 							state.onDropFile(path);

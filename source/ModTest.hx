@@ -9,7 +9,7 @@ class ModTest extends FlxState {
         super.create();
         var func:Dynamic;
         #if desktop
-        func = Lib.load(Paths.getModsFolder() + "/Friday Night Funkin'/mod.ndll", "template_mod_main", 0);
+        func = Lib.load(Paths.modsPath + "/Friday Night Funkin'/mod.ndll", "template_mod_main", 0);
         #end
         func();
     }

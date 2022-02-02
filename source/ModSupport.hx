@@ -240,10 +240,10 @@ class ModSupport {
     public static var modConfig:Map<String, ModConfig> = null;
 
     public static var modSaves:Map<String, FlxSave> = [];
-    public static var mFolder = Paths.getModsFolder();
+    public static var mFolder = Paths.modsPath;
 
     public static function getMods():Array<String> {
-        var modFolder = Paths.getModsFolder();
+        var modFolder = Paths.modsPath;
         var a = FileSystem.readDirectory(modFolder);
         var finalArray = [];
         for (e in a) {
@@ -324,7 +324,7 @@ class ModSupport {
             var splittedPath = path.split(":");
             if (splittedPath.length < 2) splittedPath.insert(0, mod);
             var joinedPath = splittedPath.join("/");
-            var mFolder = Paths.getModsFolder();
+            var mFolder = Paths.modsPath;
             var expr = getExpressionFromPath('$mFolder/$joinedPath.hx');
             if (expr != null) {
                 hscript.execute(expr);
@@ -392,9 +392,9 @@ class ModSupport {
     }
 
     public static function saveModData(mod:String):Bool {
-        if (FileSystem.exists('${Paths.getModsFolder()}/$mod/')) {
+        if (FileSystem.exists('${Paths.modsPath}/$mod/')) {
             if (modConfig[mod] != null) {
-                File.saveContent('${Paths.getModsFolder()}/$mod/config.json', Json.stringify(modConfig[mod], "\t"));
+                File.saveContent('${Paths.modsPath}/$mod/config.json', Json.stringify(modConfig[mod], "\t"));
                 return true;
             }
         }
@@ -416,7 +416,7 @@ class ModSupport {
         //     var splittedPath = path.split(":");
         //     if (splittedPath.length < 2) splittedPath.insert(0, mod);
         //     var joinedPath = splittedPath.join("/");
-        //     var mFolder = Paths.getModsFolder();
+        //     var mFolder = Paths.modsPath;
         //     var expr = getExpressionFromPath('$mFolder/$joinedPath.hx');
         //     if (expr != null) {
         //         hscript.execute(expr);
@@ -487,7 +487,7 @@ class ModSupport {
     }
     public static function parseSongConfig() {
         var songName = PlayState._SONG.song.toLowerCase();
-        var songCodePath = Paths.getModsFolder() + '/$currentMod/song_conf';
+        var songCodePath = Paths.modsPath + '/$currentMod/song_conf';
         var parser = new hscript.Parser();
         parser.allowTypes = true;
         // var ast = null;
@@ -526,12 +526,12 @@ class ModSupport {
 
         // OUTDATED CODE, HOW TF DID I WROTE THIS IN RELEASE
         // if (stage == "default_stage")
-        //     song_stage_path = Paths.getModsFolder() + '/Friday Night Funkin\'/stages/$stage'; // fallback
+        //     song_stage_path = Paths.modsPath + '/Friday Night Funkin\'/stages/$stage'; // fallback
         // else
-        //     song_stage_path = Paths.getModsFolder() + '/$currentMod/stages/$stage';
+        //     song_stage_path = Paths.modsPath + '/$currentMod/stages/$stage';
 
         // if (modchart != "")
-        //     song_modchart_path = Paths.getModsFolder() + '/$currentMod/modcharts/$modchart';
+        //     song_modchart_path = Paths.modsPath + '/$currentMod/modcharts/$modchart';
         // else
         //     song_modchart_path = "";
 
@@ -604,7 +604,7 @@ class ModSupport {
         var folders:Array<String> = [];
         var songs:Array<String> = [];
         #if sys
-            var folders:Array<String> = sys.FileSystem.readDirectory(Paths.getModsFolder() + "/");
+            var folders:Array<String> = sys.FileSystem.readDirectory(Paths.modsPath + "/");
         #end
 
         for (mod in folders) {
@@ -612,7 +612,7 @@ class ModSupport {
             var freeplayList:String = "";
             #if sys
                 try {
-                    freeplayList = sys.io.File.getContent(Paths.getModsFolder() + "/" + mod + "/data/freeplaySonglist.txt");
+                    freeplayList = sys.io.File.getContent(Paths.modsPath + "/" + mod + "/data/freeplaySonglist.txt");
                 } catch(e) {
                     freeplayList = "";
                 }

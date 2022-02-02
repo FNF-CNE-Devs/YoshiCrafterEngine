@@ -38,7 +38,7 @@ class ModCard extends FlxUITabMenu {
         m = mod;
         mod_name.text = mod.name != null ? mod.name : this.mod;
         mod_desc.text = mod.description != null ? mod.description : "(No description)";
-        var iconPath = '${Paths.getModsFolder()}/${this.mod}/modIcon.png';
+        var iconPath = '${Paths.modsPath}/${this.mod}/modIcon.png';
         mod_icon.loadGraphic(FileSystem.exists(iconPath) ? BitmapData.fromFile(iconPath) : Paths.image("modEmptyIcon", "preload"));
         mod_icon.setGraphicSize(150, 150);
         mod_icon.updateHitbox();

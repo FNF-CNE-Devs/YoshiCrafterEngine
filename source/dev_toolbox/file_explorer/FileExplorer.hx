@@ -61,7 +61,7 @@ class FileExplorer extends MusicBeatSubstate {
         }
         spawnedElems = [];
         this.path = path;
-        var p = '${Paths.getModsFolder()}/$mod/$path';
+        var p = '${Paths.modsPath}/$mod/$path';
 
 
         // 256 + 20 = 276
@@ -240,7 +240,7 @@ class FileExplorer extends MusicBeatSubstate {
         }));
         #if windows
             buttons.push(new FlxUIButton(0, 0, "Open Folder", function() {
-                var p = ('explorer "${Paths.getModsFolder()}/$mod/$path"').replace("/", "/").replace("\\", "/");
+                var p = ('explorer "${Paths.modsPath}/$mod/$path"').replace("/", "/").replace("\\", "/");
                 trace(p);
                 new Process(p);
             }));

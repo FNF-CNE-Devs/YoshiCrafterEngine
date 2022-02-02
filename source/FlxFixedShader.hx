@@ -1,5 +1,7 @@
 import flixel.system.FlxAssets.FlxShader;
 
+using StringTools;
+
 // goddamn prefix
 class FlxFixedShader extends FlxShader {
     @:noCompletion private override function __initGL():Void
@@ -29,10 +31,16 @@ class FlxFixedShader extends FlxShader {
         @:privateAccess
         var gl = __context.gl;
 
-        #if (js && html5)
-        var prefix = (precisionHint == FULL ? "precision mediump float;\n" : "precision lowp float;\n");
+        #if android
+        var prefix = "#version 320 es\n";
         #else
-        var prefix = "#version 120\n#ifdef GL_ES\n"
+        var prefix = "#version 120\n";
+        #end
+
+        #if (js && html5)
+        prefix += (precisionHint == FULL ? "precision mediump float;\n" : "precision lowp float;\n");
+        #else
+        prefix += "#ifdef GL_ES\n"
             + (precisionHint == FULL ? "#ifdef GL_FRAGMENT_PRECISION_HIGH\n"
                 + "precision highp float;\n"
                 + "#else\n"
@@ -41,8 +49,14 @@ class FlxFixedShader extends FlxShader {
             + "#endif\n\n";
         #end
 
+        #if android
+        var vertex = prefix + glVertexSource.replace("attribute", "in").replace("varying", "out");
+        var fragment = prefix + glFragmentSource.replace("varying", "in");
+        #else
         var vertex = prefix + glVertexSource;
         var fragment = prefix + glFragmentSource;
+        #end
+
 
         var id = vertex + fragment;
         @:privateAccess

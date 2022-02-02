@@ -107,7 +107,7 @@ class ScriptPack {
     public var scriptModScripts:Array<ModScript> = [];
     public function new(scripts:Array<ModScript>) {
         for (s in scripts) {
-            var sc = Script.create('${Paths.getModsFolder()}/${s.path}');
+            var sc = Script.create('${Paths.modsPath}/${s.path}');
             if (sc == null) continue;
             ModSupport.setScriptDefaultVars(sc, s.mod, {});
             this.scripts.push(sc);
@@ -118,7 +118,7 @@ class ScriptPack {
     public function loadFiles() {
         for (k=>sc in scripts) {
             var s = scriptModScripts[k];
-            sc.loadFile('${Paths.getModsFolder()}/${s.path}');
+            sc.loadFile('${Paths.modsPath}/${s.path}');
         }
     }
 
@@ -290,7 +290,7 @@ class LuaScript extends Script {
             // var property = Reflect.getProperty(currentObj, splittedVar[splittedVar.length - 1]);
             // if (property != null) {
             var finalVal = value;
-            if (Std.is(finalVal, String)) {
+            if (Std.isOfType(finalVal, String)) {
                 var str = cast(finalVal, String);
                 if (str.startsWith("${") && str.endsWith("}")) {
                     var v = getVar(str.substr(2, str.length - 3));
@@ -375,7 +375,7 @@ class LuaScript extends Script {
 
             var finalArgs = [];
             for (a in args) {
-                if (Std.is(a, String)) {
+                if (Std.isOfType(a, String)) {
                     var str = cast(a, String);
                     if (str.startsWith("${") && str.endsWith("}")) {
                         var st = str.substr(2, str.length - 3);

@@ -78,7 +78,7 @@ class FreeplayState extends MusicBeatState
 	var instCooldown:Float = 0;
 
 	public static function loadFreeplaySongs() {
-		var mPath = Paths.getModsFolder();
+		var mPath = Paths.modsPath;
 		
 		songs = [];
 		var fnfSongs = [];
@@ -404,6 +404,7 @@ class FreeplayState extends MusicBeatState
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
 		var accepted = controls.ACCEPT;
+		var cursorAccept = false;
 		if (FlxG.mouse.justPressed) {
 			var posY = FlxG.mouse.getScreenPosition().y;
 			var posX = FlxG.mouse.getScreenPosition().x;
@@ -411,6 +412,7 @@ class FreeplayState extends MusicBeatState
 				var i = Math.floor(posY / 720 * 5) - 2;
 				if (i == 0) {
 					accepted = true;
+					cursorAccept = true;
 				} else {
 					changeSelection(i);
 				}
@@ -462,7 +464,7 @@ class FreeplayState extends MusicBeatState
 			
 		}
 
-		if (FlxG.keys.pressed.ENTER || (accepted && Settings.engineSettings.data.autoplayInFreeplay))
+		if (FlxG.keys.pressed.ENTER || (accepted && Settings.engineSettings.data.autoplayInFreeplay) || cursorAccept)
 		{
 			select();
 		}

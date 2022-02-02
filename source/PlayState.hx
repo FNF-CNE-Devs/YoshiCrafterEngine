@@ -90,7 +90,7 @@ class Rating {
 		if (splittedPath.length < 2) return path;
 		var mod = splittedPath[0];
 		var path = splittedPath[1];
-		var mPath = Paths.getModsFolder();
+		var mPath = Paths.modsPath;
 		var bData = Paths.getBitmapOutsideAssets('$mPath/$mod/images/$path.png');
 		if (bData != null) {
 			if (bitmap != null) bitmap.dispose();
@@ -299,7 +299,7 @@ class PlayState extends MusicBeatState
 
 	public var isWidescreen(get, set):Bool;
 	public function get_isWidescreen():Bool {
-		return Std.is(FlxG.scaleMode, WideScreenScale);
+		return Std.isOfType(FlxG.scaleMode, WideScreenScale);
 	}
 	public function set_isWidescreen(enable:Bool):Bool {
 		if (enable) {
@@ -499,7 +499,7 @@ class PlayState extends MusicBeatState
 		lime.app.Application.current.window.title = gameTitle;
 
 		// GAME ICON
-		var modFolder = Paths.getModsFolder();
+		var modFolder = Paths.modsPath;
 		trace('$modFolder/$songMod/icon.ico');
 		/*
 		#if desktop
@@ -696,12 +696,12 @@ class PlayState extends MusicBeatState
 
         scripts = new ScriptPack(ModSupport.scripts);
 		if (ModSupport.song_cutscene != null) {
-			cutscene = Script.create('${Paths.getModsFolder()}/${ModSupport.song_cutscene.path}');
+			cutscene = Script.create('${Paths.modsPath}/${ModSupport.song_cutscene.path}');
 		} else {
 			cutscene = new HScript();
 		}
 		if (ModSupport.song_end_cutscene != null) {
-			end_cutscene = Script.create('${Paths.getModsFolder()}/${ModSupport.song_end_cutscene.path}');
+			end_cutscene = Script.create('${Paths.modsPath}/${ModSupport.song_end_cutscene.path}');
 		} else {
 			end_cutscene = new HScript();
 		}
@@ -797,8 +797,8 @@ class PlayState extends MusicBeatState
 
 
 		scripts.loadFiles();
-		if (ModSupport.song_cutscene != null) cutscene.loadFile('${Paths.getModsFolder()}/${ModSupport.song_cutscene.path}');
-		if (ModSupport.song_end_cutscene != null) end_cutscene.loadFile('${Paths.getModsFolder()}/${ModSupport.song_end_cutscene.path}');
+		if (ModSupport.song_cutscene != null) cutscene.loadFile('${Paths.modsPath}/${ModSupport.song_cutscene.path}');
+		if (ModSupport.song_end_cutscene != null) end_cutscene.loadFile('${Paths.modsPath}/${ModSupport.song_end_cutscene.path}');
 
 		var resultRatings:Array<Dynamic> = cast(scripts.getVariable("ratings", defaultRatings), Array<Dynamic>);
 		if (resultRatings == null) {
@@ -1334,7 +1334,7 @@ class PlayState extends MusicBeatState
 			var splittedThingy = t.split(":");
 			if (splittedThingy.length < 2) {
 				for(ext in Main.supportedFileTypes) {
-					if (FileSystem.exists('${Paths.getModsFolder()}/${PlayState.songMod}/notes/${splittedThingy[0]}.$ext')) {
+					if (FileSystem.exists('${Paths.modsPath}/${PlayState.songMod}/notes/${splittedThingy[0]}.$ext')) {
 						splittedThingy.insert(0, PlayState.songMod);
 						break;
 					}
@@ -1347,7 +1347,7 @@ class PlayState extends MusicBeatState
 
 			var noteScriptName = splittedThingy[1];
 			var noteScriptMod = splittedThingy[0];
-			var p = Paths.getModsFolder() + '/$noteScriptMod/notes/$noteScriptName';
+			var p = Paths.modsPath + '/$noteScriptMod/notes/$noteScriptName';
 			var script = Script.create(p);
 			script.setVariable("enableRating", true);
 
@@ -1412,7 +1412,7 @@ class PlayState extends MusicBeatState
 				}
 			});
 			script.setVariable("generateStaticArrow", function(babyArrow:StrumNote, i:Int) {
-					babyArrow.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas(engineSettings.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets') : Paths.getSparrowAtlas_Custom(Paths.getModsFolder() + "/notes/" + engineSettings.customArrowSkin.toLowerCase());
+					babyArrow.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas(engineSettings.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets') : Paths.getSparrowAtlas_Custom(Paths.modsPath + "/notes/" + engineSettings.customArrowSkin.toLowerCase());
 					
 					babyArrow.animation.addByPrefix('green', 'arrowUP');
 					babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
@@ -1483,7 +1483,7 @@ class PlayState extends MusicBeatState
 				noteMiss(noteData);
 				health -= script.getVariable("note").isSustainNote ? 0.03125 : 0.125;
 			});
-			// script.execute(ModSupport.getExpressionFromPath(Paths.getModsFolder() + '/$noteScriptMod/notes/$noteScriptName.hx', true));
+			// script.execute(ModSupport.getExpressionFromPath(Paths.modsPath + '/$noteScriptMod/notes/$noteScriptName.hx', true));
 			script.loadFile(p);
 			ModSupport.setScriptDefaultVars(script, noteScriptMod, {});
 			noteScripts.push(script);
@@ -2852,12 +2852,24 @@ class PlayState extends MusicBeatState
 		var justReleasedArray:Array<Bool> = [];
 
 		if (!engineSettings.botplay) {
-			for(i in 0...SONG.keyNumber) {
+			#if mobile
+			justPressedArray = [for (i in 0...SONG.keyNumber) false];
+			justReleasedArray = [for (i in 0...SONG.keyNumber) false];
+			pressedArray = [for (i in 0...SONG.keyNumber) false];
+			for (t in FlxG.touches.list) {
+				var id = Math.floor(t.getScreenPosition().x / FlxG.width * SONG.keyNumber);
+				justPressedArray[id] = t.justPressed;
+				justReleasedArray[id] = t.justReleased;
+				pressedArray[id] = t.pressed;
+			}
+			#else
+			for (i in 0...SONG.keyNumber) {
 				var key:FlxKey = cast(Reflect.field(engineSettings, 'control_' + kNum + '_$i'), FlxKey);
 				pressedArray.push(FlxG.keys.anyPressed([key])); // Should prob fix this
 				justPressedArray.push(FlxG.keys.anyJustPressed([key])); // Should prob fix this
 				justReleasedArray.push(FlxG.keys.anyJustReleased([key])); // Should prob fix this
 			}
+			#end
 		} else {
 			// BOTPLAY CODE
 			justPressedArray = [for (i in 0...SONG.keyNumber) false];

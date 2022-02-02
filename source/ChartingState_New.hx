@@ -249,7 +249,7 @@ class ChartingState_New extends MusicBeatState
 		typingShit = UI_songTitle;
 
 		var difficulties:Array<StrNameLabel> = [];
-		var basePath = '${Paths.getModsFolder()}/${PlayState.songMod}/data/${_song.song}/';
+		var basePath = '${Paths.modsPath}/${PlayState.songMod}/data/${_song.song}/';
 		for (f in FileSystem.readDirectory(basePath)) {
 			if (!FileSystem.isDirectory('$basePath/$f')) {
 				if (Path.extension(f).toLowerCase() == "json") {
@@ -285,7 +285,7 @@ class ChartingState_New extends MusicBeatState
 		//
 		var mods:Array<String> = [];
 		var modCharacters:Array<Array<String>> = [];
-		var m = Paths.getModsFolder();
+		var m = Paths.modsPath;
 		for(folder in FileSystem.readDirectory(m)) {
 			if (FileSystem.isDirectory('$m/$folder') && FileSystem.exists('$m/$folder/characters/')) {
 				var chars = [];
@@ -442,42 +442,42 @@ class ChartingState_New extends MusicBeatState
 
 
 		// BROKEN, NEED FIX
-		// var fixChartButton = new FlxButton(10, 654, "Fix Chart", function() {
-		// 	for (s in _song.notes) {
-		// 		for (n in s.sectionNotes) {
-		// 			s.sectionNotes.remove(n);
-		// 			var newSection = Math.floor(Math.max(0, n[0] / (Conductor.crochet * 4)));
-		// 			if (_song.notes[newSection] == null) _song.notes[newSection] = {
-		// 				typeOfSection: 0,
-		// 				mustHitSection: true,
-		// 				sectionNotes: [],
-		// 				bpm: _song.bpm,
-		// 				changeBPM: false,
-		// 				lengthInSteps: 16,
-		// 				altAnim: false
-		// 			}; 
-		// 			var mustHit = (n[1] % (_song.keyNumber * 2)) < _song.keyNumber;
-		// 			if (s.mustHitSection) mustHit != mustHit;
-		// 			// Gets note type
-		// 			var noteType = Math.floor(n[1] / (_song.keyNumber * 2));
-		// 			// Gets strum ID
-		// 			var no = n[1] % _song.keyNumber;
-		// 			var id = 0;
+		var fixChartButton = new FlxButton(10, 654, "Fix Chart", function() {
+			for (s in _song.notes) {
+				for (n in s.sectionNotes) {
+					s.sectionNotes.remove(n);
+					var newSection = Math.floor(Math.max(0, n[0] / (Conductor.crochet * 4)));
+					if (_song.notes[newSection] == null) _song.notes[newSection] = {
+						typeOfSection: 0,
+						mustHitSection: true,
+						sectionNotes: [],
+						bpm: _song.bpm,
+						changeBPM: false,
+						lengthInSteps: 16,
+						altAnim: false
+					}; 
+					var mustHit = (n[1] % (_song.keyNumber * 2)) < _song.keyNumber;
+					if (s.mustHitSection) mustHit != mustHit;
+					// Gets note type
+					var noteType = Math.floor(n[1] / (_song.keyNumber * 2));
+					// Gets strum ID
+					var no = n[1] % _song.keyNumber;
+					var id = 0;
 
-		// 			if ((_song.notes[newSection].mustHitSection && mustHit) || (!_song.notes[newSection].mustHitSection && !mustHit)) {
-		// 				id = Std.int(no + (noteType * _song.keyNumber * 2));
-		// 			} else {
-		// 				id = Std.int((no + _song.keyNumber) % (_song.keyNumber * 2) + (noteType * _song.keyNumber * 2));
-		// 			}
-		// 			n[1] = id;
+					if ((_song.notes[newSection].mustHitSection && mustHit) || (!_song.notes[newSection].mustHitSection && !mustHit)) {
+						id = Std.int(no + (noteType * _song.keyNumber * 2));
+					} else {
+						id = Std.int((no + _song.keyNumber) % (_song.keyNumber * 2) + (noteType * _song.keyNumber * 2));
+					}
+					n[1] = id;
 					
-		// 			_song.notes[newSection].sectionNotes.push(n);
-		// 		}
-		// 	}
-		// });
-		// fixChartButton.y -= fixChartButton.height;
-		// var fixChartLabel = new FlxUIText(10, fixChartButton.y - 10, 280, "Pressing this button will fix chart's note section problem, where notes are in the wrong section and off the grid. This operation may take a while depending on the size on the chart. Continue at your own risk.");
-		// fixChartLabel.y -= fixChartLabel.height;
+					_song.notes[newSection].sectionNotes.push(n);
+				}
+			}
+		});
+		fixChartButton.y -= fixChartButton.height;
+		var fixChartLabel = new FlxUIText(10, fixChartButton.y - 10, 280, "Pressing this button will fix chart's note section problem, where notes are in the wrong section and off the grid. This operation may take a while depending on the size on the chart. Continue at your own risk.");
+		fixChartLabel.y -= fixChartLabel.height;
 
 
 
@@ -509,8 +509,8 @@ class ChartingState_New extends MusicBeatState
 		tab_group_song.add(player1CharDropDown);
 		tab_group_song.add(player1ModDropDown);
 
-		// tab_group_song.add(fixChartLabel);
-		// tab_group_song.add(fixChartButton);
+		tab_group_song.add(fixChartLabel);
+		tab_group_song.add(fixChartButton);
 
 		UI_box.addGroup(tab_group_song);
 		UI_box.scrollFactor.set();
@@ -650,7 +650,7 @@ class ChartingState_New extends MusicBeatState
 
 		var applyLength:FlxButton = new FlxButton(212, 9, 'Apply');
 		var nTypes:Array<String> = [];
-		var mPath = Paths.getModsFolder();
+		var mPath = Paths.modsPath;
 		for (mod in FileSystem.readDirectory(mPath)) {
 			if (FileSystem.exists('$mPath/$mod/notes/')) {
 				for (nType in FileSystem.readDirectory('$mPath/$mod/notes/')) {

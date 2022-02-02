@@ -40,7 +40,7 @@ class WeeksTab extends ToolboxTab {
         weekJson = {
             weeks : []
         };
-        var weeksPath = '${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/weeks.json';
+        var weeksPath = '${Paths.modsPath}/${ToolboxHome.selectedMod}/weeks.json';
         if (FileSystem.exists(weeksPath)) {
             weekJson = Json.parse(File.getContent(weeksPath));
         } else {
@@ -198,7 +198,7 @@ class WeeksTab extends ToolboxTab {
     public function updateWeekInfo() {
         var w = selectedWeek;
         var b = null;
-        var path = '${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/${w.buttonSprite}';
+        var path = '${Paths.modsPath}/${ToolboxHome.selectedMod}/${w.buttonSprite}';
         try {
             b = Paths.getBitmapOutsideAssets(path);
         } catch(e) {
@@ -253,7 +253,7 @@ class WeeksTab extends ToolboxTab {
             };
 
 		menuCharacter = new FlxSprite(uiX + (FlxG.width * 0.25) - 150, 72 + uiY);
-        menuCharacter.frames = Paths.getSparrowAtlas_Custom('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/${d.file}');
+        menuCharacter.frames = Paths.getSparrowAtlas_Custom('${Paths.modsPath}/${ToolboxHome.selectedMod}/${d.file}');
         menuCharacter.antialiasing = true;
         menuCharacter.animation.addByPrefix("char", d.animation, 24);
         menuCharacter.animation.play("char");
@@ -278,6 +278,6 @@ class WeeksTab extends ToolboxTab {
         
         // insert(20001, txtTracklist);
 
-        File.saveContent('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/weeks.json', Json.stringify(weekJson, "\t"));
+        File.saveContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/weeks.json', Json.stringify(weekJson, "\t"));
     }
 }

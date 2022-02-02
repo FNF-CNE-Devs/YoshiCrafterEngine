@@ -33,7 +33,7 @@ class HealthIcon extends FlxSprite
 		super();
 		
 		// if (char.indexOf(":") == -1 && mod != null) {
-		// 	if (FileSystem.exists(Paths.getModsFolder() + '/$mod/characters/$char/icon.png'))
+		// 	if (FileSystem.exists(Paths.modsPath + '/$mod/characters/$char/icon.png'))
 		// 		char = '$mod:$char';
 		// }
 		// if (HealthIcon.redirects == null) {
@@ -61,7 +61,7 @@ class HealthIcon extends FlxSprite
 		if (PlayState.current != null) cGF = PlayState.current.engineSettings.customGFSkin;
 		
 		var path = Paths.getCharacterFolderPath(character) + "/icon.png";
-		loadGraphic(FileSystem.exists(path) ? Paths.getBitmapOutsideAssets(path) : Paths.getBitmapOutsideAssets(Paths.getModsFolder() + "/Friday Night Funkin'/characters/unknown/icon.png"), true, 150, 150);
+		loadGraphic(FileSystem.exists(path) ? Paths.getBitmapOutsideAssets(path) : Paths.getBitmapOutsideAssets(Paths.modsPath + "/Friday Night Funkin'/characters/unknown/icon.png"), true, 150, 150);
 		
 		animation.add('char', [for (i in 0...frames.frames.length) i], 0, false, isPlayer);
 		animation.play('char');

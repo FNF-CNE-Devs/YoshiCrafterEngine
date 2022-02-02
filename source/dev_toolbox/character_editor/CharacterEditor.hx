@@ -155,7 +155,7 @@ class CharacterEditor extends MusicBeatState {
                     FlxColor.fromRGBFloat(shader.r.value[0], shader.g.value[0], shader.b.value[0]).toWebString();
                 }]
         }
-        File.saveContent('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/characters/$c/Character.json', Json.stringify(json, "\t"));
+        File.saveContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$c/Character.json', Json.stringify(json, "\t"));
         // if (isBFskin.checked) {
         //     if (ModSupport.modConfig[ToolboxHome.selectedMod].BFskins == null) ModSupport.modConfig[ToolboxHome.selectedMod].BFskins = [];
         //     var exists = false;
@@ -348,7 +348,7 @@ class CharacterEditor extends MusicBeatState {
                     {
                         label : "Yes",
                         onClick : function(e) {
-                            var p = '${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/characters/$c';
+                            var p = '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$c';
                             sys.io.File.copy('$p/Character.hx', '$p/Character-old.hx');
                             sys.io.File.saveContent('$p/Character.hx', 'function create() {\r\n\tcharacter.frames = Paths.getCharacter(character.curCharacter);\r\n\tcharacter.loadJSON(true); // Setting to true will override getColors() and dance().\r\n}');
                             FlxG.switchState(new CharacterEditor(this.c));

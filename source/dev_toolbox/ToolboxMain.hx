@@ -23,7 +23,7 @@ class ToolboxMain extends MusicBeatState {
 
     public override function new(?mod:String) {
         if (mod != null) selectedMod = mod;
-        if (!Std.is(FlxG.state, MainMenuState) && !Std.is(FlxG.state, ToolboxHome)) {
+        if (!Std.isOfType(FlxG.state, MainMenuState) && !Std.isOfType(FlxG.state, ToolboxHome)) {
             FlxTransitionableState.skipNextTransIn = true;
             FlxTransitionableState.skipNextTransOut = true;
         }
@@ -74,8 +74,8 @@ class ToolboxMain extends MusicBeatState {
                     label: "Yes",
                     onClick: function(t) {
                         try {
-                            CoolUtil.deleteFolder('${Paths.getModsFolder()}/$selectedMod');
-                            FileSystem.deleteDirectory('${Paths.getModsFolder()}/$selectedMod');
+                            CoolUtil.deleteFolder('${Paths.modsPath}/$selectedMod');
+                            FileSystem.deleteDirectory('${Paths.modsPath}/$selectedMod');
                             ModSupport.reloadModsConfig();
                             openSubState(new ToolboxMessage("Success", '$selectedMod was successfully deleted.', [
                                 {
@@ -142,8 +142,8 @@ class ToolboxMain extends MusicBeatState {
     public function updateModData() {
         modName.text = ModSupport.modConfig[selectedMod].name != null ? ModSupport.modConfig[selectedMod].name : selectedMod;
         modDesc.text = ModSupport.modConfig[selectedMod].description != null ? ModSupport.modConfig[selectedMod].description : "(No description)";
-        if (FileSystem.exists('${Paths.getModsFolder()}/$selectedMod/modIcon.png')) {
-            modIcon.loadGraphic(Paths.getBitmapOutsideAssets('${Paths.getModsFolder()}/$selectedMod/modIcon.png'));
+        if (FileSystem.exists('${Paths.modsPath}/$selectedMod/modIcon.png')) {
+            modIcon.loadGraphic(Paths.getBitmapOutsideAssets('${Paths.modsPath}/$selectedMod/modIcon.png'));
         } else {
             modIcon.loadGraphic(Paths.image("modEmptyIcon", "preload"));
         }

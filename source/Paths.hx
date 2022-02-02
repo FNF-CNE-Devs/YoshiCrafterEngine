@@ -1,5 +1,7 @@
 package;
 
+import openfl.system.ApplicationDomain;
+import lime.app.Application;
 import flixel.util.FlxDestroyUtil;
 import flixel.graphics.frames.FlxFramesCollection;
 import haxe.io.Bytes;
@@ -31,16 +33,21 @@ class Paths
 		currentLevel = name.toLowerCase();
 	}
 
-	static public function getModsFolder() {
+	public static var modsPath(get, null):String;
+
+	public static function get_modsPath() {
+		
 		#if sourceCode
 			return './../../../../mods';
 		#elseif android
-			return '/sdcard/Yoshi Engine/mods';
+			return '${System.userDirectory}/Yoshi Engine/mods';
 		#else
 			return './mods';
 		#end
-		
 	}
+
+	public static function getModsPath() {return modsPath;};
+	
 	static function getPath(file:String, type:AssetType, library:Null<String>)
 	{
 		if (library != null)
@@ -127,7 +134,7 @@ class Paths
 	}
 	inline static public function getInstPath(song:String, mod:String, ?difficulty:String = "")
 	{
-		var path = Paths.getModsFolder() + '/$mod/songs/$song/';
+		var path = Paths.modsPath + '/$mod/songs/$song/';
 		// trace(path + 'Inst-$difficulty.ogg');
 		if (FileSystem.exists(path + 'Inst-$difficulty.ogg')) {
 			path += 'Inst-$difficulty.ogg';
@@ -143,7 +150,7 @@ class Paths
 
 	inline static public function modVoices(song:String, mod:String, ?difficulty:String = "")
 	{
-		var path = Paths.getModsFolder() + '/$mod/songs/$song/';
+		var path = Paths.modsPath + '/$mod/songs/$song/';
 		if (FileSystem.exists(path + 'Voices-$difficulty.ogg')) {
 			path += 'Voices-$difficulty.ogg';
 		} else {
@@ -169,7 +176,7 @@ class Paths
 	
 	inline static public function getSkinsPath() {
 		#if android
-			return '/sdcard/Yoshi Engine/skins/';
+			return '${System.documentsDirectory}}/Yoshi Engine/skins/';
 		#else
 			return "./skins/";
 		#end
@@ -332,7 +339,7 @@ class Paths
 			charName = splittedCharacterID[1];
 			charMod = splittedCharacterID[0];
 		}
-		var folder = Paths.getModsFolder() + '/$charMod/characters/$charName';
+		var folder = Paths.modsPath + '/$charMod/characters/$charName';
 		if (charMod == "~") {
 			// You have unlocked secret skin menu !
 			folder = '${Paths.getSkinsPath()}/$charName';
@@ -345,12 +352,12 @@ class Paths
 			if (exists) break;
 		}
 		if (!exists) {
-			folder = Paths.getModsFolder() + '/Friday Night Funkin\'/characters/unknown';
+			folder = Paths.modsPath + '/Friday Night Funkin\'/characters/unknown';
 		}
 		return folder;
 	}
 	inline static public function getCharacterFolderPath_Array(character:Array<String>):String {
-		return '${Paths.getModsFolder()}/${character[0]}/characters/${character[1]}';
+		return '${Paths.modsPath}/${character[0]}/characters/${character[1]}';
 	}
 	inline static public function getModCharacter(characterId:String)
 	{

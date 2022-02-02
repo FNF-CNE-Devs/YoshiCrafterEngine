@@ -105,7 +105,7 @@ class NewModWizard extends MusicBeatState {
         var createButton = new FlxUIButton(640 - 110, 308 - 50, "Create your mod", function() {
             var folderName = Toolbox.generateModFolderName(mod_name.text);
             trace(folderName);
-            if (FileSystem.exists('${Paths.getModsFolder()}/$folderName')) {
+            if (FileSystem.exists('${Paths.modsPath}/$folderName')) {
                 openSubState(ToolboxMessage.showMessage("Error", 'The folder for your mod ("$folderName") already exists. Please rename the existing one or give another name to your mod.'));
                 return;
             }

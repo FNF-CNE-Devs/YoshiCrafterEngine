@@ -23,17 +23,17 @@ class Toolbox {
     }
 
     public static function createMod(config:ModConfig, folderName:String, ?modIcon:BitmapData, ?titlebarIcon:BitmapData) {
-        FileSystem.createDirectory('${Paths.getModsFolder()}/$folderName');
-        File.saveContent('${Paths.getModsFolder()}/$folderName/config.json', Json.stringify(config, "\t"));
-        File.saveContent('${Paths.getModsFolder()}/$folderName/song_conf.hx', '// USABLE VARIABLES : song, difficulty\r\n// The "song" variable corresponds to the song\'s name in lower case\r\n// The difficulty variable corresponds to the difficulty name (case sensitive, not in lower case)\r\nscripts = ["Friday Night Funkin\':stages/default_stage"];');
+        FileSystem.createDirectory('${Paths.modsPath}/$folderName');
+        File.saveContent('${Paths.modsPath}/$folderName/config.json', Json.stringify(config, "\t"));
+        File.saveContent('${Paths.modsPath}/$folderName/song_conf.hx', '// USABLE VARIABLES : song, difficulty\r\n// The "song" variable corresponds to the song\'s name in lower case\r\n// The difficulty variable corresponds to the difficulty name (case sensitive, not in lower case)\r\nscripts = ["Friday Night Funkin\':stages/default_stage"];');
         for (dir in ["characters", "data"]) {
-            FileSystem.createDirectory('${Paths.getModsFolder()}/$folderName/$dir');
+            FileSystem.createDirectory('${Paths.modsPath}/$folderName/$dir');
         }
         if (modIcon != null) {
-            sys.io.File.saveBytes('${Paths.getModsFolder()}/$folderName/modIcon.png', modIcon.encode(modIcon.rect, new PNGEncoderOptions(true)));
+            sys.io.File.saveBytes('${Paths.modsPath}/$folderName/modIcon.png', modIcon.encode(modIcon.rect, new PNGEncoderOptions(true)));
         }
         if (titlebarIcon != null) {
-            sys.io.File.saveBytes('${Paths.getModsFolder()}/$folderName/icon.png', titlebarIcon.encode(titlebarIcon.rect, new PNGEncoderOptions(true)));
+            sys.io.File.saveBytes('${Paths.modsPath}/$folderName/icon.png', titlebarIcon.encode(titlebarIcon.rect, new PNGEncoderOptions(true)));
         }
         ModSupport.reloadModsConfig();
         ModSupport.modConfig[folderName] = config;

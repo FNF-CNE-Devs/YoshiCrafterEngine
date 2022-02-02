@@ -79,8 +79,8 @@ class InfoTab extends ToolboxTab {
 
         var modIcon = new FlxUISprite(85, titlebarName.y + titlebarName.height + 10)
         .loadGraphic(
-            FileSystem.exists('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/modIcon.png')
-            ? BitmapData.fromFile('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/modIcon.png')
+            FileSystem.exists('${Paths.modsPath}/${ToolboxHome.selectedMod}/modIcon.png')
+            ? BitmapData.fromFile('${Paths.modsPath}/${ToolboxHome.selectedMod}/modIcon.png')
             : Paths.image("modEmptyIcon", "preload")
         );
         modIcon.setGraphicSize(150, 150);
@@ -102,7 +102,7 @@ class InfoTab extends ToolboxTab {
             e.name = mod_name.text;
             e.description = mod_description.text.replace("/n", "\n");
             e.titleBarName = titlebarName.text;
-            File.saveBytes('${Paths.getModsFolder()}/${ToolboxHome.selectedMod}/modIcon.png', modIcon.pixels.encode(modIcon.pixels.rect, new PNGEncoderOptions(true)));
+            File.saveBytes('${Paths.modsPath}/${ToolboxHome.selectedMod}/modIcon.png', modIcon.pixels.encode(modIcon.pixels.rect, new PNGEncoderOptions(true)));
             ModSupport.saveModData(ToolboxHome.selectedMod);
             card.updateMod(e);
         });
