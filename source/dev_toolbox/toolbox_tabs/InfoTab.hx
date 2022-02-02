@@ -109,7 +109,8 @@ class InfoTab extends ToolboxTab {
         saveButton.resize(145, 20);
 
         add(bg);
-        
+
+        for (l in OHMYFUCKINGGODITSTHELABELARMY) add(l);
         add(mod_name);
         add(mod_description);
         add(titlebarName);

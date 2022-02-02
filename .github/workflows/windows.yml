@@ -50,5 +50,5 @@ jobs:
           
       - uses: actions/upload-artifact@v2
         with:
-          name: WINDOWS BUILD OUTPUT WOOHOO
+          name: Yoshi Engine (Windows)
           path: export/release/windows/bin
