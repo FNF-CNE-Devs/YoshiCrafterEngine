@@ -32,7 +32,7 @@ class FlxFixedShader extends FlxShader {
         var gl = __context.gl;
 
         #if android
-        var prefix = "#version 320 es\n";
+        var prefix = "#version 300 es\n";
         #else
         var prefix = "#version 120\n";
         #end
@@ -49,9 +49,11 @@ class FlxFixedShader extends FlxShader {
             + "#endif\n\n";
         #end
 
+
         #if android
-        var vertex = prefix + glVertexSource.replace("attribute", "in").replace("varying", "out");
-        var fragment = prefix + glFragmentSource.replace("varying", "in");
+        prefix += 'out vec4 output_FragColor;\n';
+        var vertex = prefix + glVertexSource.replace("attribute", "in").replace("varying", "out").replace("texture2D", "texture").replace("gl_FragColor", "output_FragColor");
+        var fragment = prefix + glFragmentSource.replace("varying", "in").replace("texture2D", "texture").replace("gl_FragColor", "output_FragColor");
         #else
         var vertex = prefix + glVertexSource;
         var fragment = prefix + glFragmentSource;

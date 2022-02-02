@@ -8,7 +8,7 @@ class BlammedShader extends FlxFixedShader {
         uniform float r;
         uniform float g;
         uniform float b;
-        uniform bool enabled = true;
+        uniform bool enabled;
 
         void main() {
             if (enabled) {
@@ -54,7 +54,7 @@ class ColorShader extends FlxFixedShader {
         uniform float addR;
         uniform float addG;
         uniform float addB;
-        uniform bool enabled = true;
+        uniform bool enabled;
 
         void main() {
             if (enabled) {
@@ -62,16 +62,16 @@ class ColorShader extends FlxFixedShader {
                 vec4 color = flixel_texture2D(bitmap, openfl_TextureCoordv);
 
                 var r = (color.r * r) + addR;
-                if (r < 0) r = 0;
-                if (r > 1) r = 1;
+                if (r < 0.0) r = 0.0;
+                if (r > 1.0) r = 1.0;
                 
                 var g = (color.g * g) + addG;
-                if (g < 0) g = 0;
-                if (g > 1) g = 1;
+                if (g < 0.0) g = 0.0;
+                if (g > 1.0) g = 1.0;
                 
                 var b = (color.b * b) + addB;
-                if (b < 0) b = 0;
-                if (b > 1) b = 1;
+                if (b < 0.0) b = 0.0;
+                if (b > 1.0) b = 1.0;
 
                 gl_FragColor = vec4(r, g, b, color.a);
             } else {

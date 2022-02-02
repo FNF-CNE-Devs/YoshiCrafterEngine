@@ -1,5 +1,7 @@
 package;
 
+import flixel.group.FlxSpriteGroup;
+import sys.io.File;
 import com.akifox.asynchttp.HttpResponse;
 import com.akifox.asynchttp.HttpRequest;
 import sys.FileSystem;
@@ -39,6 +41,10 @@ import openfl.Assets;
 
 using StringTools;
 
+typedef TitleScreen = {
+	var script:Script;
+	var grp:FlxSpriteGroup;
+}
 class TitleState extends MusicBeatState
 {
 	static var initialized:Bool = false;
@@ -160,6 +166,52 @@ class TitleState extends MusicBeatState
 	var danceLeft:Bool = false;
 	var titleText:FlxSprite;
 
+	var titleScreens:Array<TitleScreen>;
+	var activeTitleScreen = -1;
+
+	var isInTransition = false;
+
+	function switchTitleScreen() {
+		if (isInTransition) return;
+		if (titleScreens.length < 2) {
+			if (activeTitleScreen == -1) {
+				activeTitleScreen = 0;
+				var grp = titleScreens[activeTitleScreen].grp;
+				grp.y = 0;
+				insert(members.indexOf(titleText), grp);
+
+			}
+			return;
+		}
+
+		isInTransition = true;
+		var max = titleScreens.length - 1;
+		if (activeTitleScreen > -1) max -= 1;
+		var randomNumber = FlxG.random.int(0, max);
+		if (activeTitleScreen > -1)
+			if (randomNumber >= activeTitleScreen)
+				randomNumber++;
+		
+		function onFinish(randomNumber:Int) {
+			activeTitleScreen = randomNumber;
+			trace(randomNumber);
+			var grp = titleScreens[activeTitleScreen].grp;
+			grp.y = FlxG.height;
+			FlxTween.tween(grp, {y: 0}, Conductor.crochet / 500, {ease: FlxEase.quintOut, onComplete: function(t2) {
+				isInTransition = false;
+			}});
+			insert(members.indexOf(titleText), grp);
+		}
+
+		if (activeTitleScreen == -1) {
+			onFinish(randomNumber);
+		} else {
+			FlxTween.tween(titleScreens[activeTitleScreen].grp, {y: FlxG.height}, Conductor.crochet / 500, {ease: FlxEase.quintIn, onComplete: function(t) {
+				remove(titleScreens[activeTitleScreen].grp);
+				onFinish(randomNumber);
+			}});
+		}
+	}
 	function startIntro()
 	{
 		if (!initialized)
@@ -187,24 +239,47 @@ class TitleState extends MusicBeatState
 		// bg.setGraphicSize(Std.int(bg.width * 0.6));
 		// bg.updateHitbox();
 		add(bg);
+		
+		titleScreens = [];
+		var keys = ModSupport.modConfig.keys();
+		while(keys.hasNext()) {
+			var k = keys.next();
+			var path = '${Paths.modsPath}/$k/data';
+			if (FileSystem.exists(path) && FileSystem.isDirectory(path)) {
+				var script = Script.create('$path/titlescreen');
+				if (script != null) {
+					var spriteGrp = new FlxSpriteGroup(0, 0);
+					ModSupport.setScriptDefaultVars(script, k, {});
+					script.setVariable("create", function() {});
+					script.setVariable("beatHit", function() {});
+					script.setVariable("add", spriteGrp.add);
+					script.loadFile('$path/titlescreen');
+					script.executeFunc("create");
+					titleScreens.push({
+						script: script,
+						grp: spriteGrp
+					});
+				}
+			}
+		}
 
-		logoBl = new FlxSprite(-50, -35);
-		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
-		logoBl.antialiasing = true;
-		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
-		logoBl.animation.play('bump');
-		logoBl.updateHitbox();
-		logoBl.scale.x = logoBl.scale.y = 0.95;
+		// logoBl = new FlxSprite(-50, -35);
+		// logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
+		// logoBl.antialiasing = true;
+		// logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
+		// logoBl.animation.play('bump');
+		// logoBl.updateHitbox();
+		// logoBl.scale.x = logoBl.scale.y = 0.95;
 		// logoBl.screenCenter();
 		// logoBl.color = FlxColor.BLACK;
 
-		gfDance = new FlxSprite(FlxG.width * 0.4, FlxG.height * 0.07);
-		gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
-		gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
-		gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
-		gfDance.antialiasing = true;
-		add(gfDance);
-		add(logoBl);
+		// gfDance = new FlxSprite(FlxG.width * 0.4, FlxG.height * 0.07);
+		// gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
+		// gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
+		// gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
+		// gfDance.antialiasing = true;
+		// add(gfDance);
+		// add(logoBl);
 
 		titleText = new FlxSprite(100, FlxG.height * 0.8);
 		titleText.frames = Paths.getSparrowAtlas('titleEnter');
@@ -295,17 +370,32 @@ class TitleState extends MusicBeatState
 
 	function getIntroTextShit():Array<Array<String>>
 	{
-		var fullText:String = Assets.getText(Paths.txt('introText'));
+		var introText:Array<Array<String>> = [];
 
-		var firstArray:Array<String> = fullText.split('\n');
-		var swagGoodArray:Array<Array<String>> = [];
-
-		for (i in firstArray)
-		{
-			swagGoodArray.push(i.split('--'));
+		var keys = ModSupport.modConfig.keys();
+		while(keys.hasNext()) {
+			var k = keys.next();
+			var path = '${Paths.modsPath}/$k/data/introText.txt';
+			if (FileSystem.exists(path)) {
+				var fContent = File.getContent(path);
+				for(l in fContent.split("\n")) if (l.trim() != "" && l.indexOf("--") != -1) introText.push(l.split("--"));
+			}
 		}
 
-		return swagGoodArray;
+		if (introText.length == 0) introText = [["the intro text", "where did it go"]];
+
+		return introText;
+		// var fullText:String = Assets.getText(Paths.txt('introText'));
+
+		// var firstArray:Array<String> = fullText.split('\n');
+		// var swagGoodArray:Array<Array<String>> = [];
+
+		// for (i in firstArray)
+		// {
+		// 	swagGoodArray.push(i.split('--'));
+		// }
+
+		// return swagGoodArray;
 	}
 
 	var transitioning:Bool = false;
@@ -479,18 +569,26 @@ class TitleState extends MusicBeatState
 		}
 	}
 
+	var skipBeat:Int = 0;
+
 	override function beatHit()
 	{
 		super.beatHit();
 
-		if (logoBl != null) logoBl.animation.play('bump');
-		danceLeft = !danceLeft;
-		if (gfDance != null) {
-			if (danceLeft)
-				gfDance.animation.play('danceRight');
-			else
-				gfDance.animation.play('danceLeft');
+		if (skippedIntro) {
+			if (activeTitleScreen > -1) titleScreens[activeTitleScreen].script.executeFunc("beatHit");
+			if ((curBeat - skipBeat) % 24 == 0) {
+				switchTitleScreen();
+			}
 		}
+		// if (logoBl != null) logoBl.animation.play('bump');
+		// danceLeft = !danceLeft;
+		// if (gfDance != null) {
+		// 	if (danceLeft)
+		// 		gfDance.animation.play('danceRight');
+		// 	else
+		// 		gfDance.animation.play('danceLeft');
+		// }
 
 		FlxG.log.add(curBeat);
 
@@ -542,6 +640,7 @@ class TitleState extends MusicBeatState
 				addMoreText('Engine'); // credTextShit.text += '\nFunkin';
 
 			case 16:
+				skipBeat = 16;
 				skipIntro();
 		}
 	}
@@ -558,5 +657,6 @@ class TitleState extends MusicBeatState
 			remove(credGroup);
 			skippedIntro = true;
 		}
+		switchTitleScreen();
 	}
 }

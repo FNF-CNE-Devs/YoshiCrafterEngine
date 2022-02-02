@@ -6,7 +6,7 @@ class ColoredNoteShader extends FlxFixedShader {
         uniform float r;
         uniform float g;
         uniform float b;
-        uniform bool enabled = true;
+        uniform bool enabled;
         
         
         void main() {
@@ -15,8 +15,8 @@ class ColoredNoteShader extends FlxFixedShader {
             if (enabled) {
                 
         
-                float diff = finalColor.r - ((finalColor.g + finalColor.b) / 2);
-                gl_FragColor = vec4(((finalColor.g + finalColor.b) / 2) + (r * diff), finalColor.g + (g * diff), finalColor.b + (b * diff), finalColor.a);
+                float diff = finalColor.r - ((finalColor.g + finalColor.b) / 2.0);
+                gl_FragColor = vec4(((finalColor.g + finalColor.b) / 2.0) + (r * diff), finalColor.g + (g * diff), finalColor.b + (b * diff), finalColor.a);
             } else {
                 gl_FragColor = finalColor;
             }

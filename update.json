@@ -2,8 +2,10 @@
     "updateLog" : [
         "1.4.1 : Bug Fixes + Updates !",
         "",
+        "- /!\\ CUSTOM TITLE SCREENS ! They change every 24 beats on the title screen soooo... Check the Friday Night Funkin' data/titlescreen.hx for an example",
+        "- /!\\ CUSTOM INTRO TEXTS ! Put your intro text in data/introText.txt !",
         "- Uploading that to test workflows, enjoy the leaks lol",
-        "- New Toolbox UI, enjoy ",
+        "- New Toolbox UI, enjoy !",
         "- The engine will remember last Freeplay song you played",
         "- If you ACCIDENTLY end a song that you took SO MUCH TIME to chart, you'll be redirected back to the charter.",
         "- You can now compile it on Android without any problems (port not done yet, make sure to allow storage access in the phone's app settings)",
