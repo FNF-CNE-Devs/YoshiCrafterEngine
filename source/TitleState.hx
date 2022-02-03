@@ -1,5 +1,6 @@
 package;
 
+import flixel.addons.plugin.control.FlxControl;
 import flixel.group.FlxSpriteGroup;
 import sys.io.File;
 import com.akifox.asynchttp.HttpResponse;
@@ -67,6 +68,7 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+		trace(FlxControls.pressed);
 
 		if (!skipOldSkinCheck) {
 			if (FileSystem.exists(Paths.getOldSkinsPath())) {
