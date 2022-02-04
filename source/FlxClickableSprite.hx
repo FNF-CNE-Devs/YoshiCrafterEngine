@@ -25,7 +25,7 @@ class FlxClickableSprite extends FlxSprite {
         return (point.x > pos.x && point.x < pos.x + hitbox.x && point.y > pos.y && point.y < pos.y + hitbox.y);
     }
     public function setHitbox() {
-        hitbox = new FlxPoint(width, height);
+        hitbox = new FlxPoint(frameWidth, frameHeight);
     }
     
     public override function update(elapsed) {
