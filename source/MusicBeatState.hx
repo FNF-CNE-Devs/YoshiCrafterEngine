@@ -38,12 +38,17 @@ class MusicBeatState extends FlxUIState
 
 				}
 			}
+			Settings.engineSettings.flush();
 		}
-		
-		@:privateAccess
-		FlxG.width = 1280;
-		@:privateAccess
-		FlxG.height = 720;
+		if (FlxG.save.data != null) {
+			FlxG.save.flush();
+		}
+		#if !android
+			@:privateAccess
+			FlxG.width = 1280;
+			@:privateAccess
+			FlxG.height = 720;
+		#end
 		
 		FlxG.scaleMode = new RatioScaleMode();
 		super(transIn, transOut);
