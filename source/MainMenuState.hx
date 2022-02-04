@@ -156,6 +156,8 @@ class MainMenuState extends MusicBeatState
 		backButton.updateHitbox();
 		backButton.y -= 10 + backButton.height;
 		backButton.scrollFactor.set(0, 0);
+		backButton.antialiasing = true;
+		backButton.hoverColor = 0xFF66CAFF;
 		add(backButton);
 		#end
 

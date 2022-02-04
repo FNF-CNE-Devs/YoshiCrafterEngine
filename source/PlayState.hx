@@ -1025,6 +1025,7 @@ class PlayState extends MusicBeatState
 			pauseButton.hitbox.x /= 2;
 			pauseButton.x -= pauseButton.hitbox.x;
 			pauseButton.cameras = [camHUD];
+			pauseButton.antialiasing = true;
 			add(pauseButton);
 		#end
 

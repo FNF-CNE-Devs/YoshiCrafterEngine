@@ -742,7 +742,7 @@ class OptionsMenu extends MusicBeatState
 			description : "Select this to open the skins folder.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
-					var p = Paths.getSkinsPath().replace("/", "/");
+					var p = Paths.getSkinsPath().replace("/", "\\");
 					trace(p);
 					#if windows
 						Sys.command('explorer "$p"');	
@@ -1187,6 +1187,8 @@ class OptionsMenu extends MusicBeatState
 			closeButton.key = FlxKey.BACKSPACE;
 			closeButton.setHitbox();
 			closeButton.hitbox.x /= 2;
+			closeButton.antialiasing = true;
+			closeButton.hoverColor = 0xFF66CAFF;
 			add(closeButton);
 
 			var downButton = new FlxClickableSprite(15, FlxG.height - 15);
@@ -1197,6 +1199,8 @@ class OptionsMenu extends MusicBeatState
 			downButton.y -= downButton.height;
 			downButton.setHitbox();
 			downButton.hitbox.x /= 2;
+			downButton.antialiasing = true;
+			downButton.hoverColor = 0xFF66CAFF;
 			add(downButton);
 
 			var upButton = new FlxClickableSprite(15, FlxG.height - 15);
@@ -1207,6 +1211,8 @@ class OptionsMenu extends MusicBeatState
 			upButton.y -= downButton.height + upButton.height;
 			upButton.setHitbox();
 			upButton.hitbox.x /= 2;
+			upButton.antialiasing = true;
+			upButton.hoverColor = 0xFF66CAFF;
 			add(upButton);
 
 			var rightButton = new FlxClickableSprite(FlxG.width - 15, FlxG.height - 15);
@@ -1218,6 +1224,8 @@ class OptionsMenu extends MusicBeatState
 			rightButton.x -= (rightButton.width / 2);
 			rightButton.setHitbox();
 			rightButton.hitbox.x /= 2;
+			rightButton.antialiasing = true;
+			rightButton.hoverColor = 0xFF66CAFF;
 			add(rightButton);
 
 			var okButton = new FlxClickableSprite(FlxG.width - 15, FlxG.height - 15);
@@ -1227,6 +1235,8 @@ class OptionsMenu extends MusicBeatState
 			okButton.key = FlxKey.ENTER;
 			okButton.y -= okButton.height;
 			okButton.x -= okButton.width + (rightButton.width / 2);
+			okButton.antialiasing = true;
+			okButton.hoverColor = 0xFF66CAFF;
 			add(okButton);
 
 			var leftButton = new FlxClickableSprite(FlxG.width - 15, FlxG.height - 15);
@@ -1238,6 +1248,8 @@ class OptionsMenu extends MusicBeatState
 			leftButton.x -= (leftButton.width / 2) + (rightButton.width / 2) + okButton.width;
 			leftButton.setHitbox();
 			leftButton.hitbox.x /= 2;
+			leftButton.antialiasing = true;
+			leftButton.hoverColor = 0xFF66CAFF;
 			add(leftButton);
 
 			desc.x = downButton.x + (downButton.width / 2) + 15;

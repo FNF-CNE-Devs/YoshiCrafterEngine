@@ -41,17 +41,22 @@ class FlxClickableSprite extends FlxSprite {
                 pressed = t.pressed;
                 justReleased = t.justReleased;
                 good = true;
+                if (hoverColor != null) color = hoverColor;
                 break;
             }
 		}
         #else
         if (_overlaps(FlxG.mouse.getScreenPosition(this.camera))) {
-            if (hoverColor != null) color = hoverColor;
             hovering = true;
             justPressed = FlxG.mouse.justPressed;
             pressed = FlxG.mouse.pressed;
             justReleased = FlxG.mouse.justReleased;
             good = true;
+            if (justPressed || pressed) {
+                if (hoverColor != null) color = hoverColor;
+            } else {
+                if (hoverColor != null) color = FlxColor.WHITE;
+            }
         }
         #end
         
