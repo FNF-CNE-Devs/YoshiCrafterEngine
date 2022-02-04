@@ -101,6 +101,13 @@ import flixel.FlxG;
 
 	// If true, will glow CPU strums like the player's strums when they press a note.
 	@:keep public static var glowCPUStrums:Bool = true;
+
+	// If false, will disable antialiasing on notes.
+	#if android
+	@:keep public static var noteAntialiasing:Bool = true;
+	#else
+	@:keep public static var noteAntialiasing:Bool = false;
+	#end
 	
 	/**
 	 * Sets the GUI scale. Defaults to 1
@@ -110,6 +117,7 @@ import flixel.FlxG;
 
 	
 	// USELESS IN SCRIPTS
+	@:keep public static var antialiasing:Bool = true;
 	@:keep public static var autoplayInFreeplay:Bool = false;
 	@:keep public static var freeplayCooldown:Float = 2;
 	@:keep public static var fpsCap:Int = 120;

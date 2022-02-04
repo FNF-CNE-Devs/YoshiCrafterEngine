@@ -82,10 +82,10 @@ class LogSubState extends MusicBeatSubstate {
         
         var maxDist = Math.max(0, text.height - (720 + PlayState.current.guiOffset.y));
         if (up) {
-            text.y += elapsed * (FlxG.keys.pressed.SHIFT ? 800 : 300);
+            text.y += elapsed * (FlxControls.pressed.SHIFT ? 800 : 300);
         }
         if (down) {
-            text.y -= elapsed * (FlxG.keys.pressed.SHIFT ? 800 : 300);
+            text.y -= elapsed * (FlxControls.pressed.SHIFT ? 800 : 300);
         }
         if (FlxG.mouse.wheel != 0) {
             text.y += FlxG.mouse.wheel * 100;

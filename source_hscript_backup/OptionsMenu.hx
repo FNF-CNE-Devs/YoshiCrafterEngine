@@ -1019,9 +1019,9 @@ class OptionsMenu extends MusicBeatState
 
 	function waitingInput():Void
 	{
-		if (FlxG.keys.getIsDown().length > 0)
+		if (FlxControls.getIsDown().length > 0)
 		{
-			PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxG.keys.getIsDown()[0].ID, null);
+			PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxControls.getIsDown()[0].ID, null);
 		}
 		// PlayerSettings.player1.controls.replaceBinding(Control)
 	}

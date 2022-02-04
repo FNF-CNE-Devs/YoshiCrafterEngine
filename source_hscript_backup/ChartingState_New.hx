@@ -782,10 +782,10 @@ class ChartingState_New extends MusicBeatState
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
 
 		var zoomShit = FlxG.mouse.wheel;
-		if (FlxG.keys.justPressed.PAGEUP) zoomShit++;
-		if (FlxG.keys.justPressed.PAGEDOWN) zoomShit--;
+		if (FlxControls.justPressed.PAGEUP) zoomShit++;
+		if (FlxControls.justPressed.PAGEDOWN) zoomShit--;
 
-		if (FlxG.keys.pressed.CONTROL && zoomShit != 0) {
+		if (FlxControls.pressed.CONTROL && zoomShit != 0) {
 			zoom += zoomShit;
 			if (zoom < 1) zoom = 1;
 			updateGrid(true);
@@ -816,7 +816,7 @@ class ChartingState_New extends MusicBeatState
 				{
 					if (FlxG.mouse.overlaps(note))
 					{
-						if (FlxG.keys.pressed.CONTROL)
+						if (FlxControls.pressed.CONTROL)
 						{
 							selectNote(note);
 						}
@@ -847,13 +847,13 @@ class ChartingState_New extends MusicBeatState
 			&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * zoom * _song.notes[curSection].lengthInSteps))
 		{
 			dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
-			if (FlxG.keys.pressed.SHIFT)
+			if (FlxControls.pressed.SHIFT)
 				dummyArrow.y = FlxG.mouse.y;
 			else
 				dummyArrow.y = Math.floor(FlxG.mouse.y / GRID_SIZE) * GRID_SIZE;
 		}
 
-		if (FlxG.keys.justPressed.ENTER)
+		if (FlxControls.justPressed.ENTER)
 		{
 			lastSection = curSection;
 
@@ -863,18 +863,18 @@ class ChartingState_New extends MusicBeatState
 			FlxG.switchState(new PlayState());
 		}
 
-		if (FlxG.keys.justPressed.E)
+		if (FlxControls.justPressed.E)
 		{
 			changeNoteSustain(Conductor.stepCrochet);
 		}
-		if (FlxG.keys.justPressed.Q)
+		if (FlxControls.justPressed.Q)
 		{
 			changeNoteSustain(-Conductor.stepCrochet);
 		}
 
-		if (FlxG.keys.justPressed.TAB)
+		if (FlxControls.justPressed.TAB)
 		{
-			if (FlxG.keys.pressed.SHIFT)
+			if (FlxControls.pressed.SHIFT)
 			{
 				UI_box.selected_tab -= 1;
 				if (UI_box.selected_tab < 0)
@@ -890,7 +890,7 @@ class ChartingState_New extends MusicBeatState
 
 		if (!typingShit.hasFocus)
 		{
-			if (FlxG.keys.justPressed.SPACE)
+			if (FlxControls.justPressed.SPACE)
 			{
 				if (FlxG.sound.music.playing)
 				{
@@ -904,9 +904,9 @@ class ChartingState_New extends MusicBeatState
 				}
 			}
 
-			if (FlxG.keys.justPressed.R)
+			if (FlxControls.justPressed.R)
 			{
-				if (FlxG.keys.pressed.SHIFT)
+				if (FlxControls.pressed.SHIFT)
 					resetSection(true);
 				else
 					resetSection();
@@ -921,21 +921,21 @@ class ChartingState_New extends MusicBeatState
 				vocals.time = FlxG.sound.music.time;
 			}
 
-			if (FlxG.keys.pressed.A || FlxG.keys.pressed.D) {
-				var speed = FlxG.keys.pressed.SHIFT ? 3 : 1;
-				strumLine.x = Math.min(Math.max(0, strumLine.x + (GRID_SIZE * _song.keyNumber * elapsed * (FlxG.keys.pressed.A ? -speed : speed))), GRID_SIZE * _song.keyNumber * 2 * (_song.noteTypes.length - 1));
+			if (FlxControls.pressed.A || FlxControls.pressed.D) {
+				var speed = FlxControls.pressed.SHIFT ? 3 : 1;
+				strumLine.x = Math.min(Math.max(0, strumLine.x + (GRID_SIZE * _song.keyNumber * elapsed * (FlxControls.pressed.A ? -speed : speed))), GRID_SIZE * _song.keyNumber * 2 * (_song.noteTypes.length - 1));
 			}
 
-			if (!FlxG.keys.pressed.SHIFT)
+			if (!FlxControls.pressed.SHIFT)
 			{
-				if (FlxG.keys.pressed.W || FlxG.keys.pressed.S)
+				if (FlxControls.pressed.W || FlxControls.pressed.S)
 				{
 					FlxG.sound.music.pause();
 					vocals.pause();
 
 					var daTime:Float = 700 * FlxG.elapsed;
 
-					if (FlxG.keys.pressed.W)
+					if (FlxControls.pressed.W)
 					{
 						FlxG.sound.music.time -= daTime;
 					}
@@ -947,14 +947,14 @@ class ChartingState_New extends MusicBeatState
 			}
 			else
 			{
-				if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.S)
+				if (FlxControls.justPressed.W || FlxControls.justPressed.S)
 				{
 					FlxG.sound.music.pause();
 					vocals.pause();
 
 					var daTime:Float = Conductor.stepCrochet * 2;
 
-					if (FlxG.keys.justPressed.W)
+					if (FlxControls.justPressed.W)
 					{
 						FlxG.sound.music.time -= daTime;
 					}
@@ -968,17 +968,17 @@ class ChartingState_New extends MusicBeatState
 
 		_song.bpm = tempBpm;
 
-		/* if (FlxG.keys.justPressed.UP)
+		/* if (FlxControls.justPressed.UP)
 				Conductor.changeBPM(Conductor.bpm + 1);
-			if (FlxG.keys.justPressed.DOWN)
+			if (FlxControls.justPressed.DOWN)
 				Conductor.changeBPM(Conductor.bpm - 1); */
 
 		var shiftThing:Int = 1;
-		if (FlxG.keys.pressed.SHIFT)
+		if (FlxControls.pressed.SHIFT)
 			shiftThing = 4;
-		if (FlxG.keys.justPressed.RIGHT)
+		if (FlxControls.justPressed.RIGHT)
 			changeSection(curSection + shiftThing);
-		if (FlxG.keys.justPressed.LEFT)
+		if (FlxControls.justPressed.LEFT)
 			changeSection(curSection - shiftThing);
 
 		bpmTxt.text = bpmTxt.text = Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
@@ -1303,7 +1303,7 @@ class ChartingState_New extends MusicBeatState
 
 		curSelectedNote = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];
 
-		if (FlxG.keys.pressed.CONTROL)
+		if (FlxControls.pressed.CONTROL)
 		{
 			_song.notes[curSection].sectionNotes.push([noteStrum, (noteData + _song.keyNumber) % (_song.keyNumber * 2), noteSus]);
 		}

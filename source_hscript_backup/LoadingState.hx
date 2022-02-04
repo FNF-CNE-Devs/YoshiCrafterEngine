@@ -122,7 +122,7 @@ class LoadingState extends MusicBeatState
 	{
 		super.update(elapsed);
 		#if debug
-		if (FlxG.keys.justPressed.SPACE)
+		if (FlxControls.justPressed.SPACE)
 			trace('fired: ' + callbacks.getFired() + " unfired:" + callbacks.getUnfired());
 		#end
 	}

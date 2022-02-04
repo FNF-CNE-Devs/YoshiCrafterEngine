@@ -142,13 +142,13 @@ class CharTab extends ToolboxTab {
             }
         }
         anims_text.text = t;
-        if (FlxG.keys.justPressed.UP) {
+        if (FlxControls.justPressed.UP) {
             selectedAnim--;
         }
-        if (FlxG.keys.justPressed.DOWN) {
+        if (FlxControls.justPressed.DOWN) {
             selectedAnim++;
         }
-        if (FlxG.keys.justPressed.ENTER) {
+        if (FlxControls.justPressed.ENTER) {
             character.flipX = !character.flipX;
         }
         if (selectedAnim > anims.length) selectedAnim = 0;
@@ -168,7 +168,7 @@ class CharTab extends ToolboxTab {
             }
         }
 
-        if (FlxG.keys.justPressed.SPACE && selectedAnim > 0) {
+        if (FlxControls.justPressed.SPACE && selectedAnim > 0) {
             character.playAnim(anims[selectedAnim - 1], true);
         }
     }

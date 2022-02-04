@@ -145,6 +145,9 @@ class Main extends Sprite
 		#if lua_test
 		initialState = LuaTest;
 		#end
+		#if android_input_test
+		initialState = AndroidInputTest;
+		#end
 
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 

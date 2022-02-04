@@ -1109,7 +1109,7 @@ class PlayState extends MusicBeatState
 		}
 		songEvents.update(elapsed);
 		songEvents.update(elapsed);
-		if (FlxG.keys.justPressed.NINE)
+		if (FlxControls.justPressed.NINE)
 		{
 			if (iconP1.animation.curAnim.name == 'bf-old')
 				iconP1.animation.play(SONG.player1);
@@ -1124,7 +1124,7 @@ class PlayState extends MusicBeatState
 		// scoreTxt.text = "Score:" + songScore + " | Misses:" + Std.string(misses) + " | Accuracy:" + (numberOfNotes == 0 ? "0%" : Std.string((Math.round(accuracy * 10000 / numberOfNotes) / 10000) * 100) + "%");
 		scoreTxt.text = ScoreText.generate(this);
 
-		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
+		if (FlxControls.justPressed.ENTER && startedCountdown && canPause)
 		{
 			persistentUpdate = false;
 			persistentDraw = true;
@@ -1144,7 +1144,7 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
-		if (FlxG.keys.justPressed.SEVEN)
+		if (FlxControls.justPressed.SEVEN)
 		{
 			FlxG.switchState(new ChartingState());
 
@@ -1183,11 +1183,11 @@ class PlayState extends MusicBeatState
 		else
 			iconP2.animation.curAnim.curFrame = 0;
 
-		/* if (FlxG.keys.justPressed.NINE)
+		/* if (FlxControls.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
 
 		#if debug
-		if (FlxG.keys.justPressed.EIGHT)
+		if (FlxControls.justPressed.EIGHT)
 			FlxG.switchState(new AnimationDebug(SONG.player2));
 		#end
 
@@ -1495,7 +1495,7 @@ class PlayState extends MusicBeatState
 			keyShit();
 
 		#if debug
-		if (FlxG.keys.justPressed.ONE)
+		if (FlxControls.justPressed.ONE)
 			endSong();
 		#end
 	}

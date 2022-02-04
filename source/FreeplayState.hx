@@ -1,5 +1,6 @@
 package;
 
+import flixel.input.keyboard.FlxKey;
 import openfl.media.Sound;
 import FreeplayGraph.GraphData;
 import Highscore.AdvancedSaveData;
@@ -261,6 +262,17 @@ class FreeplayState extends MusicBeatState
 			t.visible = false;
 		}
 
+		#if MOBILE_UI
+			var closeButton = new FlxClickableSprite(15, 15);
+			closeButton.frames = Paths.getSparrowAtlas("ui_buttons", "preload");
+			closeButton.animation.addByPrefix("x", "x button");
+			closeButton.animation.play("x");
+			closeButton.key = FlxKey.BACKSPACE;
+			closeButton.setHitbox();
+			closeButton.hitbox.x /= 2;
+			add(closeButton);
+		#end
+
 		super.create();
 	}
 
@@ -432,12 +444,12 @@ class FreeplayState extends MusicBeatState
 		}
 
 		if (FlxG.mouse.wheel != 0) changeSelection(-FlxG.mouse.wheel);
-		if (upP || (controls.UP && FlxG.keys.pressed.SHIFT && shiftCooldown > 0.05))
+		if (upP || (controls.UP && FlxControls.pressed.SHIFT && shiftCooldown > 0.05))
 		{
 			changeSelection(-1);
 			shiftCooldown = 0;
 		}
-		if (downP || (controls.DOWN && FlxG.keys.pressed.SHIFT && shiftCooldown > 0.05))
+		if (downP || (controls.DOWN && FlxControls.pressed.SHIFT && shiftCooldown > 0.05))
 		{
 			changeSelection(1);
 			shiftCooldown = 0;
@@ -464,11 +476,11 @@ class FreeplayState extends MusicBeatState
 			
 		}
 
-		if (FlxG.keys.pressed.ENTER || (accepted && Settings.engineSettings.data.autoplayInFreeplay) || cursorAccept)
+		if (FlxControls.pressed.ENTER || (accepted && Settings.engineSettings.data.autoplayInFreeplay) || cursorAccept)
 		{
 			select();
 		}
-		if (FlxG.keys.pressed.SPACE) {
+		if (FlxControls.pressed.SPACE) {
 			if (selectedSongInstPath == currentInstPath) {
 				select();
 			} else {
@@ -476,7 +488,7 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 
-		if (FlxG.keys.justReleased.CONTROL) {
+		if (FlxControls.justReleased.CONTROL) {
 			showAdvancedData();
 		}
 	}

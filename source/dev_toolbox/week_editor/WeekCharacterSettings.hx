@@ -124,8 +124,8 @@ class WeekCharacterSettings extends MusicBeatSubstate {
     }
 
     public override function update(elapsed) {
-        offsetX.stepSize = (FlxG.keys.pressed.SHIFT ? 30 : 10);
-        offsetY.stepSize = (FlxG.keys.pressed.SHIFT ? 30 : 10);
+        offsetX.stepSize = (FlxControls.pressed.SHIFT ? 30 : 10);
+        offsetY.stepSize = (FlxControls.pressed.SHIFT ? 30 : 10);
 
         super.update(elapsed);
         state.menuCharacter.scale.x = state.menuCharacter.scale.y = scale.value;

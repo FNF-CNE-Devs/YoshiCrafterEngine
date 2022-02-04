@@ -792,64 +792,65 @@ class OptionsMenu extends MusicBeatState
 		});
 		
 		performance.options.push(
-			{
-				text : "Freeplay Cooldown",
-				description : "If checked, will wait the specified number of seconds in the freeplay menu before automatically playing the song.",
-				updateOnSelected: function(elapsed:Float, o:FNFOption) {
-					if (controls.LEFT_P) {
-						Settings.engineSettings.data.freeplayCooldown = round(Settings.engineSettings.data.freeplayCooldown - 0.1, 2);
-						if (Settings.engineSettings.data.freeplayCooldown < 0) Settings.engineSettings.data.freeplayCooldown = 0;
-	
-						var str = Std.string(Settings.engineSettings.data.freeplayCooldown);
-						if (str.indexOf(".") == -1) str += ".0";
-	
-						o.setValue(str);
-					}
-					if (controls.RIGHT_P) {
-						Settings.engineSettings.data.freeplayCooldown = round(Settings.engineSettings.data.freeplayCooldown + 0.1, 2);
-						if (Settings.engineSettings.data.freeplayCooldown > 10) Settings.engineSettings.data.freeplayCooldown = 10;
-	
-						var str = Std.string(Settings.engineSettings.data.freeplayCooldown);
-						if (str.indexOf(".") == -1) str += ".0";
-	
-						o.setValue(str);
-					}
-					if (controls.ACCEPT) {
-						Settings.engineSettings.data.autoplayInFreeplay = !Settings.engineSettings.data.autoplayInFreeplay;
-						o.check(Settings.engineSettings.data.autoplayInFreeplay);
-					}
-				},
-				checkbox: true,
-				checkboxChecked: function() {return Settings.engineSettings.data.autoplayInFreeplay;},
-				value: function() {return Std.string(Settings.engineSettings.data.freeplayCooldown).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.freeplayCooldown) + ".0" : Std.string(Settings.engineSettings.data.freeplayCooldown);}
-			});
+		{
+			text : "Antialiasing",
+			description : "If unchecked, will disable anti-aliasing for every sprite, netherless of if the script enables it or not.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.antialiasing = !Settings.engineSettings.data.antialiasing;
+					o.check(Settings.engineSettings.data.antialiasing);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.antialiasing;},
+			value: function() {return "";}
+		});
 		
 		performance.options.push(
-			{
-				text : "Maximum Framerate",
-				description : "Sets the maximum framerate the game can have. If the value is higher than what's your " + #if desktop "computer" #elseif android "phone/tablet" #else "device" #end + " is capable of, slowdowns during animations may happen.",
-				updateOnSelected: function(elapsed:Float, o:FNFOption) {
-					if (controls.LEFT_P || (controls.LEFT && FlxG.keys.pressed.SHIFT)) {
-						Settings.engineSettings.data.fpsCap -= 5;
-						if (Settings.engineSettings.data.fpsCap < 20) Settings.engineSettings.data.fpsCap = 20;
-	
-						o.setValue(Settings.engineSettings.data.fpsCap);
-						FlxG.drawFramerate = Settings.engineSettings.data.fpsCap;
-						FlxG.updateFramerate = Settings.engineSettings.data.fpsCap;
-					}
-					if (controls.RIGHT_P || (controls.RIGHT && FlxG.keys.pressed.SHIFT)) {
-						Settings.engineSettings.data.fpsCap += 5;
-						if (Settings.engineSettings.data.fpsCap > 400) Settings.engineSettings.data.fpsCap = 400;
-	
-						o.setValue(Settings.engineSettings.data.fpsCap);
-						FlxG.drawFramerate = Settings.engineSettings.data.fpsCap;
-						FlxG.updateFramerate = Settings.engineSettings.data.fpsCap;
-					}
-				},
-				checkbox: false,
-				checkboxChecked: function() {return false;},
-				value: function() {return Settings.engineSettings.data.fpsCap;}
-			});
+		{
+			text : "Note antialiasing",
+			#if android
+			description : "If unchecked, will disable anti-aliasing for notes, to allow better performance on mobile devices. Does not affect strums. Disabled by default.",
+			#else
+			description : "If unchecked, will disable anti-aliasing for notes, to allow better performance on lower end PCs. Does not affect strums. Enabled by default.",
+			#end
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.noteAntialiasing = !Settings.engineSettings.data.noteAntialiasing;
+					o.check(Settings.engineSettings.data.noteAntialiasing);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.noteAntialiasing;},
+			value: function() {return "";}
+		});
+		
+		performance.options.push(
+		{
+			text : "Maximum Framerate",
+			description : "Sets the maximum framerate the game can have. If the value is higher than what's your " + #if desktop "computer" #elseif android "phone/tablet" #else "device" #end + " is capable of, slowdowns during animations may happen.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.LEFT_P || (controls.LEFT && FlxControls.pressed.SHIFT)) {
+					Settings.engineSettings.data.fpsCap -= 5;
+					if (Settings.engineSettings.data.fpsCap < 20) Settings.engineSettings.data.fpsCap = 20;
+
+					o.setValue(Settings.engineSettings.data.fpsCap);
+					FlxG.drawFramerate = Settings.engineSettings.data.fpsCap;
+					FlxG.updateFramerate = Settings.engineSettings.data.fpsCap;
+				}
+				if (controls.RIGHT_P || (controls.RIGHT && FlxControls.pressed.SHIFT)) {
+					Settings.engineSettings.data.fpsCap += 5;
+					if (Settings.engineSettings.data.fpsCap > 400) Settings.engineSettings.data.fpsCap = 400;
+
+					o.setValue(Settings.engineSettings.data.fpsCap);
+					FlxG.drawFramerate = Settings.engineSettings.data.fpsCap;
+					FlxG.updateFramerate = Settings.engineSettings.data.fpsCap;
+				}
+			},
+			checkbox: false,
+			checkboxChecked: function() {return false;},
+			value: function() {return Settings.engineSettings.data.fpsCap;}
+		});
 		performance.options.push({
 			text : "Enable antialiasing on videos",
 			description : "If checked, will enable antialiasing on MP4 videos (cutscenes, ect...)",
@@ -1103,7 +1104,8 @@ class OptionsMenu extends MusicBeatState
 		}});
 	}
 
-	
+	// var textWidth:Float = FlxG.width;
+	// var textX:Float = 0;
 	override function create()
 	{
 		addControlsCategory();
@@ -1175,6 +1177,75 @@ class OptionsMenu extends MusicBeatState
 		setOptions();
 		super.create();
 
+		#if MOBILE_UI
+			// enables mobile ui
+
+			var closeButton = new FlxClickableSprite(15, 15);
+			closeButton.frames = Paths.getSparrowAtlas("ui_buttons", "preload");
+			closeButton.animation.addByPrefix("x", "x button");
+			closeButton.animation.play("x");
+			closeButton.key = FlxKey.BACKSPACE;
+			closeButton.setHitbox();
+			closeButton.hitbox.x /= 2;
+			add(closeButton);
+
+			var downButton = new FlxClickableSprite(15, FlxG.height - 15);
+			downButton.frames = Paths.getSparrowAtlas("ui_buttons", "preload");
+			downButton.animation.addByPrefix("down", "down button");
+			downButton.animation.play("down");
+			downButton.key = FlxKey.DOWN;
+			downButton.y -= downButton.height;
+			downButton.setHitbox();
+			downButton.hitbox.x /= 2;
+			add(downButton);
+
+			var upButton = new FlxClickableSprite(15, FlxG.height - 15);
+			upButton.frames = Paths.getSparrowAtlas("ui_buttons", "preload");
+			upButton.animation.addByPrefix("up", "up button");
+			upButton.animation.play("up");
+			upButton.key = FlxKey.UP;
+			upButton.y -= downButton.height + upButton.height;
+			upButton.setHitbox();
+			upButton.hitbox.x /= 2;
+			add(upButton);
+
+			var rightButton = new FlxClickableSprite(FlxG.width - 15, FlxG.height - 15);
+			rightButton.frames = Paths.getSparrowAtlas("ui_buttons", "preload");
+			rightButton.animation.addByPrefix("right", "right button");
+			rightButton.animation.play("right");
+			rightButton.key = FlxKey.RIGHT;
+			rightButton.y -= rightButton.height;
+			rightButton.x -= (rightButton.width / 2);
+			rightButton.setHitbox();
+			rightButton.hitbox.x /= 2;
+			add(rightButton);
+
+			var okButton = new FlxClickableSprite(FlxG.width - 15, FlxG.height - 15);
+			okButton.frames = Paths.getSparrowAtlas("ui_buttons", "preload");
+			okButton.animation.addByPrefix("select", "select button");
+			okButton.animation.play("select");
+			okButton.key = FlxKey.ENTER;
+			okButton.y -= okButton.height;
+			okButton.x -= okButton.width + (rightButton.width / 2);
+			add(okButton);
+
+			var leftButton = new FlxClickableSprite(FlxG.width - 15, FlxG.height - 15);
+			leftButton.frames = Paths.getSparrowAtlas("ui_buttons", "preload");
+			leftButton.animation.addByPrefix("left", "left button");
+			leftButton.animation.play("left");
+			leftButton.key = FlxKey.LEFT;
+			leftButton.y -= leftButton.height;
+			leftButton.x -= (leftButton.width / 2) + (rightButton.width / 2) + okButton.width;
+			leftButton.setHitbox();
+			leftButton.hitbox.x /= 2;
+			add(leftButton);
+
+			desc.x = downButton.x + (downButton.width / 2) + 15;
+			desc.fieldWidth = FlxG.width - (FlxG.width - leftButton.x) - (downButton.width / 2) - 30;
+		#end
+
+
+
 		// openSubState(new OptionsSubState());
 	}
 	var isInCategory = false;
@@ -1214,9 +1285,9 @@ class OptionsMenu extends MusicBeatState
 
 	function waitingInput():Void
 	{
-		// if (FlxG.keys.getIsDown().length > 0)
+		// if (FlxControls.getIsDown().length > 0)
 		// {
-		// 	PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxG.keys.getIsDown()[0].ID, null);
+		// 	PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxControls.getIsDown()[0].ID, null);
 		// }
 		// PlayerSettings.player1.controls.replaceBinding(Control)
 	}

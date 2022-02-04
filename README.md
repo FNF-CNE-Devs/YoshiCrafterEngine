@@ -1,4 +1,5 @@
 # Friday Night Funkin' - Yoshi Engine
+![Yoshi Engine's logo](art/banner_new.png)
 
 This is the repository of Yoshi Engine, a modification of Friday Night Funkin' which allows full modding without source code access.
 

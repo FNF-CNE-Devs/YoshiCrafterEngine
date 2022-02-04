@@ -4,8 +4,13 @@
 	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="back button0000" x="10" y="10" width="212" height="115" pivotX="9.5" pivotY="4.8"/>
 	<SubTexture name="cancel button0000" x="232" y="10" width="212" height="115" pivotX="9.45" pivotY="4.75"/>
-	<SubTexture name="exit button0000" x="10" y="135" width="212" height="115" pivotX="9.45" pivotY="4.75"/>
-	<SubTexture name="select button0000" x="232" y="135" width="212" height="115" pivotX="9.45" pivotY="4.75"/>
-	<SubTexture name="skip button0000" x="10" y="260" width="212" height="115" pivotX="9.5" pivotY="4.85"/>
-	<SubTexture name="x button0000" x="232" y="260" width="108" height="116" pivotX="4.95" pivotY="5.2"/>
+	<SubTexture name="down button0000" x="454" y="10" width="108" height="116" pivotX="4.95" pivotY="5.2"/>
+	<SubTexture name="exit button0000" x="572" y="10" width="212" height="115" pivotX="9.45" pivotY="4.75"/>
+	<SubTexture name="left button0000" x="794" y="10" width="108" height="116" pivotX="4.95" pivotY="5.2"/>
+	<SubTexture name="pause button0000" x="10" y="136" width="108" height="116" pivotX="4.95" pivotY="5.2"/>
+	<SubTexture name="right button0000" x="128" y="136" width="108" height="116" pivotX="4.95" pivotY="5.2"/>
+	<SubTexture name="select button0000" x="246" y="136" width="212" height="115" pivotX="9.45" pivotY="4.75"/>
+	<SubTexture name="skip button0000" x="468" y="136" width="212" height="115" pivotX="9.5" pivotY="4.85"/>
+	<SubTexture name="up button0000" x="690" y="136" width="108" height="116" pivotX="4.95" pivotY="5.2"/>
+	<SubTexture name="x button0000" x="808" y="136" width="108" height="116" pivotX="4.95" pivotY="5.2"/>
 </TextureAtlas>

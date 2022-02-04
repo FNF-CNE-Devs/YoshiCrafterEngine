@@ -176,7 +176,7 @@ class Paths
 	
 	inline static public function getSkinsPath() {
 		#if android
-			return '${System.documentsDirectory}}/Yoshi Engine/skins/';
+			return '${System.userDirectory}/Yoshi Engine/skins/';
 		#else
 			return "./skins/";
 		#end

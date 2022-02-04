@@ -670,23 +670,23 @@ class CharacterEditor extends MusicBeatState {
     }
 
     public override function update(elapsed:Float) {
-        offsetX.stepSize = (FlxG.keys.pressed.SHIFT ? 1 : 10);
-        offsetY.stepSize = (FlxG.keys.pressed.SHIFT ? 1 : 10);
-        globalOffsetX.stepSize = (FlxG.keys.pressed.SHIFT ? 1 : 10);
-        globalOffsetY.stepSize = (FlxG.keys.pressed.SHIFT ? 1 : 10);
-        camOffsetX.stepSize = (FlxG.keys.pressed.SHIFT ? 1 : 10);
-        camOffsetY.stepSize = (FlxG.keys.pressed.SHIFT ? 1 : 10);
+        offsetX.stepSize = (FlxControls.pressed.SHIFT ? 1 : 10);
+        offsetY.stepSize = (FlxControls.pressed.SHIFT ? 1 : 10);
+        globalOffsetX.stepSize = (FlxControls.pressed.SHIFT ? 1 : 10);
+        globalOffsetY.stepSize = (FlxControls.pressed.SHIFT ? 1 : 10);
+        camOffsetX.stepSize = (FlxControls.pressed.SHIFT ? 1 : 10);
+        camOffsetY.stepSize = (FlxControls.pressed.SHIFT ? 1 : 10);
 
         super.update(elapsed);
 
         isPlayer = editAsPlayer.checked;
         var move:FlxPoint = new FlxPoint(0, 0);
-        if (FlxG.keys.pressed.RIGHT) move.x += 1;
-        if (FlxG.keys.pressed.UP) move.y -= 1;
-        if (FlxG.keys.pressed.LEFT) move.x -= 1;
-        if (FlxG.keys.pressed.DOWN) move.y += 1;
-        FlxG.camera.scroll.x += move.x * 400 * elapsed * (FlxG.keys.pressed.SHIFT ? 2.5 : 1);
-        FlxG.camera.scroll.y += move.y * 400 * elapsed * (FlxG.keys.pressed.SHIFT ? 2.5 : 1);
+        if (FlxControls.pressed.RIGHT) move.x += 1;
+        if (FlxControls.pressed.UP) move.y -= 1;
+        if (FlxControls.pressed.LEFT) move.x -= 1;
+        if (FlxControls.pressed.DOWN) move.y += 1;
+        FlxG.camera.scroll.x += move.x * 400 * elapsed * (FlxControls.pressed.SHIFT ? 2.5 : 1);
+        FlxG.camera.scroll.y += move.y * 400 * elapsed * (FlxControls.pressed.SHIFT ? 2.5 : 1);
         character.x = (isPlayer ? 770 : 100) + globalOffsetX.value;
         character.y = 100 + globalOffsetY.value;
         shadowCharacter.setPosition(character.x, character.y);
