@@ -20,6 +20,7 @@ class StagesTab extends ToolboxTab {
         updateRadioList();
         var selectStageButton = new FlxUIButton(0, FlxG.height - y - 10, "Edit", function() {
             if (selectedStage != null) {
+                StageEditor.fromFreeplay = false;
                 FlxG.switchState(new StageEditor(selectedStage));
             }
         });

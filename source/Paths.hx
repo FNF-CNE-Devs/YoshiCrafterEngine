@@ -230,8 +230,8 @@ class Paths
 		}
 		cacheBitmap.clear();
 		cacheBytes.clear();
-		for (c in cacheSparrow) 
-			FlxDestroyUtil.destroy(c);
+		// for (c in cacheSparrow) 
+		// 	FlxDestroyUtil.destroy(c);
 		cacheSparrow.clear();
 	}
 
@@ -305,7 +305,6 @@ class Paths
 		return Paths.cacheBytes[cachePath];
 	}
 	public static function getExternSparrow(key:String) {
-		
 		#if trace_everything trace("Getting bitmap"); #end
 		var png = Paths.getBitmapOutsideAssets(key + ".png");
 
@@ -315,14 +314,14 @@ class Paths
 		cacheSparrow[key] = nFrames;
 		return nFrames;
 	}
-	inline static public function getSparrowAtlas_Custom(key:String)
+	inline static public function getSparrowAtlas_Custom(key:String, forceReload:Bool = false)
 	{
 		// Assets.registerLibrary("custom", AssetLibrary.(key + ".png"));
 		// Assets.registerLibrary("custom", AssetLibrary.fromFile(key + ".xml"));
 		#if sys
 		key = key.trim().replace("/", "/").replace("\\", "/");
 		if (cacheSparrow[key] != null) {
-			if (cacheSparrow[key].frames != null) {
+			if (cacheSparrow[key].frames != null && !forceReload) {
 				return cacheSparrow[key];
 			} else {
 				return getExternSparrow(key);
@@ -335,21 +334,21 @@ class Paths
 		return null;
 		#end
 	}
-	inline static public function getSparrowAtlas_Stage(key:String)
-	{
-		key = key.trim().replace("/", "/").replace("\\", "/");
-		#if sys
-		return FlxAtlasFrames.fromSparrow(Paths.getLibraryPath(ModSupport.song_stage_path), Paths.getTextOutsideAssets(ModSupport.song_stage_path + '/$key.xml'));
-		// return FlxAtlasFrames.fromSparrow(Paths.getBitmapOutsideAssets(ModSupport.song_stage_path + '/$key.png'), Paths.getTextOutsideAssets(ModSupport.song_stage_path + '/$key.xml'));
-		#else
-		return null;
-		#end
-	}
+	// inline static public function getSparrowAtlas_Stage(key:String)
+	// {
+	// 	key = key.trim().replace("/", "/").replace("\\", "/");
+	// 	#if sys
+	// 	return FlxAtlasFrames.fromSparrow(Paths.getLibraryPath(ModSupport.song_stage_path), Paths.getTextOutsideAssets(ModSupport.song_stage_path + '/$key.xml'));
+	// 	// return FlxAtlasFrames.fromSparrow(Paths.getBitmapOutsideAssets(ModSupport.song_stage_path + '/$key.png'), Paths.getTextOutsideAssets(ModSupport.song_stage_path + '/$key.xml'));
+	// 	#else
+	// 	return null;
+	// 	#end
+	// }
 
-	inline static public function getCharacter(key:String)
-	{
-		return FlxAtlasFrames.fromSparrow(getPath('$key.png', IMAGE, "characters"), file('$key.xml', "characters"));
-	}
+	// inline static public function getCharacter(key:String)
+	// {
+	// 	return FlxAtlasFrames.fromSparrow(getPath('$key.png', IMAGE, "characters"), file('$key.xml', "characters"));
+	// }
 
 	inline static public function video(key:String, ?library:String)
 	{
@@ -408,10 +407,10 @@ class Paths
 		return getPath('icons/$key.png', IMAGE, "characters");
 	}
 
-	inline static public function getCharacterPacker(key:String)
-	{
-		return FlxAtlasFrames.fromSpriteSheetPacker(getPath('$key.png', IMAGE, "characters"), file('$key.txt', "characters"));
-	}
+	// inline static public function getCharacterPacker(key:String)
+	// {
+	// 	return FlxAtlasFrames.fromSpriteSheetPacker(getPath('$key.png', IMAGE, "characters"), file('$key.txt', "characters"));
+	// }
 
 	inline static public function getModCharacterPacker(characterId:String)
 	{
@@ -419,8 +418,8 @@ class Paths
 		return FlxAtlasFrames.fromSpriteSheetPacker(Paths.getBitmapOutsideAssets('$folder/spritesheet.png'), Paths.getTextOutsideAssets('$folder/spritesheet.txt'));
 	}
 
-	inline static public function getPackerAtlas(key:String, ?library:String)
-	{
-		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
-	}
+	// inline static public function getPackerAtlas(key:String, ?library:String)
+	// {
+	// 	return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
+	// }
 }

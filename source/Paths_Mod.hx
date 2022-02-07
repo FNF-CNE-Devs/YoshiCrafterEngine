@@ -78,11 +78,11 @@ class Paths_Mod {
     }
     public function sound(file:String):Sound {
 
-        return Paths.getSoundExtern('${Paths.modsPath}/$mod/sounds/$file.mp3');
+        return Paths.getSoundExtern('${Paths.modsPath}/$mod/sounds/$file.ogg');
     }
 
     public function music(file:String):Sound {
-        return Paths.getSoundExtern('${Paths.modsPath}/$mod/music/$file.mp3');
+        return Paths.getSoundExtern('${Paths.modsPath}/$mod/music/$file.ogg');
     }
 
     public function image(key:String):BitmapData {

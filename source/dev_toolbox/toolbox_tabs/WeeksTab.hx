@@ -103,6 +103,7 @@ class WeeksTab extends ToolboxTab {
         var createWeekButton = new FlxUIButton(10, 670, "Create", function() {
             state.openSubState(new CreateWeekWizard(function() {
                 radioList.updateRadios([for (i in 0...weekJson.weeks.length) Std.string(i)], [for(w in weekJson.weeks) w.name.trim() == "" ? "(Untitled)" : w.name]);
+                saveFile();
             }, this));
         });
         var deleteWeekButton = new FlxUIButton(createWeekButton.x + createWeekButton.width + 10, 670, "Delete", function() {
@@ -259,10 +260,16 @@ class WeeksTab extends ToolboxTab {
             };
 
 		menuCharacter = new FlxSprite(uiX + (FlxG.width * 0.25) - 150, 72 + uiY);
-        menuCharacter.frames = Paths.getSparrowAtlas_Custom('${Paths.modsPath}/${ToolboxHome.selectedMod}/${d.file}');
+        var sprAtlas = Paths.getSparrowAtlas_Custom('${Paths.modsPath}/${ToolboxHome.selectedMod}/${d.file}', true);
+        #if trace_everything trace(sprAtlas); #end
+        menuCharacter.frames = sprAtlas;
         menuCharacter.antialiasing = true;
         menuCharacter.animation.addByPrefix("char", d.animation, 24);
         menuCharacter.animation.play("char");
+        if (menuCharacter.animation.curAnim == null) {
+            menuCharacter.animation.add("undef", [0]);
+            menuCharacter.animation.play("undef");
+        }
         menuCharacter.flipX = (w.dad.flipX == true); // To prevent null exception thingy
         if (w.dad.scale == 0) w.dad.scale = 1;
         menuCharacter.scale.set(w.dad.scale, w.dad.scale);
@@ -285,6 +292,10 @@ class WeeksTab extends ToolboxTab {
         
         // insert(20001, txtTracklist);
 
+        saveFile();
+    }
+
+    function saveFile() {
         File.saveContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/weeks.json', Json.stringify(weekJson, "\t"));
     }
 }

@@ -502,7 +502,11 @@ class TitleState extends MusicBeatState
 			skipIntro();
 		}
 
-		super.update(elapsed);
+		try {
+			super.update(elapsed);
+		} catch(e) {
+			
+		}
 	}
 
 	function onUpdateData(data:String) {

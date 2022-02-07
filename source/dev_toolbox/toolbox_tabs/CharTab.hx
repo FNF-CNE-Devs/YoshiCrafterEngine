@@ -63,7 +63,8 @@ class CharTab extends ToolboxTab {
             @:privateAccess
             var it = character.animation._animations.keys();
             while (it.hasNext()) {
-                anims.push(it.next());
+                var v = it.next();
+                if (v.trim() != "") anims.push(v);
             }
             anims.sort(function(a, b) {return (a.toUpperCase() < b.toUpperCase()) ? -1 : ((a.toUpperCase() > b.toUpperCase()) ? 1 : 0);});
         });

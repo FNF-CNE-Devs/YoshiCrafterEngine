@@ -211,6 +211,8 @@ class PlayState extends MusicBeatState
 	public var camZooming:Bool = true;
 	public var autoCamZooming:Bool = true;
 	public var curSong:String = "";
+
+	public var devStage:String = null;
 	
 	public var gfSpeed:Int = 1;
 	public var health:Float = 1;
@@ -231,7 +233,7 @@ class PlayState extends MusicBeatState
 				to do it in one go. My current personal best is
 				1 shit rating and therefore 1 blueball.
 			*/
-			maxHealth = 0.0001; // VERY SMALL.
+			maxHealth = 0; // VERY SMALL.
 			health = 0; // Take any damage and you DIE
 			if (healthBar != null) {
 				healthBar.visible = false;
@@ -1384,13 +1386,13 @@ class PlayState extends MusicBeatState
 			script.setVariable("enableRating", true);
 
 			script.setVariable("update", function(elapsed) {
-				var note = script.getVariable("note");
+				var note:Note = script.getVariable("note");
 				if (note.isSustainNote) {
 					note.canBeHit = (note.strumTime - (Conductor.stepCrochet * 0.6) < Conductor.songPosition) && (note.strumTime + (Conductor.stepCrochet) > Conductor.songPosition);
 				} else {
-					note.canBeHit = (note.strumTime > Conductor.songPosition - Conductor.safeZoneOffset && note.strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5));
+					note.canBeHit = (note.strumTime - note.maxEarlyDiff < Conductor.songPosition && note.strumTime + note.maxLateDiff > Conductor.songPosition);
 				}
-				if (note.strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !note.wasGoodHit)
+				if (note.strumTime + note.missDiff < Conductor.songPosition && !note.wasGoodHit)
 					note.tooLate = true;
 			});
 			script.setVariable("create", function() {

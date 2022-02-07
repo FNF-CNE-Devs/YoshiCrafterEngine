@@ -42,6 +42,10 @@ class Note extends FlxSprite
 
 	public var noteScore:Float = 1;
 
+	public var maxEarlyDiff:Float = 125; //ms
+	public var maxLateDiff:Float = 90; //ms
+	public var missDiff:Float = 100; //ms
+
 	public var noteType:Int = 0;
 
 	public var colored:Bool = false;

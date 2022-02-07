@@ -67,14 +67,15 @@ class Stage {
 		} catch(e) {
 			PlayState.trace('Failed to parse JSON data at $path in $mod : $e');
 		}
+		PlayState.current.devStage = splitPath.join(":");
 		var PlayState = PlayState.current;
 		if (json.defaultCamZoom != null) PlayState.defaultCamZoom = json.defaultCamZoom;
 		if (json.bfOffset != null) {
 			if (json.bfOffset.length > 0) {
-				PlayState.boyfriend.x = json.bfOffset[0];
+				PlayState.boyfriend.x += json.bfOffset[0];
 			}
 			if (json.bfOffset.length > 1) {
-				PlayState.boyfriend.y = json.bfOffset[1];
+				PlayState.boyfriend.y += json.bfOffset[1];
 			}
 		}
 		if (json.dadOffset != null) {
@@ -103,7 +104,7 @@ class Stage {
 						if (s.name != null) sprites[s.name] = sAtlas;
 
 
-						if (s.animation != null && s.animation.type == "onbeat") {
+						if (s.animation != null && s.animation.type.toLowerCase() == "onbeat") {
 							onBeatAnimSprites.push({
 								anim: s.animation.name,
 								sprite: sAtlas
