@@ -396,7 +396,7 @@ class ChartingState_New extends MusicBeatState
 		var stepperSpeedLabel = new FlxUIText(10, stepperSpeed.y + (stepperSpeed.height / 2), 0, "Scroll Speed");
 		stepperSpeedLabel.y -= stepperSpeed.height / 2;
 
-		var stepperBPM:FlxUINumericStepper = new FlxUINumericStepper(290, stepperSpeed.y + stepperSpeed.height, 1, 1, 1, 339, 0);
+		var stepperBPM:FlxUINumericStepper = new FlxUINumericStepper(290, stepperSpeed.y + stepperSpeed.height, 1, 1, 1, 999, 0);
 		stepperBPM.x -= stepperBPM.width;
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
@@ -1095,6 +1095,7 @@ class ChartingState_New extends MusicBeatState
 			lastSection = curSection;
 
 			PlayState._SONG = _song;
+			PlayState._SONG.validScore = false;
 			PlayState.fromCharter = true;
 			FlxG.sound.music.stop();
 			vocals.stop();
@@ -1531,6 +1532,7 @@ class ChartingState_New extends MusicBeatState
 
 	private function saveLevel(references:Bool = true, ?space:String)
 	{
+		_song.validScore = true;
 		var json = {
 			"song": _song
 		};

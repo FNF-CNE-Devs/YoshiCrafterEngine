@@ -1,3 +1,4 @@
+import flixel.math.FlxPoint;
 import openfl.net.FileReference;
 import flixel.addons.ui.FlxUIButton;
 import flixel.FlxG;
@@ -10,10 +11,15 @@ class LogSubState extends MusicBeatSubstate {
     var text:FlxText;
     var released:Bool;
     var scrollSprite:FlxSprite;
-
+    var size:FlxPoint;
     public override function create() {
         var list = PlayState.log.copy();
-        var maxLength = Std.int(16777215 / (1280 + PlayState.current.guiOffset.x) / 30);
+        size = new FlxPoint(FlxG.width, FlxG.height);
+        if (PlayState.current != null) {
+            size.set(PlayState.current.guiSize.x, PlayState.current.guiSize.y);
+        }
+        var maxLength = Std.int(16777215 / (size.x) / 30);
+
         trace(maxLength);
         if (list.length > maxLength) {
             list = ["... /!/ Due to OpenFL's bitmap limitations (16777215 pixels per bitmap), use the Save button to export and read the file yourself."];
@@ -22,14 +28,15 @@ class LogSubState extends MusicBeatSubstate {
             }
         }
         var t = list.join("\r\n");
-        text = new FlxText(-PlayState.current.guiOffset.x / 2, -PlayState.current.guiOffset.y / 2, 1280 + PlayState.current.guiOffset.x, t, 12);
+        text = new FlxText(0, 0, Std.int(size.x), t, 12);
         text.setFormat(Paths.font("vcr.ttf"), Std.int(16), FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 
 
-        var bg = new FlxSprite(-PlayState.current.guiOffset.x / 2, -PlayState.current.guiOffset.y / 2).makeGraphic(Math.ceil(1280 + PlayState.current.guiOffset.x), Math.ceil(720 + PlayState.current.guiOffset.y), FlxColor.fromRGBFloat(0, 0, 0, 0.65));
+        var bg = new FlxSprite(0, 0).makeGraphic(Std.int(size.x), Std.int(size.y), FlxColor.fromRGBFloat(0, 0, 0, 0.65));
+        // var bg = new FlxSprite(-PlayState.current.guiOffset.x / 2, -PlayState.current.guiOffset.y / 2).makeGraphic(Math.ceil(1280 + PlayState.current.guiOffset.x), Math.ceil(720 + PlayState.current.guiOffset.y), FlxColor.fromRGBFloat(0, 0, 0, 0.65));
         
 
-        scrollSprite = new FlxSprite(1280 + (PlayState.current.guiOffset.y / 2) - 10, 0).makeGraphic(10, Std.int(((720 + PlayState.current.guiOffset.y) / text.height) * (720 + PlayState.current.guiOffset.y)), 0x88FFFFFF);
+        scrollSprite = new FlxSprite(Std.int(size.x) - 10, 0).makeGraphic(10, Std.int((Std.int(size.y) / text.height) * Std.int(size.y)), 0x88FFFFFF);
         
         var clearButton:FlxUIButton = new FlxUIButton(scrollSprite.x - 10, 10, "Clear", function() {
             text.text = "";
@@ -62,7 +69,7 @@ class LogSubState extends MusicBeatSubstate {
         add(clearButton);
         add(saveButton);
 
-        text.y = -Math.max(0, text.height - (720 + PlayState.current.guiOffset.y));
+        text.y = -Math.max(0, text.height - Std.int(size.y));
         released = controls.ACCEPT || controls.BACK;
 
         bg.scrollFactor.set();
@@ -80,7 +87,7 @@ class LogSubState extends MusicBeatSubstate {
 		var back = (controls.ACCEPT || controls.BACK) && !released;
         if (released) released = controls.ACCEPT || controls.BACK;
         
-        var maxDist = Math.max(0, text.height - (720 + PlayState.current.guiOffset.y));
+        var maxDist = Math.max(0, text.height - size.y);
         if (up) {
             text.y += elapsed * (FlxControls.pressed.SHIFT ? 800 : 300);
         }
@@ -98,7 +105,7 @@ class LogSubState extends MusicBeatSubstate {
             close();
         }
         // scrollSprite.y = (-PlayState.current.guiOffset.y / 2) + (((text.y - text.height) / text.height) * (720 + PlayState.current.guiOffset.y));
-        scrollSprite.y = (-PlayState.current.guiOffset.y / 2) + (-text.y / text.height * (PlayState.current.guiOffset.y + 720));
+        scrollSprite.y = (-text.y / text.height * size.y);
         // trace(scrollSprite.y);
     }
 }

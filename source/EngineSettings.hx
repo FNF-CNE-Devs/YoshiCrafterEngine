@@ -129,7 +129,9 @@ import flixel.FlxG;
 	@:keep public static var developerMode:Bool = false;
 	@:keep public static var hideOriginalGame:Bool = false;
 	@:keep public static var showAccuracyMode:Bool = false;
-	@:keep public static var lastSelectedSong:String = "";
+	@:keep public static var lastSelectedSong:String = "Friday Night Funkin':tutorial";
+	@:keep public static var lastSelectedSongDifficulty:Int = 1; // Normal
+	@:keep public static var charEditor_showDadAndBF:Bool = true;
 
 	// ========================================================
 	// PER KEY SET CONTROLS

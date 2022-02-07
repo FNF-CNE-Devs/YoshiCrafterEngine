@@ -48,7 +48,7 @@ class Highscore
 			Reflect.setField(FlxG.save.data, daSong, data);
 	}
 
-	public static function saveScore(mod:String, song:String, score:Int = 0, ?diff:String = "Normal"):Void
+	public static function saveScore(mod:String, song:String, score:Int = 0, ?diff:String = "Normal"):Bool
 	{
 		var daSong:String = formatSong('$mod:$song', diff);
 
@@ -63,11 +63,17 @@ class Highscore
 
 		if (songScores.exists(daSong))
 		{
-			if (songScores.get(daSong) < score)
+			if (songScores.get(daSong) < score) {
 				setScore(daSong, score);
+				return true;
+			}
 		}
 		else
+		{
 			setScore(daSong, score);
+			return true;
+		}
+		return false;
 	}
 
 	public static function saveWeekScore(week:Int = 1, score:Int = 0, ?diff:String = "Normal"):Void

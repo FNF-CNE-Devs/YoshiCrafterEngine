@@ -1,5 +1,6 @@
 package;
 
+import flixel.input.keyboard.FlxKey;
 import flixel.addons.ui.FlxUIButton;
 import lime.utils.Assets;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileCircle;
@@ -49,6 +50,7 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
+        persistentUpdate = false;
 		if (Settings.engineSettings.data.developerMode) {
 			optionShit.insert(4, 'toolbox');
 		}
@@ -171,6 +173,17 @@ class MainMenuState extends MusicBeatState
 	// }
 	override function update(elapsed:Float)
 	{
+		super.update(elapsed);
+		if (subState != null) return;
+
+		if (FlxControls.justPressed.SEVEN) {
+			if (Settings.engineSettings.data.developerMode) {
+				// psych engine shortcut lol
+				FlxG.switchState(new dev_toolbox.ToolboxMain());
+			} else {
+				openSubState(new ThisAintPsych());
+			}
+		}
 		if ((FlxG.mouse.getScreenPosition().x != oldPos.x || FlxG.mouse.getScreenPosition().y != oldPos.y) && !selectedSomethin){
 			oldPos = FlxG.mouse.getScreenPosition();
 			for (i in 0...menuItems.length) {
@@ -220,7 +233,6 @@ class MainMenuState extends MusicBeatState
 			}
 		}
 
-		super.update(elapsed);
 
 		menuItems.forEach(function(spr:FlxSprite)
 		{

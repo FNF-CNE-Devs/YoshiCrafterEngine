@@ -68,9 +68,10 @@ class WeeksTab extends ToolboxTab {
         bf.x -= 80;
 
         weekButton = new FlxSprite(0, yellowBG.y + yellowBG.height + 10);
+        weekButton.visible = false;
         weekButton.antialiasing = true;
 
-        txtTracklist = new FlxText(uiX + (FlxG.width * 0.05), yellowBG.height + 100, 0, "Tracks\n", 32);
+        txtTracklist = new FlxText(uiX + (FlxG.width * 0.05), yellowBG.height + 100, 0, "TRACKS\n", 32);
 		txtTracklist.alignment = CENTER;
 		txtTracklist.font = scoreText.font;
 		txtTracklist.color = 0xFFe55777;
@@ -105,6 +106,7 @@ class WeeksTab extends ToolboxTab {
             }, this));
         });
         var deleteWeekButton = new FlxUIButton(createWeekButton.x + createWeekButton.width + 10, 670, "Delete", function() {
+            if (selectedWeek == null) return;
             state.openSubState(new ToolboxMessage("Delete Week", 'Are you sure you want to delete the ${selectedWeek.name} week ? This operation is irreversible.', [
                 {
                     label: "Yes",
@@ -112,6 +114,10 @@ class WeeksTab extends ToolboxTab {
                         weekJson.weeks.remove(selectedWeek);
                         radioList.updateRadios([for (i in 0...weekJson.weeks.length) Std.string(i)], [for(w in weekJson.weeks) w.name.trim() == "" ? "(Untitled)" : w.name]);
                         selectedWeek = null;
+                        txtWeekTitle.text = "Select a week...";
+                        txtTracklist.text = "TRACKS\n";
+                        weekButton.visible = false;
+                        remove(menuCharacter);
                     }
                 },
                 {
@@ -272,6 +278,7 @@ class WeeksTab extends ToolboxTab {
         }
         // remove(blackBG);
 
+        weekButton.visible = true;
         add(menuCharacter);
         remove(txtTracklist);
         add(txtTracklist);

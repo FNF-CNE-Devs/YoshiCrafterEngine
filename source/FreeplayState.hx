@@ -223,6 +223,7 @@ class FreeplayState extends MusicBeatState
 				break;
 			}
 		}
+		curDifficulty = Std.int(Settings.engineSettings.data.lastSelectedSongDifficulty % songs[curSelected].difficulties.length);
 		changeSelection();
 		changeDiff();
 
@@ -268,12 +269,10 @@ class FreeplayState extends MusicBeatState
 			closeButton.animation.addByPrefix("x", "x button");
 			closeButton.animation.play("x");
 			closeButton.key = FlxKey.BACKSPACE;
-			closeButton.setHitbox();
-			closeButton.hitbox.x /= 2;
 			add(closeButton);
 		#end
 
-		super.create();
+		super.create();  
 	}
 
 	public function addSong(songName:String, modName:String, songCharacter:String)
@@ -374,9 +373,9 @@ class FreeplayState extends MusicBeatState
 
 	public override function beatHit() {
 		super.beatHit();
-		trace(selectedSongInstPath);
-		trace(currentInstPath);
-		trace(iconBumping);
+		// trace(selectedSongInstPath);
+		// trace(currentInstPath);
+		// trace(iconBumping);
 		if ((selectedSongInstPath == currentInstPath) && iconBumping) {
 			var i = iconArray[curSelected];
 			i.scale.set(1.2, 1.2);
@@ -520,6 +519,7 @@ class FreeplayState extends MusicBeatState
 		trace(poop);
 
 		Settings.engineSettings.data.lastSelectedSong = '${songs[curSelected].mod}:${songs[curSelected].songName.toLowerCase()}';
+		Settings.engineSettings.data.lastSelectedSongDifficulty = curDifficulty;
 		// PlayState._SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 		try {
 			PlayState._SONG = Song.loadModFromJson(poop, songs[curSelected].mod, songs[curSelected].songName.toLowerCase());

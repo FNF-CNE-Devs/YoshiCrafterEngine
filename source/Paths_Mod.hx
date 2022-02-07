@@ -77,32 +77,19 @@ class Paths_Mod {
         return sound('$file$r');
     }
     public function sound(file:String):Sound {
-        var mFolder = Paths.modsPath;
-        #if web
-            return Sound.fromFile('$mFolder/$mod/sounds/$file.mp3');
-        #else
-            return Sound.fromFile('$mFolder/$mod/sounds/$file.ogg');
-        #end
+
+        return Paths.getSoundExtern('${Paths.modsPath}/$mod/sounds/$file.mp3');
     }
 
     public function music(file:String):Sound {
-        var mFolder = Paths.modsPath;
-        #if web
-            return Sound.fromFile('$mFolder/$mod/music/$file.mp3');
-        #else
-            return Sound.fromFile('$mFolder/$mod/music/$file.ogg');
-        #end
+        return Paths.getSoundExtern('${Paths.modsPath}/$mod/music/$file.mp3');
     }
 
     public function image(key:String):BitmapData {
         var mFolder = Paths.modsPath;
         var p = '$mFolder/$mod/images/$key.png';
         if (FileSystem.exists(p)) {
-            if (copyBitmap) {
-                return Paths.getBitmapOutsideAssets(p).clone();
-            } else {
-                return Paths.getBitmapOutsideAssets(p);
-            }
+            return Paths.getBitmapOutsideAssets(p);
         } else {
             PlayState.log.push('Paths : Image at "$p" does not exist');
             return null;
@@ -114,13 +101,10 @@ class Paths_Mod {
         var png = '$mFolder/$mod/images/$key.png';
         var xml = '$mFolder/$mod/images/$key.xml';
         if (FileSystem.exists(png) && FileSystem.exists(xml)) {
-            var b:BitmapData;
-            if (copyBitmap) {
-                b = Paths.getBitmapOutsideAssets(png).clone();
-            } else {
-                b = Paths.getBitmapOutsideAssets(png);
-            }
-            return FlxAtlasFrames.fromSparrow(b, Paths.getTextOutsideAssets(xml));
+            // var b:BitmapData;
+            // b = Paths.getBitmapOutsideAssets(png);
+            // return FlxAtlasFrames.fromSparrow(b, Paths.getTextOutsideAssets(xml));
+            return Paths.getSparrowAtlas_Custom('$mFolder/$mod/images/$key');
         } else {
             PlayState.log.push('Paths : Sparrow Atlas at "$mFolder/$mod/images/$key" does not exist. Make sure there is an XML and a PNG file');
             return null;

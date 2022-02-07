@@ -82,6 +82,7 @@ class ToolboxHome extends MusicBeatState {
 			{name: "songs", label: 'Songs'},
 			{name: "chars", label: 'Characters'},
 			{name: "weeks", label: 'Weeks'},
+			{name: "stages", label: 'Stages'},
 		];
         UI_Tabs = new FlxUITabMenu(null, tabs, true);
         UI_Tabs.x = 0;
@@ -103,6 +104,7 @@ class ToolboxHome extends MusicBeatState {
         new CharTab(0, 22, this);
         new WeeksTab(0, 22, this);
         new SongTab(0, 22, this);
+        new StagesTab(0, 22, this);
 
         closeButton = new FlxUIButton(FlxG.width - 20, 0, "X", function() {
             FlxG.switchState(new ToolboxMain());

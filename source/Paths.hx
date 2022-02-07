@@ -35,6 +35,13 @@ class Paths
 
 	public static var modsPath(get, null):String;
 
+	public static function getSoundExtern(path:String) {
+		var cPath = getCachePath(path);
+		if (cacheSound[cPath] == null) {
+			cacheSound[cPath] = Sound.fromFile(path);
+		}
+		return cacheSound[cPath];
+	}
 	public static function get_modsPath() {
 		
 		#if sourceCode
@@ -210,6 +217,7 @@ class Paths
 	public static var cacheBitmap:Map<String, BitmapData> = new Map<String, BitmapData>();
 	public static var cacheBytes:Map<String, Bytes> = new Map<String, Bytes>();
 	public static var cacheSparrow:Map<String, FlxAtlasFrames> = new Map<String, FlxAtlasFrames>();
+	public static var cacheSound:Map<String, Sound> = new Map<String, Sound>();
 	#if sys	
 
 	inline static public function clearCache() {
@@ -227,76 +235,101 @@ class Paths
 		cacheSparrow.clear();
 	}
 
+	public static function getCachePath(path:String) {
+		return path.replace("\\", "/").trim().toLowerCase();
+	}
 	inline static public function getTextOutsideAssets(path:String, log:Bool = false) {
 		
+		var cachePath = getCachePath(path);
 		if (Settings.engineSettings.data.developerMode) {
 			if (!FileSystem.exists(path)) {
 				PlayState.log.push('Paths : Text file at "$path" does not exist.');
 			}
 		}
+
+		if (cacheText[cachePath] == null) cacheText[cachePath] = sys.io.File.getContent(path);
 		// if (Paths.cacheText[path] == null) {
 		// 	if (log) trace('Getting file content at "$path"');
 		// 	Paths.cacheText[path] = sys.io.File.getContent(path);
 		// }
-		return sys.io.File.getContent(path);
+
+		// THIS is causing some PROBLEMS.
+		// return sys.io.File.getContent(path);
+
+		return cacheText[cachePath];
 	}
 
 	#end
 	inline static public function getBitmapOutsideAssets(path:String) {
 		// trace(path);
 		
+		var cachePath = getCachePath(path);
 		if (Settings.engineSettings.data.developerMode) {
-			if (!FileSystem.exists(path)) {
+			if (!FileSystem.exists(cachePath)) {
 				PlayState.log.push('Paths : Bitmap at "$path" does not exist.');
 			}
 		}
-		if (Paths.cacheBitmap[path] == null) {
-			Paths.cacheBitmap[path] = BitmapData.fromFile(path);
-		} else if (!Paths.cacheBitmap[path].readable) {
-			Paths.cacheBitmap[path] = BitmapData.fromFile(path);
+		if (Paths.cacheBitmap[cachePath] == null) {
+			#if trace_everything trace('BitmapData not existent for $path.'); #end
+			var bData = BitmapData.fromFile(path);
+			// bData.dis
+			Paths.cacheBitmap[cachePath] = bData;
+		} else if (!Paths.cacheBitmap[cachePath].readable) {
+			#if trace_everything trace('BitmapData not readable for $path.'); #end
+			Paths.cacheBitmap[cachePath] = BitmapData.fromFile(path);
 		}
 		
-		var b = Paths.cacheBitmap[path];
-		if (copyBitmap) {
-			b = b.clone();
-			for(i in 0...0x7FFFFFFF) {
-				if (Paths.cacheBitmap[path + "/" + Std.string(i)] == null) {
-					Paths.cacheBitmap[path + "/" + Std.string(i)] = b;
-					break;
-				}
-			}
-		}
-		return (copyBitmap ? b : Paths.cacheBitmap[path]);
+		var b = Paths.cacheBitmap[cachePath];
+		// if (copyBitmap) {
+		// 	b = b.clone();
+		// 	for(i in 0...0x7FFFFFFF) {
+		// 		if (Paths.cacheBitmap[cachePath + "/" + Std.string(i)] == null) {
+		// 			Paths.cacheBitmap[cachePath + "/" + Std.string(i)] = b;
+		// 			break;
+		// 		}
+		// 	}
+		// }
+		return (copyBitmap ? b : Paths.cacheBitmap[cachePath]);
 	}
 	inline static public function getBytesOutsideAssets(path:String) {
 		// trace(path);
-		
+		var cachePath = getCachePath(path);
 		if (Settings.engineSettings.data.developerMode) {
-			if (!FileSystem.exists(path)) {
+			if (!FileSystem.exists(cachePath)) {
 				PlayState.log.push('Paths : Byte file at "$path" does not exist.');
 			}
 		}
-		if (Paths.cacheBytes[path] == null) {
-			Paths.cacheBytes[path] = File.getBytes(path);
+		if (Paths.cacheBytes[cachePath] == null) {
+			Paths.cacheBytes[cachePath] = File.getBytes(path);
 		}
-		return Paths.cacheBytes[path];
+		return Paths.cacheBytes[cachePath];
+	}
+	public static function getExternSparrow(key:String) {
+		
+		#if trace_everything trace("Getting bitmap"); #end
+		var png = Paths.getBitmapOutsideAssets(key + ".png");
+
+		#if trace_everything trace("Getting XML content"); #end
+		var xml = Paths.getTextOutsideAssets(key + ".xml");
+		var nFrames = FlxAtlasFrames.fromSparrow(png, xml);
+		cacheSparrow[key] = nFrames;
+		return nFrames;
 	}
 	inline static public function getSparrowAtlas_Custom(key:String)
 	{
 		// Assets.registerLibrary("custom", AssetLibrary.(key + ".png"));
 		// Assets.registerLibrary("custom", AssetLibrary.fromFile(key + ".xml"));
-		key = key.trim().replace("/", "/").replace("\\", "/");
 		#if sys
+		key = key.trim().replace("/", "/").replace("\\", "/");
 		if (cacheSparrow[key] != null) {
 			if (cacheSparrow[key].frames != null) {
 				return cacheSparrow[key];
 			} else {
-				var nFrames = FlxAtlasFrames.fromSparrow(Paths.getBitmapOutsideAssets(key + ".png"), Paths.getTextOutsideAssets(key + ".xml"));
-				cacheSparrow[key] = nFrames;
-				return nFrames;
+				return getExternSparrow(key);
 			}
 		} else {
-			return FlxAtlasFrames.fromSparrow(Paths.getBitmapOutsideAssets(key + ".png"), Paths.getTextOutsideAssets(key + ".xml"));
+			#if trace_everything trace("Key exists, returning from cache"); #end
+			return getExternSparrow(key);
 		}
 		#else
 		return null;

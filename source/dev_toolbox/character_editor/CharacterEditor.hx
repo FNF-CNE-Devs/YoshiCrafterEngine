@@ -1,5 +1,6 @@
 package dev_toolbox.character_editor;
 
+import EngineSettings.Settings;
 import flixel.animation.FlxAnimation;
 import flixel.graphics.frames.FlxFrame;
 import flixel.ui.FlxSpriteButton;
@@ -45,6 +46,7 @@ class CharacterEditor extends MusicBeatState {
     var isBFskin:FlxUICheckBox = null;
     var canBeGFSkinned:FlxUICheckBox = null;
     var editAsPlayer:FlxUICheckBox = null;
+    var showCharacterReferences:FlxUICheckBox = null;
     var isGFskin:FlxUICheckBox = null;
     var antialiasing:FlxUICheckBox = null;
     var globalOffsetX:FlxUINumericStepper = null;
@@ -58,6 +60,7 @@ class CharacterEditor extends MusicBeatState {
     var shadowCharacter:Character;
 
     var isPlayer:Bool = false;
+    var usePlayerArrowColors:Bool = false;
 
     var currentAnim(default, set):String = "";
 
@@ -404,9 +407,17 @@ class CharacterEditor extends MusicBeatState {
             if (editAsPlayer.checked) {
                 character.flipX = !character.flipX;
             }
+            shadowCharacter.flipX = character.flipX;
         });
         editAsPlayer.scrollFactor.set();
         add(editAsPlayer);
+
+        showCharacterReferences = new FlxUICheckBox(anim.x + anim.width + 10, editAsPlayer.y + editAsPlayer.height + 10, null, null, "Show Dad and BF", 250, null, function() {
+            Settings.engineSettings.data.charEditor_showDadAndBF = dad.visible = bf.visible = showCharacterReferences.checked;
+        });
+        showCharacterReferences.scrollFactor.set();
+        showCharacterReferences.checked = Settings.engineSettings.data.charEditor_showDadAndBF;
+        add(showCharacterReferences);
 
         var characterSettingsTabs = new FlxUITabMenu(null, [
             {
@@ -431,12 +442,14 @@ class CharacterEditor extends MusicBeatState {
         flipCheckbox = new FlxUICheckBox(10, 10, null, null, "Flip Character", 120, null, function() {
             character.flipX = flipCheckbox.checked;
             if (isPlayer) character.flipX = !character.flipX;
+            shadowCharacter.flipX = character.flipX;
         });
         flipCheckbox.checked = character.flipX;
         // add(flipCheckbox);
 
         antialiasing = new FlxUICheckBox(flipCheckbox.x + 145, 10, null, null, "Anti-Aliasing", 120, null, function() {
             character.antialiasing = antialiasing.checked;
+            shadowCharacter.antialiasing = antialiasing.checked;
         });
         antialiasing.checked = character.antialiasing;
         // add(antialiasing);
@@ -617,6 +630,11 @@ class CharacterEditor extends MusicBeatState {
             arrowSettings.add(note);
             arrows.push(note);
         }
+        var usePlayerColors:FlxUICheckBox = null;
+        usePlayerColors = new FlxUICheckBox(10, 70, null, null, "Use player's colors", 100, null, function() {
+            usePlayerArrowColors = usePlayerColors.checked;
+        });
+        arrowSettings.add(usePlayerColors);
         characterSettingsTabs.addGroup(arrowSettings);
     }
 
@@ -714,6 +732,7 @@ class CharacterEditor extends MusicBeatState {
             }
         }
         character.scale.set(scale.value, scale.value);
+        shadowCharacter.scale.set(scale.value, scale.value);
         var midpoint = character.getMidpoint();
         cross.x = -25 + midpoint.x + 150 + character.camOffset.x;
         cross.y = -25 + midpoint.y - 100 + character.camOffset.y;

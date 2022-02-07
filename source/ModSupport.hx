@@ -426,9 +426,16 @@ class ModSupport {
         if (PlayState.current != null) {
             script.setVariable("EngineSettings", PlayState.current.engineSettings);
             script.setVariable("global", PlayState.current.vars);
+            script.setVariable("loadStage", function(stagePath) {
+                return new Stage(stagePath, mod);
+            });
+
         } else {
             script.setVariable("EngineSettings", {});
             script.setVariable("global", {});
+            script.setVariable("loadStage", function(stagePath) {
+                return null;
+            });
         }
         script.setVariable("trace", function(text) {
             try {
@@ -456,8 +463,6 @@ class ModSupport {
 		script.setVariable("FlxSound", FlxSound);
 		script.setVariable("FlxEase", FlxEase);
 		script.setVariable("FlxTween", FlxTween);
-		// script.setVariable("File", File);
-		// script.setVariable("FileSystem", FileSystem);
 		script.setVariable("FlxColor", FlxColor_Helper);
 		script.setVariable("Boyfriend", Boyfriend);
 		script.setVariable("FlxTypedGroup", FlxTypedGroup);
@@ -466,7 +471,6 @@ class ModSupport {
 		script.setVariable("FlxTimer", FlxTimer);
 		script.setVariable("Json", Json);
 		script.setVariable("MP4Video", MP4Video);
-		// script.setVariable("PNGEncoderOptions", PNGEncoderOptions);
 		script.setVariable("CoolUtil", CoolUtil);
 		script.setVariable("FlxTypeText", FlxTypeText);
 		script.setVariable("FlxText", FlxText);

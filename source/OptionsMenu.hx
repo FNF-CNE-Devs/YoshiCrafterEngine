@@ -1186,7 +1186,6 @@ class OptionsMenu extends MusicBeatState
 			closeButton.animation.play("x");
 			closeButton.key = FlxKey.BACKSPACE;
 			closeButton.setHitbox();
-			closeButton.hitbox.x /= 2;
 			closeButton.antialiasing = true;
 			closeButton.hoverColor = 0xFF66CAFF;
 			add(closeButton);
@@ -1198,7 +1197,6 @@ class OptionsMenu extends MusicBeatState
 			downButton.key = FlxKey.DOWN;
 			downButton.y -= downButton.height;
 			downButton.setHitbox();
-			downButton.hitbox.x /= 2;
 			downButton.antialiasing = true;
 			downButton.hoverColor = 0xFF66CAFF;
 			add(downButton);
@@ -1210,7 +1208,6 @@ class OptionsMenu extends MusicBeatState
 			upButton.key = FlxKey.UP;
 			upButton.y -= downButton.height + upButton.height;
 			upButton.setHitbox();
-			upButton.hitbox.x /= 2;
 			upButton.antialiasing = true;
 			upButton.hoverColor = 0xFF66CAFF;
 			add(upButton);
@@ -1223,7 +1220,6 @@ class OptionsMenu extends MusicBeatState
 			rightButton.y -= rightButton.height;
 			rightButton.x -= (rightButton.width / 2);
 			rightButton.setHitbox();
-			rightButton.hitbox.x /= 2;
 			rightButton.antialiasing = true;
 			rightButton.hoverColor = 0xFF66CAFF;
 			add(rightButton);

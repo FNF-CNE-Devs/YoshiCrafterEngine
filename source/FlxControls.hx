@@ -45,7 +45,7 @@ class FlxControls {
 			}
 			return FlxG.keys.anyPressed(keys);
 		#else
-			FlxG.keys.anyPressed(keys);
+			return FlxG.keys.anyPressed(keys);
 		#end
     }
 
@@ -77,7 +77,7 @@ class FlxControls {
 			}
 			return FlxG.keys.anyJustPressed(keys);
 		#else
-			FlxG.keys.anyJustPressed(keys);
+			return FlxG.keys.anyJustPressed(keys);
 		#end
     }
 
@@ -109,7 +109,7 @@ class FlxControls {
 			}
 			return FlxG.keys.anyJustReleased(keys);
 		#else
-			FlxG.keys.anyJustReleased(keys);
+			return FlxG.keys.anyJustReleased(keys);
 		#end
     }
 
