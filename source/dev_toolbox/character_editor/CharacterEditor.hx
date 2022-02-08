@@ -206,6 +206,9 @@ class CharacterEditor extends MusicBeatState {
         }
     }
     public function new(char:String) {
+        #if desktop
+            Discord.DiscordClient.changePresence("In the Character Editor...", null, "Character Editor Icon");
+        #end
         super();
         current = this;
         this.c = char;

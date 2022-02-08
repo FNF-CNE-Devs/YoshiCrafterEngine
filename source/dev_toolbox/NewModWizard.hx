@@ -24,6 +24,9 @@ import flixel.FlxState;
 class NewModWizard extends MusicBeatState {
 
     public override function new() {
+        #if desktop
+            Discord.DiscordClient.changePresence("Creating a new mod...", null, "Toolbox Icon");
+        #end
         FlxTransitionableState.skipNextTransIn = true;
         FlxTransitionableState.skipNextTransOut = true;
         super();

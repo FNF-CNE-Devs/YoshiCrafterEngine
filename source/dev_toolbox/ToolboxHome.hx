@@ -1,5 +1,7 @@
 package dev_toolbox;
 
+import Discord.DiscordClient;
+import discord_rpc.DiscordRpc;
 import dev_toolbox.toolbox_tabs.*;
 import lime.math.Rectangle;
 import dev_toolbox.week_editor.CreateWeekWizard;
@@ -59,6 +61,9 @@ class ToolboxHome extends MusicBeatState {
     public var tabs:Map<String, ToolboxTab> = [];
 
     public override function new(mod:String) {
+        #if desktop
+            DiscordClient.changePresence("In the Toolbox", "Nah, this wont leak the mod they're working on.", "Toolbox Icon");
+        #end
         if (mod != null) selectedMod = mod;
         super();
         if (ModSupport.modConfig[mod] == null) {

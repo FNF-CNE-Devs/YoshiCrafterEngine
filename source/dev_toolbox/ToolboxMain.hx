@@ -1,5 +1,6 @@
 package dev_toolbox;
 
+import Discord.DiscordClient;
 import flixel.util.FlxCollision;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIDropDownMenu.FlxUIDropDownHeader;
@@ -22,6 +23,9 @@ class ToolboxMain extends MusicBeatState {
     var selectedMod:String = "Friday Night Funkin'";
 
     public override function new(?mod:String) {
+        #if desktop
+            Discord.DiscordClient.changePresence("Selecting a Mod in the Toolbox...", null, "Toolbox Icon");
+        #end
         if (mod != null) selectedMod = mod;
         if (!Std.isOfType(FlxG.state, MainMenuState) && !Std.isOfType(FlxG.state, ToolboxHome)) {
             FlxTransitionableState.skipNextTransIn = true;

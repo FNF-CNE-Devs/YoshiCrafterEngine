@@ -259,6 +259,10 @@ class StageEditor extends MusicBeatState {
         selectedObj = null;
     }
     public override function create() {
+        
+        #if desktop
+            Discord.DiscordClient.changePresence("In the Stage Editor...", null, "Stage Editor Icon");
+        #end
         super.create();
         // persistentDraw = false;
         persistentUpdate = false;
