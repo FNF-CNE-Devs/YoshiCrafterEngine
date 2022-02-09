@@ -895,12 +895,12 @@ class OptionsMenu extends MusicBeatState
 			value: function() {return "";}
 		});
 		performance.options.push({
-			text : "Clear skin cache",
-			description : "If checked, will optimize the memory of the game.",
+			text : "Clear Cache",
+			description : "Select this to clear the cache.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Paths.clearCache();
-					o.setValue("cache deleted");
+					o.setValue("Cache Deleted");
 				}
 			},
 			checkbox: false,
@@ -1023,6 +1023,19 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: function() {return Settings.engineSettings.data.developerMode;},
+			value: function() {return "";}
+		});
+		dev.options.push({
+			text : "Move camera in Stage Editor",
+			description : "If checked, will automatically move the camera to the right in Stage Editor, allowing the user to access more space. If you find that effect annoying, uncheck this option.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.moveCameraInStageEditor = !Settings.engineSettings.data.moveCameraInStageEditor;
+					o.check(Settings.engineSettings.data.moveCameraInStageEditor);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.moveCameraInStageEditor;},
 			value: function() {return "";}
 		});
 		settings.push(dev);

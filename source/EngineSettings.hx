@@ -132,6 +132,7 @@ import flixel.FlxG;
 	@:keep public static var lastSelectedSong:String = "Friday Night Funkin':tutorial";
 	@:keep public static var lastSelectedSongDifficulty:Int = 1; // Normal
 	@:keep public static var charEditor_showDadAndBF:Bool = true;
+	// @:keep public static var moveCameraInStageEditor:Bool = true;
 
 	// ========================================================
 	// PER KEY SET CONTROLS

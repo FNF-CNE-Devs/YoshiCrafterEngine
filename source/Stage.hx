@@ -40,12 +40,16 @@ typedef OnBeatAnimSprite = {
 class Stage {
 	public var sprites:Map<String, FlxSprite> = [];
 	public var onBeatAnimSprites:Array<OnBeatAnimSprite> = [];
+	public var onBeatForceAnimSprites:Array<OnBeatAnimSprite> = [];
 	public function getSprite(name:String) {
 		return sprites[name];
 	}
 	public function onBeat() {
 		for (s in onBeatAnimSprites) {
 			s.sprite.animation.play(s.anim);
+		}
+		for (s in onBeatForceAnimSprites) {
+			s.sprite.animation.play(s.anim, true);
 		}
 	}
 	public function new(path:String, mod:String) {
@@ -104,11 +108,18 @@ class Stage {
 						if (s.name != null) sprites[s.name] = sAtlas;
 
 
-						if (s.animation != null && s.animation.type.toLowerCase() == "onbeat") {
-							onBeatAnimSprites.push({
-								anim: s.animation.name,
-								sprite: sAtlas
-							});
+						if (s.animation != null) {
+							if (s.animation.type.toLowerCase() == "onbeat") {
+								onBeatAnimSprites.push({
+									anim: s.animation.name,
+									sprite: sAtlas
+								});
+							} else if (s.animation.type.toLowerCase() == "onbeatforce") {
+								onBeatForceAnimSprites.push({
+									anim: s.animation.name,
+									sprite: sAtlas
+								});
+							}
 						}
 					case "Bitmap":
 						var bmap = generateBitmap(s, splitPath[0]);
