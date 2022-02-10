@@ -501,6 +501,7 @@ class ModSupport {
         var interp = Script.create(songCodePath);
         interp.setVariable("song", songName);
         interp.setVariable("difficulty", PlayState.storyDifficulty);
+        
         interp.setVariable("stage", "");
         interp.setVariable("cutscene", "");
         interp.setVariable("end_cutscene", "");

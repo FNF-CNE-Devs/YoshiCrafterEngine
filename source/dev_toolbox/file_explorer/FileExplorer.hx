@@ -111,17 +111,17 @@ class FileExplorer extends MusicBeatSubstate {
                         case SparrowAtlas:
                             var ext = Path.extension(f).toLowerCase();
                             if (!fileExt.split(";").contains(ext)) {
-                                openSubState(ToolboxMessage.showMessage("Error", 'You must select a ${fileType}.'));
+                                showMessage("Error", 'You must select a $fileType');
                                 return;
                             }
                             if (ext == "png") {
                                 if (!FileSystem.exists('$p/${Path.withoutExtension(f)}.xml')) {
-                                    openSubState(ToolboxMessage.showMessage("Error", 'The selected Sparrow Atlas doesn\'t have a corresponding XML file.'));
+                                    showMessage("Error", 'The selected Sparrow Atlas doesn\'t have a corresponding XML file.');
                                     return;
                                 }
                             } else {
                                 if (!FileSystem.exists('$p/${Path.withoutExtension(f)}.png')) {
-                                    openSubState(ToolboxMessage.showMessage("Error", 'The selected Sparrow Atlas doesn\'t have a corresponding PNG file.'));
+                                    showMessage("Error", 'The selected Sparrow Atlas doesn\'t have a corresponding PNG file.');
                                     return;
                                 }
                             }
@@ -130,7 +130,7 @@ class FileExplorer extends MusicBeatSubstate {
                         
                         default:
                             if (!fileExt.split(";").contains(Path.extension(f).toLowerCase())) {
-                                openSubState(ToolboxMessage.showMessage("Error", 'You must select a ${fileType}.'));
+                                showMessage("Error", 'You must select a $fileType');
                                 return;
                             }
                             callback('$path/$f');
@@ -145,6 +145,12 @@ class FileExplorer extends MusicBeatSubstate {
         }
         pathText.text = '$path/';
 
+    }
+
+    function showMessage(title:String, text:String) {
+        var m = ToolboxMessage.showMessage(title, text);
+        m.cameras = cameras;
+        openSubState(m);
     }
 
     public override function new(mod:String, type:FileExplorerType, ?defaultFolder:String = "", callback:String->Void) {

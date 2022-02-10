@@ -18,12 +18,12 @@ typedef StageJSON = {
 typedef StageSprite = {
 	var name:String;
 	var type:String;
-	var animation:StageAnim;
-	var src:String;
-	var pos:Array<Float>;
-	var antialiasing:Null<Bool>;
+	@:optional var animation:StageAnim;
+	@:optional var src:String;
+	@:optional var pos:Array<Float>;
+	@:optional var antialiasing:Null<Bool>;
 	var scrollFactor:Array<Float>;
-	var scale:Null<Float>;
+	@:optional var scale:Null<Float>;
 }
 
 typedef StageAnim = {
@@ -38,6 +38,29 @@ typedef OnBeatAnimSprite = {
 }
 
 class Stage {
+	public static var templateStage:StageJSON = {
+		defaultCamZoom: 1,
+		bfOffset: [0, 0],
+		gfOffset: [0, 0],
+		dadOffset: [0, 0],
+		sprites: [
+			{
+				name: "Girlfriend",
+				type: "GF",
+				scrollFactor: [0.95, 0.95]
+			},
+			{
+				name: "Boyfriend",
+				type: "BF",
+				scrollFactor: [1, 1]
+			},
+			{
+				name: "Dad",
+				type: "Dad",
+				scrollFactor: [1, 1]
+			}
+		]
+	};
 	public var sprites:Map<String, FlxSprite> = [];
 	public var onBeatAnimSprites:Array<OnBeatAnimSprite> = [];
 	public var onBeatForceAnimSprites:Array<OnBeatAnimSprite> = [];
@@ -126,16 +149,32 @@ class Stage {
 						if (s.name != null) sprites[s.name] = bmap;
 						PlayState.add(bmap);
 					case "BF":
+						doTheChar(PlayState.boyfriend, s);
 						PlayState.add(PlayState.boyfriend);
 					case "GF":
+						doTheChar(PlayState.gf, s);
 						PlayState.add(PlayState.gf);
 					case "Dad":
+						doTheChar(PlayState.dad, s);
 						PlayState.add(PlayState.dad);
 				}
 			}
 		}
 	}
 
+	function doTheChar(char:Character, s:StageSprite) {
+		var scrollFactor = s.scrollFactor;
+		if (scrollFactor == null) scrollFactor = [1, 1];
+		while (scrollFactor.length < 2) scrollFactor.push(1);
+		char.scrollFactor.set(scrollFactor[0], scrollFactor[1]);
+		char.updateHitbox();
+
+		// if (s.scale == null) s.scale = 1;
+
+		// char.scale.set(s.scale, s.scale);
+		// char.x += (char.charGlobalOffset.x * (s.scale - 1));
+		// char.y += (char.charGlobalOffset.y * (s.scale - 1));
+	}
 	public static function generateSparrowAtlas(s:StageSprite, mod:String) {
 		var pos:FlxPoint = new FlxPoint(0, 0);
 		if (s.pos != null) {

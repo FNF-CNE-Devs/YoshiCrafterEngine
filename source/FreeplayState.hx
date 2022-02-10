@@ -84,7 +84,7 @@ class FreeplayState extends MusicBeatState
 		songs = [];
 		var fnfSongs = [];
 		for(mod in FileSystem.readDirectory('$mPath/')) {
-			if (FileSystem.exists('$mPath/$mod/data/freeplaySonglist.json') && FileSystem.exists('$mPath/$mod/song_conf.hx')) {
+			if (FileSystem.exists('$mPath/$mod/data/freeplaySonglist.json')) {
 				var jsonContent:FreeplaySongList = null;
 				try {
 					jsonContent = Json.parse(Paths.getTextOutsideAssets('$mPath/$mod/data/freeplaySonglist.json'));
@@ -148,6 +148,14 @@ class FreeplayState extends MusicBeatState
 			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songName, true, false);
 			songText.isMenuItem = true;
 			songText.targetY = i;
+			if (songText.width > FlxG.width - 256) {
+				var ratio = (FlxG.width - 256) / songText.width;
+				for (m in songText.members) {
+					m.scale.x *= ratio;
+					m.updateHitbox();
+					m.x *= ratio;
+				}
+			}
 			grpSongs.add(songText);
 
 			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter, false, songs[i].mod);

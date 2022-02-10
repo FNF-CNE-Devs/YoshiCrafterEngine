@@ -13,13 +13,9 @@ class ToolboxMessage extends FlxUIPopup {
     var buttons:Array<Button> = [];
     public override function new(title:String, text:String, buttons:Array<Button>, ?bgColor:FlxColor, ?camera:FlxCamera) {
         super(bgColor);
+        if (camera != null) this.camera = camera;
         quickSetup(title, text, [for(b in buttons) b.label]);
         this.buttons = buttons;
-        if (camera != null) {
-            for(e in members) {
-                e.camera = camera;
-            }
-        }
     }
 
     public override function getEvent(id:String, target:Dynamic, data:Dynamic, ?params:Array<Dynamic>):Void
@@ -32,6 +28,10 @@ class ToolboxMessage extends FlxUIPopup {
                 close();
             }
         }
+    }
+
+    public override function update(elapsed:Float) {
+        super.update(elapsed);
     }
 
     public static function showMessage(title:String, text:String, ?callback:Void->Void, ?camera:FlxCamera) {

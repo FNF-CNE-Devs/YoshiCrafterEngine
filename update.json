@@ -11,7 +11,8 @@
         "- If you ACCIDENTLY end a song that you took SO MUCH TIME to chart, you'll be redirected back to the charter.",
         "- You can now compile it on Android without any problems (port not done yet, make sure to allow storage access in the phone's app settings)",
         "- Added character shadow in Character Editor. That means you can use an animation of your character as a base to set the offset of the other ones",
-        "- Fixed the Tab button glitch on the Charter"
+        "- Fixed the Tab button glitch on the Charter",
+        "- Freeplay song names now gets \"squished\" when they're too long"
     ],
     "version" : [1,4,1],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"
