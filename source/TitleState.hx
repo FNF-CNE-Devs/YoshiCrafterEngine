@@ -161,6 +161,7 @@ class TitleState extends MusicBeatState
 		});
 		
 		#end
+		FlxG.autoPause = Settings.engineSettings.data.autopause == true;
 	}
 
 	var logoBl:FlxSprite;

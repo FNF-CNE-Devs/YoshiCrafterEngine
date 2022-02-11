@@ -969,6 +969,21 @@ class OptionsMenu extends MusicBeatState
 			checkboxChecked: function() {return Settings.engineSettings.data.hideOriginalGame;},
 			value: function() {return "";}
 		});
+		misc.options.push({
+			text : "Auto-Pause",
+			description : "When enabled, pauses the game automatically when the focus is lost. Checked by default.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.autopause = !Settings.engineSettings.data.autopause;
+					o.checkboxChecked = Settings.engineSettings.data.autopause;
+					o.check(Settings.engineSettings.data.autopause);
+					FlxG.autoPause = Settings.engineSettings.data.autopause;
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.autopause;},
+			value: function() {return "";}
+		});
 		// misc.options.push({
 		// 	text : "Use new charter",
 		// 	updateOnSelected: function(elapsed:Float, o:FNFOption) {

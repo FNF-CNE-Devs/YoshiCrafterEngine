@@ -50,6 +50,66 @@ function create() {
     PlayState.add(sprite);
 }
 ```
+
+---
+**`createPost():Void`**
+Runs after the `super.create()` (requested by raf on my discord server)
+Example usage:
+```haxe
+function createPost() {
+    // Hides the icons
+    PlayState.iconP1.visible = false;
+    PlayState.iconP2.visible = false;
+}
+```
+
+---
+**`onGuiPopup():Void`**
+Runs after the GUI has been popped up.
+Example usage:
+```haxe
+function onGuiPopup() {
+    // Hides the icons (again)
+    PlayState.iconP1.visible = false;
+    PlayState.iconP2.visible = false;
+}
+```
+
+---
+**`onStartCountdown():Void`**
+Runs when `startCountdown()` is called.
+Example usage:
+```haxe
+function onStartCountdown() {
+    sprite.animation.play("anim during cooldown");
+}
+```
+
+---
+**`onCountdown(number:Int):Void`**
+Runs when the countdown goes
+
+Params:
+- `number:Int`: Current number (goes from 3 to 0, 0 being "Go!")
+
+To prevent the default number appearance, return false.
+Example usage:
+```haxe
+function onCountdown(val:Int) {
+    // Hides the icons (again)
+    switch(val) {
+        case 3:
+            sprite.animation.play("3");
+        case 2:
+            sprite.animation.play("2");
+        case 1:
+            sprite.animation.play("1");
+        case 0:
+            sprite.animation.play("GO!");
+    }
+}
+```
+
 ---
 **`createInFront():Void`**
 Same as `create()` excepts run after GF, BF and Dad are added in stage.

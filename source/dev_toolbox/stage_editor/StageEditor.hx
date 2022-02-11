@@ -1,5 +1,10 @@
 package dev_toolbox.stage_editor;
 
+import openfl.display.Application;
+import openfl.display.Window;
+import sys.FileSystem;
+import sys.FileSystem;
+import haxe.io.Path;
 import flixel.text.FlxText.FlxTextBorderStyle;
 import EngineSettings.Settings;
 import flixel.input.mouse.FlxMouse;
@@ -41,6 +46,12 @@ class StageEditor extends MusicBeatState {
     public var dad:FlxStageSprite; // Not a Character since loading it would take too much time
 
     public var selectedObj(default, set):FlxStageSprite;
+
+    public static var animTypes:Array<StrNameLabel> = [
+        new StrNameLabel("OnBeat", "On Beat"),
+        new StrNameLabel("OnBeatForce", "On Beat (Force)"),
+        new StrNameLabel("Loop", "Loop")
+    ];
 
     function set_selectedObj(n:FlxStageSprite):FlxStageSprite {
         selectedObj = n;
@@ -280,12 +291,95 @@ class StageEditor extends MusicBeatState {
         globalSetsTab = new FlxUI(null, tabs);
         globalSetsTab.name = "globalSets";
 
-        defCamZoomNum = new FlxUINumericStepper(10, 10, 0.05, stage.defaultCamZoom == null ? 1 : stage.defaultCamZoom, 0.1, 5, 2);
-        
+        defCamZoomNum = new FlxUINumericStepper(290, 10, 0.05, stage.defaultCamZoom == null ? 1 : stage.defaultCamZoom, 0.1, 5, 2);
+        defCamZoomNum.x -= defCamZoomNum.width;
+        var defCamZoomLabel = new FlxUIText(10, defCamZoomNum.y + (defCamZoomNum.height / 2), 0, "Camera Zoom");
+        defCamZoomLabel.y -= defCamZoomLabel.height / 2;
+        globalSetsTab.add(defCamZoomLabel);
         globalSetsTab.add(defCamZoomNum);
         tabs.addGroup(globalSetsTab);
     }
 
+    public override function onDropFile(path:String) {
+        trace(path);
+        var fileExt = Path.extension(path).toLowerCase();
+        var stagePath = '${Paths.modsPath}/${ToolboxHome.selectedMod}/images/stages/${stageFile}';
+        var fileName = Path.withoutDirectory(Path.withoutExtension(path));
+        FileSystem.createDirectory('$stagePath/');
+
+        var pathWithoutExt = Path.withoutExtension(path);
+
+        var doSparrow = function() {
+            if (FileSystem.exists('$stagePath/${fileName}.png') ||
+                FileSystem.exists('$stagePath/${fileName}.xml')) {
+                
+                
+                for (i in 0...0x7FFFFFFF) {
+                    if (!FileSystem.exists('$stagePath/${fileName}${i}.png') &&
+                        !FileSystem.exists('$stagePath/${fileName}${i}.xml')) {
+                            fileName = '${fileName}${i}';
+                            break;
+                    }
+                }
+            }
+            File.copy('$pathWithoutExt.png', '$stagePath/${fileName}.png');
+            File.copy('$pathWithoutExt.xml', '$stagePath/${fileName}.xml');
+
+            stage.sprites.push({
+                type: "SparrowAtlas",
+                scrollFactor: [1, 1],
+                name: fileName,
+                src: 'stages/${stageFile}/${fileName}',
+                animation: {
+                    name: "",
+                    fps: 24,
+                    type: "Loop"
+                }
+            });
+            updateStageElements();
+        }
+        switch(fileExt) {
+            case "png":
+                if (FileSystem.exists('$pathWithoutExt.xml')) {
+                    // Creates a directory where to put all of the bitmaps
+                    // if (FileSystem.exists('/${fileName}.png') ||
+                    //     FileSystem.exists('$stagePath/${fileName}.xml')) {
+                    //     showMessage("Error", "A Sparrow Atlas with the same name already exists.");
+                    //     return;
+                    // }
+                    // File.copy('$pathWithoutExt.png', '$stagePath/${fileName}.png');
+                    // File.copy('$pathWithoutExt.xml', '$stagePath/${fileName}.xml');
+                    // trace("TODO");
+
+                    doSparrow();
+                } else {
+                    if (FileSystem.exists('$stagePath/${fileName}.png')) {
+                        doSparrow();
+                    } else {
+                        File.copy('$pathWithoutExt.png', '$stagePath/${fileName}.png');
+                    }
+                    stage.sprites.push({
+                        type: "Bitmap",
+                        scrollFactor: [1, 1],
+                        name: fileName,
+                        src: 'stages/${stageFile}/${fileName}'
+                    });
+                    updateStageElements();
+                }
+            case "xml":
+                if (FileSystem.exists('$pathWithoutExt.png')) {
+                    doSparrow();
+                } else {
+                    showMessage("Error", "No PNG file was found for your Sparrow Atlas. Make sure there's a corresponding PNG file.");
+                    return;
+                }
+            default:
+                showMessage("Error", "Dropped file must be of type \"png\" or \"xml\"");
+                return;
+        }
+
+        lime.app.Application.current.window.focus();
+    }
     function addSelectedObjectTab() {
         selectedObjTab = new FlxUI(null, tabs);
         // selectedObjTab
@@ -332,11 +426,7 @@ class StageEditor extends MusicBeatState {
         fpsLabel.y -= fpsLabel.height / 2;
         animationFPSNumeric.x += fpsLabel.width;
 
-        animationLabel = new FlxUIDropDownMenu(10, animationFPSNumeric.y + animationFPSNumeric.height + 10, [
-            new StrNameLabel("OnBeat", "On Beat"),
-            new StrNameLabel("OnBeatForce", "On Beat (Force)"),
-            new StrNameLabel("Loop", "Loop")
-        ], function(id) {
+        animationLabel = new FlxUIDropDownMenu(10, animationFPSNumeric.y + animationFPSNumeric.height + 10, animTypes, function(id) {
             // animationLabel.label
         });
 
@@ -381,7 +471,10 @@ class StageEditor extends MusicBeatState {
         selectedObj = null;
     }
     public override function create() {
-        
+        if (FlxG.sound.music == null) {
+            FlxG.sound.playMusic(Paths.music("characterEditor", "preload"));
+            // FlxG.sound.music.volume = 0;
+        }
         #if desktop
             Discord.DiscordClient.changePresence("In the Stage Editor...", null, "Stage Editor Icon");
         #end
@@ -466,12 +559,12 @@ class StageEditor extends MusicBeatState {
         addGlobalSetsTab();
 
         var hideButton:FlxUIButton = null;
-        hideButton = new FlxUIButton(FlxG.width - 315, 20, ">", function() {
+        hideButton = new FlxUIButton(FlxG.width - 320, 20, ">", function() {
             closed = !closed;
             hideButton.label.text = closed ? "<" : ">";
         });
         hideButton.scrollFactor.set(1, 1);
-        hideButton.resize(15, FlxG.height - 20);
+        hideButton.resize(20, FlxG.height - 20);
         hideButton.cameras = [camHUD];
         add(hideButton);
 
@@ -523,8 +616,9 @@ class StageEditor extends MusicBeatState {
         });
         saveButton.x -= saveButton.width;
         saveButton.cameras = [dummyHUDCamera, camHUD];
-        add(closeButton);
+        saveButton.scrollFactor.set(1, 1);
         add(saveButton);
+        add(closeButton);
         updateStageElements();
 
     }
@@ -775,7 +869,7 @@ class StageEditor extends MusicBeatState {
             if (camGame.zoom < 0.1) camGame.zoom = 0.1;
             if (defCamZoomNum.value < 0.1) defCamZoomNum.value = 0.1;
 
-            if (FlxG.mouse.getScreenPosition(camHUD).x >= FlxG.width - 315 - camHUD.scroll.x) {
+            if (FlxG.mouse.getScreenPosition(camHUD).x >= FlxG.width - 320 - camHUD.scroll.x) {
                 // when on tabs thingy
                 if (selectedObj != null) {
                     selectedObj.x = sprPosX.value;

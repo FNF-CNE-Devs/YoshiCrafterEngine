@@ -9,7 +9,7 @@
 	<app file="YoshiEngine_Mac" if="mac" />
 	<app file="YoshiEngine_Android" if="android" />
 	<!-- <app file="Yoshi Engine (x64)" unless="32bit" /> -->
-	<haxedef name="X64" unless="32bit"/>
+	<haxedef name="X64_BITS" unless="32bit"/>
 
 	<haxedef name="HXCPP_CHECK_POINTER" if="release" />
 	<haxedef name="HXCPP_STACK_LINE" if="release" />

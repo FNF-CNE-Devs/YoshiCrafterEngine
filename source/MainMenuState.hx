@@ -1,5 +1,7 @@
 package;
 
+import io.newgrounds.components.MedalComponent;
+import dev_toolbox.ToolboxMessage;
 import flixel.input.keyboard.FlxKey;
 import flixel.addons.ui.FlxUIButton;
 import lime.utils.Assets;
@@ -34,9 +36,9 @@ class MainMenuState extends MusicBeatState
 	var menuItems:FlxTypedGroup<FlxSprite>;
 
 	#if !switch
-	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate', 'credits', 'options'];
+	var optionShit:Array<String> = ['story mode', 'freeplay', 'mods', 'donate', 'credits', 'options'];
 	#else
-	var optionShit:Array<String> = ['story mode', 'freeplay'];
+	var optionShit:Array<String> = ['story mode', 'freeplay', 'options'];
 	#end
 
 	var magenta:FlxSprite;
@@ -282,6 +284,10 @@ class MainMenuState extends MusicBeatState
 								case 'freeplay':
 									FlxG.switchState(new FreeplayState());
 									trace("Freeplay Menu Selected");
+								
+								case 'mods':
+									FlxG.switchState(new ModMenuState());
+									trace ("Mods Menu Selected");
 								
 								case 'credits':
 									FlxG.switchState(new CreditsState());

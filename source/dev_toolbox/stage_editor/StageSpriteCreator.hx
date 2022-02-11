@@ -76,7 +76,7 @@ class StageSpriteCreator extends MusicBeatSubstate {
         var nameTextBox:FlxUIInputText = new FlxUIInputText(10, nameLabel.y + nameLabel.height, tabWidth - 20, "Sprite");
 
         var pathLabel:FlxUIText = new FlxUIText(10, nameTextBox.y + nameTextBox.height + 10, tabWidth - 20, "Path to the Bitmap");
-        var bitmapTabField:FlxUIInputText;
+        var bitmapTabField:FlxUIInputText = null;
         var browseButton = new FlxUIButton(tabWidth - 10, pathLabel.y + pathLabel.height, "Browse...", function() {
             var fe = new FileExplorer(ToolboxHome.selectedMod, FileExplorerType.Bitmap, "/images", function(p) {
                 var splitThing = [for (e in p.split("/")) if (e.trim() != "") e];
@@ -84,6 +84,7 @@ class StageSpriteCreator extends MusicBeatSubstate {
                     openSubState(ToolboxMessage.showMessage("Error", "The Bitmap must be in the \"images\" folder."));
                 } else {
                     bitmapTabField.text = Path.withoutExtension([for (i in 1...splitThing.length) splitThing[i]].join("/"));
+                    if (nameTextBox.text == "Sprite") nameTextBox.text = Path.withoutExtension(splitThing[splitThing.length - 1]);
                 }
             });
             fe.cameras = [state.dummyHUDCamera, state.camHUD];
@@ -158,6 +159,7 @@ class StageSpriteCreator extends MusicBeatSubstate {
                     openSubState(ToolboxMessage.showMessage("Error", "The Sparrow Atlas must be in the \"images\" folder."));
                 } else {
                     bitmapTabField.text = Path.withoutExtension([for (i in 1...splitThing.length) splitThing[i]].join("/"));
+                    if (nameTextBox.text == "Sprite") nameTextBox.text = Path.withoutExtension(splitThing[splitThing.length - 1]);
                 }
             });
             fe.cameras = [state.dummyHUDCamera, state.camHUD];
@@ -167,6 +169,19 @@ class StageSpriteCreator extends MusicBeatSubstate {
         browseButton.x -= browseButton.width;
         bitmapTabField = new FlxUIInputText(10, browseButton.y, Std.int(tabWidth - 30 - browseButton.width), "");
         browseButton.y += (bitmapTabField.height - browseButton.height) / 2;
+        
+        var animLabel:FlxUIText = new FlxUIText(10, bitmapTabField.y + bitmapTabField.height + 10, tabWidth - 20, "Animation Name");
+        var anim:FlxUIInputText = new FlxUIInputText(10, animLabel.y + animLabel.height, Std.int(tabWidth - 20 ), "");
+
+        var fps:FlxUINumericStepper = new FlxUINumericStepper(10, anim.y + anim.height + 10, 1, 24, 0, 300);
+        var fpsLabel:FlxUIText = new FlxUIText(10, fps.y + (fps.height / 2), 0, "FPS: ");
+        fps.x += fpsLabel.width;
+        fpsLabel.y -= fpsLabel.height / 2;
+
+        var animType:FlxUIDropDownMenu = new FlxUIDropDownMenu(10, fps.y + fps.height + 10, StageEditor.animTypes);
+        var animTypeLabel:FlxUIText = new FlxUIText(10, animType.y + (10), 0, "Animation Type: ");
+        animType.x += animTypeLabel.width;
+        animTypeLabel.y -= animTypeLabel.height / 2;
 
         var acceptButton = new FlxUIButton(tabWidth / 2, tabHeight - 50, "Create", function() {
             var path = Path.withoutExtension(bitmapTabField.text.trim());
@@ -199,9 +214,9 @@ class StageSpriteCreator extends MusicBeatSubstate {
                 name: nameTextBox.text.trim(),
                 src: path,
                 animation: {
-                    type: "Loop",
-                    name: "",
-                    fps: 24
+                    type: animType.selectedId,
+                    name: anim.text,
+                    fps: Std.int(fps.value)
                 }
             });
             state.updateStageElements();
@@ -217,15 +232,18 @@ class StageSpriteCreator extends MusicBeatSubstate {
         tab.add(bitmapTabField);
         tab.add(browseButton);
 
+        tab.add(anim);
+        tab.add(animLabel);
+
+        tab.add(fps);
+        tab.add(fpsLabel);
+
+        tab.add(animType);
+        tab.add(animTypeLabel);
+
         tab.add(acceptButton);
 
         tabs.addGroup(tab);
         //  = 
-    }
-
-    function showMessage(title:String, text:String) {
-        var m = ToolboxMessage.showMessage(title, text);
-        m.cameras = cameras;
-        openSubState(m);
     }
 }

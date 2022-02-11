@@ -147,11 +147,11 @@ class FileExplorer extends MusicBeatSubstate {
 
     }
 
-    function showMessage(title:String, text:String) {
-        var m = ToolboxMessage.showMessage(title, text);
-        m.cameras = cameras;
-        openSubState(m);
-    }
+    // function showMessage(title:String, text:String) {
+    //     var m = ToolboxMessage.showMessage(title, text);
+    //     m.cameras = cameras;
+    //     openSubState(m);
+    // }
 
     public override function new(mod:String, type:FileExplorerType, ?defaultFolder:String = "", callback:String->Void) {
         super();

@@ -61,8 +61,9 @@ class ToolboxHome extends MusicBeatState {
     public var tabs:Map<String, ToolboxTab> = [];
 
     public override function new(mod:String) {
+        // FlxG.sound.playMusic(Paths.music("characterEditor", "preload"));
         #if desktop
-            DiscordClient.changePresence("In the Toolbox", "Nah, this wont leak the mod they're working on.", "Toolbox Icon");
+            DiscordClient.changePresence("In the Toolbox", null, "Toolbox Icon");
         #end
         if (mod != null) selectedMod = mod;
         super();

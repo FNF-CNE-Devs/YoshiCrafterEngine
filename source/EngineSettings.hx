@@ -118,6 +118,7 @@ import flixel.FlxG;
 	
 	// USELESS IN SCRIPTS
 	@:keep public static var antialiasing:Bool = true;
+	@:keep public static var autopause:Bool = true;
 	@:keep public static var autoplayInFreeplay:Bool = false;
 	@:keep public static var freeplayCooldown:Float = 2;
 	@:keep public static var fpsCap:Int = 120;
@@ -247,6 +248,7 @@ class Settings {
 			// }
 		}
 		engineSettings.flush();
+
     }
 
     // public static function load(bind:Bool = true) {

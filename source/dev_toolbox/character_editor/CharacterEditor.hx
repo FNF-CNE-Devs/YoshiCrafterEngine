@@ -206,6 +206,7 @@ class CharacterEditor extends MusicBeatState {
         }
     }
     public function new(char:String) {
+        if (FlxG.sound.music == null) FlxG.sound.playMusic(Paths.music("characterEditor", "preload"));
         #if desktop
             Discord.DiscordClient.changePresence("In the Character Editor...", null, "Character Editor Icon");
         #end

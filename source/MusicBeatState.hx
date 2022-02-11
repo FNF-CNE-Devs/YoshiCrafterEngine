@@ -1,5 +1,6 @@
 package;
 
+import dev_toolbox.ToolboxMessage;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.FlxSprite;
@@ -155,4 +156,10 @@ class MusicBeatState extends FlxUIState
 	public function onDropFile(path:String) {
 		
 	}
+
+    function showMessage(title:String, text:String) {
+        var m = ToolboxMessage.showMessage(title, text);
+        m.cameras = cameras;
+        openSubState(m);
+    }
 }
