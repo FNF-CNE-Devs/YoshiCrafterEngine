@@ -248,6 +248,7 @@ class CharacterEditor extends MusicBeatState {
         dad = new Character(100, 100, "Friday Night Funkin':dad");
         dad.color = 0xFF000000;
         dad.alpha = 1 / 3;
+        dad.visible = Settings.engineSettings.data.charEditor_showDadAndBF;
         add(dad);
 
         shadowCharacter = new Character(100, 100, '${ToolboxHome.selectedMod}:$char');
@@ -259,6 +260,7 @@ class CharacterEditor extends MusicBeatState {
         bf = new Boyfriend(770, 100, "Friday Night Funkin':bf");
         bf.color = 0xFF000000;
         bf.alpha = 1 / 3;
+        bf.visible = Settings.engineSettings.data.charEditor_showDadAndBF;
         add(bf);
 
 
@@ -420,7 +422,6 @@ class CharacterEditor extends MusicBeatState {
         showCharacterReferences = new FlxUICheckBox(anim.x + anim.width + 10, editAsPlayer.y + editAsPlayer.height + 10, null, null, "Show Dad and BF", 250, null, function() {
             Settings.engineSettings.data.charEditor_showDadAndBF = dad.visible = bf.visible = showCharacterReferences.checked;
         });
-        showCharacterReferences.checked = true;
         showCharacterReferences.scrollFactor.set();
         showCharacterReferences.checked = Settings.engineSettings.data.charEditor_showDadAndBF;
         add(showCharacterReferences);

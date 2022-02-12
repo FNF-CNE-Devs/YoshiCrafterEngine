@@ -2086,7 +2086,7 @@ class PlayState extends MusicBeatState
 		// better streaming of shit
 
 		// RESET = Quick Game Over Screen
-		if (controls.RESET)
+		if (controls.RESET && engineSettings.resetButton)
 		{
 			health = -1;
 			trace("oh no he died");

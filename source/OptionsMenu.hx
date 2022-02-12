@@ -336,6 +336,20 @@ class OptionsMenu extends MusicBeatState
 			value: function() {return "";}
 		});
 		gameplay.options.push({
+			text : "Reset Button",
+			description : "When checked, will allow the player to press R to blue ball itself.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.resetButton = !Settings.engineSettings.data.resetButton;
+					o.checkboxChecked = Settings.engineSettings.data.resetButton;
+					o.check(Settings.engineSettings.data.resetButton);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.resetButton;},
+			value: function() {return "";}
+		});
+		gameplay.options.push({
 			text : "Accuracy mode",
 			description : "Sets the accuracy mode. \"Simple\" means based on the rating, \"Complex\" means based on the press delay.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
