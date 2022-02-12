@@ -30,6 +30,7 @@ function create() {
     character.addOffset("singDOWNmiss", -11, -19);
     character.addOffset("hey", 7, 4);
     character.addOffset('scared', -4);
+    character.addOffset('preAttack', -33, -40);
 
     character.playAnim('idle');
     character.charGlobalOffset.y = 350;

@@ -135,6 +135,20 @@ class ScriptPack {
         return defaultReturnVal;
     }
 
+    public function executeFuncMultiple(funcName:String, ?args:Array<Any>, ?defaultReturnVal:Array<Any>) {
+        var a = args;
+        if (a == null) a = [];
+        if (defaultReturnVal == null) defaultReturnVal = [null];
+        for (script in scripts) {
+            var returnVal = script.executeFunc(funcName, a);
+            if (!defaultReturnVal.contains(returnVal)) {
+                #if messTest trace("found"); #end
+                return returnVal;
+            }
+        }
+        return defaultReturnVal[0];
+    }
+
     public function setVariable(name:String, val:Dynamic) {
         for (script in scripts) script.setVariable(name, val);
     }

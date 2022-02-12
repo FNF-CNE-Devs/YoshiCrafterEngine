@@ -1203,11 +1203,11 @@ class PlayState extends MusicBeatState
 
 			{
 				case 0:
-					if (scripts.executeFunc("onCountdown", [3], null) != false) {
+					if (scripts.executeFuncMultiple("onCountdown", [3], [true, null]) != false) {
 						FlxG.sound.play(Paths.sound('intro3'), 0.6);
 					}
 				case 1:
-					if (scripts.executeFunc("onCountdown", [2], null) != false) {
+					if (scripts.executeFuncMultiple("onCountdown", [2], [true, null]) != false) {
 						var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
 						ready.scrollFactor.set();
 						ready.updateHitbox();
@@ -1227,7 +1227,7 @@ class PlayState extends MusicBeatState
 						FlxG.sound.play(Paths.sound('intro2'), 0.6);
 					}
 				case 2:
-					if (scripts.executeFunc("onCountdown", [1], null) != false) {
+					if (scripts.executeFuncMultiple("onCountdown", [1], [true, null]) != false) {
 						var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[1]));
 						set.scrollFactor.set();
 	
@@ -1247,7 +1247,7 @@ class PlayState extends MusicBeatState
 					}
 					
 				case 3:
-					if (scripts.executeFunc("onCountdown", [0], null) != false) {
+					if (scripts.executeFuncMultiple("onCountdown", [0], [true, null]) != false) {
 						var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[2]));
 						go.scrollFactor.set();
 	
@@ -1402,7 +1402,7 @@ class PlayState extends MusicBeatState
 			var script = Script.create(p);
 			script.setVariable("enableRating", true);
 
-			script.setVariable("update", function(elapsed) {
+			var calculateNote = function() {
 				var note:Note = script.getVariable("note");
 				if (note.isSustainNote) {
 					note.canBeHit = (note.strumTime - (Conductor.stepCrochet * 0.6) < Conductor.songPosition) && (note.strumTime + (Conductor.stepCrochet) > Conductor.songPosition);
@@ -1411,6 +1411,10 @@ class PlayState extends MusicBeatState
 				}
 				if (note.strumTime + note.missDiff < Conductor.songPosition && !note.wasGoodHit)
 					note.tooLate = true;
+			}
+			script.setVariable("calculateNote", calculateNote);
+			script.setVariable("update", function(elapsed) {
+				calculateNote();
 			});
 			script.setVariable("create", function() {
 				var note:Note = script.getVariable("note");
@@ -1783,6 +1787,12 @@ class PlayState extends MusicBeatState
 	var discordTimer:Float = 0;
 	override public function update(elapsed:Float)
 	{
+		
+		if (inCutscene) {
+			(endCutscene ? end_cutscene : cutscene).executeFunc("preUpdate", [elapsed]);
+		} else {
+			scripts.executeFunc("preUpdate", [elapsed]);
+		}
 		#if !debug
 		perfectMode = false;
 		#end
@@ -1875,24 +1885,26 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
-		var iconlerp = 1.15 - (FlxEase.cubeOut(((Conductor.songPosition + (Conductor.crochet * 5)) / Conductor.crochet) % 1) * 0.15);
-		iconP1.scale.set(iconlerp, iconlerp);
-		iconP2.scale.set(iconlerp, iconlerp);
-
-		// iconP1.updateHitbox();
-		// iconP2.updateHitbox();
-
-		var iconOffset:Int = 26;
-
-		iconP1.offset.x = -75;
-		iconP2.offset.x = -75;
-		// iconP1.offset.y = -iconOffset;
-		if (maxHealth <= 0.0001) {
-			iconP1.x = Std.int(PlayState.current.guiSize.x / 2) - iconOffset + iconP1.offset.x;
-			iconP2.x = Std.int(PlayState.current.guiSize.x / 2) - (iconP2.width - iconOffset) + iconP2.offset.x;
-		} else {
-			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) + iconP1.offset.x;
-			iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset) + iconP2.offset.x;
+		if (scripts.executeFuncMultiple("onHealthUpdate", [elapsed], [true, null]) != false) {
+			var iconlerp = 1.15 - (FlxEase.cubeOut(((Conductor.songPosition + (Conductor.crochet * 5)) / Conductor.crochet) % 1) * 0.15);
+			iconP1.scale.set(iconlerp, iconlerp);
+			iconP2.scale.set(iconlerp, iconlerp);
+	
+			// iconP1.updateHitbox();
+			// iconP2.updateHitbox();
+	
+			var iconOffset:Int = 26;
+	
+			iconP1.offset.x = -75;
+			iconP2.offset.x = -75;
+			// iconP1.offset.y = -iconOffset;
+			if (maxHealth <= 0.0001) {
+				iconP1.x = Std.int(PlayState.current.guiSize.x / 2) - iconOffset + iconP1.offset.x;
+				iconP2.x = Std.int(PlayState.current.guiSize.x / 2) - (iconP2.width - iconOffset) + iconP2.offset.x;
+			} else {
+				iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) + iconP1.offset.x;
+				iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset) + iconP2.offset.x;
+			}
 		}
 
 		if (health > maxHealth)
@@ -2323,6 +2335,12 @@ class PlayState extends MusicBeatState
 		#end
 		
 		
+		if (inCutscene) {
+			(endCutscene ? end_cutscene : cutscene).executeFunc("postUpdate", [elapsed]);
+		} else {
+			scripts.executeFunc("postUpdate", [elapsed]);
+		}
+		
 	}
 
 	function endSong():Void
@@ -2541,63 +2559,61 @@ class PlayState extends MusicBeatState
 
 		hits[daRating.name] += 1;
 
-		var seperatedScore:Array<Int> = [];
 
-		var stringCombo = Std.string(combo);
-		for(i in 0...stringCombo.length) {
-			seperatedScore.push(Std.parseInt(stringCombo.charAt(i)));
-		}
-		if (seperatedScore.length < 3) {
-			for(i in seperatedScore.length...3) {
-				seperatedScore.insert(0, 0);
+		if (scripts.executeFuncMultiple("onShowCombo", [combo, coolText], [true, null]) != false) {
+			var seperatedScore:Array<Int> = [];
+			var stringCombo = Std.string(combo);
+			for(i in 0...stringCombo.length) {
+				seperatedScore.push(Std.parseInt(stringCombo.charAt(i)));
 			}
-		}
-		// seperatedScore.push(Math.floor(combo / 100));
-		// seperatedScore.push(Math.floor((combo - (seperatedScore[0] * 100)) / 10));
-		// seperatedScore.push(combo % 10);
 
-		var daLoop:Int = 0;
-		for (i in seperatedScore)
-		{
-			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image('num' + Std.int(i)));
-			numScore.screenCenter();
-			numScore.x = coolText.x + (43 * daLoop) - 90;
-			numScore.y += 80;
-
-			if (!curStage.startsWith('school'))
+			while(seperatedScore.length < 3) seperatedScore.insert(0, 0);
+	
+			var daLoop:Int = 0;
+			for (i in seperatedScore)
 			{
-				numScore.antialiasing = true;
-				numScore.setGraphicSize(Std.int(numScore.width * 0.5));
-			}
-			else
-			{
-				numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom));
-			}
-			numScore.updateHitbox();
-
-			numScore.acceleration.y = FlxG.random.int(200, 300);
-			numScore.velocity.y -= FlxG.random.int(140, 160);
-			numScore.velocity.x = FlxG.random.float(-5, 5);
-
-			if (combo >= 10 || combo == 0)
-				add(numScore);
-
-			FlxTween.tween(numScore, {alpha: 0}, 0.2, {
-				onComplete: function(tween:FlxTween)
+				var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image('num' + Std.int(i)));
+				numScore.screenCenter();
+				numScore.x = coolText.x + (43 * daLoop) - 90;
+				numScore.y += 80;
+	
+				if (!curStage.startsWith('school'))
 				{
-					numScore.destroy();
-				},
-				startDelay: Conductor.crochet * 0.002
-			});
-
-			daLoop++;
+					numScore.antialiasing = true;
+					numScore.setGraphicSize(Std.int(numScore.width * 0.5));
+				}
+				else
+				{
+					numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom));
+				}
+				numScore.updateHitbox();
+	
+				numScore.acceleration.y = FlxG.random.int(200, 300);
+				numScore.velocity.y -= FlxG.random.int(140, 160);
+				numScore.velocity.x = FlxG.random.float(-5, 5);
+	
+				if (combo >= 10 || combo == 0)
+					add(numScore);
+	
+				FlxTween.tween(numScore, {alpha: 0}, 0.2, {
+					onComplete: function(tween:FlxTween)
+					{
+						numScore.destroy();
+					},
+					startDelay: Conductor.crochet * 0.002
+				});
+	
+				daLoop++;
+			}
+			
+			coolText.text = Std.string(seperatedScore);
 		}
+		
 		/* 
 			trace(combo);
 			trace(seperatedScore);
 		 */
 
-		coolText.text = Std.string(seperatedScore);
 		// add(coolText);
 
 		FlxTween.tween(rating, {alpha: 0}, 0.2, {
@@ -3209,6 +3225,8 @@ class PlayState extends MusicBeatState
 						if (rating.miss) 
 							noteMiss((note.noteData % _SONG.keyNumber) % SONG.keyNumber);
 					}
+				} else {
+					health += note.sustainHealth;
 				}
 			}
 

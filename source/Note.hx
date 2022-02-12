@@ -49,6 +49,8 @@ class Note extends FlxSprite
 	public var noteType:Int = 0;
 
 	public var colored:Bool = false;
+
+	public var sustainHealth:Float = 0.004;
 	// #if secret
 	// 	var c:FlxColor = new FlxColor(0xFFFF0000);
 	// 	c.hue = (strumTime / 100) % 359;

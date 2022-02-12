@@ -67,8 +67,10 @@ class PauseSubState extends MusicBeatSubstate
 		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 		FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
 		if (Settings.engineSettings.data.developerMode == true) {
-			for (d in devMenuItems) menuItems.push(d);
-			if (PlayState.current.devStage == null) menuItems.remove("Edit Stage");
+			if (!(ModSupport.modConfig[PlayState.songMod] != null && ModSupport.modConfig[PlayState.songMod].locked == true)) {
+				for (d in devMenuItems) menuItems.push(d);
+				if (PlayState.current.devStage == null) menuItems.remove("Edit Stage");
+			}
 		}
 		menuItems.push("Exit to menu");
 		grpMenuShit = new FlxTypedGroup<Alphabet>();

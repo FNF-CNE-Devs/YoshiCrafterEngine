@@ -152,6 +152,7 @@
 	
 	<!-- <haxelib name="flixel-animate"/> -->
 	<haxelib name="discord_rpc" if="desktop"/>
+	<!-- <haxelib name="zip"/> -->
 
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 

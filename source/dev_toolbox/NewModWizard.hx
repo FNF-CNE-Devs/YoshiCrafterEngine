@@ -121,7 +121,8 @@ class NewModWizard extends MusicBeatState {
                 skinnableGFs: [],
                 skinnableBFs: [],
                 BFskins: [],
-                GFskins: []
+                GFskins: [],
+                locked: false
             }
 
             Toolbox.createMod(json, folderName, modIcon.pixels, icon.pixels);

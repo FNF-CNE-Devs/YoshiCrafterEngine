@@ -101,6 +101,7 @@ hscript
 newgrounds
 akifox-asynchttp
 linc_luajit
+zip
 ```
 So for each of those type `haxelib install [library]` so shit like `haxelib install newgrounds`
 

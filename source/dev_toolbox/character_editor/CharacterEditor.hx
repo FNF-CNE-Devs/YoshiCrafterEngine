@@ -77,11 +77,12 @@ class CharacterEditor extends MusicBeatState {
     public function updateAnim() {
         var anim = character.animation.getByName(currentAnim);
         if (anim == null) return;
-        framerate.value = anim.frameRate;
-        loopCheckBox.checked = anim.looped;
+        if (framerate != null) framerate.value = anim.frameRate;
+        if (loopCheckBox != null) loopCheckBox.checked = anim.looped;
         character.playAnim(currentAnim);
         // shadowCharacter.playAnim(currentAnim);
 
+        if (offsetX == null || offsetY == null) return;
         var offsets = character.animOffsets[currentAnim];
         if (offsets == null) offsets = [0, 0];
         offsetX.value = offsets[0];
@@ -419,6 +420,7 @@ class CharacterEditor extends MusicBeatState {
         showCharacterReferences = new FlxUICheckBox(anim.x + anim.width + 10, editAsPlayer.y + editAsPlayer.height + 10, null, null, "Show Dad and BF", 250, null, function() {
             Settings.engineSettings.data.charEditor_showDadAndBF = dad.visible = bf.visible = showCharacterReferences.checked;
         });
+        showCharacterReferences.checked = true;
         showCharacterReferences.scrollFactor.set();
         showCharacterReferences.checked = Settings.engineSettings.data.charEditor_showDadAndBF;
         add(showCharacterReferences);
@@ -663,7 +665,7 @@ class CharacterEditor extends MusicBeatState {
             if (n != "") anims.push(new StrNameLabel(n, n));
         }
         if (newAnimName == null && (character.animation.getByName(oldSelec) == null || removeOldAnim)) {
-            var newAnim = anims[0].name;
+            var newAnim = anims.length < 1 ? "" : anims[0].name;
             if (newAnim == oldSelec) newAnim = (anims[1] != null ? anims[1].name : "");
             newAnimName = newAnim;
             character.playAnim(newAnim);

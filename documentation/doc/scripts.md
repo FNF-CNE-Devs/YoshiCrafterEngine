@@ -107,6 +107,28 @@ function onCountdown(val:Int) {
         case 0:
             sprite.animation.play("GO!");
     }
+
+    return false;
+}
+```
+
+---
+**`onShowCombo(combo:Int, coolText:FlxText):Void`**
+Runs when the countdown goes
+
+Params:
+- `combo:Int`: Current combo
+- `coolText:FlxText`: Text used for placement
+
+To prevent the default number appearance, return false.
+Example usage:
+```haxe
+function onShowCombo(combo:Int, coolText:FlxText) {
+    // Show your own combo thingy
+    ...
+
+    // Prevent showing default combo
+    return false;
 }
 ```
 
@@ -122,6 +144,32 @@ Fired when the countdown finished and the music starts
 Available variables :
 - `botplay:Bool` - Whenever the player is in botplay or not.
 - [Every other default variables](defaultVars.md)
+
+---
+**`preUpdate(elapsed:Float):Void`**
+
+Like update, excepts runs at the beginning of PlayState's `update` function.
+
+Params :
+- `elapsed:Float` : Time elapsed
+
+
+---
+**`postUpdate(elapsed:Float):Void`**
+
+Like update, excepts runs at the end of PlayState's `update` function.
+
+Params :
+- `elapsed:Float` : Time elapsed
+
+
+---
+**`onHealthUpdate(elapsed:Float):Void`**
+
+Runs before health updates. Return false to prevent the engine from updating the health icon position, allowing you to do it yourself.
+
+Params :
+- `elapsed:Float` : Time elapsed
 
 ---
 **`update(elapsed:Float):Void`**

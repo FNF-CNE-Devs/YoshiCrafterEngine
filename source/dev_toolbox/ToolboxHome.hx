@@ -76,7 +76,8 @@ class ToolboxHome extends MusicBeatState {
                 BFskins: [],
                 GFskins: [],
                 skinnableBFs : [],
-                skinnableGFs : []
+                skinnableGFs : [],
+                locked: false
             };
             ModSupport.modConfig[mod] = conf;
         }

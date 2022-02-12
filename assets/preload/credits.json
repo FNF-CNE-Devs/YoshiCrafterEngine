@@ -1,8 +1,8 @@
 {
     "credits" : [
         {
-            "name" : "Muffichii aka YoshiCrafter29",
-            "role" : "Engine developer & Doge GF's n°1 fan",
+            "name" : "YoshiCrafter29",
+            "role" : "Engine developer & Doge GF's n°1 fan, aka Muffichii or Doovleed (dont use that username please).",
             "icon" : "credits/yoshicrafter29",
             "urls" : [
                 {
@@ -11,7 +11,7 @@
                 },
                 {
                     "name" : "Twitter",
-                    "url" : "https://twitter.com/muffichii"
+                    "url" : "https://twitter.com/YoshiCrafter29"
                 },
                 {
                     "name" : "GitHub",

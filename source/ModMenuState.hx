@@ -1,3 +1,4 @@
+import flixel.util.FlxColor;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import flixel.FlxG;
@@ -25,10 +26,21 @@ class ModMenuState extends MusicBeatState {
             add(card);
         }
 
-        var fancyHUDTopBar = new FlxSprite(0, 0).makeGraphic(FlxG.width, 100, 0x88000000);
+        var fancyHUDTopBar = new FlxSprite(0, 0).makeGraphic(FlxG.width, 75, 0x88000000);
         fancyHUDTopBar.scrollFactor.set(0, 0);
         add(fancyHUDTopBar);
         
+        var titleBarAlphabet = new Alphabet(0, 0, "Installed Mods", true, false, FlxColor.WHITE);
+        for (m in titleBarAlphabet) {
+            m.scale.set(0.65, 0.65);
+            m.updateHitbox();
+            m.x *= 0.65;
+        }
+        titleBarAlphabet.scrollFactor.set(0, 0);
+        // titleBarAlphabet.x = 10;
+        titleBarAlphabet.screenCenter(X);
+        titleBarAlphabet.y = 37.5 - (titleBarAlphabet.height / 2);
+        add(titleBarAlphabet);
     }
 
     public override function update(elapsed) {
@@ -54,6 +66,9 @@ class ModMenuState extends MusicBeatState {
         }
         if (controls.DOWN_P) {
             changeSelection(1);
+        }
+        if (FlxG.mouse.wheel != 0) {
+            changeSelection(-FlxG.mouse.wheel);
         }
         if (controls.BACK) {
             FlxG.switchState(new MainMenuState());

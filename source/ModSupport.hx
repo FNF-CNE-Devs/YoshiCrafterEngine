@@ -1,3 +1,7 @@
+import haxe.io.Bytes;
+// import zip.Zip;
+// import zip.ZipEntry;
+// import zip.ZipReader;
 import Shaders.ColorShader;
 #if desktop
 import cpp.Lib;
@@ -226,6 +230,10 @@ typedef ModScript = {
     var mod:String;
 }
 
+// typedef ZipProgress = {
+//     var progress:Float;
+//     var zipReader:ZipReader;
+// }
 class ModSupport {
     public static var song_config_parser:hscript.Interp;
     public static var song_modchart_path:String = "";
@@ -271,7 +279,8 @@ class ModSupport {
                 skinnableBFs: null,
                 BFskins: null,
                 GFskins: null,
-                keyNumbers: null
+                keyNumbers: null,
+                locked: false
             };
             modConfig[mod] = json;
         }
@@ -554,4 +563,41 @@ class ModSupport {
         }
         return songs;
     }
+
+    /*
+    public static function installModFromZip(zipPath:String, callback:Void->Void):ZipProgress {
+        var fileContent = File.getBytes(zipPath);
+        var zip = new ZipReader(fileContent);
+
+        var thingy:ZipProgress = {
+            progress: 0,
+            zipReader: zip
+        };
+        #if (target.threaded)
+        sys.thread.Thread.create(function() {
+        #end
+            var entries:Map<String, ZipEntry> = [];
+            while(true) {
+                var entry = zip.getNextEntry();
+                if (entry == null) break;
+                entries[entry.fileName] = entry;
+                thingy.progress = zip.progress() / 2;
+            }
+            var p = 0;
+            var keys = entries.keys();
+            var am = [while (keys.hasNext()) keys.next()];
+            for(k=>e in entries) {
+                // wtf
+                var bytes:Bytes = cast(Zip.getBytes(entries.get(k)), Bytes);
+                File.saveBytes('${Paths.modsPath}/$k', bytes);
+                p++;
+                thingy.progress = 0.5 + (p / am.length / 2);
+            }
+            callback();
+        #if (target.threaded)
+        });
+        #end
+        return thingy;
+    }
+    */
 }

@@ -52,56 +52,6 @@ function create() {
     }
 }
 
-function update(elapsed) {
-    if (note.isSustainNote) {
-        note.canBeHit = (note.strumTime - (Conductor.stepCrochet * 0.6) < Conductor.songPosition) && (note.strumTime + (Conductor.stepCrochet) > Conductor.songPosition);
-    } else {
-        note.canBeHit = (note.strumTime > Conductor.songPosition - Conductor.safeZoneOffset && note.strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5));
-    }
-    if (note.strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !note.wasGoodHit)
-        note.tooLate = true;
-}
-
-function onPlayerHit(direction) {
-    switch(direction) {
-        case 0: //SING LEFT
-            PlayState.boyfriend.playAnim("singLEFT", true);
-        case 1: //SING DOWN
-            PlayState.boyfriend.playAnim("singDOWN", true);
-        case 2: //SING UP
-            PlayState.boyfriend.playAnim("singUP", true);
-        case 3: //SING RIGHT
-            PlayState.boyfriend.playAnim("singRIGHT", true);
-    }
-}
-
-function onDadHit(direction) {
-    switch(direction) {
-        case 0: //SING LEFT
-            PlayState.dad.playAnim("singLEFT", true);
-        case 1: //SING DOWN
-            PlayState.dad.playAnim("singDOWN", true);
-        case 2: //SING UP
-            PlayState.dad.playAnim("singUP", true);
-        case 3: //SING RIGHT
-            PlayState.dad.playAnim("singRIGHT", true);
-    }
-}
-
-function onMiss(direction) {
-    switch(direction) {
-        case 0: //SING LEFT
-            PlayState.boyfriend.playAnim("singLEFTmiss", true);
-        case 1: //SING DOWN
-            PlayState.boyfriend.playAnim("singDOWNmiss", true);
-        case 2: //SING UP
-            PlayState.boyfriend.playAnim("singUPmiss", true);
-        case 3: //SING RIGHT
-            PlayState.boyfriend.playAnim("singRIGHTmiss", true);
-    }
-    PlayState.noteMiss(note.noteData);
-    PlayState.health -= note.isSustainNote ? 0.01 : 0.0475;
-}
 
 function generateStaticArrow(babyArrow:FlxSprite, i:Int) {
     babyArrow.loadGraphic(Paths.image(EngineSettings.customArrowColors ? 'weeb/pixelUI/arrows-pixels-colored' : 'weeb/pixelUI/arrows-pixels'), true, 17, 17);
@@ -138,16 +88,3 @@ function generateStaticArrow(babyArrow:FlxSprite, i:Int) {
             babyArrow.animation.add('confirm', [15, 19], 24, false);
     }
 }
-
-// function onDadHit(direction) {
-//     switch(direction) {
-//         case 0: //SING LEFT
-//             PlayState.dad.playAnim("singLEFT");
-//         case 1: //SING DOWN
-//             PlayState.dad.playAnim("singDOWN");
-//         case 2: //SING UP
-//             PlayState.dad.playAnim("singUP");
-//         case 3: //SING RIGHT
-//             PlayState.dad.playAnim("singRIGHT");
-//     }
-// }

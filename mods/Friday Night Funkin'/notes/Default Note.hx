@@ -131,27 +131,3 @@ function create() {
         note.animation.play("holdend");
     }
 }
-
-function update(elapsed) {
-    if (note.isSustainNote) {
-        note.canBeHit = (note.strumTime - (Conductor.stepCrochet * 0.6) < Conductor.songPosition) && (note.strumTime + (Conductor.stepCrochet) > Conductor.songPosition);
-    } else {
-        note.canBeHit = (note.strumTime > Conductor.songPosition - Conductor.safeZoneOffset && note.strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5));
-    }
-    if (note.strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !note.wasGoodHit)
-        note.tooLate = true;
-}
-
-function onPlayerHit(noteData) {
-    for (bf in PlayState.boyfriends) bf.playAnim(noteSchemes[PlayState.song.keyNumber][noteData % PlayState.song.keyNumber][4], true);
-}
-
-function onMiss(noteData) {
-    for (bf in PlayState.boyfriends) bf.playAnim(noteSchemes[PlayState.song.keyNumber][noteData % PlayState.song.keyNumber][4] + "miss", true);
-    PlayState.noteMiss(note.noteData);
-    PlayState.health -= note.isSustainNote ? 0.01 : 0.0475;
-}
-
-function onDadHit(noteData) {
-    for (dad in PlayState.dads) dad.playAnim(noteSchemes[PlayState.song.keyNumber][noteData % PlayState.song.keyNumber][4] + (note.altAnim ? "-alt" : ""), true);
-}
