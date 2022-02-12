@@ -26,6 +26,7 @@ jobs:
           haxe-version: 4.2.4
       - name: sudo files
         run: |
+          sudo apt-get update
           sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev g++ g++-multilib gcc-multilib libasound2-dev libx11-dev libxext-dev libxi-dev libxrandr-dev libxinerama-dev
       # Runs a set of commands using the runners shell
       - name: funny dependencies
