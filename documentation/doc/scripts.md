@@ -86,6 +86,16 @@ function onStartCountdown() {
 ```
 
 ---
+**`onGenerateStaticArrows():Void`**
+Runs after `generateStaticArrows()` was called for all characters..
+Example usage:
+```haxe
+function onGenerateStaticArrows() {
+    // Change the arrows position here
+}
+```
+
+---
 **`onCountdown(number:Int):Void`**
 Runs when the countdown goes
 

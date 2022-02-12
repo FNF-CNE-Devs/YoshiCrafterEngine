@@ -1,5 +1,6 @@
 package dev_toolbox.toolbox_tabs;
 
+import dev_toolbox.stage_editor.StageCreator;
 import dev_toolbox.stage_editor.StageEditor;
 import flixel.FlxG;
 import flixel.addons.ui.*;
@@ -18,18 +19,26 @@ class StagesTab extends ToolboxTab {
             selectedStage = stage;
         });
         updateRadioList();
-        var selectStageButton = new FlxUIButton(0, FlxG.height - y - 10, "Edit", function() {
+        var selectStageButton = new FlxUIButton((FlxG.width / 2) + 5, FlxG.height - y - 10, "Edit", function() {
             if (selectedStage != null) {
                 StageEditor.fromFreeplay = false;
                 FlxG.switchState(new StageEditor(selectedStage));
             }
         });
         selectStageButton.y -= selectStageButton.height;
-        selectStageButton.screenCenter(X);
+        // selectStageButton.screenCenter(X);
+
+        var createStageButton = new FlxUIButton((FlxG.width / 2) - 5, FlxG.height - y - 10, "Create", function() {
+            home.openSubState(new StageCreator());
+        });
+        createStageButton.x -= createStageButton.width;
+        createStageButton.y -= createStageButton.height;
+        // createStageButton.screenCenter(X);
 
 
         add(stageRadioList);
         add(selectStageButton);
+        add(createStageButton);
     }
 
     function updateRadioList() {

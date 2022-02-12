@@ -50,7 +50,7 @@ class Note extends FlxSprite
 
 	public var colored:Bool = false;
 
-	public var sustainHealth:Float = 0.004;
+	public var sustainHealth:Float = 0.012;
 	// #if secret
 	// 	var c:FlxColor = new FlxColor(0xFFFF0000);
 	// 	c.hue = (strumTime / 100) % 359;

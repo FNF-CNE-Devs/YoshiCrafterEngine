@@ -89,7 +89,7 @@ class ToolboxHome extends MusicBeatState {
 			{name: "songs", label: 'Songs'},
 			{name: "chars", label: 'Characters'},
 			{name: "weeks", label: 'Weeks'},
-			{name: "stages", label: 'Stages'},
+			{name: "stages", label: 'Stages JSONs'},
 		];
         UI_Tabs = new FlxUITabMenu(null, tabs, true);
         UI_Tabs.x = 0;

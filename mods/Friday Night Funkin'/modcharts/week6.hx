@@ -10,6 +10,14 @@ function create() {
     date = Paths.sound("introGo-pixel");
 }
 
+function createPost() {
+    for(m in PlayState.members) {
+        if (Std.isOfType(m, FlxSprite)) {
+            m.antialiasing = false;
+        }
+    }
+}
+
 function onCountdown(countdown:Int) {
     switch(countdown) {
         case 3:

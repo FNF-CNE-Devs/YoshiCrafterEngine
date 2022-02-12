@@ -1,5 +1,7 @@
 package;
 
+import flixel.util.FlxColor;
+import openfl.display.BitmapData;
 import lime.ui.FileDialogType;
 import lime.ui.FileDialog;
 import flixel.FlxState;
@@ -17,6 +19,100 @@ class CoolUtil
 	* Array for difficulty names
 	*/
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
+
+	public static function calculateAverageColorLight(icon:BitmapData) {
+		var r:Float = 0;
+		var g:Float = 0;
+		var b:Float = 0;
+		var t:Float = 0;
+		for (x in 0...icon.width) {
+			for (y in 0...icon.height) {
+				var c:FlxColor = icon.getPixel32(x, y);
+				r += c.redFloat * c.lightness * c.alpha;
+				g += c.greenFloat * c.lightness * c.alpha;
+				b += c.blueFloat * c.lightness * c.alpha;
+				t += c.lightness * c.alpha;
+			}
+		}
+		if (t == 0) {
+			return 0xFF000000;
+		} else {
+			return FlxColor.fromRGBFloat(r / t, g / t, b / t);
+		}
+	}
+	public static function calculateAverageColor(icon:BitmapData) {
+		var r:Float = 0;
+		var g:Float = 0;
+		var b:Float = 0;
+		var t:Float = 0;
+		for (x in 0...icon.width) {
+			for (y in 0...icon.height) {
+				var c:FlxColor = icon.getPixel32(x, y);
+				r += c.redFloat * c.alpha;
+				g += c.greenFloat * c.alpha;
+				b += c.blueFloat * c.alpha;
+				t += c.alpha;
+			}
+		}
+		if (t == 0) {
+			return 0xFF000000;
+		} else {
+			return FlxColor.fromRGBFloat(r / t, g / t, b / t);
+		}
+	}
+
+	public static function getMostPresentColor(icon:BitmapData) {
+		var colors:Map<FlxColor, Int> = [];
+		for (x in 0...icon.width) {
+			for (y in 0...icon.height) {
+				var c:FlxColor = cast(icon.getPixel32(x, y), FlxColor).to24Bit();
+				if (colors[c] == null) {
+					colors[c] = 1;
+				} else {
+					colors[c]++;
+				}
+			}
+		}
+
+		var maxColor:Int = 0xFF000000;
+		var maxColorAmount:Int = 0;
+		for (color=>amount in colors) {
+			if (amount > maxColorAmount) {
+				maxColor = color;
+				maxColorAmount = amount;
+			}
+		}
+
+		return maxColor;
+	}
+
+	public static function getMostPresentColor2(icon:BitmapData) {
+		var colors:Map<FlxColor, Int> = [];
+		for (x in 0...icon.width) {
+			for (y in 0...icon.height) {
+				var c:FlxColor = cast(icon.getPixel32(x, y), FlxColor).to24Bit();
+				if (c.redFloat == 0 && c.greenFloat == 0 && c.blueFloat == 0) continue;
+				if (colors[c] == null) {
+					colors[c] = 1;
+				} else {
+					colors[c]++;
+				}
+			}
+		}
+
+		var maxColor:FlxColor = 0xFF000000;
+		var maxColorAmount:Int = 0;
+		for (color=>amount in colors) {
+			if (amount > maxColorAmount && color.to24Bit() != FlxColor.BLACK) {
+				maxColor = color;
+				maxColorAmount = amount;
+			}
+		}
+
+		return maxColor;
+	}
+
+
 
 	public static function addBG(f:FlxState) {
 		var bg = new FlxSprite(0,0).loadGraphic(Paths.image("menuBGYoshi", "preload"));

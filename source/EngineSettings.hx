@@ -92,12 +92,17 @@ import flixel.FlxG;
 	// If true, video will have an antialiasing effect applied.
 	@:keep public static var videoAntialiasing:Bool = true;
 	
+	// Note offset
+	@:keep public static var noteOffset:Float = 0;
+
+	
 	// If true, will show the ratings at the bottom left of the screen like this :
 	// Sick: 0
 	// Good: 0
 	// Bad: 0
 	// Shit: 0
 	@:keep public static var showRatingTotal:Bool = false;
+
 
 	// If true, will glow CPU strums like the player's strums when they press a note.
 	@:keep public static var glowCPUStrums:Bool = true;

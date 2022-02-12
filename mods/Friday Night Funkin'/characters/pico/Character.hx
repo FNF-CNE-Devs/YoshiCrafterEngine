@@ -44,7 +44,7 @@ function create() {
 var danced = false;
 function dance() {
     if (!danced) {
-        character.playAnim("idle");
+        character.playAnim("idle", true);
     }
     danced = !danced;
 }

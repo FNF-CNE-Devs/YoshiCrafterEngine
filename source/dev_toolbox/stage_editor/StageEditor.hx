@@ -220,14 +220,18 @@ class StageEditor extends MusicBeatState {
 
         var deleteSpriteButton = new FlxUIButton(10, FlxG.height - 70, "Delete", function() {
             if (selectedObj == null) {
-                openSubState(ToolboxMessage.showMessage("Error", "No sprite was selected", function() {}, camHUD));
+                var t = ToolboxMessage.showMessage("Error", "No sprite was selected", function() {}, camHUD);
+                t.cameras = [dummyHUDCamera, camHUD];
+                openSubState(t);
                 return;
             }
             if (homies.contains(selectedObj.type)) {
-                openSubState(ToolboxMessage.showMessage("Error", 'You can\'t delete ${selectedObj.name}', function() {}, camHUD));
+                var t = ToolboxMessage.showMessage("Error", 'You can\'t delete ${selectedObj.name}', function() {}, camHUD);
+                t.cameras = [dummyHUDCamera, camHUD];
+                openSubState(t);
                 return;
             }
-            openSubState(new ToolboxMessage("Delete a sprite", 'Are you sure you want to delete "${selectedObj.name}"? This operation is irreversible.', [
+            var t = new ToolboxMessage("Delete a sprite", 'Are you sure you want to delete "${selectedObj.name}"? This operation is irreversible.', [
                 {
                     label: "Yes",
                     onClick: function(t) {
@@ -246,7 +250,9 @@ class StageEditor extends MusicBeatState {
                     label: "No",
                     onClick: function(t) {}
                 }
-            ]));
+            ]);
+            t.cameras = [dummyHUDCamera, camHUD];
+            openSubState(t);
         });
         deleteSpriteButton.color = 0xFFFF4444;
         deleteSpriteButton.label.color = FlxColor.WHITE;
@@ -577,7 +583,8 @@ class StageEditor extends MusicBeatState {
         add(tabs);
         var closeButton = new FlxUIButton(FlxG.width - 20, 0, "X", function() {
             if (unsaved) {
-                openSubState(new ToolboxMessage("Warning", "Some changes to the stage weren't saved. Do you want to save them ?", [
+                
+                var t = new ToolboxMessage("Warning", "Some changes to the stage weren't saved. Do you want to save them ?", [
                     {
                         label: "Save",
                         onClick: function(mes) {
@@ -595,7 +602,9 @@ class StageEditor extends MusicBeatState {
                         label: "Cancel",
                         onClick: function(mes) {}
                     }
-                ], null, camHUD));
+                ], null, camHUD);
+                t.cameras = [dummyHUDCamera, camHUD];
+                openSubState(t);
             } else {
                 bye();
             }

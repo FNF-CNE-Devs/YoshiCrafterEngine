@@ -432,7 +432,7 @@ class Character extends FlxSprite
 		}
 	}
 
-	public var lastHit:Float = 0;
+	public var lastHit:Float = -60000;
 
 
 	/**
@@ -444,7 +444,7 @@ class Character extends FlxSprite
 	 * @param Frame				Frame to begin with
 	 */
 
-	public var lastNoteHitTime:Float = -500;
+	public var lastNoteHitTime:Float = -60000;
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
 		if (AnimName.startsWith("sing")) {

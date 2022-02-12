@@ -305,6 +305,23 @@ class OptionsMenu extends MusicBeatState
 			value: function() {return Std.string(Settings.engineSettings.data.scrollSpeed).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.scrollSpeed) + ".0" : Std.string(Settings.engineSettings.data.scrollSpeed);}
 		});
 		gameplay.options.push({
+			text : "Note Offset",
+			description : "Sets the note offset.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.LEFT_P) {
+					Settings.engineSettings.data.noteOffset -= 10;
+					o.setValue('${Std.string(Settings.engineSettings.data.noteOffset)} ms');
+				}
+				if (controls.RIGHT_P) {
+					Settings.engineSettings.data.noteOffset += 10;
+					o.setValue('${Std.string(Settings.engineSettings.data.noteOffset)} ms');
+				}
+			},
+			checkbox: false,
+			checkboxChecked: function() {return false;},
+			value: function() {return '${Std.string(Settings.engineSettings.data.noteOffset)} ms';}
+		});
+		gameplay.options.push({
 			text : "Botplay",
 			description : "When enabled, will let a bot play the game instead of you. Useful for recording mod showcases.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {

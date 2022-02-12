@@ -100,8 +100,14 @@ class Rating {
 		return path;
 	}
 }
+
+typedef SustainHit = {
+	var time:Float;
+	var healthVal:Float;
+}
 class PlayState extends MusicBeatState
 {
+	public var currentSustains:Array<SustainHit> = [];
 	public var vars:Map<String, Dynamic> = [];
 	public var ratings:Array<Rating> = [];
 
@@ -1189,6 +1195,7 @@ class PlayState extends MusicBeatState
 
 			var introAlts:Array<String> = introAssets.get('default');
 			var altSuffix:String = "";
+			curBeat = -5 + swagCounter;
 
 			for (value in introAssets.keys())
 			{
@@ -1550,7 +1557,7 @@ class PlayState extends MusicBeatState
 
 			for (songNotes in section.sectionNotes)
 			{
-				var daStrumTime:Float = songNotes[0];
+				var daStrumTime:Float = songNotes[0] + Settings.engineSettings.data.noteOffset;
 				var daNoteData:Int = Std.int(songNotes[1]);
 
 				var gottaHitNote:Bool = section.mustHitSection;
@@ -2320,8 +2327,18 @@ class PlayState extends MusicBeatState
 				});
 			}
 
-			if (!inCutscene && !blockPlayerInput)
+			if (!inCutscene && !blockPlayerInput) {
 				keyShit(elapsed);
+
+				for(e in currentSustains) {
+					if (e.time + Conductor.stepCrochet > Conductor.songPosition) {
+						health += e.healthVal / (Conductor.stepCrochet / 1000) * elapsed;
+					} else {
+						currentSustains.remove(e);
+					}
+				}
+			}
+				
 
 			
 			var noteColors:Array<FlxColor> = boyfriend.getColors();
@@ -3226,7 +3243,11 @@ class PlayState extends MusicBeatState
 							noteMiss((note.noteData % _SONG.keyNumber) % SONG.keyNumber);
 					}
 				} else {
-					health += note.sustainHealth;
+					// smooth
+					currentSustains.push({
+						time: note.strumTime,
+						healthVal: note.sustainHealth
+					});
 				}
 			}
 

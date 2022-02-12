@@ -544,7 +544,7 @@ class CharacterEditor extends MusicBeatState {
         healthSettings.add(healthBar);
         healthSettings.add(icon);
 
-        var changeHealthColorButton = new FlxUIButton(10, healthBar.y + healthBar.height + 20, "Edit", function() {
+        var changeHealthColorButton = new FlxUIButton(135, healthBar.y + healthBar.height + 20, "Edit", function() {
             openSubState(new ColorPicker(healthBar.color, function(newColor) {
                 healthBar.color = newColor;
             }));
@@ -552,51 +552,26 @@ class CharacterEditor extends MusicBeatState {
         changeHealthColorButton.resize(30, 20);
         healthSettings.add(changeHealthColorButton);
 
-        var autoGenerateHealthColor = new FlxUIButton(changeHealthColorButton.x + changeHealthColorButton.width + 10, healthBar.y + healthBar.height + 20, "Autogenerate #1", function() {
-            var r:Float = 0;
-            var g:Float = 0;
-            var b:Float = 0;
-            var t:Float = 0;
-            for (x in 0...icon.pixels.width) {
-                for (y in 0...icon.pixels.height) {
-                    var c:FlxColor = icon.pixels.getPixel32(x, y);
-                    r += c.redFloat * c.lightness * c.alpha;
-                    g += c.greenFloat * c.lightness * c.alpha;
-                    b += c.blueFloat * c.lightness * c.alpha;
-                    t += c.lightness * c.alpha;
-                }
-            }
-            if (t == 0) {
-                healthBar.color = 0xFF000000;
-            } else {
-                healthBar.color = FlxColor.fromRGBFloat(r / t, g / t, b / t);
-            }
+        var autoGenerateHealthColor = new FlxUIButton(10, changeHealthColorButton.y + changeHealthColorButton.height + 10, "Use Mixed Colors (using light)", function() {
+            healthBar.color = CoolUtil.calculateAverageColorLight(icon.pixels);
+            
         });
-        autoGenerateHealthColor.resize(115, 20);
+        autoGenerateHealthColor.resize(280, 20);
 
-        var autoGenerateHealthColor2 = new FlxUIButton(autoGenerateHealthColor.x + autoGenerateHealthColor.width + 10, healthBar.y + healthBar.height + 20, "Autogenerate #2", function() {
-            var r:Float = 0;
-            var g:Float = 0;
-            var b:Float = 0;
-            var t:Float = 0;
-            for (x in 0...icon.pixels.width) {
-                for (y in 0...icon.pixels.height) {
-                    var c:FlxColor = icon.pixels.getPixel32(x, y);
-                    r += c.redFloat * c.alpha;
-                    g += c.greenFloat * c.alpha;
-                    b += c.blueFloat * c.alpha;
-                    t += c.alpha;
-                }
-            }
-            if (t == 0) {
-                healthBar.color = 0xFF000000;
-            } else {
-                healthBar.color = FlxColor.fromRGBFloat(r / t, g / t, b / t);
-            }
+        var autoGenerateHealthColor2 = new FlxUIButton(10, autoGenerateHealthColor.y + autoGenerateHealthColor.height, "Use Mixed Colors", function() {
+            healthBar.color = CoolUtil.calculateAverageColor(icon.pixels);
         });
-        autoGenerateHealthColor2.resize(115, 20);
+        autoGenerateHealthColor2.resize(280, 20);
+
+        var autoGenerateHealthColor4 = new FlxUIButton(10, autoGenerateHealthColor2.y + autoGenerateHealthColor2.height, "Use Most Present Color", function() {
+            healthBar.color = CoolUtil.getMostPresentColor2(icon.pixels);
+        });
+        autoGenerateHealthColor4.resize(280, 20);
+
+
         healthSettings.add(autoGenerateHealthColor);
         healthSettings.add(autoGenerateHealthColor2);
+        healthSettings.add(autoGenerateHealthColor4);
 
         characterSettingsTabs.addGroup(healthSettings);
         add(saveButton);
