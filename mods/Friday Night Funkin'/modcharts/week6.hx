@@ -11,11 +11,12 @@ function create() {
 }
 
 function createPost() {
-    for(m in PlayState.members) {
-        if (Std.isOfType(m, FlxSprite)) {
-            m.antialiasing = false;
-        }
-    }
+    // for(m in PlayState.members) {
+    //     if (Std.isOfType(m, FlxSprite)) {
+    //         m.antialiasing = false;
+    //     }
+    // }
+    
 }
 
 function onCountdown(countdown:Int) {

@@ -62,7 +62,7 @@ class HealthIcon extends FlxSprite
 		
 		var path = Paths.getCharacterFolderPath(character) + "/icon.png";
 		loadGraphic(FileSystem.exists(path) ? Paths.getBitmapOutsideAssets(path) : Paths.getBitmapOutsideAssets(Paths.modsPath + "/Friday Night Funkin'/characters/unknown/icon.png"), true, 150, 150);
-		
+		// if ()
 		animation.add('char', [for (i in 0...frames.frames.length) i], 0, false, isPlayer);
 		animation.play('char');
 	}

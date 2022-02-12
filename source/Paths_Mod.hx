@@ -122,7 +122,7 @@ class Paths_Mod {
         var txt = '$path/spritesheet.txt';
         if (FileSystem.exists(png) && FileSystem.exists(txt)) {
             var b = Paths.getBitmapOutsideAssets(png);
-            if (copyBitmap) b = b.clone();
+            // if (copyBitmap) b = b.clone();
             return FlxAtlasFrames.fromSpriteSheetPacker(b, Paths.getTextOutsideAssets(txt));
         } else {
             PlayState.log.push('Paths : Sprite Sheet Packer at "$path/spritesheet" does not exist. Make sure there is an TXT and a PNG file');
@@ -141,7 +141,7 @@ class Paths_Mod {
         var txt = '$mFolder/$mod/images/$key.txt';
         if (FileSystem.exists(png) && FileSystem.exists(txt)) {
             var b = Paths.getBitmapOutsideAssets(png);
-            if (copyBitmap) b = b.clone();
+            // if (copyBitmap) b = b.clone();
             return FlxAtlasFrames.fromSpriteSheetPacker(b, Paths.getTextOutsideAssets(txt));
         } else {
             PlayState.log.push('Paths : Packer Atlas at "$mFolder/$mod/images/$key" does not exist. Make sure there is an XML and a PNG file');

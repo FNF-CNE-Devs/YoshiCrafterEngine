@@ -322,12 +322,21 @@ class Paths
 		key = key.trim().replace("/", "/").replace("\\", "/");
 		if (cacheSparrow[key] != null) {
 			if (cacheSparrow[key].frames != null && !forceReload) {
-				return cacheSparrow[key];
+				if (cacheSparrow[key].parent.bitmap != null) {
+					if (cacheSparrow[key].parent.bitmap.readable) {
+						return cacheSparrow[key];
+					} else {
+						return getExternSparrow(key);
+					}
+				} else {
+					return getExternSparrow(key);
+				}
 			} else {
+				#if trace_everything trace('$key is dead, returning a new one'); #end
 				return getExternSparrow(key);
 			}
 		} else {
-			#if trace_everything trace("Key exists, returning from cache"); #end
+			#if trace_everything trace('$key exists, returning from cache'); #end
 			return getExternSparrow(key);
 		}
 		#else

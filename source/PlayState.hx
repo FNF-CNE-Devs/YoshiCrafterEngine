@@ -1,5 +1,6 @@
 package;
 
+import flixel.graphics.FlxGraphic;
 import Script.ScriptPack;
 import openfl.display.ShaderParameter;
 import NoteShader.ColoredNoteShader;
@@ -1059,6 +1060,25 @@ class PlayState extends MusicBeatState
 
 		// https://discord.com/channels/860561967383445535/925492025258836059/941454799600242759
 		scripts.executeFunc("createPost");
+
+		for (e in members) {
+			if (Std.isOfType(e, FlxSprite)) {
+				var sprite = cast(e, FlxSprite);
+				@:privateAccess
+				if (sprite.graphic == null) sprite.graphic = new FlxGraphic("unknown", new BitmapData(1, 1, true, 0), true);
+				#if trace_everything
+					trace(sprite.graphic);
+					trace(sprite.graphic.bitmap);
+				#end
+				if (sprite.graphic.bitmap == null) {
+					sprite.graphic.bitmap = new BitmapData(1, 1, true, 0);
+				}
+				if (!sprite.graphic.bitmap.readable) {
+					sprite.graphic.bitmap.dispose();
+					sprite.graphic.bitmap = new BitmapData(1, 1, true, 0);
+				}
+			}
+		}
 	}
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
