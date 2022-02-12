@@ -22,7 +22,7 @@ class ToolboxMain extends MusicBeatState {
 
     var nonEditableMods:Array<String> = ["Friday Night Funkin'", "YoshiEngine"];
 
-    var selectedMod:String = "Friday Night Funkin'";
+    var selectedMod:String = "";
 
     public override function new(?mod:String) {
         #if desktop
@@ -132,7 +132,7 @@ class ToolboxMain extends MusicBeatState {
         if (mods.length == 0) {
             modName.text = "No mod projects";
             modDesc.text = "Go ahead and create one using the \"Create a new mod\" button.";
-            modIcon.loadGraphic(Paths.getBitmapOutsideAssets('${Paths.modsPath}/$selectedMod/modIcon.png'));
+            modIcon.loadGraphic(Paths.image("modEmptyIcon", "preload"));
             modIcon.setGraphicSize(150, 150);
             modIcon.updateHitbox();
             
@@ -168,9 +168,9 @@ class ToolboxMain extends MusicBeatState {
 
     public function updateModData() {
         if (selectedMod.trim() == "") {
-            modName.text = "No mods";
-            modDesc.text = "No unlocked mod has been installed.";
-            modIcon.loadGraphic(Paths.getBitmapOutsideAssets('${Paths.modsPath}/$selectedMod/modIcon.png'));
+            modName.text = "No selected mod";
+            modDesc.text = "";
+            modIcon.loadGraphic(Paths.image("modEmptyIcon", "preload"));
             modIcon.setGraphicSize(150, 150);
             modIcon.updateHitbox();
             selectButton.color = FlxColor.GRAY;
