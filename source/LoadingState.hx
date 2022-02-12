@@ -1,5 +1,6 @@
 package;
 
+import EngineSettings.Settings;
 import lime.app.Promise;
 import lime.app.Future;
 import flixel.FlxG;
@@ -122,7 +123,7 @@ class LoadingState extends MusicBeatState
 	{
 		super.update(elapsed);
 		#if debug
-		if (FlxG.keys.justPressed.SPACE)
+		if (FlxControls.justPressed.SPACE)
 			trace('fired: ' + callbacks.getFired() + " unfired:" + callbacks.getUnfired());
 		#end
 	}
@@ -143,6 +144,14 @@ class LoadingState extends MusicBeatState
 	static function getVocalPath()
 	{
 		return Paths.voices(PlayState._SONG.song);
+	}
+
+	public static function switchState(state:FlxState) {
+		if (Settings.engineSettings != null) {
+			if (Settings.engineSettings.data.developerMode) {
+
+			}
+		}
 	}
 	
 	inline static public function loadAndSwitchState(target:FlxState, stopMusic = false)

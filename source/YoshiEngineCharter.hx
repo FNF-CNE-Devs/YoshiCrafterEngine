@@ -188,7 +188,7 @@ class YoshiEngineCharter extends MusicBeatState {
         super.update(elapsed);
 
 
-        if (FlxG.keys.justReleased.ENTER) {
+        if (FlxControls.justReleased.ENTER) {
             FlxG.sound.music.stop();   
             if (vocals != null) {
                 vocals.stop();
@@ -207,7 +207,7 @@ class YoshiEngineCharter extends MusicBeatState {
 
         
 
-        if (FlxG.keys.justReleased.SPACE) {
+        if (FlxControls.justReleased.SPACE) {
             if (vocals != null) vocals.time = FlxG.sound.music.time;
             if (FlxG.sound.music.playing) {
                 FlxG.sound.music.pause();   

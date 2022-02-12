@@ -42,6 +42,7 @@ class AnimationDebug extends FlxState
 		if (daAnim == 'bf')
 			isDad = false;
 
+		
 		if (isDad)
 		{
 			dad = new Character(0, 0, daAnim);
@@ -113,23 +114,23 @@ class AnimationDebug extends FlxState
 	{
 		textAnim.text = char.animation.curAnim.name;
 
-		if (FlxG.keys.justPressed.E)
+		if (FlxControls.justPressed.E)
 			FlxG.camera.zoom += 0.25;
-		if (FlxG.keys.justPressed.Q)
+		if (FlxControls.justPressed.Q)
 			FlxG.camera.zoom -= 0.25;
 
-		if (FlxG.keys.pressed.I || FlxG.keys.pressed.J || FlxG.keys.pressed.K || FlxG.keys.pressed.L)
+		if (FlxControls.pressed.I || FlxControls.pressed.J || FlxControls.pressed.K || FlxControls.pressed.L)
 		{
-			if (FlxG.keys.pressed.I)
+			if (FlxControls.pressed.I)
 				camFollow.velocity.y = -90;
-			else if (FlxG.keys.pressed.K)
+			else if (FlxControls.pressed.K)
 				camFollow.velocity.y = 90;
 			else
 				camFollow.velocity.y = 0;
 
-			if (FlxG.keys.pressed.J)
+			if (FlxControls.pressed.J)
 				camFollow.velocity.x = -90;
-			else if (FlxG.keys.pressed.L)
+			else if (FlxControls.pressed.L)
 				camFollow.velocity.x = 90;
 			else
 				camFollow.velocity.x = 0;
@@ -139,12 +140,12 @@ class AnimationDebug extends FlxState
 			camFollow.velocity.set();
 		}
 
-		if (FlxG.keys.justPressed.W)
+		if (FlxControls.justPressed.W)
 		{
 			curAnim -= 1;
 		}
 
-		if (FlxG.keys.justPressed.S)
+		if (FlxControls.justPressed.S)
 		{
 			curAnim += 1;
 		}
@@ -155,7 +156,7 @@ class AnimationDebug extends FlxState
 		if (curAnim >= animList.length)
 			curAnim = 0;
 
-		if (FlxG.keys.justPressed.S || FlxG.keys.justPressed.W || FlxG.keys.justPressed.SPACE)
+		if (FlxControls.justPressed.S || FlxControls.justPressed.W || FlxControls.justPressed.SPACE)
 		{
 			char.playAnim(animList[curAnim]);
 
@@ -163,12 +164,12 @@ class AnimationDebug extends FlxState
 			genBoyOffsets(false);
 		}
 
-		var upP = FlxG.keys.anyJustPressed([UP]);
-		var rightP = FlxG.keys.anyJustPressed([RIGHT]);
-		var downP = FlxG.keys.anyJustPressed([DOWN]);
-		var leftP = FlxG.keys.anyJustPressed([LEFT]);
+		var upP = FlxControls.anyJustPressed([UP]);
+		var rightP = FlxControls.anyJustPressed([RIGHT]);
+		var downP = FlxControls.anyJustPressed([DOWN]);
+		var leftP = FlxControls.anyJustPressed([LEFT]);
 
-		var holdShift = FlxG.keys.pressed.SHIFT;
+		var holdShift = FlxControls.pressed.SHIFT;
 		var multiplier = 1;
 		if (holdShift)
 			multiplier = 10;

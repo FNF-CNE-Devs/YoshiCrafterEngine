@@ -1,5 +1,6 @@
 package dev_toolbox;
 
+import flixel.FlxCamera;
 import cpp.abi.Abi;
 import flixel.util.FlxColor;
 import flixel.addons.ui.FlxUIPopup;
@@ -10,8 +11,9 @@ typedef Button = {
 };
 class ToolboxMessage extends FlxUIPopup {
     var buttons:Array<Button> = [];
-    public override function new(title:String, text:String, buttons:Array<Button>, ?bgColor:FlxColor) {
+    public override function new(title:String, text:String, buttons:Array<Button>, ?bgColor:FlxColor, ?camera:FlxCamera) {
         super(bgColor);
+        if (camera != null) this.camera = camera;
         quickSetup(title, text, [for(b in buttons) b.label]);
         this.buttons = buttons;
     }
@@ -28,7 +30,11 @@ class ToolboxMessage extends FlxUIPopup {
         }
     }
 
-    public static function showMessage(title:String, text:String, ?callback:Void->Void) {
+    public override function update(elapsed:Float) {
+        super.update(elapsed);
+    }
+
+    public static function showMessage(title:String, text:String, ?callback:Void->Void, ?camera:FlxCamera) {
         return new ToolboxMessage(title, text, [
             {
                 label : "OK",
@@ -36,6 +42,6 @@ class ToolboxMessage extends FlxUIPopup {
                     if (callback != null) callback();
                 }
             }
-        ]);
+        ], null, camera);
     }
 }

@@ -1,3 +1,4 @@
+#if ENABLE_LUA
 import llua.LuaL;
 import flixel.FlxState;
 import Script.LuaScript;
@@ -12,3 +13,4 @@ class LuaTest extends FlxState {
         trace(l.executeFunc("re"));
     }
 }
+#end

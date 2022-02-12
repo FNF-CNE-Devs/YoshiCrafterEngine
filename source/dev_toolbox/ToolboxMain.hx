@@ -1,5 +1,6 @@
 package dev_toolbox;
 
+import Discord.DiscordClient;
 import flixel.util.FlxCollision;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIDropDownMenu.FlxUIDropDownHeader;
@@ -10,6 +11,8 @@ import flixel.util.FlxColor;
 import flixel.addons.ui.*;
 import flixel.FlxG;
 import flixel.FlxState;
+
+using StringTools;
 
 class ToolboxMain extends MusicBeatState {
     var modName:FlxUIText = null;
@@ -22,8 +25,11 @@ class ToolboxMain extends MusicBeatState {
     var selectedMod:String = "Friday Night Funkin'";
 
     public override function new(?mod:String) {
+        #if desktop
+            Discord.DiscordClient.changePresence("Selecting a Mod in the Toolbox...", null, "Toolbox Icon");
+        #end
         if (mod != null) selectedMod = mod;
-        if (!Std.is(FlxG.state, MainMenuState) && !Std.is(FlxG.state, ToolboxHome)) {
+        if (!Std.isOfType(FlxG.state, MainMenuState) && !Std.isOfType(FlxG.state, ToolboxHome)) {
             FlxTransitionableState.skipNextTransIn = true;
             FlxTransitionableState.skipNextTransOut = true;
         }
@@ -44,10 +50,7 @@ class ToolboxMain extends MusicBeatState {
 		var label = new FlxUIText(10, 10, 620, "Select a mod to begin, or click on \"Create a new mod\".");
 
         selectButton = new FlxUIButton(10, 232, "Edit mod...", function() {
-            #if toolboxBypass
-            #else
-            if (nonEditableMods.contains(selectedMod)) return;
-            #end
+            if (selectedMod.trim() == "") return;
             FlxG.switchState(new ToolboxHome(selectedMod));
         });
         var closeButton = new FlxUIButton(UI_Main.x + UI_Main.width - 23, UI_Main.y + 3, "X", function() {
@@ -62,6 +65,7 @@ class ToolboxMain extends MusicBeatState {
         });
         createButton.resize(140, 20);
         var deleteMod = new FlxUIButton(createButton.x + createButton.width + 10, 232, "Delete this mod", function() {
+            if (selectedMod.trim() == "") return;
             var mName = ModSupport.modConfig[selectedMod].name;
             if (mName == null || mName == "") mName = selectedMod;
             if (nonEditableMods.contains(selectedMod)) {
@@ -74,8 +78,8 @@ class ToolboxMain extends MusicBeatState {
                     label: "Yes",
                     onClick: function(t) {
                         try {
-                            CoolUtil.deleteFolder('${Paths.getModsFolder()}\\$selectedMod');
-                            FileSystem.deleteDirectory('${Paths.getModsFolder()}\\$selectedMod');
+                            CoolUtil.deleteFolder('${Paths.modsPath}/$selectedMod');
+                            FileSystem.deleteDirectory('${Paths.modsPath}/$selectedMod');
                             ModSupport.reloadModsConfig();
                             openSubState(new ToolboxMessage("Success", '$selectedMod was successfully deleted.', [
                                 {
@@ -116,7 +120,12 @@ class ToolboxMain extends MusicBeatState {
             if (k == null || k == "null") continue;
             var mName = ModSupport.modConfig[k].name;
             if (mName == null || mName == "") mName = k;
+            #if toolboxBypass
             mods.push(new StrNameLabel(k, mName));
+            #else
+            if (ModSupport.modConfig[k].locked != true) // if false or null
+                mods.push(new StrNameLabel(k, mName));
+            #end
         }
 
         var modDropDown = new FlxUIDropDownMenu(630, 10, mods, function(label:String) {
@@ -140,16 +149,26 @@ class ToolboxMain extends MusicBeatState {
     }
 
     public function updateModData() {
-        modName.text = ModSupport.modConfig[selectedMod].name != null ? ModSupport.modConfig[selectedMod].name : selectedMod;
-        modDesc.text = ModSupport.modConfig[selectedMod].description != null ? ModSupport.modConfig[selectedMod].description : "(No description)";
-        if (FileSystem.exists('${Paths.getModsFolder()}\\$selectedMod\\modIcon.png')) {
-            modIcon.loadGraphic(Paths.getBitmapOutsideAssets('${Paths.getModsFolder()}\\$selectedMod\\modIcon.png'));
+        if (selectedMod.trim() == "") {
+            modName.text = "No mods";
+            modDesc.text = "No unlocked mod has been installed.";
+            modIcon.loadGraphic(Paths.getBitmapOutsideAssets('${Paths.modsPath}/$selectedMod/modIcon.png'));
+            modIcon.setGraphicSize(150, 150);
+            modIcon.updateHitbox();
+            selectButton.color = FlxColor.GRAY;
         } else {
-            modIcon.loadGraphic(Paths.image("modEmptyIcon", "preload"));
+            modName.text = ModSupport.modConfig[selectedMod].name != null ? ModSupport.modConfig[selectedMod].name : selectedMod;
+            modDesc.text = ModSupport.modConfig[selectedMod].description != null ? ModSupport.modConfig[selectedMod].description : "(No description)";
+            if (FileSystem.exists('${Paths.modsPath}/$selectedMod/modIcon.png')) {
+                modIcon.loadGraphic(Paths.getBitmapOutsideAssets('${Paths.modsPath}/$selectedMod/modIcon.png'));
+            } else {
+                modIcon.loadGraphic(Paths.image("modEmptyIcon", "preload"));
+            }
+            modIcon.setGraphicSize(150, 150);
+            modIcon.updateHitbox();
+            
+            selectButton.color = FlxColor.WHITE;
         }
-        modIcon.setGraphicSize(150, 150);
-        modIcon.updateHitbox();
         
-        selectButton.color = nonEditableMods.contains(selectedMod) ? FlxColor.GRAY : FlxColor.WHITE;
     }
 }

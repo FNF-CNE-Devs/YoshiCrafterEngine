@@ -1,5 +1,6 @@
 package dev_toolbox.week_editor;
 
+import dev_toolbox.toolbox_tabs.WeeksTab;
 import StoryMenuState.FNFWeek;
 import openfl.desktop.ClipboardTransferMode;
 import openfl.desktop.ClipboardFormats;
@@ -13,10 +14,10 @@ import flixel.addons.ui.*;
 using StringTools;
 
 class CreateWeekWizard extends MusicBeatSubstate {
-    var state:ToolboxHome;
-    public override function new(whenDone:Void->Void) {
+    // var state:ToolboxHome;
+    public override function new(whenDone:Void->Void, state:WeeksTab) {
         super();
-        state = cast(FlxG.state, ToolboxHome);
+        // state = cast(FlxG.state, ToolboxHome);
 
         add(new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000));
 

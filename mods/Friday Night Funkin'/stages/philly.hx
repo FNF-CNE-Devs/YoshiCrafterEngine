@@ -59,6 +59,7 @@ function create()
     light.setGraphicSize(Std.int(light.width * 0.85));
     light.updateHitbox();
     light.antialiasing = true;
+    light.alpha = 0;
     global["light"] = light;
     PlayState.add(light);
 

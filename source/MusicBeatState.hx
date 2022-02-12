@@ -1,5 +1,9 @@
 package;
 
+import dev_toolbox.ToolboxMessage;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxSpriteGroup;
+import flixel.FlxSprite;
 import lime.graphics.Image;
 import openfl.display.Application;
 import flixel.system.scaleModes.RatioScaleMode;
@@ -10,6 +14,9 @@ import flixel.FlxG;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
 import flixel.math.FlxRect;
+
+typedef FlxSpriteTypedGroup = FlxTypedGroup<FlxSprite>;
+typedef FlxSpriteArray = Array<FlxSprite>;
 
 class MusicBeatState extends FlxUIState
 {
@@ -32,12 +39,17 @@ class MusicBeatState extends FlxUIState
 
 				}
 			}
+			Settings.engineSettings.flush();
 		}
-		
-		@:privateAccess
-		FlxG.width = 1280;
-		@:privateAccess
-		FlxG.height = 720;
+		if (FlxG.save.data != null) {
+			FlxG.save.flush();
+		}
+		#if !android
+			@:privateAccess
+			FlxG.width = 1280;
+			@:privateAccess
+			FlxG.height = 720;
+		#end
 		
 		FlxG.scaleMode = new RatioScaleMode();
 		super(transIn, transOut);
@@ -75,8 +87,39 @@ class MusicBeatState extends FlxUIState
 		
 		if (oldStep < curStep && curStep > 0)
 			stepHit();
+		// if (oldStep < curStep)
 
 		super.update(elapsed);
+
+		/*
+		if (Settings.engineSettings != null)
+			if (!Settings.engineSettings.data.antialiasing)
+				for(e in members)
+					if (Std.isOfType(e, FlxSprite))
+						cast(e, FlxSprite).antialiasing = false;
+		*/
+		if (Settings.engineSettings != null) {
+			if (!Settings.engineSettings.data.antialiasing) {
+				for(e in members) {
+					if (Std.isOfType(e, FlxSprite)) {
+						cast(e, FlxSprite).antialiasing = false;
+					} else if (Std.isOfType(e, FlxSpriteGroup)) {
+						var grp:FlxSpriteGroup = cast e;
+						for (m in grp.members) {
+							m.antialiasing = false;
+						}
+					} else if (Std.isOfType(e, FlxSpriteTypedGroup)) {
+						var grp:FlxTypedGroup<FlxSprite> = cast e;
+						for (m in grp.members) {
+							m.antialiasing = false;
+						}
+					}
+				}
+			}
+		}
+			
+				
+					
 	}
 
 	private function updateBeat():Void
@@ -114,4 +157,10 @@ class MusicBeatState extends FlxUIState
 	public function onDropFile(path:String) {
 		
 	}
+
+    function showMessage(title:String, text:String) {
+        var m = ToolboxMessage.showMessage(title, text);
+        m.cameras = cameras;
+        openSubState(m);
+    }
 }

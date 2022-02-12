@@ -91,8 +91,8 @@ vec4 flixel_texture2D(sampler2D bitmap, vec2 coord)
         }
         var mod = splittedShaderPath[0];
         var shader = splittedShaderPath[1];
-        var mPath = Paths.getModsFolder();
-        var path = '$mPath\\$mod\\shaders\\$shader';
+        var mPath = Paths.modsPath;
+        var path = '$mPath/$mod/shaders/$shader';
 
         if (Path.extension(path) == "") path += '.glsl';
         if (FileSystem.exists(path)) {

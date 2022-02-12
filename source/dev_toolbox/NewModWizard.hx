@@ -24,6 +24,9 @@ import flixel.FlxState;
 class NewModWizard extends MusicBeatState {
 
     public override function new() {
+        #if desktop
+            Discord.DiscordClient.changePresence("Creating a new mod...", null, "Toolbox Icon");
+        #end
         FlxTransitionableState.skipNextTransIn = true;
         FlxTransitionableState.skipNextTransOut = true;
         super();
@@ -105,7 +108,7 @@ class NewModWizard extends MusicBeatState {
         var createButton = new FlxUIButton(640 - 110, 308 - 50, "Create your mod", function() {
             var folderName = Toolbox.generateModFolderName(mod_name.text);
             trace(folderName);
-            if (FileSystem.exists('${Paths.getModsFolder()}\\$folderName')) {
+            if (FileSystem.exists('${Paths.modsPath}/$folderName')) {
                 openSubState(ToolboxMessage.showMessage("Error", 'The folder for your mod ("$folderName") already exists. Please rename the existing one or give another name to your mod.'));
                 return;
             }
@@ -118,7 +121,8 @@ class NewModWizard extends MusicBeatState {
                 skinnableGFs: [],
                 skinnableBFs: [],
                 BFskins: [],
-                GFskins: []
+                GFskins: [],
+                locked: false
             }
 
             Toolbox.createMod(json, folderName, modIcon.pixels, icon.pixels);

@@ -98,7 +98,7 @@ class OptionsNotesColors extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		if (FlxG.keys.justPressed.ENTER)
+		if (FlxControls.justPressed.ENTER)
 		{
 			Settings.engineSettings.data.arrowColor0 = cast(colors[0], Int);
 			Settings.engineSettings.data.arrowColor1 = cast(colors[1], Int);
@@ -107,11 +107,11 @@ class OptionsNotesColors extends MusicBeatState
 			FlxG.switchState(new OptionsMenu(0, 0));
 		}
 
-		if (FlxG.keys.justPressed.ESCAPE)
+		if (FlxControls.justPressed.ESCAPE)
 		{
 			FlxG.switchState(new OptionsMenu(0, 0));
 		}
-		if (FlxG.keys.justPressed.TAB)
+		if (FlxControls.justPressed.TAB)
 		{
 			arrowSelected++;
 			if (arrowSelected > 3)
@@ -120,11 +120,11 @@ class OptionsNotesColors extends MusicBeatState
 			FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
 			refreshColorCodes();
 		}
-		if (FlxG.keys.justPressed.DOWN)
+		if (FlxControls.justPressed.DOWN)
 		{
 			changeChannel(1);
 		}
-		if (FlxG.keys.justPressed.R)
+		if (FlxControls.justPressed.R)
 		{
 			colors = [
 				new FlxColor(0xFFC24B99),
@@ -135,28 +135,28 @@ class OptionsNotesColors extends MusicBeatState
 			refreshNotes();
 			refreshColorCodes();
 		}
-		if (FlxG.keys.justPressed.UP)
+		if (FlxControls.justPressed.UP)
 		{
 			changeChannel(-1);
 		}
-		if (FlxG.keys.pressed.SHIFT)
+		if (FlxControls.pressed.SHIFT)
 		{
-			if (FlxG.keys.justPressed.LEFT)
+			if (FlxControls.justPressed.LEFT)
 			{
 				changeRGB(-1);
 			}
-			if (FlxG.keys.justPressed.RIGHT)
+			if (FlxControls.justPressed.RIGHT)
 			{
 				changeRGB(1);
 			}
 		}
 		else
 		{
-			if (FlxG.keys.pressed.LEFT)
+			if (FlxControls.pressed.LEFT)
 			{
 				changeRGB(-1);
 			}
-			if (FlxG.keys.pressed.RIGHT)
+			if (FlxControls.pressed.RIGHT)
 			{
 				changeRGB(1);
 			}

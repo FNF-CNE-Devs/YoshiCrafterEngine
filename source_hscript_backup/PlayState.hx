@@ -1540,7 +1540,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 		
-		if (FlxG.keys.justPressed.NINE)
+		if (FlxControls.justPressed.NINE)
 		{
 			if (iconP1.animation.curAnim.name == 'bf-old')
 				iconP1.animation.play(SONG.player1);
@@ -1570,7 +1570,7 @@ class PlayState extends MusicBeatState
 			hitCounter.y = 700 + (guiOffset.y / 2) - hitCounter.height;
 		}
 
-		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
+		if (FlxControls.justPressed.ENTER && startedCountdown && canPause)
 		{
 			persistentUpdate = false;
 			persistentDraw = true;
@@ -1589,7 +1589,7 @@ class PlayState extends MusicBeatState
 			DiscordClient.changePresence(detailsPausedText, songAltName + " (" + storyDifficultyText + ")", iconRPC);
 			#end
 		}
-		if (FlxG.keys.justPressed.SEVEN)
+		if (FlxControls.justPressed.SEVEN)
 		{
 			if (FlxG.sound.music != null) FlxG.sound.music.pause();
 			if (engineSettings.yoshiEngineCharter)
@@ -1633,11 +1633,11 @@ class PlayState extends MusicBeatState
 		else
 			iconP2.animation.curAnim.curFrame = 0;
 
-		/* if (FlxG.keys.justPressed.NINE)
+		/* if (FlxControls.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
 
 		#if debug
-		if (FlxG.keys.justPressed.EIGHT)
+		if (FlxControls.justPressed.EIGHT)
 			FlxG.switchState(new AnimationDebug(SONG.player2));
 		#end
 
@@ -2002,7 +2002,7 @@ class PlayState extends MusicBeatState
 				keyShit(elapsed);
 
 		#if debug
-		if (FlxG.keys.justPressed.ONE)
+		if (FlxControls.justPressed.ONE)
 			endSong();
 		#end
 		
@@ -2584,9 +2584,9 @@ class PlayState extends MusicBeatState
 
 		// var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
 		
-		// var pressedArray:Array<Bool> = [FlxG.keys.pressed.W, FlxG.keys.pressed.X, FlxG.keys.pressed.C, FlxG.keys.pressed.NUMPADONE, FlxG.keys.pressed.NUMPADTWO, FlxG.keys.pressed.NUMPADTHREE];
-		// var justPressedArray:Array<Bool> = [FlxG.keys.justPressed.W, FlxG.keys.justPressed.X, FlxG.keys.justPressed.C, FlxG.keys.justPressed.NUMPADONE, FlxG.keys.justPressed.NUMPADTWO, FlxG.keys.justPressed.NUMPADTHREE];
-		// var justReleasedArray:Array<Bool> = [FlxG.keys.justReleased.W, FlxG.keys.justReleased.X, FlxG.keys.justReleased.C, FlxG.keys.justReleased.NUMPADONE, FlxG.keys.justReleased.NUMPADTWO, FlxG.keys.justReleased.NUMPADTHREE];
+		// var pressedArray:Array<Bool> = [FlxControls.pressed.W, FlxControls.pressed.X, FlxControls.pressed.C, FlxControls.pressed.NUMPADONE, FlxControls.pressed.NUMPADTWO, FlxControls.pressed.NUMPADTHREE];
+		// var justPressedArray:Array<Bool> = [FlxControls.justPressed.W, FlxControls.justPressed.X, FlxControls.justPressed.C, FlxControls.justPressed.NUMPADONE, FlxControls.justPressed.NUMPADTWO, FlxControls.justPressed.NUMPADTHREE];
+		// var justReleasedArray:Array<Bool> = [FlxControls.justReleased.W, FlxControls.justReleased.X, FlxControls.justReleased.C, FlxControls.justReleased.NUMPADONE, FlxControls.justReleased.NUMPADTWO, FlxControls.justReleased.NUMPADTHREE];
 		var kNum = Std.string(SONG.keyNumber);
 		var pressedArray:Array<Bool> = [];
 		var justPressedArray:Array<Bool> = [];
@@ -2595,9 +2595,9 @@ class PlayState extends MusicBeatState
 		if (!engineSettings.botplay) {
 			for(i in 0...SONG.keyNumber) {
 				var key:FlxKey = cast(Reflect.field(engineSettings, 'control_' + kNum + '_$i'), FlxKey);
-				pressedArray.push(FlxG.keys.anyPressed([key])); // Should prob fix this
-				justPressedArray.push(FlxG.keys.anyJustPressed([key])); // Should prob fix this
-				justReleasedArray.push(FlxG.keys.anyJustReleased([key])); // Should prob fix this
+				pressedArray.push(FlxControls.anyPressed([key])); // Should prob fix this
+				justPressedArray.push(FlxControls.anyJustPressed([key])); // Should prob fix this
+				justReleasedArray.push(FlxControls.anyJustReleased([key])); // Should prob fix this
 			}
 		} else {
 			// BOTPLAY CODE

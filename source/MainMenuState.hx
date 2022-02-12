@@ -1,5 +1,8 @@
 package;
 
+import dev_toolbox.ToolboxMessage;
+import flixel.input.keyboard.FlxKey;
+import flixel.addons.ui.FlxUIButton;
 import lime.utils.Assets;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileCircle;
 import EngineSettings.Settings;
@@ -17,7 +20,10 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+#if newgrounds
 import io.newgrounds.NG;
+import io.newgrounds.components.MedalComponent;
+#end
 import flixel.math.FlxPoint;
 import lime.app.Application;
 
@@ -30,13 +36,14 @@ class MainMenuState extends MusicBeatState
 	var menuItems:FlxTypedGroup<FlxSprite>;
 
 	#if !switch
-	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate', 'credits', 'options'];
+	var optionShit:Array<String> = ['story mode', 'freeplay', 'mods', 'donate', 'credits', 'options'];
 	#else
-	var optionShit:Array<String> = ['story mode', 'freeplay'];
+	var optionShit:Array<String> = ['story mode', 'freeplay', 'options'];
 	#end
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
+	var backButton:FlxClickableSprite;
 
 	var factor(get, never):Float;
 	function get_factor() {
@@ -45,6 +52,7 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
+        persistentUpdate = false;
 		if (Settings.engineSettings.data.developerMode) {
 			optionShit.insert(4, 'toolbox');
 		}
@@ -141,6 +149,22 @@ class MainMenuState extends MusicBeatState
 
 		changeItem();
 
+		#if MOBILE_UI
+		backButton = new FlxClickableSprite(10, versionShit.y, function() {
+			FlxG.switchState(new TitleState());
+		});
+		backButton.frames = Paths.getSparrowAtlas("ui_buttons", "preload");
+		backButton.animation.addByPrefix("button", "exit button");
+		backButton.animation.play("button");
+		// backButton.scale.x = backButton.scale.y = 0.7;
+		backButton.updateHitbox();
+		backButton.y -= 10 + backButton.height;
+		backButton.scrollFactor.set(0, 0);
+		backButton.antialiasing = true;
+		backButton.hoverColor = 0xFF66CAFF;
+		add(backButton);
+		#end
+
 		super.create();
 	}
 
@@ -151,19 +175,34 @@ class MainMenuState extends MusicBeatState
 	// }
 	override function update(elapsed:Float)
 	{
-		if ((FlxG.mouse.getScreenPosition().x != oldPos.x || FlxG.mouse.getScreenPosition().y != oldPos.y) && !selectedSomethin) {
+		super.update(elapsed);
+		if (subState != null) return;
+
+		if (FlxControls.justPressed.SEVEN) {
+			if (Settings.engineSettings.data.developerMode) {
+				// psych engine shortcut lol
+				FlxG.switchState(new dev_toolbox.ToolboxMain());
+			} else {
+				openSubState(new ThisAintPsych());
+			}
+		}
+		if ((FlxG.mouse.getScreenPosition().x != oldPos.x || FlxG.mouse.getScreenPosition().y != oldPos.y) && !selectedSomethin){
 			oldPos = FlxG.mouse.getScreenPosition();
 			for (i in 0...menuItems.length) {
 				// if (FlxG.mouse.overlaps(menuItems.members[i])) {
 				var pos = FlxG.mouse.getPositionInCameraView(FlxG.camera);
-				if (pos.y > i / menuItems.length * FlxG.height && pos.y < (i + 1) / menuItems.length * FlxG.height) {
+				if (pos.y > i / menuItems.length * FlxG.height && pos.y < (i + 1) / menuItems.length * FlxG.height && curSelected != i) {
 					curSelected = i;
 					changeItem();
 					break;
 				}
 			}
 		}
-		if (FlxG.mouse.pressed && !selectedSomethin)
+		if (FlxG.mouse.pressed && !selectedSomethin
+			#if MOBILE_UI
+			&& !backButton.hovering
+			#end
+			)
 			select();
 
 		if (FlxG.sound.music.volume < 0.8)
@@ -196,7 +235,6 @@ class MainMenuState extends MusicBeatState
 			}
 		}
 
-		super.update(elapsed);
 
 		menuItems.forEach(function(spr:FlxSprite)
 		{
@@ -246,6 +284,10 @@ class MainMenuState extends MusicBeatState
 								case 'freeplay':
 									FlxG.switchState(new FreeplayState());
 									trace("Freeplay Menu Selected");
+								
+								case 'mods':
+									FlxG.switchState(new ModMenuState());
+									trace ("Mods Menu Selected");
 								
 								case 'credits':
 									FlxG.switchState(new CreditsState());

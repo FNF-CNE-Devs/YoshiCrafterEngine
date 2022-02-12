@@ -155,7 +155,7 @@ class MP4Handler
 
 	function update(e:Event)
 	{
-		if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.SPACE)
+		if (FlxControls.justPressed.ENTER || FlxControls.justPressed.SPACE)
 		{
 			if (bitmap.isPlaying)
 			{

@@ -7,8 +7,10 @@ import cpp.Lib;
 import cpp.Pointer;
 import cpp.RawPointer;
 import cpp.Callable;
+#if ENABLE_LUA
 import llua.State;
 import llua.Convert;
+#end
 import ModSupport.ModScript;
 import haxe.Constraints.Function;
 import haxe.DynamicAccess;
@@ -107,7 +109,7 @@ class ScriptPack {
     public var scriptModScripts:Array<ModScript> = [];
     public function new(scripts:Array<ModScript>) {
         for (s in scripts) {
-            var sc = Script.create('${Paths.getModsFolder()}\\${s.path}');
+            var sc = Script.create('${Paths.modsPath}/${s.path}');
             if (sc == null) continue;
             ModSupport.setScriptDefaultVars(sc, s.mod, {});
             this.scripts.push(sc);
@@ -118,7 +120,7 @@ class ScriptPack {
     public function loadFiles() {
         for (k=>sc in scripts) {
             var s = scriptModScripts[k];
-            sc.loadFile('${Paths.getModsFolder()}\\${s.path}');
+            sc.loadFile('${Paths.modsPath}/${s.path}');
         }
     }
 
@@ -328,7 +330,7 @@ class LuaScript extends Script {
 
             var finalArgs = [];
             for (a in args) {
-                if (Std.is(a, String)) {
+                if (Std.isOfType(a, String)) {
                     var str = cast(a, String);
                     if (str.startsWith("$")) {
                         var v = getVar(str.substr(1));
@@ -378,7 +380,7 @@ class LuaScript extends Script {
             return addToVariables(r);
         });
         Lua_helper.add_callback(state, "toLuaValue", function(obj:String):Dynamic {
-            if (Std.is(obj, String)) {
+            if (Std.isOfType(obj, String)) {
                 if (obj.startsWith("$")) {
                     var v = variables[obj.substr(1)];
                     switch (Type.typeof(v)) {

@@ -48,52 +48,52 @@ class ClipRectTest extends FlxState {
     public override function update(elapsed:Float) {
         super.update(elapsed);
 
-        if (FlxG.keys.released.PAGEUP) {
+        if (FlxControls.released.PAGEUP) {
             longNote.scale.y += 0.01;
             longNote.centerOffsets();
         }
 
-        if (FlxG.keys.released.PAGEDOWN) {
+        if (FlxControls.released.PAGEDOWN) {
             longNote.scale.y -= 0.01;
             longNote.centerOffsets();
         }
 
-        if (FlxG.keys.released.LEFT) {
+        if (FlxControls.released.LEFT) {
             rect.x -= 1;
             updateRect();
         }
 
-        if (FlxG.keys.released.RIGHT) {
+        if (FlxControls.released.RIGHT) {
             rect.x += 1;
             updateRect();
         }
 
-        if (FlxG.keys.released.UP) {
+        if (FlxControls.released.UP) {
             rect.y -= 1;
             updateRect();
         }
 
-        if (FlxG.keys.released.DOWN) {
+        if (FlxControls.released.DOWN) {
             rect.y += 1;
             updateRect();
         }
 
-        if (FlxG.keys.released.Q) {
+        if (FlxControls.released.Q) {
             rect.width -= 1;
             updateRect();
         }
 
-        if (FlxG.keys.released.D) {
+        if (FlxControls.released.D) {
             rect.width += 1;
             updateRect();
         }
 
-        if (FlxG.keys.released.Z) {
+        if (FlxControls.released.Z) {
             rect.height -= 1;
             updateRect();
         }
 
-        if (FlxG.keys.released.S) {
+        if (FlxControls.released.S) {
             rect.height += 1;
             updateRect();
         }

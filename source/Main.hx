@@ -27,10 +27,14 @@ class Main extends Sprite
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
 	// YOSHI ENGINE STUFF
-	public static var engineVer:Array<Int> = [1,4,0];
+	public static var engineVer:Array<Int> = [1,5,0];
 	public static var buildVer:String = "";
 
-	public static var supportedFileTypes = ["lua", "hx", "hscript"];
+	public static var supportedFileTypes = [
+		#if ENABLE_LUA "lua", #end
+		"hx",
+		"hscript"];
+
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
 	// HAHA no.
@@ -52,19 +56,21 @@ class Main extends Sprite
 
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, function(e:UncaughtErrorEvent) {
 			var m:String = e.error;
-			if (Std.is(e.error, Error)) {
+			if (Std.isOfType(e.error, Error)) {
 				var err = cast(e.error, Error);
 				m = '${err.message}';
-			} else if (Std.is(e.error, ErrorEvent)) {
+			} else if (Std.isOfType(e.error, ErrorEvent)) {
 				var err = cast(e.error, ErrorEvent);
 				m = '${err.text}';
 			}
 			m += '\r\n ${CallStack.toString(CallStack.exceptionStack())}';
+			trace('An error occured !\r\nYoshi Engine ver. ${engineVer.join(".")} $buildVer\r\n\r\n${m}\r\n\r\nThe engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !');
  			Application.current.window.alert('An error occured !\r\nYoshi Engine ver. ${engineVer.join(".")} $buildVer\r\n\r\n${m}\r\n\r\nThe engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !', e.error);
 			e.stopPropagation();
 			e.stopImmediatePropagation();
 		});
-		
+
+
 		if (stage != null)
 		{
 			init();
@@ -77,19 +83,20 @@ class Main extends Sprite
 
 	private function init(?E:Event):Void
 	{
+		lime.utils.Log.throwErrors = false;
 		stage.window.onDropFile.add(function(path:String) {
-			if (Std.is(FlxG.state, MusicBeatState)) {
+			if (Std.isOfType(FlxG.state, MusicBeatState)) {
 				var checkSubstate:FlxState->Void = function(state) {
-					if (Std.is(state, MusicBeatState)) {
+					if (Std.isOfType(state, MusicBeatState)) {
 						var state = cast(state, MusicBeatState);
-						if (Std.is(state.subState, MusicBeatSubstate)) {
+						if (Std.isOfType(state.subState, MusicBeatSubstate)) {
 		
 						} else {
 							state.onDropFile(path);
 						}
-					} else if (Std.is(state, MusicBeatSubstate)) {
+					} else if (Std.isOfType(state, MusicBeatSubstate)) {
 						var state = cast(state, MusicBeatSubstate);
-						if (Std.is(state.subState, MusicBeatSubstate)) {
+						if (Std.isOfType(state.subState, MusicBeatSubstate)) {
 		
 						} else {
 							state.onDropFile(path);
@@ -137,6 +144,9 @@ class Main extends Sprite
 		#end
 		#if lua_test
 		initialState = LuaTest;
+		#end
+		#if android_input_test
+		initialState = AndroidInputTest;
 		#end
 
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));

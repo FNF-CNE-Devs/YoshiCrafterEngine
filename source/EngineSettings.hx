@@ -92,6 +92,10 @@ import flixel.FlxG;
 	// If true, video will have an antialiasing effect applied.
 	@:keep public static var videoAntialiasing:Bool = true;
 	
+	// Note offset
+	@:keep public static var noteOffset:Float = 0;
+
+	
 	// If true, will show the ratings at the bottom left of the screen like this :
 	// Sick: 0
 	// Good: 0
@@ -99,8 +103,16 @@ import flixel.FlxG;
 	// Shit: 0
 	@:keep public static var showRatingTotal:Bool = false;
 
+
 	// If true, will glow CPU strums like the player's strums when they press a note.
 	@:keep public static var glowCPUStrums:Bool = true;
+
+	// If false, will disable antialiasing on notes.
+	#if android
+	@:keep public static var noteAntialiasing:Bool = true;
+	#else
+	@:keep public static var noteAntialiasing:Bool = false;
+	#end
 	
 	/**
 	 * Sets the GUI scale. Defaults to 1
@@ -110,6 +122,8 @@ import flixel.FlxG;
 
 	
 	// USELESS IN SCRIPTS
+	@:keep public static var antialiasing:Bool = true;
+	@:keep public static var autopause:Bool = true;
 	@:keep public static var autoplayInFreeplay:Bool = false;
 	@:keep public static var freeplayCooldown:Float = 2;
 	@:keep public static var fpsCap:Int = 120;
@@ -121,6 +135,10 @@ import flixel.FlxG;
 	@:keep public static var developerMode:Bool = false;
 	@:keep public static var hideOriginalGame:Bool = false;
 	@:keep public static var showAccuracyMode:Bool = false;
+	@:keep public static var lastSelectedSong:String = "Friday Night Funkin':tutorial";
+	@:keep public static var lastSelectedSongDifficulty:Int = 1; // Normal
+	@:keep public static var charEditor_showDadAndBF:Bool = true;
+	// @:keep public static var moveCameraInStageEditor:Bool = true;
 
 	// ========================================================
 	// PER KEY SET CONTROLS
@@ -235,6 +253,7 @@ class Settings {
 			// }
 		}
 		engineSettings.flush();
+
     }
 
     // public static function load(bind:Bool = true) {

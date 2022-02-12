@@ -4,16 +4,19 @@
 	<!-- _________________________ Application Settings _________________________ -->
 
 	<app title="Friday Night Funkin' - Yoshi Engine" packageName="com.yoshicrafter29.yoshiengine" package="com.yoshicrafter29.yoshiengine" main="Main" version="0.2.7.1" company="yc29" />
-	<app file="Yoshi Engine (Windows)" if="windows" />
-	<app file="Yoshi Engine (Linux)" if="linux" />
-	<app file="Yoshi Engine (Mac)" if="mac" />
+	<app file="YoshiEngine" if="windows" />
+	<app file="YoshiEngine_Linux" if="linux" />
+	<app file="YoshiEngine_Mac" if="mac" />
+	<app file="YoshiEngine_Android" if="android" />
 	<!-- <app file="Yoshi Engine (x64)" unless="32bit" /> -->
-	<haxedef name="X64" unless="32bit"/>
+	<haxedef name="X64_BITS" unless="32bit"/>
 
 	<haxedef name="HXCPP_CHECK_POINTER" if="release" />
 	<haxedef name="HXCPP_STACK_LINE" if="release" />
 	<haxedef name="HXCPP_DEBUG_LINK" if="release" />
 	<haxedef name="hscriptPos" />
+	<haxedef name="newgrounds" if="windows"/>
+	<!-- <haxedef name="lua" unless="android"/> -->
 	
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
@@ -38,7 +41,8 @@
 	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false"/>
 
 	<!--Mobile-specific-->
-	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false"/>
+	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false" allow-shaders="true" require-shaders="true"/>
+	
 
 	<!--Switch-specific-->
 	<window if="switch" orientation="landscape" fullscreen="true" width="0" height="0" resizable="true" />
@@ -112,8 +116,8 @@
 	<assets path="plugins/" rename='' if="windows"/>
 	<assets path="dlls/" rename='' if="windows"/>
 	
-	<assets path='mods' library="mods" embed='false'/>
-	<assets path='skins' rename='skins' embed='false'/>
+	<assets path='mods' library="mods" embed='false' unless="mobile"/>
+	<assets path='skins' rename='skins' embed='false' unless="mobile"/>
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
 	<assets path='Launch.bat' />
 	<!-- <assets path="documentation" rename="docs"/> -->
@@ -138,7 +142,7 @@
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
-	<haxelib name="newgrounds"/>
+	<haxelib name="newgrounds" if="windows"/>
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="polymod"/>
 	<!-- <haxelib name="hxvm-lua"/>
@@ -148,6 +152,7 @@
 	
 	<!-- <haxelib name="flixel-animate"/> -->
 	<haxelib name="discord_rpc" if="desktop"/>
+	<!-- <haxelib name="zip"/> -->
 
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
@@ -189,18 +194,33 @@
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
 
+	<haxedef name="ENABLE_LUA" /> <!-- LUA -->
+
 	<!-- _________________________________ Custom _______________________________ -->
 
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
 	
-	<icon path="art/icon16.png" size='16'/>
-	<icon path="art/icon32.png" size='32'/>
-	<icon path="art/icon64.png" size='64'/>
-	<icon path="art/icon128.png" size='128'/>
-	<icon path="art/icon256.png" size='256'/>
-	<icon path="art/iconOG.png" size='600'/>
+	<icon path="art/logo_new.png"/>
+	<icon path="art/icons/16.png" size='16'/>
+	<icon path="art/icons/24.png" size='24'/>
+	<icon path="art/icons/32.png" size='32'/>
+	<icon path="art/icons/40.png" size='40'/>
+	<icon path="art/icons/48.png" size='48'/>
+	<icon path="art/icons/64.png" size='64'/>
+	<icon path="art/icons/96.png" size='96'/>
+	<icon path="art/icons/128.png" size='128'/>
+	<icon path="art/icons/256.png" size='256'/>
 
 
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
 	<haxedef name="NG_LOGIN" if="newgrounds" />
+
+	<!-- Android stuff -->
+	<android permission="android.permission.ACCESS_NETWORK_STATE"/>
+	<android permission="android.permission.INTERNET"/>
+	<android permission="android.permission.VIBRATE"/>
+	<android permission="android.permission.WRITE_EXTERNAL_STORAGE"/>
+	<android permission="android.permission.READ_EXTERNAL_STORAGE"/>
+	<haxedef name="MOBILE_UI" if="android"/>
+
 </project>

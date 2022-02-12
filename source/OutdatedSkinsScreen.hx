@@ -135,17 +135,17 @@ function getColors(altAnim) {
     }
 
     public function beginTransition() {
-        var bfSkinsPath = '${Paths.getOldSkinsPath()}\\bf\\';
+        var bfSkinsPath = '${Paths.getOldSkinsPath()}/bf/';
         if (FileSystem.exists(bfSkinsPath)) {
             for (skin in FileSystem.readDirectory(bfSkinsPath)) {
                 if (skin.toLowerCase() == "default" || skin.toLowerCase() == "template") continue;
-                if (FileSystem.isDirectory('$bfSkinsPath\\$skin')) {
+                if (FileSystem.isDirectory('$bfSkinsPath/$skin')) {
                     trace('=======================');
                     trace('Converting $skin');
                     var requiredFiles = ["spritesheet.xml", "spritesheet.png", "icon.png", "anim_names.txt", "offsets.txt"];
                     var canConvert = true;
                     for (r in requiredFiles) {
-                        if (!FileSystem.exists('$bfSkinsPath\\$skin\\$r')) {
+                        if (!FileSystem.exists('$bfSkinsPath/$skin/$r')) {
                             canConvert = false;
                             break;
                         }
@@ -154,21 +154,21 @@ function getColors(altAnim) {
                         trace('Could not convert $skin. Not all of the required files are there.');
                         continue;
                     }
-                    FileSystem.createDirectory('${Paths.getSkinsPath()}\\bf\\$skin\\');
+                    FileSystem.createDirectory('${Paths.getSkinsPath()}/bf/$skin/');
     
                     trace("Copying spritesheet...");
-                    File.copy('$bfSkinsPath\\$skin\\spritesheet.xml', '${Paths.getSkinsPath()}\\bf\\$skin\\spritesheet.xml');
-                    File.copy('$bfSkinsPath\\$skin\\spritesheet.png', '${Paths.getSkinsPath()}\\bf\\$skin\\spritesheet.png');
+                    File.copy('$bfSkinsPath/$skin/spritesheet.xml', '${Paths.getSkinsPath()}/bf/$skin/spritesheet.xml');
+                    File.copy('$bfSkinsPath/$skin/spritesheet.png', '${Paths.getSkinsPath()}/bf/$skin/spritesheet.png');
     
                     trace("Copying icon...");
-                    File.copy('$bfSkinsPath\\$skin\\icon.png', '${Paths.getSkinsPath()}\\bf\\$skin\\icon.png');
+                    File.copy('$bfSkinsPath/$skin/icon.png', '${Paths.getSkinsPath()}/bf/$skin/icon.png');
     
                     trace("Loading animations...");
-                    var animsFile = File.getContent('$bfSkinsPath\\$skin\\anim_names.txt').replace("\r", "").trim();
+                    var animsFile = File.getContent('$bfSkinsPath/$skin/anim_names.txt').replace("\r", "").trim();
                     var splitAnims = animsFile.split("\n");
     
                     trace("Loading offsets...");
-                    var offsetFile = File.getContent('$bfSkinsPath\\$skin\\offsets.txt');
+                    var offsetFile = File.getContent('$bfSkinsPath/$skin/offsets.txt');
                     while(offsetFile.contains("  ")) {
                         offsetFile.replace("  ", " ");
                     }
@@ -207,22 +207,22 @@ function getColors(altAnim) {
     
                     trace("Saving Character.hx...");
                     charCode = charCode.replace("{1}", additionalCode);
-                    File.saveContent('${Paths.getSkinsPath()}\\bf\\$skin\\Character.hx', charCode);
+                    File.saveContent('${Paths.getSkinsPath()}/bf/$skin/Character.hx', charCode);
                 }
             }
         }
 
-        var gfSkinsPath = '${Paths.getOldSkinsPath()}\\gf\\';
+        var gfSkinsPath = '${Paths.getOldSkinsPath()}/gf/';
         if (FileSystem.exists(gfSkinsPath)) {
             for (skin in FileSystem.readDirectory(gfSkinsPath)) {
                 if (skin.toLowerCase() == "default" || skin.toLowerCase() == "template") continue;
-                if (FileSystem.isDirectory('$gfSkinsPath\\$skin')) {
+                if (FileSystem.isDirectory('$gfSkinsPath/$skin')) {
                     trace('=======================');
                     trace('Converting $skin');
                     var requiredFiles = ["spritesheet.xml", "spritesheet.png", "icon.png", "anim_names.txt", "offsets.txt"];
                     var canConvert = true;
                     for (r in requiredFiles) {
-                        if (!FileSystem.exists('$gfSkinsPath\\$skin\\$r')) {
+                        if (!FileSystem.exists('$gfSkinsPath/$skin/$r')) {
                             canConvert = false;
                             break;
                         }
@@ -231,21 +231,21 @@ function getColors(altAnim) {
                         trace('Could not convert $skin. Not all of the required files are there.');
                         continue;
                     }
-                    FileSystem.createDirectory('${Paths.getSkinsPath()}\\gf\\$skin\\');
+                    FileSystem.createDirectory('${Paths.getSkinsPath()}/gf/$skin/');
     
                     trace("Copying spritesheet...");
-                    File.copy('$gfSkinsPath\\$skin\\spritesheet.xml', '${Paths.getSkinsPath()}\\gf\\$skin\\spritesheet.xml');
-                    File.copy('$gfSkinsPath\\$skin\\spritesheet.png', '${Paths.getSkinsPath()}\\gf\\$skin\\spritesheet.png');
+                    File.copy('$gfSkinsPath/$skin/spritesheet.xml', '${Paths.getSkinsPath()}/gf/$skin/spritesheet.xml');
+                    File.copy('$gfSkinsPath/$skin/spritesheet.png', '${Paths.getSkinsPath()}/gf/$skin/spritesheet.png');
     
                     trace("Copying icon...");
-                    File.copy('$gfSkinsPath\\$skin\\icon.png', '${Paths.getSkinsPath()}\\gf\\$skin\\icon.png');
+                    File.copy('$gfSkinsPath/$skin/icon.png', '${Paths.getSkinsPath()}/gf/$skin/icon.png');
     
                     trace("Loading animations...");
-                    var animsFile = File.getContent('$gfSkinsPath\\$skin\\anim_names.txt').replace("\r", "").trim();
+                    var animsFile = File.getContent('$gfSkinsPath/$skin/anim_names.txt').replace("\r", "").trim();
                     var splitAnims = animsFile.split("\n");
     
                     trace("Loading offsets...");
-                    var offsetFile = File.getContent('$gfSkinsPath\\$skin\\offsets.txt');
+                    var offsetFile = File.getContent('$gfSkinsPath/$skin/offsets.txt');
                     while(offsetFile.contains("  ")) {
                         offsetFile.replace("  ", " ");
                     }
@@ -297,19 +297,19 @@ function getColors(altAnim) {
     
                     trace("Saving Character.hx...");
                     charCode = charCode.replace("{1}", additionalCode);
-                    File.saveContent('${Paths.getSkinsPath()}\\gf\\$skin\\Character.hx', charCode);
+                    File.saveContent('${Paths.getSkinsPath()}/gf/$skin/Character.hx', charCode);
                 }
             }
         }
 
-        var noteSkinsPath = '${Paths.getOldSkinsPath()}\\notes\\';
+        var noteSkinsPath = '${Paths.getOldSkinsPath()}/notes/';
         var exts = ["png", "xml"];
         if (FileSystem.exists(noteSkinsPath))
             for (skin in FileSystem.readDirectory(noteSkinsPath))
                 for (ext in exts)
                     if (Path.extension(skin).toLowerCase() == ext)
-                        File.copy('$noteSkinsPath\\$skin', '${Paths.getSkinsPath()}\\notes\\$skin');
-        var file = Paths.getOldSkinsPath().replace("/", "\\");
+                        File.copy('$noteSkinsPath/$skin', '${Paths.getSkinsPath()}/notes/$skin');
+        var file = Paths.getOldSkinsPath().replace("/", "/");
         trace(file);
         CoolUtil.deleteFolder(file);
         FileSystem.deleteDirectory(file);

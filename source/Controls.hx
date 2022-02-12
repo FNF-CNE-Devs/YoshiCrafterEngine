@@ -1,5 +1,6 @@
 package;
 
+import FlxControls.FlxControlType;
 import flixel.FlxG;
 import flixel.input.FlxInput;
 import flixel.input.actions.FlxAction;
@@ -11,6 +12,33 @@ import flixel.input.gamepad.FlxGamepadButton;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 
+using StringTools;
+
+class AndroidSupportFlxActionDigital extends FlxActionDigital {
+	public override function check() {
+		#if MOBILE_UI
+		var repeatActions = ["up", "left", "down", "right"];
+		var type:FlxControlType = repeatActions.contains(name) ? Pressed : JustPressed;
+		// trace(name);
+		if (name.endsWith("-press")) {
+			type = JustPressed;
+		} else if (name.endsWith("-release")) {
+			type = JustReleased;
+		}
+		var androidShit = FlxControls.getAndroidInput(type);
+		var stringShit = FlxKey.toStringMap;
+		for (m in this.inputs) {
+			if (Std.isOfType(m, FlxActionInputDigitalKeyboard)) {
+				var k = cast(m, FlxActionInputDigitalKeyboard);
+				if (Reflect.field(androidShit, stringShit[cast(k.inputID, FlxKey)]) == true) {
+					return true;
+				}
+			}
+		}
+		#end
+		return super.check();
+	}
+}
 #if (haxe >= "4.0.0")
 enum abstract Action(String) to String from String
 {
@@ -94,23 +122,23 @@ enum KeyboardScheme
  */
 class Controls extends FlxActionSet
 {
-	var _up = new FlxActionDigital(Action.UP);
-	var _left = new FlxActionDigital(Action.LEFT);
-	var _right = new FlxActionDigital(Action.RIGHT);
-	var _down = new FlxActionDigital(Action.DOWN);
-	var _upP = new FlxActionDigital(Action.UP_P);
-	var _leftP = new FlxActionDigital(Action.LEFT_P);
-	var _rightP = new FlxActionDigital(Action.RIGHT_P);
-	var _downP = new FlxActionDigital(Action.DOWN_P);
-	var _upR = new FlxActionDigital(Action.UP_R);
-	var _leftR = new FlxActionDigital(Action.LEFT_R);
-	var _rightR = new FlxActionDigital(Action.RIGHT_R);
-	var _downR = new FlxActionDigital(Action.DOWN_R);
-	var _accept = new FlxActionDigital(Action.ACCEPT);
-	var _back = new FlxActionDigital(Action.BACK);
-	var _pause = new FlxActionDigital(Action.PAUSE);
-	var _reset = new FlxActionDigital(Action.RESET);
-	var _cheat = new FlxActionDigital(Action.CHEAT);
+	var _up = new AndroidSupportFlxActionDigital(Action.UP);
+	var _left = new AndroidSupportFlxActionDigital(Action.LEFT);
+	var _right = new AndroidSupportFlxActionDigital(Action.RIGHT);
+	var _down = new AndroidSupportFlxActionDigital(Action.DOWN);
+	var _upP = new AndroidSupportFlxActionDigital(Action.UP_P);
+	var _leftP = new AndroidSupportFlxActionDigital(Action.LEFT_P);
+	var _rightP = new AndroidSupportFlxActionDigital(Action.RIGHT_P);
+	var _downP = new AndroidSupportFlxActionDigital(Action.DOWN_P);
+	var _upR = new AndroidSupportFlxActionDigital(Action.UP_R);
+	var _leftR = new AndroidSupportFlxActionDigital(Action.LEFT_R);
+	var _rightR = new AndroidSupportFlxActionDigital(Action.RIGHT_R);
+	var _downR = new AndroidSupportFlxActionDigital(Action.DOWN_R);
+	var _accept = new AndroidSupportFlxActionDigital(Action.ACCEPT);
+	var _back = new AndroidSupportFlxActionDigital(Action.BACK);
+	var _pause = new AndroidSupportFlxActionDigital(Action.PAUSE);
+	var _reset = new AndroidSupportFlxActionDigital(Action.RESET);
+	var _cheat = new AndroidSupportFlxActionDigital(Action.CHEAT);
 
 	#if (haxe >= "4.0.0")
 	var byName:Map<String, FlxActionDigital> = [];

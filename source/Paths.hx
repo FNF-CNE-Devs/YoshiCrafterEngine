@@ -1,5 +1,9 @@
 package;
 
+import openfl.system.ApplicationDomain;
+import lime.app.Application;
+import flixel.util.FlxDestroyUtil;
+import flixel.graphics.frames.FlxFramesCollection;
 import haxe.io.Bytes;
 import EngineSettings.Settings;
 import openfl.media.Sound;
@@ -14,6 +18,8 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
 
+using StringTools;
+
 class Paths
 {
 	inline public static var SOUND_EXT = #if web "mp3" #else "ogg" #end;
@@ -27,14 +33,28 @@ class Paths
 		currentLevel = name.toLowerCase();
 	}
 
-	static public function getModsFolder() {
+	public static var modsPath(get, null):String;
+
+	public static function getSoundExtern(path:String) {
+		var cPath = getCachePath(path);
+		if (cacheSound[cPath] == null) {
+			cacheSound[cPath] = Sound.fromFile(path);
+		}
+		return cacheSound[cPath];
+	}
+	public static function get_modsPath() {
+		
 		#if sourceCode
 			return './../../../../mods';
+		#elseif android
+			return '${System.userDirectory}/Yoshi Engine/mods';
 		#else
 			return './mods';
 		#end
-		
 	}
+
+	public static function getModsPath() {return modsPath;};
+	
 	static function getPath(file:String, type:AssetType, library:Null<String>)
 	{
 		if (library != null)
@@ -121,7 +141,7 @@ class Paths
 	}
 	inline static public function getInstPath(song:String, mod:String, ?difficulty:String = "")
 	{
-		var path = Paths.getModsFolder() + '/$mod/songs/$song/';
+		var path = Paths.modsPath + '/$mod/songs/$song/';
 		// trace(path + 'Inst-$difficulty.ogg');
 		if (FileSystem.exists(path + 'Inst-$difficulty.ogg')) {
 			path += 'Inst-$difficulty.ogg';
@@ -137,7 +157,7 @@ class Paths
 
 	inline static public function modVoices(song:String, mod:String, ?difficulty:String = "")
 	{
-		var path = Paths.getModsFolder() + '/$mod/songs/$song/';
+		var path = Paths.modsPath + '/$mod/songs/$song/';
 		if (FileSystem.exists(path + 'Voices-$difficulty.ogg')) {
 			path += 'Voices-$difficulty.ogg';
 		} else {
@@ -162,7 +182,11 @@ class Paths
 	}
 	
 	inline static public function getSkinsPath() {
-		return "./skins/";
+		#if android
+			return '${System.userDirectory}/Yoshi Engine/skins/';
+		#else
+			return "./skins/";
+		#end
 	}
 	inline static public function getOldSkinsPath() {
 		return System.applicationStorageDirectory + "../../YoshiCrafter29/Yoshi Engine/skins/";
@@ -192,6 +216,8 @@ class Paths
 	public static var cacheText:Map<String, String> = new Map<String, String>();
 	public static var cacheBitmap:Map<String, BitmapData> = new Map<String, BitmapData>();
 	public static var cacheBytes:Map<String, Bytes> = new Map<String, Bytes>();
+	public static var cacheSparrow:Map<String, FlxAtlasFrames> = new Map<String, FlxAtlasFrames>();
+	public static var cacheSound:Map<String, Sound> = new Map<String, Sound>();
 	#if sys	
 
 	inline static public function clearCache() {
@@ -204,89 +230,138 @@ class Paths
 		}
 		cacheBitmap.clear();
 		cacheBytes.clear();
+		// for (c in cacheSparrow) 
+		// 	FlxDestroyUtil.destroy(c);
+		cacheSparrow.clear();
 	}
 
+	public static function getCachePath(path:String) {
+		return path.replace("\\", "/").trim().toLowerCase();
+	}
 	inline static public function getTextOutsideAssets(path:String, log:Bool = false) {
 		
+		var cachePath = getCachePath(path);
 		if (Settings.engineSettings.data.developerMode) {
 			if (!FileSystem.exists(path)) {
 				PlayState.log.push('Paths : Text file at "$path" does not exist.');
 			}
 		}
-		if (Paths.cacheText[path] == null) {
-			if (log) trace('Getting file content at "$path"');
-			Paths.cacheText[path] = sys.io.File.getContent(path);
-		}
-		return Paths.cacheText[path];
+
+		if (cacheText[cachePath] == null) cacheText[cachePath] = sys.io.File.getContent(path);
+		// if (Paths.cacheText[path] == null) {
+		// 	if (log) trace('Getting file content at "$path"');
+		// 	Paths.cacheText[path] = sys.io.File.getContent(path);
+		// }
+
+		// THIS is causing some PROBLEMS.
+		// return sys.io.File.getContent(path);
+
+		return cacheText[cachePath];
 	}
 
 	#end
 	inline static public function getBitmapOutsideAssets(path:String) {
 		// trace(path);
 		
+		var cachePath = getCachePath(path);
 		if (Settings.engineSettings.data.developerMode) {
-			if (!FileSystem.exists(path)) {
+			if (!FileSystem.exists(cachePath)) {
 				PlayState.log.push('Paths : Bitmap at "$path" does not exist.');
 			}
 		}
-		if (Paths.cacheBitmap[path] == null) {
-			Paths.cacheBitmap[path] = BitmapData.fromFile(path);
-		} else if (!Paths.cacheBitmap[path].readable) {
-			Paths.cacheBitmap[path] = BitmapData.fromFile(path);
+		if (Paths.cacheBitmap[cachePath] == null) {
+			#if trace_everything trace('BitmapData not existent for $path.'); #end
+			var bData = BitmapData.fromFile(path);
+			// bData.dis
+			Paths.cacheBitmap[cachePath] = bData;
+		} else if (!Paths.cacheBitmap[cachePath].readable) {
+			#if trace_everything trace('BitmapData not readable for $path.'); #end
+			Paths.cacheBitmap[cachePath] = BitmapData.fromFile(path);
 		}
 		
-		var b = Paths.cacheBitmap[path];
-		if (copyBitmap) {
-			b = b.clone();
-			for(i in 0...0x00FFFFFF) {
-				if (Paths.cacheBitmap[path + "/" + Std.string(i)] == null) {
-					Paths.cacheBitmap[path + "/" + Std.string(i)] = b;
-					break;
-				}
-			}
-		}
-		return (copyBitmap ? b : Paths.cacheBitmap[path]);
+		var b = Paths.cacheBitmap[cachePath];
+		// if (copyBitmap) {
+		// 	b = b.clone();
+		// 	for(i in 0...0x7FFFFFFF) {
+		// 		if (Paths.cacheBitmap[cachePath + "/" + Std.string(i)] == null) {
+		// 			Paths.cacheBitmap[cachePath + "/" + Std.string(i)] = b;
+		// 			break;
+		// 		}
+		// 	}
+		// }
+		return (copyBitmap ? b : Paths.cacheBitmap[cachePath]);
 	}
 	inline static public function getBytesOutsideAssets(path:String) {
 		// trace(path);
-		
+		var cachePath = getCachePath(path);
 		if (Settings.engineSettings.data.developerMode) {
-			if (!FileSystem.exists(path)) {
+			if (!FileSystem.exists(cachePath)) {
 				PlayState.log.push('Paths : Byte file at "$path" does not exist.');
 			}
 		}
-		if (Paths.cacheBytes[path] == null) {
-			Paths.cacheBytes[path] = File.getBytes(path);
+		if (Paths.cacheBytes[cachePath] == null) {
+			Paths.cacheBytes[cachePath] = File.getBytes(path);
 		}
-		return Paths.cacheBytes[path];
+		return Paths.cacheBytes[cachePath];
 	}
-	inline static public function getSparrowAtlas_Custom(key:String)
+	public static function getExternSparrow(key:String) {
+		#if trace_everything trace("Getting bitmap"); #end
+		var png = Paths.getBitmapOutsideAssets(key + ".png");
+
+		#if trace_everything trace("Getting XML content"); #end
+		var xml = Paths.getTextOutsideAssets(key + ".xml");
+		var nFrames = FlxAtlasFrames.fromSparrow(png, xml);
+		cacheSparrow[key] = nFrames;
+		return nFrames;
+	}
+	inline static public function getSparrowAtlas_Custom(key:String, forceReload:Bool = false)
 	{
 		// Assets.registerLibrary("custom", AssetLibrary.(key + ".png"));
 		// Assets.registerLibrary("custom", AssetLibrary.fromFile(key + ".xml"));
 		#if sys
-		return FlxAtlasFrames.fromSparrow(Paths.getBitmapOutsideAssets(key + ".png"), Paths.getTextOutsideAssets(key + ".xml"));
+		key = key.trim().replace("/", "/").replace("\\", "/");
+		if (cacheSparrow[key] != null) {
+			if (cacheSparrow[key].frames != null && !forceReload) {
+				if (cacheSparrow[key].parent.bitmap != null) {
+					if (cacheSparrow[key].parent.bitmap.readable) {
+						return cacheSparrow[key];
+					} else {
+						return getExternSparrow(key);
+					}
+				} else {
+					return getExternSparrow(key);
+				}
+			} else {
+				#if trace_everything trace('$key is dead, returning a new one'); #end
+				return getExternSparrow(key);
+			}
+		} else {
+			#if trace_everything trace('$key exists, returning from cache'); #end
+			return getExternSparrow(key);
+		}
 		#else
 		return null;
 		#end
 	}
-	inline static public function getSparrowAtlas_Stage(key:String)
-	{
-		#if sys
-		return FlxAtlasFrames.fromSparrow(Paths.getLibraryPath(ModSupport.song_stage_path), Paths.getTextOutsideAssets(ModSupport.song_stage_path + '/$key.xml'));
-		// return FlxAtlasFrames.fromSparrow(Paths.getBitmapOutsideAssets(ModSupport.song_stage_path + '/$key.png'), Paths.getTextOutsideAssets(ModSupport.song_stage_path + '/$key.xml'));
-		#else
-		return null;
-		#end
-	}
+	// inline static public function getSparrowAtlas_Stage(key:String)
+	// {
+	// 	key = key.trim().replace("/", "/").replace("\\", "/");
+	// 	#if sys
+	// 	return FlxAtlasFrames.fromSparrow(Paths.getLibraryPath(ModSupport.song_stage_path), Paths.getTextOutsideAssets(ModSupport.song_stage_path + '/$key.xml'));
+	// 	// return FlxAtlasFrames.fromSparrow(Paths.getBitmapOutsideAssets(ModSupport.song_stage_path + '/$key.png'), Paths.getTextOutsideAssets(ModSupport.song_stage_path + '/$key.xml'));
+	// 	#else
+	// 	return null;
+	// 	#end
+	// }
 
-	inline static public function getCharacter(key:String)
-	{
-		return FlxAtlasFrames.fromSparrow(getPath('$key.png', IMAGE, "characters"), file('$key.xml', "characters"));
-	}
+	// inline static public function getCharacter(key:String)
+	// {
+	// 	return FlxAtlasFrames.fromSparrow(getPath('$key.png', IMAGE, "characters"), file('$key.xml', "characters"));
+	// }
 
 	inline static public function video(key:String, ?library:String)
 	{
+		key = key.trim().replace("/", "/").replace("\\", "/");
 		trace('assets/videos/$key.mp4');
 		return getPath('videos/$key.mp4', BINARY, library);
 	}
@@ -305,7 +380,7 @@ class Paths
 			charName = splittedCharacterID[1];
 			charMod = splittedCharacterID[0];
 		}
-		var folder = Paths.getModsFolder() + '/$charMod/characters/$charName';
+		var folder = Paths.modsPath + '/$charMod/characters/$charName';
 		if (charMod == "~") {
 			// You have unlocked secret skin menu !
 			folder = '${Paths.getSkinsPath()}/$charName';
@@ -318,12 +393,12 @@ class Paths
 			if (exists) break;
 		}
 		if (!exists) {
-			folder = Paths.getModsFolder() + '/Friday Night Funkin\'/characters/unknown';
+			folder = Paths.modsPath + '/Friday Night Funkin\'/characters/unknown';
 		}
 		return folder;
 	}
 	inline static public function getCharacterFolderPath_Array(character:Array<String>):String {
-		return '${Paths.getModsFolder()}\\${character[0]}\\characters\\${character[1]}';
+		return '${Paths.modsPath}/${character[0]}/characters/${character[1]}';
 	}
 	inline static public function getModCharacter(characterId:String)
 	{
@@ -341,10 +416,10 @@ class Paths
 		return getPath('icons/$key.png', IMAGE, "characters");
 	}
 
-	inline static public function getCharacterPacker(key:String)
-	{
-		return FlxAtlasFrames.fromSpriteSheetPacker(getPath('$key.png', IMAGE, "characters"), file('$key.txt', "characters"));
-	}
+	// inline static public function getCharacterPacker(key:String)
+	// {
+	// 	return FlxAtlasFrames.fromSpriteSheetPacker(getPath('$key.png', IMAGE, "characters"), file('$key.txt', "characters"));
+	// }
 
 	inline static public function getModCharacterPacker(characterId:String)
 	{
@@ -352,8 +427,8 @@ class Paths
 		return FlxAtlasFrames.fromSpriteSheetPacker(Paths.getBitmapOutsideAssets('$folder/spritesheet.png'), Paths.getTextOutsideAssets('$folder/spritesheet.txt'));
 	}
 
-	inline static public function getPackerAtlas(key:String, ?library:String)
-	{
-		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
-	}
+	// inline static public function getPackerAtlas(key:String, ?library:String)
+	// {
+	// 	return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
+	// }
 }

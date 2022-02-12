@@ -54,7 +54,7 @@ class CreditsState extends MusicBeatState {
         FlxG.camera.follow(camFollow, LOCKON, 0.04);
         FlxG.camera.zoom = 0.75;
 
-        var mFolder = Paths.getModsFolder();
+        var mFolder = Paths.modsPath;
         var y = 0;
 
         var mods = FileSystem.readDirectory(mFolder);

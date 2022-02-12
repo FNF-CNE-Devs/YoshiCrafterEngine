@@ -47,13 +47,13 @@ switch(song) {
 
     // WEEK 6
     case "senpai":
-        scripts = ["stages/school"];
+        scripts = ["stages/school", "modcharts/week6"];
         cutscene = "cutscenes/weeb-dialogue";
     case "roses":
-        scripts = ["stages/school"];
+        scripts = ["stages/school", "modcharts/week6"];
         cutscene = "cutscenes/weeb-dialogue";
     case "thorns":
-        scripts = ["stages/school-evil"];
+        scripts = ["stages/school-evil", "modcharts/week6"];
         cutscene = "cutscenes/weeb-dialogue";
 }
 

@@ -1,5 +1,7 @@
 package;
 
+import dev_toolbox.ToolboxHome;
+import dev_toolbox.stage_editor.StageEditor;
 import ControlsSettingsSubState.ControlsSettingsSub;
 import EngineSettings.Settings;
 import Controls.Control;
@@ -20,7 +22,7 @@ class PauseSubState extends MusicBeatSubstate
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
 	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Change Keybinds', 'Options'];
-	var devMenuItems:Array<String> = ['Logs', 'Edit Opponent', 'Edit Player'];
+	var devMenuItems:Array<String> = ['Logs', 'Edit Opponent', 'Edit Player', 'Edit Stage'];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
@@ -65,7 +67,10 @@ class PauseSubState extends MusicBeatSubstate
 		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 		FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
 		if (Settings.engineSettings.data.developerMode == true) {
-			for (d in devMenuItems) menuItems.push(d);
+			if (!(ModSupport.modConfig[PlayState.songMod] != null && ModSupport.modConfig[PlayState.songMod].locked == true)) {
+				for (d in devMenuItems) menuItems.push(d);
+				if (PlayState.current.devStage == null) menuItems.remove("Edit Stage");
+			}
 		}
 		menuItems.push("Exit to menu");
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
@@ -135,6 +140,11 @@ class PauseSubState extends MusicBeatSubstate
 					dev_toolbox.character_editor.CharacterEditor.fromFreeplay = true;
 					dev_toolbox.ToolboxHome.selectedMod = split[0];
 					FlxG.switchState(new dev_toolbox.character_editor.CharacterEditor(split[1]));
+				case "Edit Stage":
+					var devStageSplit = PlayState.current.devStage.split(":");
+					ToolboxHome.selectedMod = devStageSplit[0];
+					StageEditor.fromFreeplay = true;
+					FlxG.switchState(new StageEditor(devStageSplit[1]));
 				case "Options":
 					OptionsMenu.fromFreeplay = true;
 					FlxG.switchState(new OptionsMenu(0, 0));
@@ -143,7 +153,7 @@ class PauseSubState extends MusicBeatSubstate
 			}
 		}
 
-		if (FlxG.keys.justPressed.J)
+		if (FlxControls.justPressed.J)
 		{
 			// for reference later!
 			// PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxKey.J, null);

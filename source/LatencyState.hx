@@ -45,15 +45,15 @@ class LatencyState extends FlxState
 
 		var multiply:Float = 1;
 
-		if (FlxG.keys.pressed.SHIFT)
+		if (FlxControls.pressed.SHIFT)
 			multiply = 10;
 
-		if (FlxG.keys.justPressed.RIGHT)
+		if (FlxControls.justPressed.RIGHT)
 			Conductor.offset += 1 * multiply;
-		if (FlxG.keys.justPressed.LEFT)
+		if (FlxControls.justPressed.LEFT)
 			Conductor.offset -= 1 * multiply;
 
-		if (FlxG.keys.justPressed.SPACE)
+		if (FlxControls.justPressed.SPACE)
 		{
 			FlxG.sound.music.stop();
 

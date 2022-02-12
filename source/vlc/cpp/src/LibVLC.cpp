@@ -140,7 +140,7 @@ void LibVLC::setPath(const char* path)
 
 	//libVlcMediaItem = libvlc_media_new_path(libVlcInstance, path);
 	libVlcMediaItem = libvlc_media_new_location(libVlcInstance, path);
-	//libVlcMediaItem = libvlc_media_new_location(libVlcInstance, "file:///C:\\Program Files (x86)\\Xms Client 3\\resources\\downloaded\\files\\ac079337-dbd1-11e6-a59e-f681aa9a2e27.mp4");
+	//libVlcMediaItem = libvlc_media_new_location(libVlcInstance, "file:///C:/Program Files (x86)/Xms Client 3/resources/downloaded/files/ac079337-dbd1-11e6-a59e-f681aa9a2e27.mp4");
 	libVlcMediaPlayer = libvlc_media_player_new_from_media(libVlcMediaItem);
 	libvlc_media_parse(libVlcMediaItem);
 	libvlc_media_release(libVlcMediaItem);

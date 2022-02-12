@@ -1,5 +1,6 @@
 package;
 
+import dev_toolbox.ToolboxMessage;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
 import flixel.FlxSubState;
@@ -66,4 +67,10 @@ class MusicBeatSubstate extends FlxSubState
 	public function onDropFile(path:String) {
 		
 	}
+
+    function showMessage(title:String, text:String) {
+        var m = ToolboxMessage.showMessage(title, text);
+        m.cameras = cameras;
+        openSubState(m);
+    }
 }

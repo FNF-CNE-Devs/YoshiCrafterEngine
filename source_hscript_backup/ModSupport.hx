@@ -49,7 +49,7 @@ class ExceptionState extends FlxState {
 
     public override function update(elapsed:Float) {
         super.update(elapsed);
-        if (FlxG.keys.pressed.ENTER) {
+        if (FlxControls.pressed.ENTER) {
             switch(resumeTo) {
                 case 0:
                     FlxG.switchState(new PlayState());

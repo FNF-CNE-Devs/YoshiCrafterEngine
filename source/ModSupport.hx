@@ -1,3 +1,7 @@
+import haxe.io.Bytes;
+// import zip.Zip;
+// import zip.ZipEntry;
+// import zip.ZipReader;
 import Shaders.ColorShader;
 #if desktop
 import cpp.Lib;
@@ -58,7 +62,7 @@ class ExceptionState extends FlxState {
 
     public override function update(elapsed:Float) {
         super.update(elapsed);
-        if (FlxG.keys.pressed.ENTER) {
+        if (FlxControls.pressed.ENTER) {
             switch(resumeTo) {
                 case 0:
                     FlxG.switchState(new PlayState());
@@ -212,6 +216,7 @@ typedef CharacterSkin = {
 }
 typedef ModConfig = {
     var name:String;
+    var locked:Null<Bool>;
     var description:String;
     var titleBarName:String;
     var skinnableBFs:Array<String>;
@@ -225,6 +230,10 @@ typedef ModScript = {
     var mod:String;
 }
 
+// typedef ZipProgress = {
+//     var progress:Float;
+//     var zipReader:ZipReader;
+// }
 class ModSupport {
     public static var song_config_parser:hscript.Interp;
     public static var song_modchart_path:String = "";
@@ -240,14 +249,14 @@ class ModSupport {
     public static var modConfig:Map<String, ModConfig> = null;
 
     public static var modSaves:Map<String, FlxSave> = [];
-    public static var mFolder = Paths.getModsFolder();
+    public static var mFolder = Paths.modsPath;
 
     public static function getMods():Array<String> {
-        var modFolder = Paths.getModsFolder();
+        var modFolder = Paths.modsPath;
         var a = FileSystem.readDirectory(modFolder);
         var finalArray = [];
         for (e in a) {
-            if (FileSystem.isDirectory('$modFolder\\$e')) finalArray.push(e);
+            if (FileSystem.isDirectory('$modFolder/$e')) finalArray.push(e);
         }
         return finalArray;
     }
@@ -255,9 +264,9 @@ class ModSupport {
         modConfig = [];
         for(mod in getMods()) {
             var json:ModConfig = null;
-            if (FileSystem.exists('$mFolder\\$mod\\config.json')) {
+            if (FileSystem.exists('$mFolder/$mod/config.json')) {
                 try {
-                    json = Json.parse(Paths.getTextOutsideAssets('$mFolder\\$mod\\config.json'));
+                    json = Json.parse(Paths.getTextOutsideAssets('$mFolder/$mod/config.json'));
                 } catch(e) {
                     for (e in ('Failed to parse mod config for $mod.').split('\n')) PlayState.log.push(e);
                 }
@@ -270,7 +279,8 @@ class ModSupport {
                 skinnableBFs: null,
                 BFskins: null,
                 GFskins: null,
-                keyNumbers: null
+                keyNumbers: null,
+                locked: false
             };
             modConfig[mod] = json;
         }
@@ -324,7 +334,7 @@ class ModSupport {
             var splittedPath = path.split(":");
             if (splittedPath.length < 2) splittedPath.insert(0, mod);
             var joinedPath = splittedPath.join("/");
-            var mFolder = Paths.getModsFolder();
+            var mFolder = Paths.modsPath;
             var expr = getExpressionFromPath('$mFolder/$joinedPath.hx');
             if (expr != null) {
                 hscript.execute(expr);
@@ -392,9 +402,9 @@ class ModSupport {
     }
 
     public static function saveModData(mod:String):Bool {
-        if (FileSystem.exists('${Paths.getModsFolder()}\\$mod\\')) {
+        if (FileSystem.exists('${Paths.modsPath}/$mod/')) {
             if (modConfig[mod] != null) {
-                File.saveContent('${Paths.getModsFolder()}\\$mod\\config.json', Json.stringify(modConfig[mod], "\t"));
+                File.saveContent('${Paths.modsPath}/$mod/config.json', Json.stringify(modConfig[mod], "\t"));
                 return true;
             }
         }
@@ -416,7 +426,7 @@ class ModSupport {
         //     var splittedPath = path.split(":");
         //     if (splittedPath.length < 2) splittedPath.insert(0, mod);
         //     var joinedPath = splittedPath.join("/");
-        //     var mFolder = Paths.getModsFolder();
+        //     var mFolder = Paths.modsPath;
         //     var expr = getExpressionFromPath('$mFolder/$joinedPath.hx');
         //     if (expr != null) {
         //         hscript.execute(expr);
@@ -426,9 +436,16 @@ class ModSupport {
         if (PlayState.current != null) {
             script.setVariable("EngineSettings", PlayState.current.engineSettings);
             script.setVariable("global", PlayState.current.vars);
+            script.setVariable("loadStage", function(stagePath) {
+                return new Stage(stagePath, mod);
+            });
+
         } else {
             script.setVariable("EngineSettings", {});
             script.setVariable("global", {});
+            script.setVariable("loadStage", function(stagePath) {
+                return null;
+            });
         }
         script.setVariable("trace", function(text) {
             try {
@@ -456,8 +473,6 @@ class ModSupport {
 		script.setVariable("FlxSound", FlxSound);
 		script.setVariable("FlxEase", FlxEase);
 		script.setVariable("FlxTween", FlxTween);
-		// script.setVariable("File", File);
-		// script.setVariable("FileSystem", FileSystem);
 		script.setVariable("FlxColor", FlxColor_Helper);
 		script.setVariable("Boyfriend", Boyfriend);
 		script.setVariable("FlxTypedGroup", FlxTypedGroup);
@@ -466,7 +481,6 @@ class ModSupport {
 		script.setVariable("FlxTimer", FlxTimer);
 		script.setVariable("Json", Json);
 		script.setVariable("MP4Video", MP4Video);
-		// script.setVariable("PNGEncoderOptions", PNGEncoderOptions);
 		script.setVariable("CoolUtil", CoolUtil);
 		script.setVariable("FlxTypeText", FlxTypeText);
 		script.setVariable("FlxText", FlxText);
@@ -487,124 +501,52 @@ class ModSupport {
     }
     public static function parseSongConfig() {
         var songName = PlayState._SONG.song.toLowerCase();
-        var songCodePath = Paths.getModsFolder() + '/$currentMod/song_conf';
-        var parser = new hscript.Parser();
-        parser.allowTypes = true;
+        var songCodePath = Paths.modsPath + '/$currentMod/song_conf';
+
+        var songConf = SongConf.parse(PlayState.songMod, PlayState.SONG.song);
+
+        scripts = songConf.scripts;
+        song_cutscene = songConf.cutscene;
+        song_end_cutscene = songConf.end_cutscene;
+        // var parser = new hscript.Parser();
+        // parser.allowTypes = true;
         // var ast = null;
         #if sys
         // ast = parser.parseString(sys.io.File.getContent(songCodePath));
         #end
-        var interp = Script.create(songCodePath);
-        interp.setVariable("song", songName);
-        interp.setVariable("difficulty", PlayState.storyDifficulty);
-        interp.setVariable("stage", "");
-        interp.setVariable("cutscene", "");
-        interp.setVariable("end_cutscene", "");
-        interp.setVariable("modchart", "");
-        interp.setVariable("scripts", []);
-        interp.loadFile(songCodePath);
-
-        var stage:String = interp.getVariable("stage");
-        var modchart:String = interp.getVariable("modchart");
-        var cutscene:String = interp.getVariable("cutscene");
-        var end_cutscene:String = interp.getVariable("end_cutscene");
-        var sc:Array<String> = interp.getVariable("scripts");
-        scripts = [];
-        scripts.push(getModScriptFromValue('stages\\$stage'));
-        if (modchart.trim() != "") scripts.push(getModScriptFromValue('$currentMod:modcharts\\$modchart'));
-        for (s in sc) {
-            scripts.push(getModScriptFromValue(s));
-        }
-        if (scripts.length == 0) {
-            scripts = [
-                {
-                    path : "Friday Night Funkin'/stages/default_stage",
-                    mod : "Friday Night Funkin'"
-                }
-            ];
-        }
+        
+        // scripts = [];
+        // scripts.push(getModScriptFromValue('stages/$stage'));
+        // for (s in sc) {
+        //     scripts.push(getModScriptFromValue(s));
+        // }
 
         // OUTDATED CODE, HOW TF DID I WROTE THIS IN RELEASE
         // if (stage == "default_stage")
-        //     song_stage_path = Paths.getModsFolder() + '/Friday Night Funkin\'/stages/$stage'; // fallback
+        //     song_stage_path = Paths.modsPath + '/Friday Night Funkin\'/stages/$stage'; // fallback
         // else
-        //     song_stage_path = Paths.getModsFolder() + '/$currentMod/stages/$stage';
+        //     song_stage_path = Paths.modsPath + '/$currentMod/stages/$stage';
 
         // if (modchart != "")
-        //     song_modchart_path = Paths.getModsFolder() + '/$currentMod/modcharts/$modchart';
+        //     song_modchart_path = Paths.modsPath + '/$currentMod/modcharts/$modchart';
         // else
         //     song_modchart_path = "";
 
-        if (cutscene != "")
-            song_cutscene = getModScriptFromValue(cutscene);
-        else
-            song_cutscene = null;
         
-        if (end_cutscene != "")
-            song_end_cutscene = getModScriptFromValue(end_cutscene);
-        else
-            song_end_cutscene = null;
 
-        trace(scripts);
+        // trace(scripts);
         // trace(song_stage_path);
-        trace(song_modchart_path);
+        // trace(song_modchart_path);
     }
 
-    public static function getModScriptFromValue(value:String):ModScript {
-        var splitValue = value.split(":");
-        if (splitValue[0] == "") {
-            PlayState.log.push('Script not found for $value.');
-            return {mod : "Friday Night Funkin'", path : "Friday Night Funkin'/modcharts/unknown"};
-        }
-        if (splitValue.length == 1) {
-            var scriptPath = splitValue[0];
-            if (FileSystem.exists('$mFolder\\$currentMod\\$scriptPath')) {
-                splitValue.insert(0, currentMod);
-            } else {
-                var valid = false;
-                for (ext in Main.supportedFileTypes) {
-                    if (FileSystem.exists('$mFolder\\$currentMod\\$scriptPath.$ext')) {
-                        splitValue.insert(0, currentMod);
-                        valid = true;
-                        break;
-                    }
-                }
-                if (!valid) {
-                    if (FileSystem.exists('$mFolder\\Friday Night Funkin\'\\$scriptPath')) {
-                        splitValue.insert(0, "Friday Night Funkin'");
-                    } else {
-                        var valid = false;
-                        for (ext in Main.supportedFileTypes) {
-                            if (FileSystem.exists('$mFolder\\Friday Night Funkin\'\\$scriptPath.$ext')) {
-                                splitValue.insert(0, "Friday Night Funkin'");
-                                valid = true;
-                                break;
-                            }
-                        }
-                        
-                        if (!valid) {
-                            PlayState.log.push('Script not found for $value.');
-                            return {mod : "Friday Night Funkin'", path : "Friday Night Funkin'/modcharts/unknown"};
-                        }
-                    }
-                }
-            }
-        }
-
-        var m = splitValue[0];
-        var path = splitValue[1];
-        return {
-            mod : m,
-            path : '$m\\$path'
-        }
-    }
+    
 
     // UNUSED
     public static function getFreeplaySongs():Array<String> {
         var folders:Array<String> = [];
         var songs:Array<String> = [];
         #if sys
-            var folders:Array<String> = sys.FileSystem.readDirectory(Paths.getModsFolder() + "/");
+            var folders:Array<String> = sys.FileSystem.readDirectory(Paths.modsPath + "/");
         #end
 
         for (mod in folders) {
@@ -612,7 +554,7 @@ class ModSupport {
             var freeplayList:String = "";
             #if sys
                 try {
-                    freeplayList = sys.io.File.getContent(Paths.getModsFolder() + "/" + mod + "/data/freeplaySonglist.txt");
+                    freeplayList = sys.io.File.getContent(Paths.modsPath + "/" + mod + "/data/freeplaySonglist.txt");
                 } catch(e) {
                     freeplayList = "";
                 }
@@ -621,4 +563,41 @@ class ModSupport {
         }
         return songs;
     }
+
+    /*
+    public static function installModFromZip(zipPath:String, callback:Void->Void):ZipProgress {
+        var fileContent = File.getBytes(zipPath);
+        var zip = new ZipReader(fileContent);
+
+        var thingy:ZipProgress = {
+            progress: 0,
+            zipReader: zip
+        };
+        #if (target.threaded)
+        sys.thread.Thread.create(function() {
+        #end
+            var entries:Map<String, ZipEntry> = [];
+            while(true) {
+                var entry = zip.getNextEntry();
+                if (entry == null) break;
+                entries[entry.fileName] = entry;
+                thingy.progress = zip.progress() / 2;
+            }
+            var p = 0;
+            var keys = entries.keys();
+            var am = [while (keys.hasNext()) keys.next()];
+            for(k=>e in entries) {
+                // wtf
+                var bytes:Bytes = cast(Zip.getBytes(entries.get(k)), Bytes);
+                File.saveBytes('${Paths.modsPath}/$k', bytes);
+                p++;
+                thingy.progress = 0.5 + (p / am.length / 2);
+            }
+            callback();
+        #if (target.threaded)
+        });
+        #end
+        return thingy;
+    }
+    */
 }

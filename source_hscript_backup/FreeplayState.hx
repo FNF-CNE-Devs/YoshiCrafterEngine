@@ -391,11 +391,11 @@ class FreeplayState extends MusicBeatState
 		}
 
 		if (FlxG.mouse.wheel != 0) changeSelection(-FlxG.mouse.wheel);
-		if (upP || (controls.UP && FlxG.keys.pressed.SHIFT))
+		if (upP || (controls.UP && FlxControls.pressed.SHIFT))
 		{
 			changeSelection(-1);
 		}
-		if (downP || (controls.DOWN && FlxG.keys.pressed.SHIFT))
+		if (downP || (controls.DOWN && FlxControls.pressed.SHIFT))
 		{
 			changeSelection(1);
 		}
@@ -438,7 +438,7 @@ class FreeplayState extends MusicBeatState
 			LoadingState.loadAndSwitchState(new PlayState());
 		}
 
-		if (FlxG.keys.justReleased.CONTROL) {
+		if (FlxControls.justReleased.CONTROL) {
 			showAdvancedData();
 		}
 	}

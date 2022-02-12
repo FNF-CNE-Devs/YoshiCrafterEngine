@@ -61,7 +61,7 @@ class FileExplorer extends MusicBeatSubstate {
         }
         spawnedElems = [];
         this.path = path;
-        var p = '${Paths.getModsFolder()}\\$mod\\$path';
+        var p = '${Paths.modsPath}/$mod/$path';
 
 
         // 256 + 20 = 276
@@ -72,7 +72,7 @@ class FileExplorer extends MusicBeatSubstate {
         var dirs = [];
         var files = [];
         for (f in FileSystem.readDirectory(p)) {
-            if (FileSystem.isDirectory('$p\\$f')) {
+            if (FileSystem.isDirectory('$p/$f')) {
                 dirs.push(f);
             } else {
                 files.push(f);
@@ -83,7 +83,7 @@ class FileExplorer extends MusicBeatSubstate {
         maxLength += 22;
         
         for (k=>f in dirs) {
-            var nPath = '$path\\$f';
+            var nPath = '$path/$f';
             var el = new FileExplorerElement(f, Folder, () -> {navigateTo(nPath);}, maxLength);
             el.x = 10 + (maxLength * Math.floor(k / 27));
             el.y = 30 + (16 * (k % 27));
@@ -111,29 +111,29 @@ class FileExplorer extends MusicBeatSubstate {
                         case SparrowAtlas:
                             var ext = Path.extension(f).toLowerCase();
                             if (!fileExt.split(";").contains(ext)) {
-                                openSubState(ToolboxMessage.showMessage("Error", 'You must select a ${fileType}.'));
+                                showMessage("Error", 'You must select a $fileType');
                                 return;
                             }
                             if (ext == "png") {
-                                if (!FileSystem.exists('$p\\${Path.withoutExtension(f)}.xml')) {
-                                    openSubState(ToolboxMessage.showMessage("Error", 'The selected Sparrow Atlas doesn\'t have a corresponding XML file.'));
+                                if (!FileSystem.exists('$p/${Path.withoutExtension(f)}.xml')) {
+                                    showMessage("Error", 'The selected Sparrow Atlas doesn\'t have a corresponding XML file.');
                                     return;
                                 }
                             } else {
-                                if (!FileSystem.exists('$p\\${Path.withoutExtension(f)}.png')) {
-                                    openSubState(ToolboxMessage.showMessage("Error", 'The selected Sparrow Atlas doesn\'t have a corresponding PNG file.'));
+                                if (!FileSystem.exists('$p/${Path.withoutExtension(f)}.png')) {
+                                    showMessage("Error", 'The selected Sparrow Atlas doesn\'t have a corresponding PNG file.');
                                     return;
                                 }
                             }
-                            callback('$path\\${Path.withoutExtension(f)}');
+                            callback('$path/${Path.withoutExtension(f)}');
                             close();
                         
                         default:
                             if (!fileExt.split(";").contains(Path.extension(f).toLowerCase())) {
-                                openSubState(ToolboxMessage.showMessage("Error", 'You must select a ${fileType}.'));
+                                showMessage("Error", 'You must select a $fileType');
                                 return;
                             }
-                            callback('$path\\$f');
+                            callback('$path/$f');
                             close();
                     }
                 }
@@ -143,9 +143,15 @@ class FileExplorer extends MusicBeatSubstate {
             tab.add(el);
             spawnedElems.push(el);
         }
-        pathText.text = '$path\\';
+        pathText.text = '$path/';
 
     }
+
+    // function showMessage(title:String, text:String) {
+    //     var m = ToolboxMessage.showMessage(title, text);
+    //     m.cameras = cameras;
+    //     openSubState(m);
+    // }
 
     public override function new(mod:String, type:FileExplorerType, ?defaultFolder:String = "", callback:String->Void) {
         super();
@@ -205,9 +211,9 @@ class FileExplorer extends MusicBeatSubstate {
         tab.name = "explorer";
 
         var upButton = new FlxUIButton(10, 10, "", function() {
-            if (mod.replace("\\", "").trim() == "") return;
-            var split = path.split("\\");
-            navigateTo([for (k=>p in split) if (p.trim() != "" && k < split.length - 1) p].join("\\"));
+            if (mod.replace("/", "").trim() == "") return;
+            var split = path.split("/");
+            navigateTo([for (k=>p in split) if (p.trim() != "" && k < split.length - 1) p].join("/"));
         });
         upButton.resize(20, 20);
 
@@ -216,7 +222,7 @@ class FileExplorer extends MusicBeatSubstate {
         });
         refreshButton.resize(20, 20);
         
-        pathText = new FlxUIText(refreshButton.x + refreshButton.width + 10, 10, 0, '$path\\');
+        pathText = new FlxUIText(refreshButton.x + refreshButton.width + 10, 10, 0, '$path/');
         
         refreshButton.y = upButton.y -= (upButton.height - pathText.height) / 2;
         
@@ -240,7 +246,7 @@ class FileExplorer extends MusicBeatSubstate {
         }));
         #if windows
             buttons.push(new FlxUIButton(0, 0, "Open Folder", function() {
-                var p = ('explorer "${Paths.getModsFolder()}\\$mod\\$path"').replace("/", "\\").replace("\\\\", "\\");
+                var p = ('explorer "${Paths.modsPath}/$mod/$path"').replace("/", "\\").replace("\\\\", "\\");
                 trace(p);
                 new Process(p);
             }));

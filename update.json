@@ -1,18 +1,20 @@
 {
     "updateLog" : [
-        "1.4.0 : LUA SUPPORT !",
+        "1.5.0 : STAGE EDITOR",
         "",
-        "- /!\\ LUA SUPPORT ! (Beta)",
-        "- /!\\ Updated the Yoshi Engine Charter to allow Real-Time charting (like friday night maker but better)",
-        "- /!\\ CREDITS MENU ICONS (thanks to KiyuuuSama for drawing them!)",
-        "- /!\\ Removed the launcher since some antiviruses were detecting it as a false positive and replaced it by a batch file.",
-        "- /!\\ Get Camera Zoom is now deprecated. Use beatHit to zoom in the camera and set PlayState.autoCamZooming to false to disable auto cam zooming every 4 beats.",
-        "- Fixed the reset button not resetting",
-        "- Fixed Week 2's BF and GF scared animations not finishing",
-        "- Now icons bump better lol",
-        "- Freeplay icons are now vibing",
-        "- Save by Reference is now unchecked by default on Chart Editor.",
-        "- Fixed Reload JSON button crashing the game"
+        "- /!\\ STAGE EDITOR ! (Only works with Json stages) Now edit your own stages without having to go through the troubles of testing over and over again !",
+        "- /!\\ CUSTOM TITLE SCREENS ! They change every 24 beats on the title screen soooo... Check the Friday Night Funkin' data/titlescreen.hx for an example",
+        "- /!\\ CUSTOM INTRO TEXTS ! Put your intro text in data/introText.txt !",
+        "- /!\\ OPTIMISATION UPDATE ! No more waiting 5 hours in front of the game after selecting story mode (idk if it's perfect tho)",
+        "- New Toolbox UI, enjoy !",
+        "- The engine will remember last Freeplay song you played",
+        "- If you ACCIDENTLY end a song that you took SO MUCH TIME to chart, you'll be redirected back to the charter.",
+        "- You can now compile it on Android without any problems (port not done yet, make sure to allow storage access in the phone's app settings)",
+        "- Added character shadow in Character Editor. That means you can use an animation of your character as a base to set the offset of the other ones",
+        "- Fixed the Tab button glitch on the Charter",
+        "- Freeplay song names now gets \"squished\" when they're too long",
+        "- Added offset",
+        "- Added a lots of events"
     ],
     "version" : [1,4,0],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"

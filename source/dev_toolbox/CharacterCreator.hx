@@ -114,19 +114,22 @@ class CharacterCreator extends MusicBeatSubstate {
         var createButton:FlxUIButton = null;
         createButton = new FlxUIButton(10, spritesheet_path_button.y + spritesheet_path_button.height + 10, "Create", function() {
             var charName = Toolbox.generateModFolderName(char_name.text);
-            if (FileSystem.exists('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\characters\\$charName')) {
+            if (FileSystem.exists('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName')) {
                 createButton.color = 0xFFFF2222;
                 createButton.label.text = "(Create) Character with this name already exists.";
+                return;
             }
             if (char_icon == null) {
                 createButton.color = 0xFFFF2222;
                 createButton.label.text = icon_path_button.color == 0xFFFF2222 ? "(Create) Icon Grid is invalid." : "(Create) Character's icon grid haven't been selected yet.";
+                return;
             }
             if (char_spritesheet == null || char_spritesheet.trim() == "") {
                 createButton.color = 0xFFFF2222;
                 createButton.label.text = spritesheet_path_button.color == 0xFFFF2222 ? "(Create) Spritesheet is invalid." : "(Create) Character's Spritesheet haven't been selected yet.";
+                return;
             }
-            FileSystem.createDirectory('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\characters\\$charName');
+            FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName');
             var averageColor:FlxColor;
             {
                 var cR:Float = 0;
@@ -162,12 +165,12 @@ class CharacterCreator extends MusicBeatSubstate {
                 arrowColors: null,
                 flipX: false
             };
-            File.saveContent('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\characters\\$charName\\Character.json', Json.stringify(json, "\t"));
-            File.copy(char_spritesheet + ".xml", '${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\characters\\$charName\\spritesheet.xml');
-            File.copy(char_spritesheet + ".png", '${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\characters\\$charName\\spritesheet.png');
+            File.saveContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/Character.json', Json.stringify(json, "\t"));
+            File.copy(char_spritesheet + ".xml", '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/spritesheet.xml');
+            File.copy(char_spritesheet + ".png", '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/spritesheet.png');
             var characterHX = 'function create() {\r\n\tcharacter.frames = Paths.getCharacter(character.curCharacter);\r\n\tcharacter.loadJSON(true);\r\n}';
-            File.saveContent('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\characters\\$charName\\Character.hx', characterHX);
-            File.saveBytes('${Paths.getModsFolder()}\\${ToolboxHome.selectedMod}\\characters\\$charName\\icon.png', char_icon.encode(char_icon.rect, new PNGEncoderOptions(true)));
+            File.saveContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/Character.hx', characterHX);
+            File.saveBytes('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/icon.png', char_icon.encode(char_icon.rect, new PNGEncoderOptions(true)));
 
             openSubState(ToolboxMessage.showMessage("Success", "Character successfully created.", function() {
                 close();

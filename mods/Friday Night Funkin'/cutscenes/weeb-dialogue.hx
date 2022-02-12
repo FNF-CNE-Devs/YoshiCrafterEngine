@@ -222,7 +222,7 @@ function update(elapsed) {
         dialogueStarted = true;
     }
 
-    if (FlxG.keys.justPressed.ANY  && dialogueStarted == true)
+    if (FlxControls.justPressed.ANY  && dialogueStarted == true)
     {
         PlayState.remove(dialogue);
             

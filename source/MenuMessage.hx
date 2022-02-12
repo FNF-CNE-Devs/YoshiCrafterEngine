@@ -23,10 +23,10 @@ class MenuMessage extends MusicBeatSubstate {
 
     public override function update(elapsed:Float) {
         super.update(elapsed);
-        if (!FlxG.keys.pressed.BACKSPACE) {
+        if (!FlxControls.pressed.BACKSPACE) {
             wasUnpressed = true;
         }
-        if (FlxG.keys.justPressed.BACKSPACE && wasUnpressed) {
+        if (FlxControls.justPressed.BACKSPACE && wasUnpressed) {
             close();
         }
     }

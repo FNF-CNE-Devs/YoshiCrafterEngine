@@ -125,8 +125,8 @@ class ControlsSettingsSub extends MusicBeatSubstate {
             } else {
                 keybindSettingCancel.color = FlxColor.WHITE;
             }
-            if (FlxG.keys.firstJustPressed() != -1) {
-                var key:FlxKey = cast(FlxG.keys.firstJustPressed(), FlxKey);
+            if (FlxControls.firstJustPressed() != -1) {
+                var key:FlxKey = cast(FlxControls.firstJustPressed(), FlxKey);
                 currentControls[keybindSettingKey] = key;
                 arrowsText[keybindSettingKey].text = getKeyName(key);
                 saveButtonEnabled = true;
@@ -141,7 +141,7 @@ class ControlsSettingsSub extends MusicBeatSubstate {
             for (i => value in currentControls) {
                 try {
 
-                    var isPressed:Bool = FlxG.keys.anyPressed([value]);
+                    var isPressed:Bool = FlxControls.anyPressed([value]);
                     if (isPressed && arrows[i].animation.curAnim.name != "pressed") {
                         arrows[i].animation.play("pressed");
                         arrows[i].centerOffsets();

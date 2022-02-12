@@ -42,9 +42,15 @@ class Note extends FlxSprite
 
 	public var noteScore:Float = 1;
 
+	public var maxEarlyDiff:Float = 125; //ms
+	public var maxLateDiff:Float = 90; //ms
+	public var missDiff:Float = 100; //ms
+
 	public var noteType:Int = 0;
 
 	public var colored:Bool = false;
+
+	public var sustainHealth:Float = 0.012;
 	// #if secret
 	// 	var c:FlxColor = new FlxColor(0xFFFF0000);
 	// 	c.hue = (strumTime / 100) % 359;
@@ -102,9 +108,9 @@ class Note extends FlxSprite
 		// pixels = new BitmapData(1, 1, 0x00000000);
 		// framePixels = new BitmapData(1, 1, 0x00000000);
 		// graphic.bitmap = new BitmapData(1, 1, 0x00000000);
-		graphic.destroyOnNoUse = false;
-		graphic.persist = true;
-		// super.destroy();
+		// graphic.destroyOnNoUse = false;
+		// graphic.persist = true;
+		super.destroy();
 	}
 	public function createNote() {
 		// switch(noteType) {
@@ -162,10 +168,10 @@ class Note extends FlxSprite
 		// 		} else {
 		// 			if (engineSettings.customArrowColors) {
 		// 				var colors:Array<FlxColor> = (mustPress || engineSettings.customArrowColors_allChars) ? PlayState.current.boyfriend.getColors(false) : PlayState.current.boyfriend.getColors(false);
-		// 				frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored') : Paths.getSparrowAtlas_Custom((Paths.getSkinsPath() + "notes/" + engineSettings.customArrowSkin.toLowerCase()).replace("/", "\\").replace("\r", ""));
+		// 				frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored') : Paths.getSparrowAtlas_Custom((Paths.getSkinsPath() + "notes/" + engineSettings.customArrowSkin.toLowerCase()).replace("/", "/").replace("\r", ""));
 						
 		// 			} else {
-		// 				frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets') : Paths.getSparrowAtlas_Custom((Paths.getSkinsPath() + "notes/" + engineSettings.customArrowSkin.toLowerCase()).replace("/", "\\").replace("\r", ""));
+		// 				frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets') : Paths.getSparrowAtlas_Custom((Paths.getSkinsPath() + "notes/" + engineSettings.customArrowSkin.toLowerCase()).replace("/", "/").replace("\r", ""));
 		// 			}
 	
 		// 			animation.addByPrefix('greenScroll', 'green0');

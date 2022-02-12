@@ -29,6 +29,7 @@ class CharterNote extends FlxSprite
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 
+
 	public var noteScore:Float = 1;
 
 	public var noteType:Int = 0;

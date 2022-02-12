@@ -3,8 +3,6 @@ import cpp.Lib;
 import cpp.Pointer;
 import cpp.RawPointer;
 import cpp.Callable;
-import llua.State;
-import llua.Convert;
 import ModSupport.ModScript;
 import haxe.Constraints.Function;
 import haxe.DynamicAccess;
@@ -21,8 +19,12 @@ import haxe.Exception;
 import hscript.Interp;
 
 // LUA
+#if ENABLE_LUA
 import llua.Lua;
 import llua.LuaL;
+import llua.State;
+import llua.Convert;
+#end
 
 class Script {
     public var fileName:String = "";
@@ -46,7 +48,7 @@ class Script {
         trace('path : "$path"');
         trace('ext :');
 
-        var scriptExts = ["lua", "hscript", "hx"];
+        var scriptExts = Main.supportedFileTypes;
         if (ext == "") {
             for (e in scriptExts) {
                 if (FileSystem.exists('$p.$e')) {
@@ -60,9 +62,11 @@ class Script {
             case 'hx' | 'hscript':
                 trace("HScript");
                 return new HScript();
+            #if ENABLE_LUA
             case 'lua':
                 trace("Lua");
                 return new LuaScript();
+            #end
         }
         trace('ext not found : $ext for $path');
         return null;
@@ -103,7 +107,7 @@ class ScriptPack {
     public var scriptModScripts:Array<ModScript> = [];
     public function new(scripts:Array<ModScript>) {
         for (s in scripts) {
-            var sc = Script.create('${Paths.getModsFolder()}\\${s.path}');
+            var sc = Script.create('${Paths.modsPath}/${s.path}');
             if (sc == null) continue;
             ModSupport.setScriptDefaultVars(sc, s.mod, {});
             this.scripts.push(sc);
@@ -114,7 +118,7 @@ class ScriptPack {
     public function loadFiles() {
         for (k=>sc in scripts) {
             var s = scriptModScripts[k];
-            sc.loadFile('${Paths.getModsFolder()}\\${s.path}');
+            sc.loadFile('${Paths.modsPath}/${s.path}');
         }
     }
 
@@ -129,6 +133,20 @@ class ScriptPack {
             }
         }
         return defaultReturnVal;
+    }
+
+    public function executeFuncMultiple(funcName:String, ?args:Array<Any>, ?defaultReturnVal:Array<Any>) {
+        var a = args;
+        if (a == null) a = [];
+        if (defaultReturnVal == null) defaultReturnVal = [null];
+        for (script in scripts) {
+            var returnVal = script.executeFunc(funcName, a);
+            if (!defaultReturnVal.contains(returnVal)) {
+                #if messTest trace("found"); #end
+                return returnVal;
+            }
+        }
+        return defaultReturnVal[0];
     }
 
     public function setVariable(name:String, val:Dynamic) {
@@ -232,6 +250,7 @@ class HScript extends Script {
     }
 }
 
+#if ENABLE_LUA
 typedef LuaObject = {
     var varPath:String;
     var set:(String,String)->Void;
@@ -285,7 +304,7 @@ class LuaScript extends Script {
             // var property = Reflect.getProperty(currentObj, splittedVar[splittedVar.length - 1]);
             // if (property != null) {
             var finalVal = value;
-            if (Std.is(finalVal, String)) {
+            if (Std.isOfType(finalVal, String)) {
                 var str = cast(finalVal, String);
                 if (str.startsWith("${") && str.endsWith("}")) {
                     var v = getVar(str.substr(2, str.length - 3));
@@ -370,7 +389,7 @@ class LuaScript extends Script {
 
             var finalArgs = [];
             for (a in args) {
-                if (Std.is(a, String)) {
+                if (Std.isOfType(a, String)) {
                     var str = cast(a, String);
                     if (str.startsWith("${") && str.endsWith("}")) {
                         var st = str.substr(2, str.length - 3);
@@ -526,3 +545,4 @@ class LuaScript extends Script {
         return Convert.fromLua(state, Lua.gettop(state));
     }
 }
+#end
