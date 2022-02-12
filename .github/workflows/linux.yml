@@ -27,6 +27,7 @@ jobs:
           path: |
             %HAXELIB_ROOT%
             export/release/linux
+        key: ${{ runner.os }}
       - uses: actions/checkout@v2
       - uses: krdlab/setup-haxe@v1
         with:
