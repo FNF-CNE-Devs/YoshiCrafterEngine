@@ -128,23 +128,41 @@ class ToolboxMain extends MusicBeatState {
             #end
         }
 
-        var modDropDown = new FlxUIDropDownMenu(630, 10, mods, function(label:String) {
-            selectedMod = label;
-            updateModData();
-        }, new FlxUIDropDownHeader(250));
-        modDropDown.selectedId = "Friday Night Funkin'";
-        modDropDown.x -= modDropDown.width;
-
         modDesc = new FlxUIText(170, modName.y + modName.height + 10, 460, "");
-        updateModData();
-		tab.add(label);
-		tab.add(selectButton);
-		tab.add(createButton);
-		tab.add(deleteMod);
-		tab.add(modName);
-		tab.add(modDesc);
-		tab.add(modIcon);
-		tab.add(modDropDown);
+        if (mods.length == 0) {
+            modName.text = "No mod projects";
+            modDesc.text = "Go ahead and create one using the \"Create a new mod\" button.";
+            modIcon.loadGraphic(Paths.getBitmapOutsideAssets('${Paths.modsPath}/$selectedMod/modIcon.png'));
+            modIcon.setGraphicSize(150, 150);
+            modIcon.updateHitbox();
+            
+            createButton.x = selectButton.x;
+            tab.add(createButton);
+            tab.add(modName);
+            tab.add(modDesc);
+            tab.add(modIcon);
+        } else {
+            var modDropDown = new FlxUIDropDownMenu(630, 10, mods, function(label:String) {
+                selectedMod = label;
+                updateModData();
+            }, new FlxUIDropDownHeader(250));
+            // modDropDown.selectedId = "Friday Night Funkin'";
+            modDropDown.x -= modDropDown.width;
+            tab.add(modDropDown);
+            updateModData();
+
+            tab.add(label);
+            tab.add(selectButton);
+            tab.add(createButton);
+            tab.add(deleteMod);
+            tab.add(modName);
+            tab.add(modDesc);
+            tab.add(modIcon);
+        }
+
+        
+
+	
 		UI_Main.addGroup(tab);
     }
 

@@ -1,6 +1,6 @@
 {
     "updateLog" : [
-        "1.5.0 : STAGE EDITOR",
+        "1.5.1 : STAGE EDITOR + FIXES",
         "",
         "- /!\\ STAGE EDITOR ! (Only works with Json stages) Now edit your own stages without having to go through the troubles of testing over and over again !",
         "- /!\\ CUSTOM TITLE SCREENS ! They change every 24 beats on the title screen soooo... Check the Friday Night Funkin' data/titlescreen.hx for an example",
