@@ -21,7 +21,7 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       
-      - name: Cache Gradle packages
+      - name: Cache packages
         uses: actions/cache@v2
         with:
           path: |
@@ -60,3 +60,11 @@ jobs:
         with:
           name: Yoshi Engine (Linux)
           path: export/release/linux/bin
+
+      - name: Cache packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            %HAXELIB_ROOT%
+            export/release/linux
+          key: ${{ runner.os }}
