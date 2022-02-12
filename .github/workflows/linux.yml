@@ -4,7 +4,7 @@
 
 # This is a basic workflow to help you get started with Actions
 
-name: COMPILE ON WINDOWS
+name: COMPILE ON LINUX
 
 # Controls when the workflow will run
 on: [push, pull_request]
