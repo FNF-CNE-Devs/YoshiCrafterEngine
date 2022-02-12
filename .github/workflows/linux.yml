@@ -20,6 +20,13 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            %HAXELIB_ROOT%
+            export/release/linux
       - uses: actions/checkout@v2
       - uses: krdlab/setup-haxe@v1
         with:
