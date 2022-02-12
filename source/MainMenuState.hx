@@ -1,6 +1,5 @@
 package;
 
-import io.newgrounds.components.MedalComponent;
 import dev_toolbox.ToolboxMessage;
 import flixel.input.keyboard.FlxKey;
 import flixel.addons.ui.FlxUIButton;
@@ -23,6 +22,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 #if newgrounds
 import io.newgrounds.NG;
+import io.newgrounds.components.MedalComponent;
 #end
 import flixel.math.FlxPoint;
 import lime.app.Application;
