@@ -1,10 +1,11 @@
 {
     "updateLog" : [
-        "1.5.0 BETA : STAGE EDITOR",
+        "1.5.0 : STAGE EDITOR",
         "",
         "- /!\\ STAGE EDITOR ! (Only works with Json stages) Now edit your own stages without having to go through the troubles of testing over and over again !",
         "- /!\\ CUSTOM TITLE SCREENS ! They change every 24 beats on the title screen soooo... Check the Friday Night Funkin' data/titlescreen.hx for an example",
         "- /!\\ CUSTOM INTRO TEXTS ! Put your intro text in data/introText.txt !",
+        "- /!\\ OPTIMISATION UPDATE ! No more waiting 5 hours in front of the game after selecting story mode (idk if it's perfect tho)",
         "- New Toolbox UI, enjoy !",
         "- The engine will remember last Freeplay song you played",
         "- If you ACCIDENTLY end a song that you took SO MUCH TIME to chart, you'll be redirected back to the charter.",
@@ -15,6 +16,6 @@
         "- Added offset",
         "- Added a lots of events"
     ],
-    "version" : [1,5,0],
+    "version" : [1,4,0],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"
 }
