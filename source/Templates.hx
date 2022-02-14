@@ -1,3 +1,4 @@
+import SongConf.SongConfJson;
 import Stage.StageJSON;
 
 class Templates {
@@ -36,4 +37,16 @@ function beatHit(curBeat) {
         gfOffset: [0, 0],
         dadOffset: [0, 0]
     };
+
+    public static var songConfTemplate:SongConfJson = {
+        songs: [
+            {
+                name: "Your song",
+                scripts: ["modcharts/script1"],
+                cutscene: "cutscenes/your-cutscene",
+                end_cutscene: "cutscenes/your-end-cutscene",
+                difficulties: null
+            }
+        ]
+    }
 }

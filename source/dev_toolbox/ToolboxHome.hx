@@ -61,6 +61,13 @@ class ToolboxHome extends MusicBeatState {
     public var tabs:Map<String, ToolboxTab> = [];
 
     public override function new(mod:String) {
+        
+        FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/');
+        FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/data/');
+        FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/images/');
+        FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/songs/');
+        FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/sounds/');
+        FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/music/');
         // FlxG.sound.playMusic(Paths.music("characterEditor", "preload"));
         #if desktop
             DiscordClient.changePresence("In the Toolbox", null, "Toolbox Icon");

@@ -10,13 +10,18 @@ function create() {
     date = Paths.sound("introGo-pixel");
 }
 
-function createPost() {
-    // for(m in PlayState.members) {
-    //     if (Std.isOfType(m, FlxSprite)) {
-    //         m.antialiasing = false;
-    //     }
-    // }
-    
+function onGuiPopup() {
+    for(m in PlayState.members) {
+        if (Std.isOfType(m, FlxSprite)) {
+            m.antialiasing = false;
+            if (Std.isOfType(m, FlxText)) {
+                // lol it's actually a built in flixel font
+                m.setFormat("Nokia Cellphone FC Small", m.size, m.color, m.alignment, m.borderStyle, 0xFF222222);
+                m.borderSize = 2;
+            }
+        }
+    }
+    PlayState.msScoreLabel.size = 24;
 }
 
 function onCountdown(countdown:Int) {

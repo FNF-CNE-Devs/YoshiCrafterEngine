@@ -24,7 +24,6 @@ function addDialogue() {
 			box.animation.addByIndices('normal', 'Text Box Appear', [4], "", 24);
 		case 'roses':
 			hasDialog = true;
-			FlxG.sound.play(Paths.sound('ANGRY_TEXT_BOX'));
 
 			box.frames = Paths.getSparrowAtlas('weeb/pixelUI/dialogueBox-senpaiMad');
 			box.animation.addByPrefix('normalOpen', 'SENPAI ANGRY IMPACT SPEECH', 24, false);
@@ -89,6 +88,9 @@ function addDialogue() {
 }
 function create()
 {
+    if (PlayState.song.song.toLowerCase() == "roses") {
+		FlxG.sound.play(Paths.sound('ANGRY_TEXT_BOX'));
+    }
     dialogueList = Paths.txt(PlayState.song.song.toLowerCase() + "/" + PlayState.song.song.toLowerCase() + "Dialogue").split("\n");
     for (i in 0...dialogueList.length)
         dialogueList[i] = StringTools.trim(dialogueList[i]);
@@ -196,7 +198,12 @@ function create()
 }
 
 function update(elapsed) {
-    if (PlayState.song.song.toLowerCase() == 'roses')
+    PlayState.camFollow.x = PlayState.gf.getMidpoint().x;
+    PlayState.camFollow.y = PlayState.gf.getMidpoint().y;
+    FlxG.camera.scroll.x = PlayState.camFollow.x - (FlxG.width / 2);
+    FlxG.camera.scroll.y = PlayState.camFollow.y - (FlxG.height / 2);
+
+    if (PlayState.song.song.toLowerCase() == 'roses' && portraitLeft != null)
         portraitLeft.visible = false;
     if (PlayState.song.song.toLowerCase() == 'thorns')
     {
@@ -205,7 +212,8 @@ function update(elapsed) {
         dropText.color = 0xFF000000;
     }
 
-    dropText.text = swagDialogue.text;
+    if (dropText != null)
+        dropText.text = swagDialogue.text;
 
     if (box.animation.curAnim != null)
     {
@@ -250,7 +258,7 @@ function update(elapsed) {
                 new FlxTimer().start(1.2, function(tmr:FlxTimer)
                 {
                     startCountdown();
-                    var shitToRemove = [box, bgFade, portraitLeft, portraitRight, swagDialogue, dropText];
+                    var shitToRemove = [box, bgFade, portraitLeft, portraitRight, swagDialogue, dropText, handSelect];
                     if (face != null) shitToRemove.push(face);
                     for (s in shitToRemove) {
                         PlayState.remove(s);
@@ -265,6 +273,7 @@ function update(elapsed) {
             startDialogue();
         }
     }
+
 }
 
 function startDialogue():Void

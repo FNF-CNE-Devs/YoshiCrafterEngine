@@ -54,6 +54,9 @@ import flixel.FlxG;
 	// If true, player's custom scroll speed will be used instead of the chart's scroll speed.
 	@:keep public static var customScrollSpeed:Bool = false;
 	
+	// Self explanatory
+	@:keep public static var ghostTapping:Bool = true;
+	
 	// Player's custom scroll speed
 	@:keep public static var scrollSpeed:Float = 2.5;
 	
@@ -91,6 +94,9 @@ import flixel.FlxG;
 	
 	// If true, video will have an antialiasing effect applied.
 	@:keep public static var videoAntialiasing:Bool = true;
+	
+	// If true, player will be able to press R to reset.
+	@:keep public static var resetButton:Bool = true;
 	
 	// Note offset
 	@:keep public static var noteOffset:Float = 0;

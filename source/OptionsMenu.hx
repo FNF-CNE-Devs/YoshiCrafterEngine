@@ -336,6 +336,34 @@ class OptionsMenu extends MusicBeatState
 			value: function() {return "";}
 		});
 		gameplay.options.push({
+			text : "Reset Button",
+			description : "When checked, will allow the player to press R to blue ball itself.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.resetButton = !Settings.engineSettings.data.resetButton;
+					o.checkboxChecked = Settings.engineSettings.data.resetButton;
+					o.check(Settings.engineSettings.data.resetButton);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.resetButton;},
+			value: function() {return "";}
+		});
+		gameplay.options.push({
+			text : "Ghost tapping",
+			description : "When unchecked, will miss everytime the player presses while there's no notes.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.ghostTapping = !Settings.engineSettings.data.ghostTapping;
+					o.checkboxChecked = Settings.engineSettings.data.ghostTapping;
+					o.check(Settings.engineSettings.data.ghostTapping);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.ghostTapping;},
+			value: function() {return "";}
+		});
+		gameplay.options.push({
 			text : "Accuracy mode",
 			description : "Sets the accuracy mode. \"Simple\" means based on the rating, \"Complex\" means based on the press delay.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
@@ -1057,19 +1085,19 @@ class OptionsMenu extends MusicBeatState
 			checkboxChecked: function() {return Settings.engineSettings.data.developerMode;},
 			value: function() {return "";}
 		});
-		dev.options.push({
-			text : "Move camera in Stage Editor",
-			description : "If checked, will automatically move the camera to the right in Stage Editor, allowing the user to access more space. If you find that effect annoying, uncheck this option.",
-			updateOnSelected: function(elapsed:Float, o:FNFOption) {
-				if (controls.ACCEPT) {
-					Settings.engineSettings.data.moveCameraInStageEditor = !Settings.engineSettings.data.moveCameraInStageEditor;
-					o.check(Settings.engineSettings.data.moveCameraInStageEditor);
-				}
-			},
-			checkbox: true,
-			checkboxChecked: function() {return Settings.engineSettings.data.moveCameraInStageEditor;},
-			value: function() {return "";}
-		});
+		// dev.options.push({
+		// 	text : "Move camera in Stage Editor",
+		// 	description : "If checked, will automatically move the camera to the right in Stage Editor, allowing the user to access more space. If you find that effect annoying, uncheck this option.",
+		// 	updateOnSelected: function(elapsed:Float, o:FNFOption) {
+		// 		if (controls.ACCEPT) {
+		// 			Settings.engineSettings.data.moveCameraInStageEditor = !Settings.engineSettings.data.moveCameraInStageEditor;
+		// 			o.check(Settings.engineSettings.data.moveCameraInStageEditor);
+		// 		}
+		// 	},
+		// 	checkbox: true,
+		// 	checkboxChecked: function() {return Settings.engineSettings.data.moveCameraInStageEditor;},
+		// 	value: function() {return "";}
+		// });
 		settings.push(dev);
 	}
 	

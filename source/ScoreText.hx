@@ -34,7 +34,7 @@ class ScoreText {
     }
 
     public static function generateAverageDelay(ps:PlayState) {
-        return Settings.engineSettings.data.showAverageDelay ? (" | Average:" + ((ps.numberOfArrowNotes == 0) ? "0ms" : Std.string(FlxMath.roundDecimal(ps.delayTotal / ps.numberOfArrowNotes, 2)) + "ms")) : "";
+        return Settings.engineSettings.data.showAverageDelay ? (" | Average:" + ((ps.numberOfArrowNotes - ps.misses == 0) ? "0ms" : Std.string(FlxMath.roundDecimal(ps.delayTotal / (ps.numberOfArrowNotes - ps.misses), 2)) + "ms")) : "";
     }
 
     public static function generateRating(ps:PlayState) {

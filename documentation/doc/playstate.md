@@ -277,6 +277,17 @@ PlayState.health = 0.75;
 ```
 
 ---
+**`tapMissHealth:Float`** - (`PlayState`)
+
+Player's health that'll be lost if he randomly taps while ghost tapping is off.
+
+__**Example usages:**__
+```haxe
+// Instant kill when random tap
+PlayState.tapMissHealth = 3;
+```
+
+---
 **`combo:Int`** - (`PlayState`)
 
 Current combo

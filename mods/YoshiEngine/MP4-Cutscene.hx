@@ -8,7 +8,7 @@
 // THE VIDEO MUST BE 1280x720
 
 function create() {
-    var mFolder = Paths_.getModsFolder();
+    var mFolder = Paths_.modsPath;
     
     // To get video path in your custom cutscene, type Paths.video("(video file name)");
     var path = mFolder + "\\" + PlayState_.songMod + "\\videos\\" + PlayState.song.song.toLowerCase() + " cutscene.mp4";
