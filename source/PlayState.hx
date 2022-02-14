@@ -968,7 +968,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.visible = false;
 
 		if (engineSettings.watermark) {
-			watermark = new FlxText(0, guiSize.y, guiSize.x, '${ModSupport.getModName(songMod)} - ${SONG.song} - Yoshi Engine v${Main.engineVer.join(".")}');
+			watermark = new FlxText(0, guiSize.y, guiSize.x, '${ModSupport.getModName(songMod)} - ${CoolUtil.prettySong(SONG.song)} - Yoshi Engine v${Main.engineVer.join(".")}');
 			watermark.setFormat(Paths.font("vcr.ttf"), Std.int(16), FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			watermark.antialiasing = true;
 			watermark.cameras = [camHUD];
@@ -1004,6 +1004,68 @@ class PlayState extends MusicBeatState
 		add(iconP1);
 		add(iconP2);
 		add(scoreTxt);
+
+		if (engineSettings.showTimer) {
+			// var apparitionPos:Float = -25;
+			// if (engineSettings.downscroll) {
+			// 	apparitionPos = guiSize.y + 25;
+			// }
+			timerBG = new FlxSprite(0, engineSettings.downscroll ? guiSize.y - 35 : 10).makeGraphic(300, 25, 0xFF222222);
+			timerBG.cameras = [camHUD];
+			timerBG.cameraCenter(X);
+			timerBG.scrollFactor.set();
+			timerBG.visible = false;
+			add(timerBG);
+
+			timerBar = new FlxBar(timerBG.x + 4, timerBG.y + 4, LEFT_TO_RIGHT, Std.int(timerBG.width - 8), Std.int(timerBG.height - 8));
+			timerBar.cameras = [camHUD];
+			timerBar.cameraCenter(X);
+			timerBar.antialiasing = true;
+			// timerBar.barWidth = Std.int(FlxG.sound.music.length / 1000);
+			timerBar.scrollFactor.set();
+			timerBar.createFilledBar(0xFF000000, 0xFFFFFFFF);
+			timerBar.visible = false;
+			add(timerBar);
+
+			timerText = new FlxText(timerBG.x, timerBG.y + (timerBG.height / 2), 0, '${CoolUtil.prettySong(SONG.song)}');
+			timerText.setFormat(Paths.font("vcr.ttf"), Std.int(24), FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			timerText.cameras = [camHUD];
+			timerText.antialiasing = true;
+			timerText.visible = false;
+			timerText.y -= timerText.height / 2;
+			timerText.screenCenter(X);
+			add(timerText);
+
+			var x = -10 + (timerText.width > timerBG.width ? timerText.x : timerBG.x);
+			timerNow = new FlxText(x, timerText.y, 0, "0:00");
+			timerNow.setFormat(Paths.font("vcr.ttf"), Std.int(24), FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			timerNow.cameras = [camHUD];
+			timerNow.antialiasing = true;
+			timerNow.visible = false;
+			timerNow.x = x - timerNow.width;
+			add(timerNow);
+
+			var x = 10 + (timerText.width > timerBG.width ? timerText.x + timerText.width: timerBG.x + timerBG.width);
+			timerFinal = new FlxText(x, timerText.y, 0, "0:00");
+			timerFinal.setFormat(Paths.font("vcr.ttf"), Std.int(24), FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			timerFinal.cameras = [camHUD];
+			timerFinal.antialiasing = true;
+			timerFinal.visible = false;
+			add(timerFinal);
+
+			// if (engineSettings.downscroll) {
+			// 	FlxTween.tween(timerBG, {y : guiSize.y - 29, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
+			// 	FlxTween.tween(timerBar, {y : guiSize.y - 25, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
+			// 	FlxTween.tween(timerText, {y : guiSize.y - 22.5, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
+			// } else {
+			// 	FlxTween.tween(timerBG, {y : 25, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
+			// 	FlxTween.tween(timerBar, {y : 29, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
+			// 	FlxTween.tween(timerText, {y : 27.5, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
+			// }
+			if (members.contains(msScoreLabel)) remove(msScoreLabel);
+			add(msScoreLabel);
+		}
+
 
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
@@ -1130,7 +1192,7 @@ class PlayState extends MusicBeatState
 		if (guiElemsPopped) return;
 		guiElemsPopped = true;
 
-		for (elem in [healthBar, iconP1, iconP2, scoreTxt, msScoreLabel, healthBarBG, hitCounter, watermark, timerText, timerBG, timerBar]) {
+		for (elem in [healthBar, iconP1, iconP2, scoreTxt, msScoreLabel, healthBarBG, hitCounter, watermark, timerText, timerBG, timerBar, timerNow, timerFinal]) {
 			if (elem != null) {
 				var oldElemY = elem.y;
 				var oldAlpha = elem.alpha;
@@ -1312,6 +1374,8 @@ class PlayState extends MusicBeatState
 	public var timerBG:FlxSprite = null;
 	public var timerBar:FlxBar = null;
 	public var timerText:FlxText = null;
+	public var timerNow:FlxText = null;
+	public var timerFinal:FlxText = null;
 	public var timerTotalLength:FlxText = null;
 
 	function startSong():Void
@@ -1331,47 +1395,7 @@ class PlayState extends MusicBeatState
 
 		
 
-		if (engineSettings.showTimer) {
-			// var apparitionPos:Float = -25;
-			// if (engineSettings.downscroll) {
-			// 	apparitionPos = guiSize.y + 25;
-			// }
-			timerBG = new FlxSprite(0, engineSettings.downscroll ? guiSize.y - 35 : 10).makeGraphic(300, 25, 0xFF222222);
-			timerBG.cameras = [camHUD];
-			timerBG.cameraCenter(X);
-			timerBG.scrollFactor.set();
-			timerBG.visible = false;
-			add(timerBG);
-
-			timerBar = new FlxBar(timerBG.x + 4, timerBG.y + 4, LEFT_TO_RIGHT, Std.int(timerBG.width - 8), Std.int(timerBG.height - 8), Conductor, 'songPosition', 0, FlxG.sound.music.length);
-			timerBar.cameras = [camHUD];
-			timerBar.cameraCenter(X);
-			timerBar.antialiasing = true;
-			// timerBar.barWidth = Std.int(FlxG.sound.music.length / 1000);
-			timerBar.scrollFactor.set();
-			timerBar.createFilledBar(0xFF000000, 0xFFFFFFFF);
-			timerBar.visible = false;
-			add(timerBar);
-
-			timerText = new FlxText(timerBG.x, timerBG.y + (timerBG.height / 2), timerBG.width, '0:00 | ${CoolUtil.prettySong(SONG.song)} | 0:00');
-			timerText.setFormat(Paths.font("vcr.ttf"), Std.int(24), FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-			timerText.cameras = [camHUD];
-			timerText.antialiasing = true;
-			timerText.visible = false;
-			add(timerText);
-
-			// if (engineSettings.downscroll) {
-			// 	FlxTween.tween(timerBG, {y : guiSize.y - 29, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
-			// 	FlxTween.tween(timerBar, {y : guiSize.y - 25, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
-			// 	FlxTween.tween(timerText, {y : guiSize.y - 22.5, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
-			// } else {
-			// 	FlxTween.tween(timerBG, {y : 25, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
-			// 	FlxTween.tween(timerBar, {y : 29, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
-			// 	FlxTween.tween(timerText, {y : 27.5, alpha : 1}, 0.5, {ease : FlxEase.circInOut});
-			// }
-			if (members.contains(msScoreLabel)) remove(msScoreLabel);
-			add(msScoreLabel);
-		}
+		
 
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
@@ -1383,6 +1407,11 @@ class PlayState extends MusicBeatState
 		// Updating Discord Rich Presence (with Time Left)
 		DiscordClient.changePresence(detailsText, '$songMod - ${CoolUtil.prettySong(song.song)} ($storyDifficultyText)', iconRPC, true, songLength);
 		#end
+		if (timerBar != null) {
+			timerBar.setParent(Conductor, "songPosition");
+			timerBar.setRange(0, FlxG.sound.music.length);
+		}
+
 		scripts.executeFunc("musicstart");
 	}
 
@@ -1954,8 +1983,8 @@ class PlayState extends MusicBeatState
 				iconP1.x = Std.int(PlayState.current.guiSize.x / 2) - iconOffset + iconP1.offset.x;
 				iconP2.x = Std.int(PlayState.current.guiSize.x / 2) - (iconP2.width - iconOffset) + iconP2.offset.x;
 			} else {
-				iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) + iconP1.offset.x;
-				iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset) + iconP2.offset.x;
+				iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) + iconP1.offset.x + (iconP1.width * (iconP1.scale.x - 1) / 2);
+				iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset) + iconP2.offset.x - (iconP2.width * (iconP2.scale.x - 1) / 2);
 			}
 		}
 
@@ -2019,8 +2048,24 @@ class PlayState extends MusicBeatState
 			// Conductor.lastSongPos = FlxG.sound.music.time;
 		}
 
-		if (timerText != null) {
-			timerText.text = '${Math.floor(Conductor.songPosition / 60000)}:${CoolUtil.addZeros(Std.string(Math.floor(Conductor.songPosition / 1000) % 60), 2)} | ${Math.floor(FlxG.sound.music.length / 60000)}:${CoolUtil.addZeros(Std.string(Math.floor(FlxG.sound.music.length / 1000) % 60), 2)}';
+		if (timerText != null && FlxG.sound.music != null) {
+			var pos = Math.max(Conductor.songPosition, 0);
+			var timeNow = '${Math.floor(pos / 60000)}:${CoolUtil.addZeros(Std.string(Math.floor(pos / 1000) % 60), 2)}';
+			var length = '${Math.floor(FlxG.sound.music.length / 60000)}:${CoolUtil.addZeros(Std.string(Math.floor(FlxG.sound.music.length / 1000) % 60), 2)}';
+			// timerText.text = '${CoolUtil.prettySong(SONG.song)}';
+			// timerText.screenCenter(X);
+			timerText.x = (guiSize.x / 2) - (timerText.width / 2);
+			
+			var x = -10 + (timerText.width > timerBG.width ? timerText.x : timerBG.x);
+			timerNow.text = timeNow;
+			timerNow.x = x - timerNow.width;
+
+			timerFinal.text = length;
+			timerFinal.x = 10 + (timerText.width > timerBG.width ? timerText.x + timerText.width: timerBG.x + timerBG.width);
+
+			timerFinal.y = timerBG.y + (timerBG.height / 2) - (timerFinal.height / 2);
+			timerNow.y = timerBG.y + (timerBG.height / 2) - (timerNow.height / 2);
+			timerText.y = timerBG.y + (timerBG.height / 2) - (timerText.height / 2);
 		}
 
 		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
