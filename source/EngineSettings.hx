@@ -54,6 +54,9 @@ import flixel.FlxG;
 	// If true, player's custom scroll speed will be used instead of the chart's scroll speed.
 	@:keep public static var customScrollSpeed:Bool = false;
 	
+	// Self explanatory
+	@:keep public static var ghostTapping:Bool = true;
+	
 	// Player's custom scroll speed
 	@:keep public static var scrollSpeed:Float = 2.5;
 	

@@ -7,6 +7,11 @@ class StrumNote extends FlxSprite {
     public var colored:Bool = false;
     public var cpuRemainingGlowTime:Float = 0;
     public var isCpu:Bool = false;
+    public var scrollSpeed:Null<Float> = null;
+
+    public function getScrollSpeed() {
+        return PlayState.current.engineSettings.customScrollSpeed ? PlayState.current.engineSettings.scrollSpeed : (scrollSpeed == null ? PlayState.SONG.speed : scrollSpeed);
+    }
 
     public override function update(elapsed:Float) {
         if (isCpu) {

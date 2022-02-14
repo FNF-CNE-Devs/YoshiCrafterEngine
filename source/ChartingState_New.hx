@@ -1,5 +1,6 @@
 package;
 
+import flixel.addons.ui.BorderDef;
 import EngineSettings.Settings;
 import flixel.input.keyboard.FlxKey;
 import flixel.addons.ui.StrNameLabel;
@@ -203,6 +204,7 @@ class ChartingState_New extends MusicBeatState
 
 		bpmTxt = new FlxText(1000, 50, 0, "", 16);
 		bpmTxt.scrollFactor.set();
+		bpmTxt.setBorderStyle(FlxTextBorderStyle.OUTLINE, 0xFF000000, 1, 1);
 		add(bpmTxt);
 
 		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(FlxG.width / 2), 4);
@@ -292,8 +294,10 @@ class ChartingState_New extends MusicBeatState
 				for(char in FileSystem.readDirectory('$m/$folder/characters/')) {
 					chars.push(char);
 				}
-				mods.push(folder);
-				modCharacters.push(chars);
+				if (chars.length > 0) {
+					mods.push(folder);
+					modCharacters.push(chars);
+				}
 			}
 		}
 
@@ -680,8 +684,8 @@ class ChartingState_New extends MusicBeatState
 		tab_group_note.add(removeSelected);
 		tab_group_note.add(applyLength);
 		tab_group_note.add(addButton);
-		tab_group_note.add(noteTypeDropdown);
 		tab_group_note.add(noteTypeRadioGroup);
+		tab_group_note.add(noteTypeDropdown);
 		
 		updateNoteTypes();
 

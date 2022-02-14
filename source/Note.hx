@@ -201,9 +201,10 @@ class Note extends FlxSprite
 	}
 	public var noteOffset:FlxPoint = new FlxPoint(0,0);
 	public var enableRating:Bool = true;
-	public var altAnim:Bool = true;
+	public var altAnim:Bool = false;
 	public var engineSettings:Dynamic;
 	public var splashColor:FlxColor = 0xFFFFFFFF;
+	public var isLongSustain:Bool = false;
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?mustHit = true, ?altAnim = false)
 	{
 		super();
@@ -338,6 +339,7 @@ class Note extends FlxSprite
 
 					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * (engineSettings.customScrollSpeed ? engineSettings.scrollSpeed : PlayState.SONG.speed);
 					prevNote.updateHitbox();
+					prevNote.isLongSustain = true;
 			
 					if (engineSettings.downscroll) {
 						prevNote.offset.y = prevNote.height / 2;

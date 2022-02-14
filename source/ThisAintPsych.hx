@@ -54,6 +54,14 @@ It can be triggered on/off again in Options -> Developer Menu -> Developer Mode'
         noButton.scrollFactor.set(0, 0);
         add(noButton);
 
+        var yesInfo = new FlxText(yesButton.x, yesButton.y + yesButton.height + 10, yesButton.width, "(ENTER)");
+        yesInfo.alignment = CENTER;
+        add(yesInfo);
+
+        var noInfo = new FlxText(noButton.x, noButton.y + noButton.height + 10, noButton.width, "(ENTER)");
+        noInfo.alignment = CENTER;
+        add(noInfo);
+
         FlxG.sound.play(Paths.sound("scrollMenu", "preload"));
     }
 

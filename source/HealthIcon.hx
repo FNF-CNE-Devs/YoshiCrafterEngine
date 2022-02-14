@@ -65,6 +65,11 @@ class HealthIcon extends FlxSprite
 		// if ()
 		animation.add('char', [for (i in 0...frames.frames.length) i], 0, false, isPlayer);
 		animation.play('char');
+
+		if (frames.frames.length > 2) {
+			// winning icon pog
+			frameIndexes = [[80, 2], [20, 0], [0, 1]];
+		}
 	}
 
 	override function update(elapsed:Float)

@@ -25,7 +25,7 @@ class Toolbox {
     public static function createMod(config:ModConfig, folderName:String, ?modIcon:BitmapData, ?titlebarIcon:BitmapData) {
         FileSystem.createDirectory('${Paths.modsPath}/$folderName');
         File.saveContent('${Paths.modsPath}/$folderName/config.json', Json.stringify(config, "\t"));
-        File.saveContent('${Paths.modsPath}/$folderName/song_conf.hx', '// USABLE VARIABLES : song, difficulty\r\n// The "song" variable corresponds to the song\'s name in lower case\r\n// The difficulty variable corresponds to the difficulty name (case sensitive, not in lower case)\r\nscripts = ["Friday Night Funkin\':stages/default_stage"];');
+        File.saveContent('${Paths.modsPath}/$folderName/song_conf.json', Json.stringify(Templates.songConfTemplate, "\t"));
         for (dir in ["characters", "data"]) {
             FileSystem.createDirectory('${Paths.modsPath}/$folderName/$dir');
         }

@@ -1,20 +1,16 @@
 {
     "updateLog" : [
-        "1.5.1 : STAGE EDITOR + FIXES",
+        "1.5.3 : STAGE EDITOR CRASH FIX",
         "",
-        "- /!\\ STAGE EDITOR ! (Only works with Json stages) Now edit your own stages without having to go through the troubles of testing over and over again !",
-        "- /!\\ CUSTOM TITLE SCREENS ! They change every 24 beats on the title screen soooo... Check the Friday Night Funkin' data/titlescreen.hx for an example",
-        "- /!\\ CUSTOM INTRO TEXTS ! Put your intro text in data/introText.txt !",
-        "- /!\\ OPTIMISATION UPDATE ! No more waiting 5 hours in front of the game after selecting story mode (idk if it's perfect tho)",
-        "- New Toolbox UI, enjoy !",
-        "- The engine will remember last Freeplay song you played",
-        "- If you ACCIDENTLY end a song that you took SO MUCH TIME to chart, you'll be redirected back to the charter.",
-        "- You can now compile it on Android without any problems (port not done yet, make sure to allow storage access in the phone's app settings)",
-        "- Added character shadow in Character Editor. That means you can use an animation of your character as a base to set the offset of the other ones",
-        "- Fixed the Tab button glitch on the Charter",
-        "- Freeplay song names now gets \"squished\" when they're too long",
-        "- Added offset",
-        "- Added a lots of events"
+        "- Fixed GitHub issue #48 and #46",
+        "- Notes now follow the same camera as the strum",
+        "- Fixed Crash for Stage Editor",
+        "- Fixed alt animation not working (who kicked dd in the balls again)",
+        "- Health icons with a winning one automatically works",
+        "- Use player's colors checkbox now works",
+        "- Fixed MP4 Cutscene script not working",
+        "- Fixed crash when note type wasn't found",
+        "- Toolbox now creates JSON song config when you create a new mod instead of hx"
     ],
     "version" : [1,5,1],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"

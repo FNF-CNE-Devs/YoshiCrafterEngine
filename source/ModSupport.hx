@@ -394,6 +394,7 @@ class ModSupport {
 		hscript.variables.set("BlammedShader", Shaders.BlammedShader);
 		hscript.variables.set("GameOverSubstate", GameOverSubstate);
 		hscript.variables.set("ModSupport", null);
+		hscript.variables.set("FlxControls", FlxControls);
 
         // SHADERS
 
@@ -495,6 +496,7 @@ class ModSupport {
 		script.setVariable("GameOverSubstate", GameOverSubstate);
 		script.setVariable("ModSupport", null);
 		script.setVariable("CustomShader", CustomShader);
+		script.setVariable("FlxControls", FlxControls);
 		// script.setVariable("FlxKey", FlxKey);
 
 

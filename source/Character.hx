@@ -292,6 +292,7 @@ class Character extends FlxSprite
 				return returnArray;
 			});
 		}
+		scale.set(json.scale, json.scale);
 	}
 
 	public function getColors(altAnim:Bool = false):Array<FlxColor>

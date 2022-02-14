@@ -58,6 +58,7 @@ class CharacterEditor extends MusicBeatState {
     var c:String = "";
     var arrows:Array<FlxClickableSprite> = [];
     var shadowCharacter:Character;
+    var usePlayerColors:FlxUICheckBox = null;
 
     var isPlayer:Bool = false;
     var usePlayerArrowColors:Bool = false;
@@ -153,7 +154,7 @@ class CharacterEditor extends MusicBeatState {
             healthIconSteps: [[20, 0], [0, 1]],
             flipX: isPlayer ? !character.flipX : character.flipX,
             healthbarColor: healthBar.color.toWebString(),
-            arrowColors: [
+            arrowColors: usePlayerColors.checked ? null : [
                 for (c in arrows) {
                     var shader = cast(c.shader, ColoredNoteShader);
                     FlxColor.fromRGBFloat(shader.r.value[0], shader.g.value[0], shader.b.value[0]).toWebString();
@@ -612,10 +613,10 @@ class CharacterEditor extends MusicBeatState {
             arrowSettings.add(note);
             arrows.push(note);
         }
-        var usePlayerColors:FlxUICheckBox = null;
         usePlayerColors = new FlxUICheckBox(10, 70, null, null, "Use player's colors", 100, null, function() {
             usePlayerArrowColors = usePlayerColors.checked;
         });
+        if (character.json != null) usePlayerColors.checked = character.json.arrowColors == null;
         arrowSettings.add(usePlayerColors);
         characterSettingsTabs.addGroup(arrowSettings);
     }

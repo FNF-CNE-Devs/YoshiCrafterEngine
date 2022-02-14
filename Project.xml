@@ -144,7 +144,7 @@
 	<haxelib name="flixel-ui" />
 	<haxelib name="newgrounds" if="windows"/>
 	<haxelib name="faxe" if='switch'/>
-	<haxelib name="polymod"/>
+	<!-- <haxelib name="polymod"/> -->
 	<!-- <haxelib name="hxvm-lua"/>
 	<haxelib name="linc_lua"/> -->
 	<haxelib name="linc_luajit" />

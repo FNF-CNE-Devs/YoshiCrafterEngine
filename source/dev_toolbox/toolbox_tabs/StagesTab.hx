@@ -15,6 +15,7 @@ class StagesTab extends ToolboxTab {
         super(x, y, "stages", home);
         // Creates a stages folder in case it doesn't exists.
         FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/stages/');
+        FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/images/');
         stageRadioList = new FlxUIRadioGroup(10, 10, stageList, stageList, function(stage) {
             selectedStage = stage;
         });

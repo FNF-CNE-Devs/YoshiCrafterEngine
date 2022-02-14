@@ -50,7 +50,7 @@ function getColors(altAnim) {
 }
 
 function healthIcon(icon) {
-    // icon.antialiasing = false;
+    icon.antialiasing = false;
     // [[Min health, Frame index (grid)]]
     icon.frameIndexes = [[0, 0]];
 }

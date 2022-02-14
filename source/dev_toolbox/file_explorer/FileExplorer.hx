@@ -55,6 +55,7 @@ class FileExplorer extends MusicBeatSubstate {
     var callback:String->Void;
 
     public function navigateTo(path:String) {
+
         for (e in spawnedElems) {
             remove(e);
             e.destroy();
@@ -62,6 +63,7 @@ class FileExplorer extends MusicBeatSubstate {
         spawnedElems = [];
         this.path = path;
         var p = '${Paths.modsPath}/$mod/$path';
+        #if trace_everything trace(p); #end
 
 
         // 256 + 20 = 276
