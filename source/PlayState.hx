@@ -1983,7 +1983,7 @@ class PlayState extends MusicBeatState
 				iconP1.x = Std.int(PlayState.current.guiSize.x / 2) - iconOffset + iconP1.offset.x;
 				iconP2.x = Std.int(PlayState.current.guiSize.x / 2) - (iconP2.width - iconOffset) + iconP2.offset.x;
 			} else {
-				iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) + iconP1.offset.x + (iconP1.width * (iconP1.scale.x - 1) / 2);
+				iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) + iconP1.offset.x + (iconP1.width * (iconP1.scale.x - 1) / 4);
 				iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset) + iconP2.offset.x - (iconP2.width * (iconP2.scale.x - 1) / 2);
 			}
 		}
