@@ -2228,6 +2228,9 @@ class PlayState extends MusicBeatState
 					// 	daNote.visible = true;
 					// 	daNote.active = true;
 					// }
+
+					// note velocity had no effect lmfao stop trying to cancel the engine cause of it
+					
 					if (daNote.tooLate && daNote.mustPress)
 					{
 						daNote.script.setVariable("note", daNote);
@@ -2245,27 +2248,29 @@ class PlayState extends MusicBeatState
 					if (strum.notes_angle == 0) {
 
 						pos.y = (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2)) + (daNote.noteOffset.y);
-						daNote.velocity.y = (0 - 1000) * (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2));
+
+						
+						// daNote.velocity.y = (0 - 1000) * (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2));
 					} else {
 						pos.x = Math.sin((strum.angle + 180) * Math.PI / 180) * ((Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2)));
 						pos.x += Math.sin((strum.angle + (engineSettings.downscroll ? 90 : 270)) * Math.PI / 180) * ((daNote.noteOffset.x));
 						pos.y = Math.cos((strum.angle) * Math.PI / 180) * (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2));
 						pos.y += Math.cos((strum.angle + (engineSettings.downscroll ? 270 : 90)) * Math.PI / 180) * ((daNote.noteOffset.y));
-						daNote.velocity.y = 0;
+						// daNote.velocity.y = 0;
 					}
 
 					daNote.antialiasing = daNote.antialiasing && engineSettings.noteAntialiasing;
 					daNote.alpha = strum.notes_alpha * (daNote.isSustainNote && engineSettings.transparentSubstains ? 0.6 : 1);
 					// daNote.cameras = strum.cameras;
-					if (daNote.isLongSustain) {
+					// if (daNote.isLongSustain) {
 						// daNote.scale.y = (Note.swagWidth / Note._swagWidth) * (Conductor.stepCrochet / 100 * 1.5 * (strum.getScrollSpeed()));
-					}
+					// }
 
 					if (engineSettings.downscroll) {
 						// daNote.y = (strumLine.y + (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(engineSettings.customScrollSpeed ? engineSettings.scrollSpeed : SONG.speed, 2)));
 						// Code above not modchart proof
-						daNote.velocity.x = -daNote.velocity.x;
-						daNote.velocity.y = -daNote.velocity.y;
+						// daNote.velocity.x = -daNote.velocity.x;
+						// daNote.velocity.y = -daNote.velocity.y;
 
 						daNote.y = (strum.y + pos.y - (daNote.noteOffset.y * 2));
 						if (strum.notes_angle == 0)
