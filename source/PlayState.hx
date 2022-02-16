@@ -1033,7 +1033,8 @@ class PlayState extends MusicBeatState
 			timerText.antialiasing = true;
 			timerText.visible = false;
 			timerText.y -= timerText.height / 2;
-			timerText.screenCenter(X);
+			// timerText.screenCenter(X);
+			timerText.x = (guiSize.x / 2) - (timerText.width / 2);
 			add(timerText);
 
 			var x = -10 + (timerText.width > timerBG.width ? timerText.x : timerBG.x);
@@ -2051,7 +2052,7 @@ class PlayState extends MusicBeatState
 		if (timerText != null && FlxG.sound.music != null) {
 			var pos = Math.max(Conductor.songPosition, 0);
 			var timeNow = '${Math.floor(pos / 60000)}:${CoolUtil.addZeros(Std.string(Math.floor(pos / 1000) % 60), 2)}';
-			var length = '${Math.floor(FlxG.sound.music.length / 60000)}:${CoolUtil.addZeros(Std.string(Math.floor(FlxG.sound.music.length / 1000) % 60), 2)}';
+			var length = '${Math.floor(inst.length / 60000)}:${CoolUtil.addZeros(Std.string(Math.floor(inst.length / 1000) % 60), 2)}';
 			// timerText.text = '${CoolUtil.prettySong(SONG.song)}';
 			// timerText.screenCenter(X);
 			timerText.x = (guiSize.x / 2) - (timerText.width / 2);
