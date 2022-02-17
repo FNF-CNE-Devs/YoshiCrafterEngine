@@ -2,7 +2,7 @@
 For each hscript (Stages, Characters, Modcharts, etc...), default variables/classes are automatically set/imported. These can be used to interact with the game, and mod it.
 
 ## Variables
-- [`PlayState`](playstate.md) - Current PlayState instance
+- [`PlayState`](https://github.com/YoshiCrafter29/YoshiEngine/wiki/PlayState) - Current PlayState instance
 - `EngineSettings` - Copy of the engine settings that you can mess with. Will have effect in game (not permanent)
 - `global` - `Map<String, Dynamic>` shared between all hscripts. Useful for sharing FlxSprites.
 - `Paths` - Instance of the `Paths_Mod` class used to get assets from your mod folder.
