@@ -3,7 +3,7 @@
 
 This is the repository of Yoshi Engine, a modification of Friday Night Funkin' which allows full modding without source code access.
 
-The documentation is [here](documentation/index.md) (in construction), feel free to download it for offline use !
+The documentation is [here](https://github.com/YoshiCrafter29/YoshiEngine/wiki) (in construction), feel free to download it for offline use !
 
 Thanks to PolybiusProxy for the [MP4 Cutscene Support](https://github.com/brightfyregit/Friday-Night-Funkin-Mp4-Video-Support) !
 
