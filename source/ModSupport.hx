@@ -423,6 +423,15 @@ class ModSupport {
     public static function setScriptDefaultVars(script:Script, mod:String, settings:Dynamic) {
 		script.setVariable("mod", mod);
 		script.setVariable("PlayState", PlayState.current);
+        script.setVariable("import", function(className:String) {
+            var splitClassName = [for (e in className.split(".")) e.trim()];
+            var realClassName = splitClassName.join(".");
+            var cl = Type.resolveClass(realClassName);
+            if (cl == null) {
+                PlayState.trace('Class at $realClassName does not exist.');
+            }
+            script.setVariable(splitClassName[splitClassName.length - 1], cl);
+        });
         // script.setVariable("include", function(path:String) {
         //     var splittedPath = path.split(":");
         //     if (splittedPath.length < 2) splittedPath.insert(0, mod);

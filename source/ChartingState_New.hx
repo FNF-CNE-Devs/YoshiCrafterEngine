@@ -71,6 +71,8 @@ class ChartingState_New extends MusicBeatState
 
 	public static var lastSection:Int = 0;
 
+	public static var combineNoteTypes:Bool = true;
+
 	var bpmTxt:FlxText;
 
 	var strumLine:FlxSprite;
@@ -223,7 +225,8 @@ class ChartingState_New extends MusicBeatState
 		UI_box = new FlxUITabMenu(null, tabs, true);
 
 		UI_box.resize(300, FlxG.height - 40);
-		UI_box.x = 0;
+		// UI_box.x = 0;
+		UI_box.x = FlxG.width - 310;
 		UI_box.y = 20;
 		add(UI_box);
 
@@ -876,7 +879,12 @@ class ChartingState_New extends MusicBeatState
 			for(i in 0..._song.keyNumber) {
 				var key:FlxKey = cast(Reflect.field(Settings.engineSettings.data, 'control_' + _song.keyNumber + '_$i'), FlxKey);
 				if (FlxControls.anyJustPressed([key])) {
-					addNote(i + (((typingMode_note * 2) + (_song.notes[curSection].mustHitSection ? typingMode_char : ((typingMode_char + 1) % 2))) * _song.keyNumber), Math.floor(Conductor.songPosition / Conductor.stepCrochet) * Conductor.stepCrochet);
+					if (combineNoteTypes) {
+						addNote(i + (((typingMode_note * 2) + (_song.notes[curSection].mustHitSection ? typingMode_char : ((typingMode_char + 1) % 2))) * _song.keyNumber) + (Math.floor(_song.keyNumber * 2 * Math.max(0, noteTypeRadioGroup.selectedIndex))), Math.floor(Conductor.songPosition / Conductor.stepCrochet) * Conductor.stepCrochet);
+					} else {
+						addNote(i + (((typingMode_note * 2) + (_song.notes[curSection].mustHitSection ? typingMode_char : ((typingMode_char + 1) % 2))) * _song.keyNumber), Math.floor(Conductor.songPosition / Conductor.stepCrochet) * Conductor.stepCrochet); 
+					}
+					
 					lastAddedNotes[i] = curSelectedNote;
 					// lastAddedNotesHitTime[i] = n;
 				}
@@ -1010,7 +1018,9 @@ class ChartingState_New extends MusicBeatState
 		
 					if (FlxControls.pressed.A || FlxControls.pressed.D) {
 						var speed = FlxControls.pressed.SHIFT ? 3 : 1;
-						strumLine.x = Math.min(Math.max(0, strumLine.x + (GRID_SIZE * _song.keyNumber * elapsed * (FlxControls.pressed.A ? -speed : speed))), GRID_SIZE * _song.keyNumber * 2 * (_song.noteTypes.length - 1));
+						// strumLine.x = Math.min(Math.max(0, strumLine.x + (GRID_SIZE * _song.keyNumber * elapsed * (FlxControls.pressed.A ? -speed : speed))), GRID_SIZE * _song.keyNumber * 2 * (_song.noteTypes.length - 1));
+						
+						strumLine.x = Math.min(Math.max(0, strumLine.x + (GRID_SIZE * _song.keyNumber * elapsed * (FlxControls.pressed.A ? -speed : speed))), Math.max(0, gridBG.width - strumLine.width));
 					}
 		
 					if (!FlxControls.pressed.SHIFT)
@@ -1067,9 +1077,13 @@ class ChartingState_New extends MusicBeatState
 		
 			
 		}
+
+		if (FlxG.sound.music.time < 0) FlxG.sound.music.time = 0;
 		
-		if (curBeat % 4 == 0 && curStep >= 16 * (curSection + 1))
+		var sec = Math.floor(FlxG.sound.music.time / (Conductor.crochet * 4));
+		if (curSection != sec)
 		{
+			curSection = sec - 1;
 			trace(curStep);
 			trace((_song.notes[curSection].lengthInSteps) * (curSection + 1));
 			trace('DUMBSHIT');
@@ -1275,24 +1289,35 @@ class ChartingState_New extends MusicBeatState
 			var oldPos = members.indexOf(gridBG);
 			remove(gridBG);
 			gridBG.destroy();
-			gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * _song.keyNumber * 2 * _song.noteTypes.length, Std.int(GRID_SIZE * 16 * zoom));
+			if (combineNoteTypes) {
+				gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * _song.keyNumber * 2, Std.int(GRID_SIZE * 16 * zoom));
+			} else {
+				gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * _song.keyNumber * 2 * _song.noteTypes.length, Std.int(GRID_SIZE * 16 * zoom));
+			}
+			
 			if (gridOverlay != null) {
 				remove(gridOverlay);
 				gridOverlay.destroy();
 			}
 			gridOverlay = new FlxSprite(gridBG.x, gridBG.y).makeGraphic(GRID_SIZE * _song.keyNumber * 2 * _song.noteTypes.length, Std.int(GRID_SIZE * 16 * zoom), FlxColor.TRANSPARENT);
-			gridOverlay.pixels.lock();
-			if (_song.noteTypes.length > 1) {
-				for(i in 1..._song.noteTypes.length) {
-					var c = noteColors[i - 1];
-					c.alphaFloat = 0.5;
-					gridOverlay.pixels.fillRect(new Rectangle(GRID_SIZE * _song.keyNumber * 2 * i, 0, GRID_SIZE * _song.keyNumber * 2, Std.int(GRID_SIZE * 16 * zoom)), c);
+			if (combineNoteTypes) {
+				gridOverlay.pixels.lock();
+				gridOverlay.pixels.fillRect(new Rectangle(GRID_SIZE * _song.keyNumber - 1, 0, 2, gridOverlay.pixels.height), 0xFF000000);
+				gridOverlay.pixels.unlock();
+			} else {
+				gridOverlay.pixels.lock();
+				if (_song.noteTypes.length > 1) {
+					for(i in 1..._song.noteTypes.length) {
+						var c = noteColors[i - 1];
+						c.alphaFloat = 0.5;
+						gridOverlay.pixels.fillRect(new Rectangle(GRID_SIZE * _song.keyNumber * 2 * i, 0, GRID_SIZE * _song.keyNumber * 2, Std.int(GRID_SIZE * 16 * zoom)), c);
+					}
 				}
+				for (i in 0...(_song.noteTypes.length * 2)) {
+					gridOverlay.pixels.fillRect(new Rectangle(GRID_SIZE * _song.keyNumber * i - (((i % 2) == 0) ? 0 : 1), 0, ((i % 2) == 0) ? 1 : 2, Std.int(GRID_SIZE * 16 * zoom)), FlxColor.BLACK);
+				}
+				gridOverlay.pixels.unlock();
 			}
-			for (i in 0...(_song.noteTypes.length * 2)) {
-				gridOverlay.pixels.fillRect(new Rectangle(GRID_SIZE * _song.keyNumber * i - (((i % 2) == 0) ? 0 : 1), 0, ((i % 2) == 0) ? 1 : 2, Std.int(GRID_SIZE * 16 * zoom)), FlxColor.BLACK);
-			}
-			gridOverlay.pixels.unlock();
 			insert(oldPos, gridOverlay);
 			insert(oldPos, gridBG);
 		}
@@ -1352,7 +1377,7 @@ class ChartingState_New extends MusicBeatState
 			}
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();
-			note.x = Math.floor(daNoteInfo * GRID_SIZE);
+			note.x = Math.floor(daNoteInfo * GRID_SIZE) % gridBG.width;
 			note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
 
 			curRenderedNotes.add(note);
@@ -1434,7 +1459,13 @@ class ChartingState_New extends MusicBeatState
 	private function addNote(?noteData:Null<Int>, ?noteStrum:Null<Float>):Void
 	{
 		if (noteStrum == null) noteStrum = getStrumTime(dummyArrow.y) + sectionStartTime();
-		if (noteData == null) noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
+		if (noteData == null) {
+			if (combineNoteTypes) {
+				noteData = Math.floor(Math.floor(FlxG.mouse.x / GRID_SIZE) + (_song.keyNumber * 2 * Math.max(noteTypeRadioGroup.selectedIndex, 0)));
+			} else {
+				noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
+			}
+		}
 		var noteSus = 0;
 
 		_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus]);
