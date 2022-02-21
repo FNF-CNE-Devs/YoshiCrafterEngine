@@ -115,10 +115,14 @@ import flixel.FlxG;
 
 	// If false, will disable antialiasing on notes.
 	#if android
-	@:keep public static var noteAntialiasing:Bool = true;
-	#else
 	@:keep public static var noteAntialiasing:Bool = false;
+	#else
+	@:keep public static var noteAntialiasing:Bool = true;
 	#end
+	
+	// String that separates, for example, Accuracy: 100% from Misses: 0
+	@:keep public static var scoreJoinString:String = " | ";
+	@:keep public static var scoreTextSize:Int = 24; // originally 16
 	
 	/**
 	 * Sets the GUI scale. Defaults to 1

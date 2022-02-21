@@ -11,8 +11,14 @@ class ScoreText {
         if (Settings.engineSettings.data.showAccuracy) arrayData.push(generateAccuracy(ps));
         if (Settings.engineSettings.data.showAverageDelay) arrayData.push(generateAverageDelay(ps));
         if (Settings.engineSettings.data.showRating) arrayData.push(generateRating(ps));
+		
+		var joinString = " | ";
+		if (PlayState.current != null)
+			joinString = PlayState.current.engineSettings.scoreJoinString;
+		else
+			joinString = Settings.engineSettings.data.scoreJoinString;
 
-        return arrayData.join(" | ");
+        return arrayData.join(joinString);
     }
 
     public static function generateScore(ps:PlayState) {

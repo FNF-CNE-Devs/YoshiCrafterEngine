@@ -130,7 +130,7 @@ typedef MenuCategory = {
 	public var name:String;
 	public var description:String;
 	public var options:Array<Option>;
-	public var center:Bool;
+	public var center:Bool;	
 }
 typedef Option = {
 	public var text:String;
