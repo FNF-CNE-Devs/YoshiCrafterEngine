@@ -15,3 +15,6 @@
 [ ] Dialogue (maybe????)
 [ ] Custom Shaders (VERY VERY IMPORTANT AAAAAAAAAAAAAAAAAAAAAAAAAAA)
 [ ] Camera movement
+[ ] Custom hscript states
+[ ] Better Optimization
+[ ] Better Menus

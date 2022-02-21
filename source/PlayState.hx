@@ -81,6 +81,7 @@ class Rating {
 	public var miss:Bool = false;
 	public var scale:Float = 1;
 	public var antialiasing:Bool = true;
+	public var fcRating:String = "FC";
 
 	public var bitmap:BitmapData = null;
 
@@ -543,7 +544,7 @@ class PlayState extends MusicBeatState
 		// Assets.loadLibrary("songs");
 		#if sys
 		if (engineSettings.emptySkinCache) {
-			Paths.clearCache();
+			// Paths.clearCache();
 		}
 		#end
 
@@ -743,7 +744,8 @@ class PlayState extends MusicBeatState
 				health : 0.035,
 				maxDiff : (166 + (2/3)) * 0.2,
 				score : 350,
-				color : "#24DEFF"                                                                                                                                                                        
+				color : "#24DEFF",
+				fcRating : "MFC"                                                                                                                                                                
 			},
 			{
 				name : "Good",
@@ -752,7 +754,8 @@ class PlayState extends MusicBeatState
 				health : 0.025,
 				maxDiff : (166 + (2/3)) * 0.60,
 				score : 200,
-				color : "#3FD200"
+				color : "#3FD200",
+				fcRating : "GFC"
 			},
 			{
 				name : "Bad",
@@ -835,6 +838,7 @@ class PlayState extends MusicBeatState
 			if (rating.name != null) r.name = rating.name;
 			if (rating.scale != null) r.scale = rating.scale;
 			if (rating.score != null) r.score = rating.score;
+			if (rating.fcRating != null) r.fcRating = rating.fcRating;
 
 			if (rating.bitmap == null) {
 				rating.bitmap = new BitmapData(1, 1, true, 0x00000000);
