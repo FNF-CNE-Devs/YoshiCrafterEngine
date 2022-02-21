@@ -18,6 +18,7 @@ import flixel.math.FlxRect;
 typedef FlxSpriteTypedGroup = FlxTypedGroup<FlxSprite>;
 typedef FlxSpriteArray = Array<FlxSprite>;
 
+
 class MusicBeatState extends FlxUIState
 {
 	private var lastBeat:Float = 0;

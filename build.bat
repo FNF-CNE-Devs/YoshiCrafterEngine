@@ -1,6 +1,7 @@
-echo OFF
+@REM echo OFF
 if %random% == 0 echo penis
 :build
-lime test windows -dce no
+echo "Testing game"
+lime test windows -dce no %*
 pause
 goto build

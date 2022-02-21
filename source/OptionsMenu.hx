@@ -466,6 +466,20 @@ class OptionsMenu extends MusicBeatState
 			value: function() {return "";}
 		});
 		guiOptions.options.push({
+			text : "Bump press delay",
+			description : "If checked, will do a bump animation on the press delay label everytime you hit a note. Enabled by default.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.animateMsLabel = !Settings.engineSettings.data.animateMsLabel;
+					o.checkboxChecked = Settings.engineSettings.data.animateMsLabel;
+					o.check(Settings.engineSettings.data.animateMsLabel);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.animateMsLabel;},
+			value: function() {return "";}
+		});
+		guiOptions.options.push({
 			text : "Show accuracy",
 			description : "If enabled, will add your accuracy next to the score.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
@@ -509,7 +523,7 @@ class OptionsMenu extends MusicBeatState
 		});
 		guiOptions.options.push({
 			text : "Show ratings amount",
-			description : "If enabled, will add the number of notes hit for each rating at the bottom left of the screen.",
+			description : "If enabled, will add the number of notes hit for each rating at the right of the screen.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.showRatingTotal = !Settings.engineSettings.data.showRatingTotal;
@@ -565,7 +579,7 @@ class OptionsMenu extends MusicBeatState
 		});
 		guiOptions.options.push({
 			text : "Show watermark",
-			description : "When checked, will show a watermark at the bottom left of the screen with the mod name, the mod song and the Yoshi Engine version.",
+			description : "When checked, will show a watermark at the top right of the screen with the mod name, the mod song and the Yoshi Engine version.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.watermark = !Settings.engineSettings.data.watermark;
@@ -575,6 +589,22 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: function() {return Settings.engineSettings.data.watermark;},
+			value: function() {return "";}
+		});
+		guiOptions.options.push({
+			text : "Minimal mode",
+			description : "When checked, will minimize the Score Text width.
+[When Disabled] Score: 123456 | Misses: 0 | Accuracy: 100% (Simple) | Average: 5ms | S (MFC)
+[When Enabled] 123456 pts | 0 Misses | 100% (S) | ~ 5ms | S (MFC)",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.minimizedMode = !Settings.engineSettings.data.minimizedMode;
+					o.checkboxChecked = Settings.engineSettings.data.minimizedMode;
+					o.check(Settings.engineSettings.data.minimizedMode);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.minimizedMode;},
 			value: function() {return "";}
 		});
 		

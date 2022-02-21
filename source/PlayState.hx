@@ -937,8 +937,8 @@ class PlayState extends MusicBeatState
 		FlxG.fixedTimestep = false;
 
 		if (engineSettings.showRatingTotal) {
-			hitCounter = new FlxText(20, guiSize.y - ((ratings.length + 1) * 16), guiSize.x, "Misses : 0", 12);
-			hitCounter.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			hitCounter = new FlxText(-20, 0, guiSize.x, "Misses : 0", 12);
+			hitCounter.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			hitCounter.antialiasing = true;
 			hitCounter.cameras = [camHUD];
 			hitCounter.visible = false;
@@ -972,11 +972,11 @@ class PlayState extends MusicBeatState
 		scoreTxt.visible = false;
 
 		if (engineSettings.watermark) {
-			watermark = new FlxText(0, guiSize.y, guiSize.x, '${ModSupport.getModName(songMod)} - ${CoolUtil.prettySong(SONG.song)} - Yoshi Engine v${Main.engineVer.join(".")}');
-			watermark.setFormat(Paths.font("vcr.ttf"), Std.int(16), FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			watermark = new FlxText(0, 0, guiSize.x, '${ModSupport.getModName(songMod)}\n${CoolUtil.prettySong(SONG.song)}\nYoshi Engine v${Main.engineVer.join(".")}');
+			watermark.setFormat(Paths.font("vcr.ttf"), Std.int(16), FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			watermark.antialiasing = true;
 			watermark.cameras = [camHUD];
-			watermark.y -= watermark.height;
+			// watermark.y -= watermark.height;
 			watermark.visible = false;
 			add(watermark);
 		}
@@ -1872,6 +1872,7 @@ class PlayState extends MusicBeatState
 	override public function update(elapsed:Float)
 	{
 		
+		#if profiler cpp.vm.Profiler.start("log.txt"); #end
 		if (inCutscene) {
 			(endCutscene ? end_cutscene : cutscene).executeFunc("preUpdate", [elapsed]);
 		} else {
@@ -1881,6 +1882,9 @@ class PlayState extends MusicBeatState
 		perfectMode = false;
 		#end
 
+		if (msScoreLabel != null && engineSettings.animateMsLabel) {
+			msScoreLabel.offset.y = FlxMath.lerp(msScoreLabel.offset.y, 0, CoolUtil.wrapFloat(0.25 * 60 * elapsed, 0, 1));
+		}
 		
 		if (!validScore) {
 			scoreWarning.visible = true;
@@ -1935,7 +1939,7 @@ class PlayState extends MusicBeatState
 				if (!hitIterator.hasNext()) break;
 			}
 			hitCounter.text = hitsText;
-			hitCounter.y = guiSize.y - 20 - hitCounter.height;
+			hitCounter.y = (guiSize.y / 2) - (hitCounter.height / 2);
 		}
 
 		if (FlxControls.justPressed.ENTER && startedCountdown && canPause)
@@ -2627,6 +2631,7 @@ class PlayState extends MusicBeatState
 		if (engineSettings.showPressDelay) {
 			msScoreLabel.text = Std.string(Math.floor(noteDiff)) + "ms";
 			msScoreLabel.alpha = 1;
+			if (engineSettings.animateMsLabel) msScoreLabel.offset.y = msScoreLabel.height / 3;
 			if (msScoreLabelTween != null) {
 				msScoreLabelTween.cancel();
 				msScoreLabelTween.destroy();

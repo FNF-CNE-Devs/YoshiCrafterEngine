@@ -14,7 +14,7 @@ class ScoreText {
 		
 		var joinString = " | ";
 		if (PlayState.current != null)
-			joinString = PlayState.current.engineSettings.scoreJoinString;
+			joinString = ps.engineSettings.scoreJoinString;
 		else
 			joinString = Settings.engineSettings.data.scoreJoinString;
 
@@ -22,17 +22,34 @@ class ScoreText {
     }
 
     public static function generateScore(ps:PlayState) {
-        return "Score:" + ps.songScore;
+        if (ps.engineSettings.minimizedMode) {
+            return Std.string(ps.songScore) + " pts";
+        } else {
+            return "Score:" + ps.songScore;
+        }
+        
     }
 
     public static function generateMisses(ps:PlayState) {
-        return "Misses:" + ps.misses;
+        if (ps.engineSettings.minimizedMode) {
+            return Std.string(ps.misses) + " Miss" + (ps.misses != 1 ? "es" : "");
+        } else {
+            return "Misses:" + ps.misses;
+        }
     }
 
     public static function generateAccuracy(ps:PlayState) {
+        var prefix = "Accuracy:";
+
+        var accText = accuracyTypesText[Settings.engineSettings.data.accuracyMode];
+        if (ps.engineSettings.minimizedMode) {
+            prefix = "";
+            accText = accText.charAt(0);
+        }
+
         switch(Settings.engineSettings.data.accuracyMode) {
             default:
-                return "Accuracy:" + (ps.numberOfNotes == 0 ? "0%" : Std.string(FlxMath.roundDecimal(ps.accuracy / ps.numberOfNotes * 100, 2)) + "%") + (Settings.engineSettings.data.showAccuracyMode ? " (" + accuracyTypesText[Settings.engineSettings.data.accuracyMode] + ")" : "");
+                return prefix + (ps.numberOfNotes == 0 ? "0%" : Std.string(FlxMath.roundDecimal(ps.accuracy / ps.numberOfNotes * 100, 2)) + "%") + (Settings.engineSettings.data.showAccuracyMode ? " (" + accText + ")" : "");
             case 1:
                 var accuracyFloat:Float = 0;
 
@@ -40,13 +57,17 @@ class ScoreText {
                     accuracyFloat += PlayState.current.hits[rat.name] * rat.accuracy;
                 }
 
-                return "Accuracy:" + (ps.numberOfNotes == 0 ? "0%" : Std.string(FlxMath.roundDecimal(accuracyFloat / ps.numberOfArrowNotes * 100, 2)) + "%") + " (" + accuracyTypesText[Settings.engineSettings.data.accuracyMode] + ")";
+                return prefix + (ps.numberOfNotes == 0 ? "0%" : Std.string(FlxMath.roundDecimal(accuracyFloat / ps.numberOfArrowNotes * 100, 2)) + "%") + " (" + accText + ")";
         }
         
     }
 
     public static function generateAverageDelay(ps:PlayState) {
-        return "Average:" + ((ps.numberOfArrowNotes - ps.misses == 0) ? "0ms" : Std.string(FlxMath.roundDecimal(ps.delayTotal / (ps.numberOfArrowNotes - ps.misses), 2)) + "ms");
+        var prefix = "Average:";
+        if (ps.engineSettings.minimizedMode)
+            prefix = "~ ";
+
+        return prefix + ((ps.numberOfArrowNotes - ps.misses == 0) ? "0ms" : Std.string(FlxMath.roundDecimal(ps.delayTotal / (ps.numberOfArrowNotes - ps.misses), 2)) + "ms");
     }
 
     public static function generateRating(ps:PlayState) {
@@ -87,7 +108,7 @@ class ScoreText {
         else if (accuracy >= 0.6) rating = "C"
         else if (accuracy >= 0.5) rating = "D"
         else if (accuracy >= 0.4) rating = "E"
-        else if (accuracy == 0) rating = "..."
+        else if (accuracy == 0) rating = "-"
         else rating = "F";
 
         return rating;

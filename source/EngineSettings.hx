@@ -35,6 +35,9 @@ import flixel.FlxG;
 	// If true, will show player's press delay above the strums.
 	@:keep public static var showPressDelay:Bool = true;
 
+	// If true, will do the little bumping animation on the press delay label above the strums.
+	@:keep public static var animateMsLabel:Bool = true;
+
 	// If true, will show player's average delay in the info bar. (Average: 15ms)
 	@:keep public static var showAverageDelay:Bool = true;
 
@@ -109,6 +112,9 @@ import flixel.FlxG;
 	// Shit: 0
 	@:keep public static var showRatingTotal:Bool = false;
 
+	// Whenever the score text is minimized, check options for more info
+	@:keep public static var minimizedMode:Bool = false;
+
 
 	// If true, will glow CPU strums like the player's strums when they press a note.
 	@:keep public static var glowCPUStrums:Bool = true;
@@ -122,7 +128,9 @@ import flixel.FlxG;
 	
 	// String that separates, for example, Accuracy: 100% from Misses: 0
 	@:keep public static var scoreJoinString:String = " | ";
-	@:keep public static var scoreTextSize:Int = 24; // originally 16
+
+	// Score text size, use scoreTxt.size instead of this, since it only applies at start
+	@:keep public static var scoreTextSize:Int = 16; // ayyyy
 	
 	/**
 	 * Sets the GUI scale. Defaults to 1
