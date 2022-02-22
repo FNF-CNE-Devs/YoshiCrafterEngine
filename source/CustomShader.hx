@@ -27,10 +27,11 @@ class CustomShader extends FlxFixedShader {
     //     ]);
     // }
     public function new(frag:String, vert:String, values:Map<String, Any>) {
-        try {
-            var mPath = Paths.modsPath;
+        var mPath = Paths.modsPath;
 
-            var fragPath = "";
+        var fragPath = "";
+        var vertPath = "";
+        try {
             if (frag != null) {
                 var splittedFragPath = frag.split(":");
                 if (splittedFragPath.length == 1) {
@@ -45,7 +46,6 @@ class CustomShader extends FlxFixedShader {
                 if (Path.extension(fragPath) == "") fragPath += '.vert';
             }
 
-            var vertPath = "";
             if (vert != null) {
                 var splittedVertPath = vert.split(":");
                 if (splittedVertPath.length == 1) {
@@ -59,6 +59,13 @@ class CustomShader extends FlxFixedShader {
         
                 if (Path.extension(vertPath) == "") vertPath += '.vert';
             }
+
+        } catch(e:Exception) {
+            trace(e);
+            trace(e.message);
+            trace(e.stack);
+            trace(e.details());
+        }
             
 
 
@@ -93,16 +100,23 @@ class CustomShader extends FlxFixedShader {
             if (FileSystem.exists(vertPath)) glVertexSource = File.getContent(vertPath);
             if (FileSystem.exists(fragPath)) glFragmentSource = File.getContent(fragPath);
             
+            if (__glSourceDirty || __paramBool == null)
+            {
+                __glSourceDirty = false;
+                program = null;
+    
+                __inputBitmapData = new Array();
+                __paramBool = new Array();
+                __paramFloat = new Array();
+                __paramInt = new Array();
+    
+                __processGLData(glVertexSource, "attribute");
+                __processGLData(glVertexSource, "uniform");
+                __processGLData(glFragmentSource, "uniform");
+            }
             initGood(glFragmentSource, glVertexSource);
 
             setValues(values);
-
-        } catch(e:Exception) {
-            trace(e);
-            trace(e.message);
-            trace(e.stack);
-            trace(e.details());
-        }
     }
 
     public function setValue(name:String, value:Dynamic) {
