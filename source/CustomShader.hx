@@ -31,7 +31,6 @@ class CustomShader extends FlxFixedShader {
 
         var fragPath = "";
         var vertPath = "";
-        try {
             if (frag != null) {
                 var splittedFragPath = frag.split(":");
                 if (splittedFragPath.length == 1) {
@@ -59,13 +58,6 @@ class CustomShader extends FlxFixedShader {
         
                 if (Path.extension(vertPath) == "") vertPath += '.vert';
             }
-
-        } catch(e:Exception) {
-            trace(e);
-            trace(e.message);
-            trace(e.stack);
-            trace(e.details());
-        }
             
 
 
@@ -114,9 +106,17 @@ class CustomShader extends FlxFixedShader {
                 __processGLData(glVertexSource, "uniform");
                 __processGLData(glFragmentSource, "uniform");
             }
+        try {
             initGood(glFragmentSource, glVertexSource);
 
             setValues(values);
+
+        } catch(e:Exception) {
+            trace(e);
+            trace(e.message);
+            trace(e.stack);
+            trace(e.details());
+        }
     }
 
     public function setValue(name:String, value:Dynamic) {

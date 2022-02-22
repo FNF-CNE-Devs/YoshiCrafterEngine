@@ -31,8 +31,11 @@ class FlxFixedShader extends FlxShader {
         initGood(glFragmentSource, glVertexSource);
     }
     public function initGood(glFragmentSource:String, glVertexSource:String) {
+		#if trace_everything trace("tryna get context"); #end
         @:privateAccess
         var gl = __context.gl;
+		#if trace_everything trace("got context"); #end
+		
 
         #if android
         var prefix = "#version 300 es\n";
@@ -64,6 +67,8 @@ class FlxFixedShader extends FlxShader {
 
 
         var id = vertex + fragment;
+		
+		
         @:privateAccess
         if (__context.__programs.exists(id))
         {   
@@ -82,7 +87,18 @@ class FlxFixedShader extends FlxShader {
             @:privateAccess
             __context.__programs.set(id, program);
         }
-
+		
+		#if trace_everything
+			/*
+			@:privateAccess
+			trace(__context);
+			@:privateAccess
+			trace(__context.__programs);
+			@:privateAccess
+			trace(program.__glProgram);
+			*/
+		#end
+		
         if (program != null)
         {
             @:privateAccess
