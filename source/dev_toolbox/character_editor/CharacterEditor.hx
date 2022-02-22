@@ -9,7 +9,6 @@ import NoteShader.ColoredNoteShader;
 import haxe.Json;
 import sys.io.File;
 import sys.FileSystem;
-import ModSupport.CharacterSkin;
 import flixel.math.FlxPoint;
 import dev_toolbox.CharacterJSON.CharacterAnim;
 import flixel.FlxG;

@@ -1,5 +1,6 @@
+import mod_support_stuff.*;
 import haxe.Json;
-import ModSupport.ModScript;
+
 import sys.FileSystem;
 
 using StringTools;

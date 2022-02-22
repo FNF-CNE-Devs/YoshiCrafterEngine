@@ -29,13 +29,13 @@ function create() {
     streetBehind = global['streetBehind'];
     light = global['light'];
     if (EngineSettings.blammedEffect) {
-        PlayState.boyfriend.shader = new BlammedShader(255, 255, 255);
+        PlayState.boyfriend.shader = new CustomShader("Friday Night Funkin':blammed");
         PlayState.boyfriend.shader.enabled.value = [false];
 
-        PlayState.dad.shader = new BlammedShader(255, 255, 255);
+        PlayState.dad.shader = new CustomShader("Friday Night Funkin':blammed");
         PlayState.dad.shader.enabled.value = [false];
 
-        PlayState.gf.shader = new BlammedShader(255, 255, 255);
+        PlayState.gf.shader = new CustomShader("Friday Night Funkin':blammed");
         PlayState.gf.shader.enabled.value = [false];
 
     }
@@ -44,19 +44,19 @@ function create() {
 function update(elapsed) {
     if (PlayState.iconP1 != null) {
         if (PlayState.iconP1.shader == null) {
-            PlayState.iconP1.shader = new BlammedShader(255, 255, 255);
+            PlayState.iconP1.shader = new CustomShader("Friday Night Funkin':blammed");
             PlayState.iconP1.shader.enabled.value = [false];
         }
     }
     if (PlayState.iconP2 != null) {
         if (PlayState.iconP2.shader == null) {
-            PlayState.iconP2.shader = new BlammedShader(255, 255, 255);
+            PlayState.iconP2.shader = new CustomShader("Friday Night Funkin':blammed");
             PlayState.iconP2.shader.enabled.value = [false];
         }
     } 
     if (PlayState.healthBarBG != null) {
         if (PlayState.healthBarBG.shader == null) {
-            PlayState.healthBarBG.shader = new BlammedShader(255, 255, 255);
+            PlayState.healthBarBG.shader = new CustomShader("Friday Night Funkin':blammed");
             PlayState.healthBarBG.shader.enabled.value = [false];
         }
     } 

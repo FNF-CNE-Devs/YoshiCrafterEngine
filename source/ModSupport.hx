@@ -38,6 +38,8 @@ import flixel.FlxG;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxTween;
 import flixel.input.keyboard.FlxKey;
+import mod_support_stuff.*;
+
 using StringTools;
 
 #if windows
@@ -69,165 +71,6 @@ class ExceptionState extends FlxState {
             }
         }
     }
-}
-
-class MP4Video {
-    // public var video:MP4Handler = new MP4Handler();
-    // public var sprite:FlxSprite;
-    // public var finishCallback:Void->Void = function() {
-    //     PlayState.current.startCountdown();
-    // };
-    // public function new() {
-    //     sprite = new FlxSprite(0, 0);
-    // }
-
-    public static function playMP4(path:String, callback:Void->Void, repeat:Bool = false):FlxSprite {
-        
-		#if X64_BITS
-            var video = new MP4Handler();
-            video.finishCallback = callback;
-            var sprite = new FlxSprite(0,0);
-            sprite.antialiasing = Settings.engineSettings.data.videoAntialiasing;
-            video.playMP4(path, repeat, sprite, null, null, true);
-            return sprite;
-        #else
-            callback();
-            return new FlxSprite(0,0);
-        #end
-    }
-}
-
-
-class FlxColor_Helper {
-    var fc:FlxColor;
-
-    
-    public var color(get, null):Int;
-    public function get_color():Int {
-        return fc;
-    }
-
-    public var alpha(get, set):Int;
-    public function get_alpha():Int {return fc.alpha;}
-    public function set_alpha(obj:Int):Int {fc.alpha = obj; return obj;}
-
-    public var alphaFloat(get, set):Float;
-    public function get_alphaFloat():Float {return fc.alphaFloat;}
-    public function set_alphaFloat(obj:Float):Float {fc.alphaFloat = obj; return obj;}
-
-    public var black(get, set):Float;
-    public function get_black():Float {return fc.black;}
-    public function set_black(obj:Float):Float {fc.black = obj; return obj;}
-
-    public var blue(get, set):Int;
-    public function get_blue():Int {return fc.blue;}
-    public function set_blue(obj:Int):Int {fc.blue = obj; return obj;}
-
-    public var blueFloat(get, set):Float;
-    public function get_blueFloat():Float {return fc.blueFloat;}
-    public function set_blueFloat(obj:Float):Float {fc.blueFloat = obj; return obj;}
-
-    public var brightness(get, set):Float;
-    public function get_brightness():Float {return fc.brightness;}
-    public function set_brightness(obj:Float):Float {fc.brightness = obj; return obj;}
-
-    public var cyan(get, set):Float;
-    public function get_cyan():Float {return fc.cyan;}
-    public function set_cyan(obj:Float):Float {fc.cyan = obj; return obj;}
-
-    public var green(get, set):Int;
-    public function get_green():Int {return fc.green;}
-    public function set_green(obj:Int):Int {fc.green = obj; return obj;}
-
-    public var greenFloat(get, set):Float;
-    public function get_greenFloat():Float {return fc.greenFloat;}
-    public function set_greenFloat(obj:Float):Float {fc.greenFloat = obj; return obj;}
-
-    public var hue(get, set):Float;
-    public function get_hue():Float {return fc.hue;}
-    public function set_hue(obj:Float):Float {fc.hue = obj; return obj;}
-
-    public var lightness(get, set):Float;
-    public function get_lightness():Float {return fc.lightness;}
-    public function set_lightness(obj:Float):Float {fc.lightness = obj; return obj;}
-
-    public var magenta(get, set):Float;
-    public function get_magenta():Float {return fc.magenta;}
-    public function set_magenta(obj:Float):Float {fc.magenta = obj; return obj;}
-
-    public var red(get, set):Int;
-    public function get_red():Int {return fc.red;}
-    public function set_red(obj:Int):Int {fc.red = obj; return obj;}
-
-    public var redFloat(get, set):Float;
-    public function get_redFloat():Float {return fc.redFloat;}
-    public function set_redFloat(obj:Float):Float {fc.redFloat = obj; return obj;}
-
-    public var saturation(get, set):Float;
-    public function get_saturation():Float {return fc.saturation;}
-    public function set_saturation(obj:Float):Float {fc.saturation = obj; return obj;}
-
-    public var yellow(get, set):Float;
-    public function get_yellow():Float {return fc.yellow;}
-    public function set_yellow(obj:Float):Float {fc.yellow = obj; return obj;}
-
-    public static function add(lhs:Int, rhs:Int):Int {return FlxColor.add(lhs, rhs);}
-    public static function fromCMYK(Cyan:Float, Magenta:Float, Yellow:Float, Black:Float, Alpha:Float):FlxColor_Helper {return new FlxColor_Helper(FlxColor.fromCMYK(Cyan, Magenta, Yellow, Black, Alpha));}
-    public static function fromHSB(Hue:Float, Saturation:Float, Brightness:Float, Alpha:Float = 1):FlxColor_Helper {return new FlxColor_Helper(FlxColor.fromHSB(Hue, Saturation, Brightness, Alpha));}
-    public static function fromHSL(Hue:Float, Saturation:Float, Lightness:Float, Alpha:Float = 1):FlxColor_Helper {return new FlxColor_Helper(FlxColor.fromHSL(Hue, Saturation, Lightness, Alpha));}
-    public static function fromInt(Value:Int):FlxColor_Helper {return new FlxColor_Helper(Value);}
-    public static function fromRGB(Red:Int, Green:Int, Blue:Int, Alpha:Int = 255):FlxColor_Helper {return new FlxColor_Helper(FlxColor.fromRGB(Red, Blue, Green, Alpha));}
-    public static function fromRGBFloat(Red:Float, Green:Float, Blue:Float, Alpha:Float = 1):FlxColor_Helper {return new FlxColor_Helper(FlxColor.fromRGBFloat(Red, Blue, Green, Alpha));}
-    public static function fromString(str:String):Null<FlxColor_Helper> {
-        var color = FlxColor.fromString(str);
-        if (color == null)
-            return null;
-        else
-            return new FlxColor_Helper(color);
-    }
-    public function getAnalogousHarmony(Threshold:Int = 30) {return fc.getAnalogousHarmony(Threshold);}
-    public function getColorInfo() {return fc.getColorInfo();}
-    public function getComplementHarmony() {return fc.getComplementHarmony();}
-    public function getDarkened(Factor:Float = 0.2) {return fc.getDarkened(Factor);}
-    public function getInverted() {return fc.getInverted();}
-    public function getLightened(Factor:Float = 0.2) {return fc.getLightened(Factor);}
-    public function getSplitComplementHarmony(Threshold:Int = 30) {return fc.getSplitComplementHarmony(Threshold);}
-    public function getTriadicHarmony() {return fc.getTriadicHarmony();}
-    public static function gradient(color1:Int, color2:Int, steps:Int, ?ease:Float -> Float) {return FlxColor.gradient(color1, color2, steps, ease);}
-    public static function interpolate(color1:Int, color2:Int, Factor:Float = 0.5) {return FlxColor.interpolate(color1, color2, Factor);}
-    public static function multiply(color1:Int, color2:Int) {return FlxColor.multiply(color1, color2);}
-    public function setCMYK(Cyan:Float, Magenta:Float, Yellow:Float, Black:Float, Alpha:Float = 1) {return fc.setCMYK(Cyan, Magenta, Yellow, Black, Alpha);}
-    public function setHSB(Hue:Float, Saturation:Float, Brightness:Float, Alpha:Float) {return fc.setHSB(Hue, Saturation, Brightness, Alpha);}
-    public function setHSL(Hue:Float, Saturation:Float, Lightness:Float, Alpha:Float) {return fc.setHSL(Hue, Saturation, Lightness, Alpha);}
-    public function setRGB(Red:Int, Green:Int, Blue:Int, Alpha:Int) {return fc.setRGB(Red, Green, Blue, Alpha);}
-    public function setRGBFloat(Red:Float, Green:Float, Blue:Float, Alpha:Float) {return fc.setRGBFloat(Red, Green, Blue, Alpha);}
-    public static function substract(color1:Int, color2:Int) {return FlxColor.subtract(color1, color2);}
-    public function toHexString(Alpha:Bool = true, Prefix:Bool = true) {return fc.toHexString(Alpha, Prefix);}
-    public function toWebString() {return fc.toWebString();}
-
-    public function new(color:Int) {
-        fc = new FlxColor(color);
-    }
-}
-
-typedef CharacterSkin = {
-    var name:String;
-    var char:String;
-}
-typedef ModConfig = {
-    var name:String;
-    var locked:Null<Bool>;
-    var description:String;
-    var titleBarName:String;
-    var skinnableBFs:Array<String>;
-    var skinnableGFs:Array<String>;
-    var BFskins:Array<CharacterSkin>;
-    var GFskins:Array<CharacterSkin>;
-    var keyNumbers:Array<Int>;
-}
-typedef ModScript = {
-    var path:String;
-    var mod:String;
 }
 
 // typedef ZipProgress = {
@@ -324,82 +167,6 @@ class ModSupport {
 
         if (!Settings.engineSettings.data.developerMode) return;
         for (e in ('$fileName:$methodName:$lineNumber: $text').split("\n")) PlayState.log.push(e.trim());
-    }
-
-    public static function setHaxeFileDefaultVars(hscript:hscript.Interp, mod:String, settings:Dynamic) {
-		hscript.variables.set("mod", mod);
-		hscript.variables.set("PlayState", PlayState.current);
-		hscript.variables.set("EngineSettings", PlayState.current.engineSettings);
-        hscript.variables.set("include", function(path:String) {
-            var splittedPath = path.split(":");
-            if (splittedPath.length < 2) splittedPath.insert(0, mod);
-            var joinedPath = splittedPath.join("/");
-            var mFolder = Paths.modsPath;
-            var expr = getExpressionFromPath('$mFolder/$joinedPath.hx');
-            if (expr != null) {
-                hscript.execute(expr);
-            }
-        });
-
-        if (PlayState.current != null) {
-            hscript.variables.set("global", PlayState.current.vars);
-        }
-        hscript.variables.set("trace", function(text) {
-            try {
-                hTrace(text, hscript);
-            } catch(e) {
-                trace(e);
-            }
-            
-        });
-		hscript.variables.set("PlayState_", PlayState);
-		hscript.variables.set("FlxSprite", FlxSprite);
-		hscript.variables.set("BitmapData", BitmapData);
-		hscript.variables.set("FlxG", FlxG);
-		hscript.variables.set("Paths", new Paths_Mod(mod, settings));
-		hscript.variables.set("Paths_", Paths);
-		hscript.variables.set("Std", Std);
-		hscript.variables.set("Math", Math);
-		hscript.variables.set("FlxMath", FlxMath);
-		hscript.variables.set("FlxAssets", FlxAssets);
-        hscript.variables.set("Assets", Assets);
-		hscript.variables.set("ModSupport", ModSupport);
-		hscript.variables.set("Note", Note);
-		hscript.variables.set("Character", Character);
-		hscript.variables.set("Conductor", Conductor);
-		hscript.variables.set("StringTools", StringTools);
-		hscript.variables.set("FlxSound", FlxSound);
-		hscript.variables.set("FlxEase", FlxEase);
-		hscript.variables.set("FlxTween", FlxTween);
-		// hscript.setVariable("File", File);
-		// hscript.setVariable("FileSystem", FileSystem);
-		hscript.variables.set("FlxColor", FlxColor_Helper);
-		hscript.variables.set("Boyfriend", Boyfriend);
-		hscript.variables.set("FlxTypedGroup", FlxTypedGroup);
-		hscript.variables.set("BackgroundDancer", BackgroundDancer);
-		hscript.variables.set("BackgroundGirls", BackgroundGirls);
-		hscript.variables.set("FlxTimer", FlxTimer);
-		hscript.variables.set("Json", Json);
-		hscript.variables.set("MP4Video", MP4Video);
-		// hscript.setVariable("PNGEncoderOptions", PNGEncoderOptions);
-		hscript.variables.set("CoolUtil", CoolUtil);
-		hscript.variables.set("FlxTypeText", FlxTypeText);
-		hscript.variables.set("FlxText", FlxText);
-		hscript.variables.set("FlxAxes", FlxAxes);
-		hscript.variables.set("BitmapDataPlus", BitmapDataPlus);
-		hscript.variables.set("Rectangle", Rectangle);
-		hscript.variables.set("Point", Point);
-		hscript.variables.set("Window", Application.current.window);
-		hscript.variables.set("ColorShader", Shaders.ColorShader);
-		hscript.variables.set("BlammedShader", Shaders.BlammedShader);
-		hscript.variables.set("GameOverSubstate", GameOverSubstate);
-		hscript.variables.set("ModSupport", null);
-		hscript.variables.set("FlxControls", FlxControls);
-
-        // SHADERS
-
-		hscript.variables.set("CustomShader", CustomShader);
-		// hscript.setVariable("FlxColor", Int);
     }
 
     public static function saveModData(mod:String):Bool {
@@ -504,7 +271,7 @@ class ModSupport {
 		script.setVariable("BlammedShader", Shaders.BlammedShader);
 		script.setVariable("GameOverSubstate", GameOverSubstate);
 		script.setVariable("ModSupport", null);
-		script.setVariable("CustomShader", CustomShader);
+		script.setVariable("CustomShader", CustomShader_Helper);
 		script.setVariable("FlxControls", FlxControls);
 		// script.setVariable("FlxKey", FlxKey);
 

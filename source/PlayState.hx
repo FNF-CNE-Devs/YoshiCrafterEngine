@@ -1,10 +1,11 @@
 package;
 
+
 import flixel.graphics.FlxGraphic;
 import Script.ScriptPack;
 import openfl.display.ShaderParameter;
 import NoteShader.ColoredNoteShader;
-import ModSupport.ModConfig;
+
 import lime.utils.UInt8Array;
 import lime.graphics.ImageBuffer;
 import sys.io.File;

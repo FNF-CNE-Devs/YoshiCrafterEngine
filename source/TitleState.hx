@@ -297,6 +297,9 @@ class TitleState extends MusicBeatState
 		titleText.animation.play('idle');
 		titleText.updateHitbox();
 		titleText.screenCenter(X);
+		#if shitTest
+			titleText.shader = new CustomShader("Friday Night Funkin':blammed", null, null);
+		#end
 		add(titleText);
 
 		var logo:FlxSprite = new FlxSprite().loadGraphic(Paths.image('logo'));

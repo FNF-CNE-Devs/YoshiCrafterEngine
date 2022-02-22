@@ -5,7 +5,7 @@ import sys.io.File;
 import flixel.group.FlxGroup;
 import lime.graphics.Image;
 import lime.app.Application;
-import ModSupport.ModConfig;
+
 import flixel.addons.transition.FlxTransitionableState;
 import lime.ui.FileDialogType;
 import openfl.display.BitmapData;

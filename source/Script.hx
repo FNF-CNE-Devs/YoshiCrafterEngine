@@ -1,9 +1,10 @@
+import mod_support_stuff.ModScript;
 import cpp.Reference;
 import cpp.Lib;
 import cpp.Pointer;
 import cpp.RawPointer;
 import cpp.Callable;
-import ModSupport.ModScript;
+
 import haxe.Constraints.Function;
 import haxe.DynamicAccess;
 import lime.app.Application;

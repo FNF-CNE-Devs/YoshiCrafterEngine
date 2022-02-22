@@ -1,6 +1,6 @@
+
 import openfl.display.BitmapData;
 import sys.FileSystem;
-import ModSupport.ModConfig;
 import flixel.addons.ui.*;
 
 class ModCard extends FlxUITabMenu {
