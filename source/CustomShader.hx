@@ -1,3 +1,5 @@
+import openfl.display.GraphicsShader;
+import flixel.graphics.tile.FlxGraphicsShader;
 import openfl.display.Shader;
 import haxe.io.Bytes;
 import openfl.display.ShaderParameter;
@@ -11,39 +13,95 @@ using StringTools;
 
 // DOESNT WORKS !!!!
 class CustomShader extends FlxFixedShader {
-    public function new(shader:String, values:Map<String, Any>) {
+// class CustomShader {
+    // public static function create() {
+    //     var shader = new GraphicsShader([
+    //         {
+    //             src: null,
+    //             fragment: false
+    //         },
+    //         {
+    //             src: text,
+    //             fragment: true
+    //         }
+    //     ]);
+    // }
+    public function new(frag:String, vert:String, values:Map<String, Any>) {
         try {
-            var splittedShaderPath = shader.split(":");
-            if (splittedShaderPath.length == 1) {
-                splittedShaderPath.insert(0, "Friday Night Funkin'");
-            } else if (splittedShaderPath.length == 0) {
-                splittedShaderPath = ["Friday Night Funkin'", "blammed"];
-            }
-            var mod = splittedShaderPath[0];
-            var shader = splittedShaderPath[1];
             var mPath = Paths.modsPath;
-            var path = '$mPath/$mod/shaders/$shader';
-    
-            if (Path.extension(path) == "") path += '.glsl';
-            if (FileSystem.exists(path)) {
-                var c = (File.getContent(path));
-                #if trace_everything trace(c); #end
-                glFragmentSource = c;
-            } else {
-                trace("No file");
+
+            var fragPath = "";
+            if (frag != null) {
+                var splittedFragPath = frag.split(":");
+                if (splittedFragPath.length == 1) {
+                    splittedFragPath.insert(0, "Friday Night Funkin'");
+                } else if (splittedFragPath.length == 0) {
+                    splittedFragPath = ["Friday Night Funkin'", "blammed"];
+                }
+                var fragMod = splittedFragPath[0];
+                var fragName = splittedFragPath[1];
+                fragPath = '$mPath/$fragMod/shaders/$fragName';
+        
+                if (Path.extension(fragPath) == "") fragPath += '.vert';
             }
+
+            var vertPath = "";
+            if (vert != null) {
+                var splittedVertPath = vert.split(":");
+                if (splittedVertPath.length == 1) {
+                    splittedVertPath.insert(0, "Friday Night Funkin'");
+                } else if (splittedVertPath.length == 0) {
+                    splittedVertPath = ["Friday Night Funkin'", "blammed"];
+                }
+                var vertMod = splittedVertPath[0];
+                var vertName = splittedVertPath[1];
+                vertPath = '$mPath/$vertMod/shaders/$vertName';
+        
+                if (Path.extension(vertPath) == "") vertPath += '.vert';
+            }
+            
+
+
             super();
-            __glSourceDirty = true;
-            program = null;
-            @:privateAccess
-            __initGL();
-    
-    
+            var glVertexSource = "#pragma header
+		
+            attribute float alpha;
+            attribute vec4 colorMultiplier;
+            attribute vec4 colorOffset;
+            uniform bool hasColorTransform;
+            
+            void main(void)
+            {
+                #pragma body
+                
+                openfl_Alphav = openfl_Alpha * alpha;
+                
+                if (hasColorTransform)
+                {
+                    openfl_ColorOffsetv = colorOffset / 255.0;
+                    openfl_ColorMultiplierv = colorMultiplier;
+                }
+            }";
+
+            var glFragmentSource = "#pragma header
+		
+            void main(void)
+            {
+                gl_FragColor = flixel_texture2D(bitmap, openfl_TextureCoordv);
+            }";
+
+            if (FileSystem.exists(vertPath)) glVertexSource = File.getContent(vertPath);
+            if (FileSystem.exists(fragPath)) glFragmentSource = File.getContent(fragPath);
+            
+            initGood(glFragmentSource, glVertexSource);
+
             setValues(values);
+
         } catch(e:Exception) {
             trace(e);
             trace(e.message);
             trace(e.stack);
+            trace(e.details());
         }
     }
 
@@ -57,7 +115,7 @@ class CustomShader extends FlxFixedShader {
         //     }
         // }
         if (Reflect.getProperty(data, name) != null) {
-            var d:ShaderParameter<Dynamic> = Reflect.field(data, name);
+            var d:ShaderParameter<Dynamic> = Reflect.getProperty(data, name);
             Reflect.setProperty(d, "value", [value]);
         }
     }
@@ -68,7 +126,7 @@ class CustomShader extends FlxFixedShader {
         var kInt = values.keys();
         while(kInt.hasNext()) {
             var key = kInt.next();
-            Reflect.setProperty(Reflect.field(data, key), "value", [values[key]]);
+            Reflect.setProperty(Reflect.getProperty(data, key), "value", [values[key]]);
         }
 
         /*
