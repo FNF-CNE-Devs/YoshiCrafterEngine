@@ -30,6 +30,14 @@ class FNFOption extends Alphabet {
 	public var checkboxChecked:Bool = false;
 	public var value:Array<AlphaCharacter> = [];
 	public var desc:String = "";
+	
+	public override function update(elapsed:Float) {
+		super.update(elapsed);
+		if (checkbox != null) {
+			var nScale = FlxMath.lerp(checkbox.scale.x, 1, CoolUtil.wrapFloat(0.25 * 30 * elapsed, 0, 1));
+			checkbox.scale.set(nScale, nScale);
+		}
+	}
 
 	public function new(x:Float, y:Float, text:String, desc:String, updateOnSelected:Float->Void, checkBox:Bool = false, checkBoxChecked:Bool = false, value:String = "") {
 		super(x, y, text, true, false, FlxColor.WHITE);
@@ -57,6 +65,7 @@ class FNFOption extends Alphabet {
 		if (checkbox != null) {
 			// checkbox.animation.play("check", true, !checked);
 			checkbox.animation.play(checked ? "checked" : "unchecked", true);
+			checkbox.scale.set(1.15, 1.15);
 		}
 	}
 
