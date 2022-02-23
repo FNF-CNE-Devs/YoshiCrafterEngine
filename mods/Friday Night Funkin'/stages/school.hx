@@ -74,7 +74,7 @@ function createAfterChars() {
 gfVersion = "gf-pixel";
 
 function create() {
-    // defaultCamZoom = 0.9;
+    PlayState.defaultCamZoom = 1;
     GameOverSubstate.char = "Friday Night Funkin':bf-pixel-dead";
 	GameOverSubstate.firstDeathSFX = "Friday Night Funkin':fnf_loss_sfx-pixel";
 	GameOverSubstate.gameOverMusic = "Friday Night Funkin':gameOver-pixel";
@@ -82,21 +82,21 @@ function create() {
 	GameOverSubstate.retrySFX = "Friday Night Funkin':gameOverEnd-pixel";
 
     var bgSky = new FlxSprite().loadGraphic(Paths.image('weeb/weebSky'));
-    bgSky.scrollFactor.set(0.1, 0.1);
+    bgSky.scrollFactor.set(1 / 6, 1 / 6);
     PlayState.add(bgSky);
 
     var repositionShit = -200;
 
     var bgSchool:FlxSprite = new FlxSprite(repositionShit, 0).loadGraphic(Paths.image('weeb/weebSchool'));
-    bgSchool.scrollFactor.set(0.6, 0.90);
+    bgSchool.scrollFactor.set(4 / 6, 5 / 6);
     PlayState.add(bgSchool);
 
     var bgStreet:FlxSprite = new FlxSprite(repositionShit).loadGraphic(Paths.image('weeb/weebStreet'));
-    bgStreet.scrollFactor.set(0.95, 0.95);
+    bgStreet.scrollFactor.set(5 / 6, 5 / 6);
     PlayState.add(bgStreet);
 
     var fgTrees:FlxSprite = new FlxSprite(repositionShit + 170, 130).loadGraphic(Paths.image('weeb/weebTreesBack'));
-    fgTrees.scrollFactor.set(0.9, 0.9);
+    fgTrees.scrollFactor.set(5 / 6, 5 / 6);
     PlayState.add(fgTrees);
 
     var bgTrees:FlxSprite = new FlxSprite(repositionShit - 380, -800);
@@ -104,14 +104,14 @@ function create() {
     bgTrees.frames = treetex;
     bgTrees.animation.add('treeLoop', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], 12);
     bgTrees.animation.play('treeLoop');
-    bgTrees.scrollFactor.set(0.85, 0.85);
+    bgTrees.scrollFactor.set(5 / 6, 5 / 6);
     PlayState.add(bgTrees);
 
     var treeLeaves:FlxSprite = new FlxSprite(repositionShit, -40);
     treeLeaves.frames = Paths.getSparrowAtlas('weeb/petals');
     treeLeaves.animation.addByPrefix('leaves', 'PETALS ALL', 24, true);
     treeLeaves.animation.play('leaves');
-    treeLeaves.scrollFactor.set(0.85, 0.85);
+    treeLeaves.scrollFactor.set(5 / 6, 5 / 6);
     PlayState.add(treeLeaves);
 
     var widShit = Std.int(bgSky.width * 6);
@@ -140,7 +140,7 @@ function create() {
         bgGirls.animation.addByIndices('danceLeft', 'BG girls group', CoolUtil.numberArray(14), "", 24, false);
         bgGirls.animation.addByIndices('danceRight', 'BG girls group', CoolUtil.numberArray(14), "", 24, false);
     }
-    bgGirls.scrollFactor.set(0.9, 0.9);
+    bgGirls.scrollFactor.set(5 / 6, 5 / 6);
 
     bgGirls.setGraphicSize(Std.int(bgGirls.width * PlayState_.daPixelZoom));
     bgGirls.updateHitbox();

@@ -1,13 +1,49 @@
+import("openfl.filters.ShaderFilter");
+
 var three:FlxSound = null;
 var ready:FlxSound = null;
 var set:FlxSound = null;
 var go:FlxSound = null;
 
+var shader = null;
 function create() {
+    var filters:Array<BitmapFilter> = [];
+    shader = new CustomShader(mod + ":mosaic");
+    var filter = new ShaderFilter(shader);
+    filters.push(filter);
+    FlxG.camera.setFilters(filters);
+    FlxG.camera.filtersEnabled = true;
+    PlayState.isWidescreen = false;
+    
     three = Paths.sound("intro3-pixel");
     ready = Paths.sound("intro2-pixel");
     set = Paths.sound("intro1-pixel");
     date = Paths.sound("introGo-pixel");
+
+    PlayState.gf.scrollFactor.set(5 / 6, 5 / 6);
+}
+function update(elapsed) {
+
+    PlayState.camFollow.x -= PlayState.camFollow.x % 36;
+    PlayState.camFollow.y -= PlayState.camFollow.y % 36;
+
+    shader.shaderData.uBlocksize.value = [6 / 1280 * FlxG.scaleMode.gameSize.x, 6 / 720 * FlxG.scaleMode.gameSize.y];
+    // shader.shaderData.uTime.value = [t];
+    PlayState.camera.zoom = PlayState.camera.defaultZoom;
+
+    
+    for (s in PlayState.members) {
+        if (Std.isOfType(s, FlxSprite)) {
+            if (s.velocity != null && s.velocity.x == 0 && s.velocity.y == 0 && !s.cameras.contains(PlayState.camHUD)) {
+                s.x -= s.x % 6;
+                s.y -= s.y % 6;
+                if (s.offset != null) {
+                    s.offset.x -= s.offset.x % 6;
+                    s.offset.y -= s.offset.y % 6;
+                }
+            }
+        }
+    }
 }
 
 function onGuiPopup() {

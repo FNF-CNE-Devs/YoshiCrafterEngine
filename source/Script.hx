@@ -60,7 +60,7 @@ class Script {
             }
         }
         switch(ext.toLowerCase()) {
-            case 'hx' | 'hscript':
+            case 'hx' | 'hscript' | 'hsc':
                 trace("HScript");
                 return new HScript();
             #if ENABLE_LUA
@@ -213,7 +213,7 @@ class HScript extends Script {
         fileName = Path.withoutDirectory(path);
         var p = path;
         if (Path.extension(p) == "") {
-            var exts = ["hx", "hscript"];
+            var exts = ["hx", "hsc", "hscript"];
             for (e in exts) {
                 if (FileSystem.exists('$p.$e')) {
                     p = '$p.$e';

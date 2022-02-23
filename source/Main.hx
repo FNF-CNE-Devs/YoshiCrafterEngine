@@ -33,7 +33,8 @@ class Main extends Sprite
 	public static var supportedFileTypes = [
 		#if ENABLE_LUA "lua", #end
 		"hx",
-		"hscript"];
+		"hscript",
+		"hsc"];
 
 
 	// You can pretty much ignore everything from here on - your code should go in your states.

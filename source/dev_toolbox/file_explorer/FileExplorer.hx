@@ -96,17 +96,17 @@ class FileExplorer extends MusicBeatSubstate {
         for (k=>f in files) {
             var t:FileExplorerIcon = Unknown;
             t = switch(Path.extension(f).toLowerCase()) {
-                case "json":            JSON;
-                case "hx" | "hscript":  Haxe;
-                case "ogg" | "mp3":     Audio;
-                case "log" | "txt":     Text;
-                case "xml":             XML;
-                case "png":             Bitmap;
-                case "exe":             Executable;
-                case "lua":             Lua;
-                case "dll":             DLL;
-                case "mp4":             MP4;
-                default:                Unknown;
+                case "json":                    JSON;
+                case "hx" | "hscript" | "hsc":  Haxe;
+                case "ogg" | "mp3":             Audio;
+                case "log" | "txt":             Text;
+                case "xml":                     XML;
+                case "png":                     Bitmap;
+                case "exe":                     Executable;
+                case "lua":                     Lua;
+                case "dll":                     DLL;
+                case "mp4":                     MP4;
+                default:                        Unknown;
             }
             var el = new FileExplorerElement(f, t, () -> {
                 if (fileExt != "") {
