@@ -19,6 +19,7 @@ using StringTools;
 
 class CustomShader extends FlxFixedShader {
     public var shaderData:Dynamic = {};
+	
     // public var bitmap(get, null):Any;
     // public function get_bitmap():Any {
     //     return bitm
@@ -168,8 +169,12 @@ class CustomShader extends FlxFixedShader {
                         default:
                     }
     
-                    Reflect.setField(__data, name, input);
-                    if (__isGenerated) Reflect.setField(shaderData, name, input);
+    
+					Reflect.setField(__data, name, input);
+					if (__isGenerated) {
+						try {Reflect.setField(this, name, input);} catch(e) {}
+						Reflect.setField(shaderData, name, input);
+					}
                 }
                 else if (!Reflect.hasField(__data, name) || Reflect.field(__data, name) == null)
                 {

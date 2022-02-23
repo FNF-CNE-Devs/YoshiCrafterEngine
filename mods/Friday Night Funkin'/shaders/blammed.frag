@@ -1,9 +1,9 @@
 #pragma header
 
-uniform float r;
-uniform float g;
-uniform float b;
-uniform bool enabled;
+uniform float r = 1;
+uniform float g = 1;
+uniform float b = 1;
+uniform bool enabled = true;
 
 void main() {
     if (enabled) {
