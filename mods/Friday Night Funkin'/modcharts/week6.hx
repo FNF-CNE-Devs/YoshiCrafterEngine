@@ -33,7 +33,7 @@ function update(elapsed) {
 
     
     for (s in PlayState.members) {
-        if (Std.isOfType(s, FlxSprite)) {
+        if (Std.isOfType(s, FlxSprite) && !Std.isOfType(s, Note)) {
             if (s.velocity != null && s.velocity.x == 0 && s.velocity.y == 0 && !s.cameras.contains(PlayState.camHUD)) {
                 s.x -= s.x % 6;
                 s.y -= s.y % 6;
