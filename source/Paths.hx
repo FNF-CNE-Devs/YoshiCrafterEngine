@@ -219,20 +219,51 @@ class Paths
 	public static var cacheSparrow:Map<String, FlxAtlasFrames> = new Map<String, FlxAtlasFrames>();
 	public static var cacheSound:Map<String, Sound> = new Map<String, Sound>();
 	#if sys	
+	
+	public static function clearForMod(mod:String) {
+		clearCache('${modsPath}/$mod');
+	}
 
-	inline static public function clearCache() {
+	inline static public function clearCache(?startsWith:String) {
+		if (startsWith == null) startsWith = "";
 		cacheText.clear();
-		for (bData in cacheBitmap) {
-			if (bData != null) {
+		for (k=>bData in cacheBitmap) {
+			if (k.startsWith(startsWith) && bData != null) {
 				bData.dispose();
 				bData.disposeImage();
+				cacheBitmap[k] = null;
 			}
 		}
-		cacheBitmap.clear();
-		cacheBytes.clear();
-		// for (c in cacheSparrow) 
-		// 	FlxDestroyUtil.destroy(c);
-		cacheSparrow.clear();
+		if (startsWith.trim() == "") {
+			cacheBitmap.clear();
+			cacheBytes.clear();
+			// for (c in cacheSparrow) 
+			// 	FlxDestroyUtil.destroy(c);
+			cacheSparrow.clear();	
+		} else {
+			for (k => b in cacheBytes) {
+				if (k.startsWith(startsWith)) {
+					cacheBytes[k].clear();
+					cacheBytes[k] = null;
+				}
+			}
+			for (k => b in cacheSparrow) {
+				if (k.startsWith(startsWith)) {
+					cacheSparrow[k] = null;
+				}
+			}
+			for (k => b in cacheText) {
+				if (k.startsWith(startsWith)) {
+					cacheText[k] = null;
+				}
+			}
+			for (k => b in cacheSound) {
+				if (k.startsWith(startsWith)) {
+					// auto complete not working, gotta fix this
+					cacheSound[k] = null;
+				}
+			}
+		}
 	}
 
 	public static function getCachePath(path:String) {
