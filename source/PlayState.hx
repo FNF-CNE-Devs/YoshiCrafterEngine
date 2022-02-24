@@ -322,12 +322,14 @@ class PlayState extends MusicBeatState
 		if (enable) {
 			FlxG.scaleMode = new WideScreenScale();
 			camHUD.x = (FlxG.width / 2) - 640;
+			WideScreenScale.updatePlayStateHUD();
 		} else {
 			FlxG.scaleMode = new RatioScaleMode();
 			FlxG.camera.width = 1280;
 			FlxG.camera.height = 720;
 			FlxG.camera.follow(camFollow, LOCKON, 0.02 * 60 / Settings.engineSettings.data.fpsCap);
 			camHUD.x = 0;
+			camHUD.y = 0;
 		}
 		return enable;
 	}
@@ -555,7 +557,7 @@ class PlayState extends MusicBeatState
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera(0, 0, 1280, 720, engineSettings.noteScale);
-		WideScreenScale.updatePlayStateHUD();
+		if (isWidescreen) WideScreenScale.updatePlayStateHUD();
 		if (engineSettings.greenScreenMode) {
 			camHUD.bgColor = new FlxColor(0xFF00FF00);
 		} else {

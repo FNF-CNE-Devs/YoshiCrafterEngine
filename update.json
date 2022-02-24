@@ -1,9 +1,12 @@
 {
     "updateLog" : [
-        "1.5.3 : FIXES + TIMER UPDATE",
+        "1.6.0 - CUSTOM SHADERS",
         "",
-        "Removed (useless) velocity stuff on notes since some people thought it affected the note position"
+        "- /!\\ Added support for custom shaders WITHOUT source code!",
+        "- Removed (useless) velocity stuff on notes since some people thought it affected the note position",
+        "- Fixed a bug that happened when widescreen was turned off that made the gui go offscreen.",
+        "- Added pixel perfect Week 6"
     ],
-    "version" : [1,5,2],
+    "version" : [1,6,0],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"
 }
