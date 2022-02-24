@@ -24,8 +24,8 @@ function create() {
 }
 function update(elapsed) {
 
-    PlayState.camFollow.x -= PlayState.camFollow.x % 36;
-    PlayState.camFollow.y -= PlayState.camFollow.y % 36;
+    PlayState.camFollow.x -= PlayState.camFollow.x % 6;
+    PlayState.camFollow.y -= PlayState.camFollow.y % 6;
 
     shader.shaderData.uBlocksize.value = [6 / 1280 * FlxG.scaleMode.gameSize.x, 6 / 720 * FlxG.scaleMode.gameSize.y];
     // shader.shaderData.uTime.value = [t];
