@@ -17,6 +17,10 @@ void main() {
 		vec4 diffColor = flixel_texture2D(bitmap, openfl_TextureCoordv + diff);
 		float shadowAlpha = (1 - diffColor.a) * a;
 		
+		for(int i=0;i<10;i++) {
+			vec4 diffColor = flixel_texture2D(bitmap, openfl_TextureCoordv + (diff * (i / 10)));	
+		}
+		
 		float nr = (color.r * (1 - shadowAlpha)) + (r * shadowAlpha);
 		float ng = (color.g * (1 - shadowAlpha)) + (g * shadowAlpha);
 		float nb = (color.b * (1 - shadowAlpha)) + (b * shadowAlpha);
