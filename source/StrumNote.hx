@@ -2,8 +2,8 @@ import NoteShader.ColoredNoteShader;
 import flixel.FlxSprite;
 
 class StrumNote extends FlxSprite {
-    public var notes_angle:Float = 0;
-    public var notes_alpha:Float = 1; // Ranges from 0 to 1
+    public var notes_angle:Null<Float> = null;
+    public var notes_alpha:Null<Float> = null; // Ranges from 0 to 1
     public var colored:Bool = false;
     public var cpuRemainingGlowTime:Float = 0;
     public var isCpu:Bool = false;
@@ -11,6 +11,14 @@ class StrumNote extends FlxSprite {
 
     public function getScrollSpeed() {
         return PlayState.current.engineSettings.customScrollSpeed ? PlayState.current.engineSettings.scrollSpeed : (scrollSpeed == null ? PlayState.SONG.speed : scrollSpeed);
+    }
+
+    public function getAlpha() {
+        return (notes_alpha == null ? alpha : notes_alpha);
+    }
+
+    public function getAngle() {
+        return (notes_angle == null ? angle : notes_angle);
     }
 
     public override function update(elapsed:Float) {

@@ -13,7 +13,7 @@
 [ ] Make Chart Editor better
 [ ] Fish Engine easter egg lol
 [ ] Dialogue (maybe????)
-[ ] Custom Shaders (VERY VERY IMPORTANT AAAAAAAAAAAAAAAAAAAAAAAAAAA)
+[x] Custom Shaders without source code (VERY VERY IMPORTANT AAAAAAAAAAAAAAAAAAAAAAAAAAA)
 [ ] Camera movement
 [ ] Custom hscript states
 [ ] Better Optimization

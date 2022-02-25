@@ -2264,22 +2264,22 @@ class PlayState extends MusicBeatState
 
 					var pos:FlxPoint = new FlxPoint(-(daNote.noteOffset.x + ((daNote.isSustainNote ? daNote.width / 2 : 0) * (engineSettings.downscroll ? 1 : -1))),(daNote.noteOffset.y));
 					var strum = (daNote.mustPress ? playerStrums.members : cpuStrums.members)[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber];
-					if (strum.notes_angle == 0) {
+					if (strum.getAngle() == 0) {
 
 						pos.y = (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2)) + (daNote.noteOffset.y);
 
 						
 						// daNote.velocity.y = (0 - 1000) * (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2));
 					} else {
-						pos.x = Math.sin((strum.angle + 180) * Math.PI / 180) * ((Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2)));
-						pos.x += Math.sin((strum.angle + (engineSettings.downscroll ? 90 : 270)) * Math.PI / 180) * ((daNote.noteOffset.x));
-						pos.y = Math.cos((strum.angle) * Math.PI / 180) * (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2));
-						pos.y += Math.cos((strum.angle + (engineSettings.downscroll ? 270 : 90)) * Math.PI / 180) * ((daNote.noteOffset.y));
+						pos.x = Math.sin((strum.getAngle() + 180) * Math.PI / 180) * ((Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2)));
+						pos.x += Math.sin((strum.getAngle() + (engineSettings.downscroll ? 90 : 270)) * Math.PI / 180) * ((daNote.noteOffset.x));
+						pos.y = Math.cos((strum.getAngle()) * Math.PI / 180) * (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2));
+						pos.y += Math.cos((strum.getAngle() + (engineSettings.downscroll ? 270 : 90)) * Math.PI / 180) * ((daNote.noteOffset.y));
 						// daNote.velocity.y = 0;
 					}
 
 					daNote.antialiasing = daNote.antialiasing && engineSettings.noteAntialiasing;
-					daNote.alpha = strum.notes_alpha * (daNote.isSustainNote && engineSettings.transparentSubstains ? 0.6 : 1);
+					daNote.alpha = strum.getAlpha() * (daNote.isSustainNote && engineSettings.transparentSubstains ? 0.6 : 1);
 					// daNote.cameras = strum.cameras;
 					// if (daNote.isLongSustain) {
 						// daNote.scale.y = (Note.swagWidth / Note._swagWidth) * (Conductor.stepCrochet / 100 * 1.5 * (strum.getScrollSpeed()));
@@ -2305,7 +2305,7 @@ class PlayState extends MusicBeatState
 						daNote.y = (strum.y - pos.y);
 						daNote.x = (strum.x - pos.x);
 					}
-					daNote.angle = daNote.isSustainNote ? strum.notes_angle : strum.angle;
+					daNote.angle = daNote.isSustainNote ? strum.notes_angle : strum.getAngle();
 
 
 					if (engineSettings.downscroll) {
