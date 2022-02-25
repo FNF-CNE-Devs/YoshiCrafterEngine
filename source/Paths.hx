@@ -34,6 +34,7 @@ class Paths
 	}
 
 	public static var modsPath(get, null):String;
+	public static var savesPath(get, null):String;
 
 	public static function getSoundExtern(path:String) {
 		var cPath = getCachePath(path);
@@ -50,6 +51,13 @@ class Paths
 			return '${System.userDirectory}/Yoshi Engine/mods';
 		#else
 			return './mods';
+		#end
+	}
+	public static function get_savesPath() {
+		#if android
+			return FileSystem.absolutePath('${System.userDirectory}/Yoshi Engine/saves/');
+		#else
+			return FileSystem.absolutePath('./saves/');
 		#end
 	}
 

@@ -106,6 +106,17 @@ class ModSupport {
     public static function reloadModsConfig() {
         modConfig = [];
         for(mod in getMods()) {
+            try {
+                var s = new FlxSave();
+                s.bind(mod.replace(" ", "").replace("'", ""));
+                s.data.mod = mod;
+                // s.flush();
+                modSaves[mod] = s;
+            } catch(e) {
+                trace(mod);
+                trace(e.details());
+            }
+
             var json:ModConfig = null;
             if (FileSystem.exists('$mFolder/$mod/config.json')) {
                 try {

@@ -253,12 +253,8 @@ class Settings {
 	 */
     public static function loadDefault() {
 		engineSettings = new FlxSave();
-		#if sys
-			engineSettings.bind("Settings", "../../YoshiCrafter29/Yoshi Engine"); // Not sure about this but it should work
-		#else
-			engineSettings.bind("Settings", "YoshiCrafter29/Yoshi Engine");
-		#end
 
+		engineSettings.bind("Settings");
 		for(k in Type.getClassFields(SuperCoolSettings)) {
 			var ogVal:Dynamic = std.Reflect.field(engineSettings.data, k);
 			if (ogVal == null) {
