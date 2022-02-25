@@ -483,7 +483,7 @@ class PlayState extends MusicBeatState
 	public override function destroy() {
 		if (PlayState.current == this) PlayState.current = null;
 		if (engineSettings.memoryOptimization && (!isStoryMode || (isStoryMode && storyPlaylist.length == 0))) {
-			Paths.clearForMod(songMod);
+			// Paths.clearForMod(songMod);
 		}
 		super.destroy();
 	}

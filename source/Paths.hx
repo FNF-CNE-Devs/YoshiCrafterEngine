@@ -243,12 +243,12 @@ class Paths
 		} else {
 			for (k => b in cacheBytes) {
 				if (k.startsWith(startsWith)) {
-					cacheBytes[k].clear();
 					cacheBytes[k] = null;
 				}
 			}
 			for (k => b in cacheSparrow) {
 				if (k.startsWith(startsWith)) {
+					cacheSparrow[k].destroy();
 					cacheSparrow[k] = null;
 				}
 			}
@@ -259,7 +259,7 @@ class Paths
 			}
 			for (k => b in cacheSound) {
 				if (k.startsWith(startsWith)) {
-					// auto complete not working, gotta fix this
+					cacheSound[k].close();
 					cacheSound[k] = null;
 				}
 			}
