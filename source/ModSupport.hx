@@ -106,14 +106,14 @@ class ModSupport {
     public static function reloadModsConfig() {
         modConfig = [];
         for(mod in getMods()) {
+            trace(mod);
             try {
                 var s = new FlxSave();
-                s.bind(mod.replace(" ", "").replace("'", ""));
+                s.bind(mod.replace(" ", "_").replace("'", "_"));
                 s.data.mod = mod;
                 // s.flush();
                 modSaves[mod] = s;
             } catch(e) {
-                trace(mod);
                 trace(e.details());
             }
 
@@ -284,6 +284,7 @@ class ModSupport {
 		script.setVariable("ModSupport", null);
 		script.setVariable("CustomShader", CustomShader_Helper);
 		script.setVariable("FlxControls", FlxControls);
+		script.setVariable("save", modSaves[mod]);
 		// script.setVariable("FlxKey", FlxKey);
 
 
