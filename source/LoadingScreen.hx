@@ -1,3 +1,4 @@
+import sys.thread.Thread;
 import sys.io.File;
 import sys.FileSystem;
 import lime.system.System;
@@ -84,13 +85,30 @@ class LoadingScreen extends FlxState {
             });
 
         FlxG.autoPause = false;
+
+        #if sys
+        Thread.create(function() {
+            for(k=>s in loadSections) {
+                loadingText.text = 'Loading ${s.name}... (${Std.string(Math.floor((k / loadSections.length) * 100))}%)';
+                s.func();
+            }
+            switchin = true;
+            // FlxG.autoPause = false;
+            var e = new TitleState();
+            trace(e);
+            FlxG.switchState(e);
+        });
+        #end
     }
     var aborted = false;
 
     public override function update(elapsed:Float) {
         super.update(elapsed);
+
+        #if !sys
         if (switchin || aborted) return;
 
+        
         if (step < 0) {
             loadingText.text = "Loading " + loadSections[0].name + "... (0%)";
             step = 0;
@@ -113,6 +131,7 @@ class LoadingScreen extends FlxState {
             }
             loadingText.screenCenter(X);
         }
+        #end
 
     }
 

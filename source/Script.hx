@@ -46,8 +46,6 @@ class Script {
     public static function create(path:String):Script {
         var p = path.toLowerCase();
         var ext = Path.extension(p);
-        trace('path : "$path"');
-        trace('ext :');
 
         var scriptExts = Main.supportedFileTypes;
         if (ext == "") {
@@ -69,7 +67,6 @@ class Script {
                 return new LuaScript();
             #end
         }
-        trace('ext not found : $ext for $path');
         return null;
     }
 

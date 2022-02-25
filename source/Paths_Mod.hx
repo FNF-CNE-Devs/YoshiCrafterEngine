@@ -38,6 +38,11 @@ class Paths_Mod {
         if (!FileSystem.exists(path)) {
             PlayState.log.push('Paths : File at "$path" does not exist');
         }
+        return path;
+    }
+
+    public function font(font:String) {
+        return FileSystem.absolutePath('${Paths.modsPath}/$mod/fonts/$font.ttf');
     }
 
     public function txt(file:String):String {
