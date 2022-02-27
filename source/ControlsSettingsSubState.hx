@@ -255,7 +255,7 @@ class ControlsSettingsSub extends MusicBeatSubstate {
                 new FlxColor(Settings.engineSettings.data.arrowColor2),
                 new FlxColor(Settings.engineSettings.data.arrowColor3)
             ][i % 4];
-            babyArrow.shader = new ColoredNoteShader(color.red, color.green, color.blue);
+            babyArrow.shader = new ColoredNoteShader(color.red, color.green, color.blue, false);
             cast(babyArrow.shader, ColoredNoteShader).enabled.value = [false];
 
             var noteNumberScheme:Array<NoteDirection> = Note.noteNumberSchemes[arrowNumber];

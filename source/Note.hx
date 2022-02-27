@@ -205,6 +205,7 @@ class Note extends FlxSprite
 	public var engineSettings:Dynamic;
 	public var splashColor:FlxColor = 0xFFFFFFFF;
 	public var isLongSustain:Bool = false;
+
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?mustHit = true, ?altAnim = false)
 	{
 		super();

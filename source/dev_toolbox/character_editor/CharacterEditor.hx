@@ -608,7 +608,7 @@ class CharacterEditor extends MusicBeatState {
             if (c == 0) {
                 c = 0xFFFFFFFF;
             }
-            note.shader = new ColoredNoteShader(c.red, c.green, c.blue);
+            note.shader = new ColoredNoteShader(c.red, c.green, c.blue, false);
             arrowSettings.add(note);
             arrows.push(note);
         }

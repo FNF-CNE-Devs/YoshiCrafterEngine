@@ -16,5 +16,7 @@
 [x] Custom Shaders without source code (VERY VERY IMPORTANT AAAAAAAAAAAAAAAAAAAAAAAAAAA)
 [ ] Camera movement
 [ ] Custom hscript states
-[ ] Better Optimization
-[ ] Better Menus
+[-] Better Optimization
+[-] Better Menus
+[ ] Custom Discord RPC
+[ ] Character Packer

@@ -36,6 +36,7 @@ class StrumNote extends FlxSprite {
     }
 
     public function toggleColor(toggle:Bool) {
-        cast(this.shader, ColoredNoteShader).enabled.value = [toggle];
+        if (Std.isOfType(this.shader, ColoredNoteShader))
+            cast(this.shader, ColoredNoteShader).enabled.value = [toggle];
     }
 }

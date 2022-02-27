@@ -5,7 +5,11 @@
         "- /!\\ Added support for custom shaders WITHOUT source code!",
         "- Removed (useless) velocity stuff on notes since some people thought it affected the note position",
         "- Fixed a bug that happened when widescreen was turned off that made the gui go offscreen.",
-        "- Added pixel perfect Week 6"
+        "- Added pixel perfect Week 6",
+        "- Note Motion Blur",
+        "- Fixed OHKO",
+        "- Fixed many bugs",
+        "- i forgor :skull:"
     ],
     "version" : [1,6,0],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"

@@ -74,7 +74,7 @@ class OptionsNotesColors extends MusicBeatState
 			arrow0.frames = Paths.getSparrowAtlas("NOTE_assets_colored", "shared");
 			arrow0.animation.addByPrefix("arrow", arrowAnimsNames[i]);
 			arrow0.animation.play("arrow");
-			arrow0.shader = new ColoredNoteShader(colors[i].red, colors[i].green, colors[i].blue);
+			arrow0.shader = new ColoredNoteShader(colors[i].red, colors[i].green, colors[i].blue, false);
 			arrow0.antialiasing = true;
 			arrow0.setGraphicSize(Std.int(arrow0.width * 0.7));
 			arrowSprites.push(arrow0);

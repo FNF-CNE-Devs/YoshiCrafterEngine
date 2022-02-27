@@ -247,12 +247,13 @@ class PlayState extends MusicBeatState
 			health = 0; // Take any damage and you DIE
 			if (healthBar != null) {
 				healthBar.visible = false;
+				healthBar.setRange(-1, 1);
 			}
 		}
 
 		if (healthBar != null) {
 			@:privateAccess
-			healthBar.max = maxHealth;
+			healthBar.setRange(0, maxHealth);
 			healthBar.dirty = true;
 		}
 		
@@ -265,6 +266,7 @@ class PlayState extends MusicBeatState
 	
 	public var generatedMusic:Bool = false;
 	public var startingSong:Bool = false;
+	public var popupArrows:Bool = isStoryMode;
 	
 	public var iconP1:HealthIcon;
 	public var iconP2:HealthIcon;
@@ -496,6 +498,7 @@ class PlayState extends MusicBeatState
 		GameOverSubstate.gameOverMusic = "Friday Night Funkin':gameOver";
 		GameOverSubstate.gameOverMusicBPM = 100;
 		GameOverSubstate.retrySFX = "Friday Night Funkin':gameOverEnd";
+		GameOverSubstate.scriptName = "";
 
 		PlayState.current = this;
 		engineSettings = Reflect.copy(Settings.engineSettings.data);
@@ -1139,6 +1142,7 @@ class PlayState extends MusicBeatState
 
 		// https://discord.com/channels/860561967383445535/925492025258836059/941454799600242759
 		scripts.executeFunc("createPost");
+		scripts.executeFunc("postCreate");
 
 		for (e in members) {
 			if (Std.isOfType(e, FlxSprite)) {
@@ -1236,6 +1240,7 @@ class PlayState extends MusicBeatState
 		
 		generateStaticArrows(0);
 		generateStaticArrows(1);
+		scripts.executeFunc("onStrums");
 		scripts.executeFunc("onGenerateStaticArrows");
 
 		var spawnUnder:Bool = engineSettings.downscroll;
@@ -1424,7 +1429,7 @@ class PlayState extends MusicBeatState
 		#end
 		if (timerBar != null) {
 			timerBar.setParent(Conductor, "songPosition");
-			timerBar.setRange(0, FlxG.sound.music.length);
+			timerBar.setRange(0, Math.max(FlxG.sound.music.length, 1000));
 		}
 
 		scripts.executeFunc("musicstart");
@@ -1523,20 +1528,20 @@ class PlayState extends MusicBeatState
 				
 				var noteNumberScheme:Array<NoteDirection> = Note.noteNumberSchemes[PlayState.SONG.keyNumber];
 				if (noteNumberScheme == null) noteNumberScheme = Note.noteNumberSchemes[4];
-				switch(note.noteData % SONG.keyNumber) {
-					case 0:
+				switch(noteNumberScheme[note.noteData % noteNumberScheme.length]) {
+					case Left:
 						note.animation.addByPrefix('scroll', "purple0");
 						note.animation.addByPrefix('holdend', "pruple end hold");
 						note.animation.addByPrefix('holdpiece', "purple hold piece");
-					case 1:
+					case Down:
 						note.animation.addByPrefix('scroll', "blue0");
 						note.animation.addByPrefix('holdend', "blue hold end");
 						note.animation.addByPrefix('holdpiece', "blue hold piece");
-					case 2:
+					case Up:
 						note.animation.addByPrefix('scroll', "green0");
 						note.animation.addByPrefix('holdend', "green hold end");
 						note.animation.addByPrefix('holdpiece', "green hold piece");
-					case 3:
+					case Right:
 						note.animation.addByPrefix('scroll', "red0");
 						note.animation.addByPrefix('holdend', "red hold end");
 						note.animation.addByPrefix('holdpiece', "red hold piece");
@@ -1724,7 +1729,7 @@ class PlayState extends MusicBeatState
 			var babyArrow:StrumNote = new StrumNote(0, strumLine.y);
 			var colors = player == 0 && !engineSettings.customArrowColors_allChars ? dad.getColors() : boyfriend.getColors();
 			var strumColor = colors[(i % (colors.length - 1)) + 1];
-			babyArrow.shader = new ColoredNoteShader(strumColor.red, strumColor.green, strumColor.blue);
+			babyArrow.shader = new ColoredNoteShader(strumColor.red, strumColor.green, strumColor.blue, false);
 			babyArrow.toggleColor(false);
 			
 			// switch (curStage)
@@ -1742,7 +1747,7 @@ class PlayState extends MusicBeatState
 			babyArrow.updateHitbox();
 			babyArrow.scrollFactor.set();
 
-			if (!isStoryMode)
+			if (popupArrows)
 			{
 				babyArrow.y -= 10;
 				babyArrow.alpha = 0;
@@ -1998,7 +2003,7 @@ class PlayState extends MusicBeatState
 			iconP1.offset.x = -75;
 			iconP2.offset.x = -75;
 			// iconP1.offset.y = -iconOffset;
-			if (maxHealth <= 0.0001) {
+			if (maxHealth == 0) {
 				iconP1.x = Std.int(PlayState.current.guiSize.x / 2) - iconOffset + iconP1.offset.x;
 				iconP2.x = Std.int(PlayState.current.guiSize.x / 2) - (iconP2.width - iconOffset) + iconP2.offset.x;
 			} else {
@@ -2268,7 +2273,6 @@ class PlayState extends MusicBeatState
 
 						pos.y = (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2)) + (daNote.noteOffset.y);
 
-						
 						// daNote.velocity.y = (0 - 1000) * (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2));
 					} else {
 						pos.x = Math.sin((strum.getAngle() + 180) * Math.PI / 180) * ((Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2)));
@@ -2305,7 +2309,7 @@ class PlayState extends MusicBeatState
 						daNote.y = (strum.y - pos.y);
 						daNote.x = (strum.x - pos.x);
 					}
-					daNote.angle = daNote.isSustainNote ? strum.notes_angle : strum.getAngle();
+					daNote.angle = daNote.isSustainNote ? strum.getAngle() : strum.angle;
 
 
 					if (engineSettings.downscroll) {
@@ -2445,6 +2449,19 @@ class PlayState extends MusicBeatState
 						}
 					}
 					
+					if (Std.isOfType(daNote.shader, ColoredNoteShader)) {
+						var shader = cast(daNote.shader, ColoredNoteShader);
+						var baseVal:Float = 0.0075 / 3;
+						var angle:Float = strum.getAngle() - daNote.angle;
+						if (angle == 0 || angle == 180) {
+							shader.x.value = [0];
+							shader.y.value = [baseVal * strum.getScrollSpeed() * engineSettings.noteMotionBlurMultiplier];
+						} else {
+							var scrollSpeed = baseVal * strum.getScrollSpeed();
+							shader.x.value = [Math.sin(angle / 180 * Math.PI) * scrollSpeed * engineSettings.noteMotionBlurMultiplier];
+							shader.y.value = [Math.cos(angle / 180 * Math.PI) * scrollSpeed * engineSettings.noteMotionBlurMultiplier];
+						}
+					}
 				});
 			}
 
@@ -2475,8 +2492,10 @@ class PlayState extends MusicBeatState
 		
 		if (inCutscene) {
 			(endCutscene ? end_cutscene : cutscene).executeFunc("postUpdate", [elapsed]);
+			(endCutscene ? end_cutscene : cutscene).executeFunc("updatePost", [elapsed]);
 		} else {
 			scripts.executeFunc("postUpdate", [elapsed]);
+			scripts.executeFunc("updatePost", [elapsed]);
 		}
 		
 	}

@@ -104,6 +104,12 @@ import flixel.FlxG;
 	// Note offset
 	@:keep public static var noteOffset:Float = 0;
 
+	// Enable Motion Blur on notes.
+	@:keep public static var noteMotionBlurEnabled:Bool = false;
+
+	// Note motion blur multiplier
+	@:keep public static var noteMotionBlurMultiplier:Float = 1;
+
 	
 	// If true, will show the ratings at the bottom left of the screen like this :
 	// Sick: 0

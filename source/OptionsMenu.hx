@@ -109,6 +109,7 @@ class FNFOption extends Alphabet {
 					add(alphaCharacter);
 					alphaCharacter.y -= 60;
 					lastLetterPos += AlphaCharacter.widths[char] != null ? (Std.int(AlphaCharacter.widths[char] / 2)) : Std.int(alphaCharacter.width) + 5;
+					alphaCharacter.offset.x = 17.5;
 				case 2:
 					alphaCharacter.createSymbol(char);
 					alphaCharacter.updateHitbox();
@@ -666,6 +667,43 @@ class OptionsMenu extends MusicBeatState
 			value: function() {return "";}
 		});
 		customisation.options.push({
+			text : "Enable Note Motion Blur",
+			description : "Check this to enable motion blur on notes. If enabled, will make the notes smoother, but can slow down the graphics. Defaults to disabled.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.noteMotionBlurEnabled = !Settings.engineSettings.data.noteMotionBlurEnabled;
+					o.checkboxChecked = Settings.engineSettings.data.noteMotionBlurEnabled;
+					o.check(Settings.engineSettings.data.noteMotionBlurEnabled);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.noteMotionBlurEnabled;},
+			value: function() {return "";}
+		});
+		customisation.options.push({
+			text : "Note Motion Blur Multiplier",
+			description : "The multiplier of how blurry the notes will get when Enable Motion Blur is enabled. If you think the notes still feels like stuttering, increasing this option may help. Higher values means blurrier notes. Defaults to 1.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				var changed = false;
+				if (controls.LEFT_P) {
+					Settings.engineSettings.data.noteMotionBlurMultiplier -= 0.1;
+					changed = true;
+				}
+				if (controls.RIGHT_P) {
+					Settings.engineSettings.data.noteMotionBlurMultiplier += 0.1;
+					changed = true;
+				}
+				if (changed) {
+					if (Settings.engineSettings.data.noteMotionBlurMultiplier < 0.1) Settings.engineSettings.data.noteMotionBlurMultiplier = 0.1;
+					if (Settings.engineSettings.data.noteMotionBlurMultiplier > 3) Settings.engineSettings.data.noteMotionBlurMultiplier = 3;
+					o.setValue(Std.string(FlxMath.roundDecimal(Settings.engineSettings.data.noteMotionBlurMultiplier, 1)));
+				}
+			},
+			checkbox: false,
+			checkboxChecked: function() {return false;},
+			value: function() {return Std.string(FlxMath.roundDecimal(Settings.engineSettings.data.noteMotionBlurMultiplier, 1));}
+		});
+		customisation.options.push({
 			text : "Transparent note tails",
 			description : "If enabled, will make sustain notes (note tails) semi-transparent.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
@@ -696,8 +734,8 @@ class OptionsMenu extends MusicBeatState
 		
 
 		customisation.options.push({
-			text : "Customize your arrows",
-			description : "Select this to customize your arrow colors.",
+			text : "Customize Note Colors",
+			description : "Select this to customize note colors.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					FlxG.switchState(new OptionsNotesColors());
