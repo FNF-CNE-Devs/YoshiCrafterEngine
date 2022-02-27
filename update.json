@@ -3,14 +3,17 @@
         "1.6.0 - CUSTOM SHADERS",
         "",
         "- /!\\ Added support for custom shaders WITHOUT source code!",
-        "- Removed (useless) velocity stuff on notes since some people thought it affected the note position",
+        "- Removed (useless) velocity stuff on notes since some people thought it affected the note position (hi kade)",
         "- Fixed a bug that happened when widescreen was turned off that made the gui go offscreen.",
         "- Added pixel perfect Week 6",
-        "- Note Motion Blur",
+        "- Added Note Motion Blur (Disabled by default)",
         "- Fixed OHKO",
         "- Fixed many bugs",
+        "- Loading screen no longer freezes the game",
+        "- New GUI Update!",
         "- i forgor :skull:",
-        "- Loading screen no longer freezes the game"
+        "- Psych Engine events support (uses onPsychEvent(name, value1, value2) in scripts)",
+        "- Centered strums (can be disabled in scripts)"
     ],
     "version" : [1,6,0],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"

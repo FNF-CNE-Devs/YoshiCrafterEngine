@@ -464,6 +464,7 @@ class StoryMenuState extends MusicBeatState
 			PlayState.storyDifficulty = weekData[curWeek].difficulties[curDifficulty].name;
 
 			PlayState._SONG = Song.loadModFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.songMod, PlayState.storyPlaylist[0].toLowerCase());
+			PlayState.jsonSongName = PlayState.storyPlaylist[0].toLowerCase();
 			PlayState.storyWeek = curWeek;
 			PlayState.campaignScore = 0;
 			PlayState.fromCharter = false;

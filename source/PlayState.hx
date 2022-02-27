@@ -70,6 +70,19 @@ import EngineSettings.Settings;
 
 using StringTools;
 
+// i'm going to throw all of you out of the window for this one
+typedef PsychEvent = {
+	var time:Float;
+	var name:String;
+	var value1:String;
+	var value2:String;
+}
+
+typedef SongEvent = {
+	var time:Float;
+	var name:String;
+	var parameters:Array<String>;
+}
 class Rating {
 	
 	public var name:String = "Sick";
@@ -144,6 +157,8 @@ class PlayState extends MusicBeatState
 	public var vocals:FlxSound;
 	public var inst:FlxSound;
 
+	public static var jsonSongName:String = "";
+
 	public var songPercentPos(get, null):Float;
 
 	public function get_songPercentPos():Float {
@@ -201,6 +216,9 @@ class PlayState extends MusicBeatState
 		healthBar.createFilledBar(dadColor, bfColor);
 	}
 	public var notes:FlxTypedGroup<Note>;
+	// nah i'm taking it further than a simple fix
+	public var psychEvents:Array<PsychEvent> = [];
+	public var events:Array<SongEvent> = [];
 	public var unspawnNotes:Array<Note> = [];
 
 	public static var current:PlayState = null;
@@ -1649,6 +1667,20 @@ class PlayState extends MusicBeatState
 
 			for (songNotes in section.sectionNotes)
 			{
+				if (songNotes[1] < 0) {
+					if (songNotes.length == 5 && Std.isOfType(songNotes[2], String) && Std.isOfType(songNotes[3], String) && Std.isOfType(songNotes[4], String)) {
+						// psych engine event for yall psych people who want to port their chart easily
+						psychEvents.push({
+							time: songNotes[0],
+							name: songNotes[2],
+							value1: songNotes[3],
+							value2: songNotes[4]
+						});
+					} else {
+						// yoshi engine event
+					}
+					continue;
+				}
 				var daStrumTime:Float = songNotes[0] + Settings.engineSettings.data.noteOffset;
 				var daNoteData:Int = Std.int(songNotes[1]);
 
@@ -1674,7 +1706,7 @@ class PlayState extends MusicBeatState
 				susLength = susLength / Conductor.stepCrochet;
 				// if (!engineSettings.downscroll) unspawnNotes.push(swagNote);
 
-				for (susNote in 0...Math.floor(susLength))
+				for (susNote in 0...Math.floor(susLength > 0 ? susLength + 1 : susLength))
 				{
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
@@ -1765,14 +1797,19 @@ class PlayState extends MusicBeatState
 			}
 
 			babyArrow.animation.play('static');
-			if 		  (PlayState.SONG.keyNumber <= 4) {
-				babyArrow.x += 50;
-			} else if (PlayState.SONG.keyNumber == 5) {
-				babyArrow.x += 30;
-			} else if (PlayState.SONG.keyNumber >= 6) {
-				babyArrow.x += 10;
+			if (engineSettings.centerStrums) {
+				babyArrow.x = (guiSize.x / 4) - (PlayState.SONG.keyNumber / 2 * Note.swagWidth) + (Note.swagWidth * i);
+				babyArrow.x += ((guiSize.x / 2) * player);
+			} else {
+				if 		  (PlayState.SONG.keyNumber <= 4) {
+					babyArrow.x += 50;
+				} else if (PlayState.SONG.keyNumber == 5) {
+					babyArrow.x += 30;
+				} else if (PlayState.SONG.keyNumber >= 6) {
+					babyArrow.x += 10;
+				}
+				babyArrow.x += ((guiSize.x / 2) * player);
 			}
-			babyArrow.x += ((guiSize.x / 2) * player);
 			
 			babyArrow.scale.x *= Note.widthRatio;
 			babyArrow.scale.y *= Note.widthRatio;
@@ -1919,6 +1956,7 @@ class PlayState extends MusicBeatState
 				iconP1.animation.play('bf-old');
 		}
 
+		
 		
 
 		super.update(elapsed);
@@ -2072,7 +2110,7 @@ class PlayState extends MusicBeatState
 			// Conductor.lastSongPos = FlxG.sound.music.time;
 		}
 
-		if (timerText != null && FlxG.sound.music != null) {
+		if (timerText != null) {
 			var pos = Math.max(Conductor.songPosition, 0);
 			var timeNow = '${Math.floor(pos / 60000)}:${CoolUtil.addZeros(Std.string(Math.floor(pos / 1000) % 60), 2)}';
 			var length = '${Math.floor(inst.length / 60000)}:${CoolUtil.addZeros(Std.string(Math.floor(inst.length / 1000) % 60), 2)}';
@@ -2451,15 +2489,15 @@ class PlayState extends MusicBeatState
 					
 					if (Std.isOfType(daNote.shader, ColoredNoteShader)) {
 						var shader = cast(daNote.shader, ColoredNoteShader);
-						var baseVal:Float = 0.0075 / 3;
-						var angle:Float = strum.getAngle() - daNote.angle;
+						var baseVal:Float = 0.0075 / 3 * 1024;
+						var angle:Float = (daNote.isSustainNote ? strum.getAngle() : strum.angle);
 						if (angle == 0 || angle == 180) {
 							shader.x.value = [0];
 							shader.y.value = [baseVal * strum.getScrollSpeed() * engineSettings.noteMotionBlurMultiplier];
 						} else {
 							var scrollSpeed = baseVal * strum.getScrollSpeed();
-							shader.x.value = [Math.cos(angle / 180 * Math.PI) * scrollSpeed * engineSettings.noteMotionBlurMultiplier];
-							shader.y.value = [Math.sin(angle / 180 * Math.PI) * scrollSpeed * engineSettings.noteMotionBlurMultiplier];
+							shader.x.value = [Math.sin(angle / 180 * Math.PI) * scrollSpeed * engineSettings.noteMotionBlurMultiplier];
+							shader.y.value = [Math.cos(angle / 180 * Math.PI) * scrollSpeed * engineSettings.noteMotionBlurMultiplier];
 						}
 					}
 				});
@@ -2488,6 +2526,14 @@ class PlayState extends MusicBeatState
 		if (FlxControls.justPressed.ONE)
 			endSong();
 		#end
+
+		for(e in psychEvents) {
+			if (e.time < Conductor.songPosition) {
+				// please dont kill me shadowmario literally everyone asked for it
+				scripts.executeFunc("onPsychEvent", [e.name, e.value1, e.value2]);
+				psychEvents.remove(e);
+			}
+		}
 		
 		
 		if (inCutscene) {

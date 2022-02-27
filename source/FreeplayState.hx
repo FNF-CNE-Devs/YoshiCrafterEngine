@@ -538,6 +538,7 @@ class FreeplayState extends MusicBeatState
 		PlayState._SONG.validScore = true;
 		PlayState.isStoryMode = false;
 		PlayState.songMod = songs[curSelected].mod;
+		PlayState.jsonSongName = songs[curSelected].songName;
 		PlayState.storyDifficulty = songs[curSelected].difficulties[curDifficulty];
 		PlayState.fromCharter = false;
 

@@ -110,6 +110,9 @@ import flixel.FlxG;
 	// Note motion blur multiplier
 	@:keep public static var noteMotionBlurMultiplier:Float = 1;
 
+	// Center the strums instead of keeping them like the original game.
+	@:keep public static var centerStrums:Bool = true;
+
 	
 	// If true, will show the ratings at the bottom left of the screen like this :
 	// Sick: 0
