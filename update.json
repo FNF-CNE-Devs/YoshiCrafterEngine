@@ -9,7 +9,8 @@
         "- Note Motion Blur",
         "- Fixed OHKO",
         "- Fixed many bugs",
-        "- i forgor :skull:"
+        "- i forgor :skull:",
+        "- Loading screen no longer freezes the game"
     ],
     "version" : [1,6,0],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"

@@ -1429,7 +1429,7 @@ class PlayState extends MusicBeatState
 		#end
 		if (timerBar != null) {
 			timerBar.setParent(Conductor, "songPosition");
-			timerBar.setRange(0, Math.max(FlxG.sound.music.length, 1000));
+			timerBar.setRange(0, Math.max(inst.length, 1000));
 		}
 
 		scripts.executeFunc("musicstart");
@@ -2458,8 +2458,8 @@ class PlayState extends MusicBeatState
 							shader.y.value = [baseVal * strum.getScrollSpeed() * engineSettings.noteMotionBlurMultiplier];
 						} else {
 							var scrollSpeed = baseVal * strum.getScrollSpeed();
-							shader.x.value = [Math.sin(angle / 180 * Math.PI) * scrollSpeed * engineSettings.noteMotionBlurMultiplier];
-							shader.y.value = [Math.cos(angle / 180 * Math.PI) * scrollSpeed * engineSettings.noteMotionBlurMultiplier];
+							shader.x.value = [Math.cos(angle / 180 * Math.PI) * scrollSpeed * engineSettings.noteMotionBlurMultiplier];
+							shader.y.value = [Math.sin(angle / 180 * Math.PI) * scrollSpeed * engineSettings.noteMotionBlurMultiplier];
 						}
 					}
 				});
