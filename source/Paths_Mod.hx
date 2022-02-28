@@ -1,3 +1,4 @@
+import lime.utils.Assets;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
@@ -33,12 +34,14 @@ class Paths_Mod {
     }
 
     public function file(file:String) {
-        var mFolder = Paths.modsPath;
-        var path = '$mFolder/$mod/$file';
-        if (!FileSystem.exists(path)) {
-            PlayState.log.push('Paths : File at "$path" does not exist');
-        }
-        return path;
+        // var mFolder = Paths.modsPath;
+        // var path = '$mFolder/$mod/$file';
+        // if (!FileSystem.exists(path)) {
+        //     PlayState.log.push('Paths : File at "$path" does not exist');
+        // }
+        // return path;
+        
+        return Paths.file(file, TEXT, 'mods/$mod');
     }
 
     public function font(font:String) {
@@ -47,17 +50,17 @@ class Paths_Mod {
 
     public function txt(file:String):String {
         var mFolder = Paths.modsPath;
-        return readTextFile('$mFolder/$mod/data/$file.txt');
+        return Paths.txt(file, 'mods/$mod');
     }
 
     public function xml(file:String):String {
         var mFolder = Paths.modsPath;
-        return readTextFile('$mFolder/$mod/data/$file.xml');
+        return Paths.xml(file, 'mods/$mod');
     }
 
     public function json(file:String):String {
         var mFolder = Paths.modsPath;
-        return readTextFile('$mFolder/$mod/data/$file.json');
+        return Paths.json(file, 'mods/$mod');
     }
 
     // No support for it yet, sorry
@@ -70,87 +73,66 @@ class Paths_Mod {
     // }
 
     public function parseJson(file:String) {
-        return Json.parse(json(file));
+        return Json.parse(Assets.getText(json(file)));
     }
 
     public function video(key:String) {
         return '${Paths.modsPath}/$mod/videos/$key.mp4';
     }
 
-    public function soundRandom(file:String, min:Int, max:Int):Sound {
+    public function soundRandom(file:String, min:Int, max:Int) {
         var r = FlxG.random.int(min, max);
         return sound('$file$r');
     }
-    public function sound(file:String):Sound {
-
-        return Paths.getSoundExtern('${Paths.modsPath}/$mod/sounds/$file.ogg');
+    public function sound(file:String) {
+        return Paths.sound(file, 'mods/$mod');
+        // return Paths.getSoundExtern('${Paths.modsPath}/$mod/sounds/$file.ogg');
     }
 
-    public function music(file:String):Sound {
-        return Paths.getSoundExtern('${Paths.modsPath}/$mod/music/$file.ogg');
+    public function music(file:String) {
+        return Paths.music(file, 'mods/$mod');
+        // return Paths.getSoundExtern('${Paths.modsPath}/$mod/music/$file.ogg');
     }
 
-    public function image(key:String):BitmapData {
-        var mFolder = Paths.modsPath;
-        var p = '$mFolder/$mod/images/$key.png';
-        if (FileSystem.exists(p)) {
-            return Paths.getBitmapOutsideAssets(p);
-        } else {
-            PlayState.log.push('Paths : Image at "$p" does not exist');
-            return null;
-        }
+    public function image(key:String) {
+        // var mFolder = Paths.modsPath;
+        // var p = '$mFolder/$mod/images/$key.png';
+        // if (FileSystem.exists(p)) {
+        //     return Paths.getBitmapOutsideAssets(p);
+        // } else {
+        //     PlayState.log.push('Paths : Image at "$p" does not exist');
+        //     return null;
+        // }
+        return Paths.image(key, 'mods/$mod');
     }
 
     public function getSparrowAtlas(key:String):FlxAtlasFrames {
-        var mFolder = Paths.modsPath;
-        var png = '$mFolder/$mod/images/$key.png';
-        var xml = '$mFolder/$mod/images/$key.xml';
-        if (FileSystem.exists(png) && FileSystem.exists(xml)) {
-            // var b:BitmapData;
-            // b = Paths.getBitmapOutsideAssets(png);
-            // return FlxAtlasFrames.fromSparrow(b, Paths.getTextOutsideAssets(xml));
-            return Paths.getSparrowAtlas_Custom('$mFolder/$mod/images/$key');
-        } else {
-            PlayState.log.push('Paths : Sparrow Atlas at "$mFolder/$mod/images/$key" does not exist. Make sure there is an XML and a PNG file');
-            return null;
-        }
+        return Paths.getSparrowAtlas(key, 'mods/$mod');
     }
 
-    public function getCharacterPacker(char:String):FlxAtlasFrames {
-        var splitChar = CoolUtil.getCharacterFull(char, mod);
-        var path = '${Paths.modsPath}/${splitChar[0]}/characters/${splitChar[1]}';
-        if (splitChar[0] == "~") {
-			// YOOOOO SKIN SUPPORT
-			path = '${Paths.getSkinsPath()}/${splitChar[1]}/';
-		}
-        var png = '$path/spritesheet.png';
-        var txt = '$path/spritesheet.txt';
-        if (FileSystem.exists(png) && FileSystem.exists(txt)) {
-            var b = Paths.getBitmapOutsideAssets(png);
-            // if (copyBitmap) b = b.clone();
-            return FlxAtlasFrames.fromSpriteSheetPacker(b, Paths.getTextOutsideAssets(txt));
-        } else {
-            PlayState.log.push('Paths : Sprite Sheet Packer at "$path/spritesheet" does not exist. Make sure there is an TXT and a PNG file');
-            return null;
-        }
+    public function getCharacterPacker(char:String) {
+        // TODO
+        // return Paths.getModCharacterPacker(key, 'mods/$mod');
     }
 
     public function getCharacter(char:String) {
         var splitChar = CoolUtil.getCharacterFull(char, mod);
-        return Paths.getModCharacter(splitChar.join(":"));
+        // if (!Paths.characterExists(splitChar[0], splitChar[1])) splitChar = ["Friday Night Funkin'", "unknown"];
+        return Paths.getCharacter(splitChar[1], 'mods/${splitChar[0]}');
     }
 
     public function getPackerAtlas(key:String) {
-        var mFolder = Paths.modsPath;
-        var png = '$mFolder/$mod/images/$key.png';
-        var txt = '$mFolder/$mod/images/$key.txt';
-        if (FileSystem.exists(png) && FileSystem.exists(txt)) {
-            var b = Paths.getBitmapOutsideAssets(png);
-            // if (copyBitmap) b = b.clone();
-            return FlxAtlasFrames.fromSpriteSheetPacker(b, Paths.getTextOutsideAssets(txt));
-        } else {
-            PlayState.log.push('Paths : Packer Atlas at "$mFolder/$mod/images/$key" does not exist. Make sure there is an XML and a PNG file');
-            return null;
-        }
+        // var mFolder = Paths.modsPath;
+        // var png = '$mFolder/$mod/images/$key.png';
+        // var txt = '$mFolder/$mod/images/$key.txt';
+        // if (FileSystem.exists(png) && FileSystem.exists(txt)) {
+        //     var b = Paths.getBitmapOutsideAssets(png);
+        //     // if (copyBitmap) b = b.clone();
+        //     return FlxAtlasFrames.fromSpriteSheetPacker(b, Paths.getTextOutsideAssets(txt));
+        // } else {
+        //     PlayState.log.push('Paths : Packer Atlas at "$mFolder/$mod/images/$key" does not exist. Make sure there is an XML and a PNG file');
+        //     return null;
+        // }
+        return Paths.getPackerAtlas(key, 'mods/$mod');
     }
 }

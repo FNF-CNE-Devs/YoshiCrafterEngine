@@ -20,3 +20,4 @@
 [-] Better Menus
 [ ] Custom Discord RPC
 [ ] Character Packer
+[ ] Yoshi Engine events lol

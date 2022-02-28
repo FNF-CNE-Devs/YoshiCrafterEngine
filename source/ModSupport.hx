@@ -1,3 +1,6 @@
+import openfl.utils.AssetLibrary;
+import openfl.utils.AssetManifest;
+import haxe.io.Path;
 import haxe.io.Bytes;
 // import zip.Zip;
 // import zip.ZipEntry;
@@ -103,6 +106,33 @@ class ModSupport {
         }
         return finalArray;
     }
+
+    public static function getAssetFiles(assets:Array<Dynamic>, rootPath:String, path:String, libraryName:String) {
+        for(f in FileSystem.readDirectory('$rootPath$path')) {
+            if (FileSystem.isDirectory('$rootPath$path$f')) {
+                getAssetFiles(assets, rootPath, '$path$f/', libraryName);
+            } else {
+                var type = "BINARY";
+                switch(Path.extension(f).toLowerCase()) {
+                    case "txt" | "xml" | "json" | "hx" | "hscript" | "hsc" | "lua":
+                        type = "TEXT";
+                    case "png":
+                        type = "IMAGE";
+                    case "ogg":
+                        type = path.toLowerCase().startsWith("music") ? "MUSIC" : "SOUND";
+                    case "ttf":
+                        type = "FONT";
+
+                }
+                assets.push({
+                    type: type,
+                    id: 'assets/$libraryName/$path$f',
+                    path: '$path$f',
+                    size: FileSystem.stat('$rootPath$path$f').size
+                });
+            }
+        }
+    }
     public static function reloadModsConfig() {
         modConfig = [];
         for(mod in getMods()) {
@@ -116,6 +146,24 @@ class ModSupport {
             } catch(e) {
                 trace(e.details());
             }
+
+            // imma do assets lol
+            var assets:AssetManifest = new AssetManifest();
+            assets.name = 'mods/$mod';
+            assets.libraryType = null;
+            assets.version = 2;
+            assets.libraryArgs = [];
+            assets.rootPath = '${Paths.modsPath}/$mod/';
+            assets.assets = [];
+            getAssetFiles(assets.assets, '${Paths.modsPath}/$mod/', '', 'mods/$mod');
+            // this is going to fucking lag the game lmfao, just checking if everything works
+            // trace(assets.assets);
+
+            if (openfl.utils.Assets.hasLibrary('mods/$mod'))
+                openfl.utils.Assets.unloadLibrary('mods/$mod');
+            openfl.utils.Assets.registerLibrary('mods/$mod', AssetLibrary.fromManifest(assets));
+
+            
 
             var json:ModConfig = null;
             if (FileSystem.exists('$mFolder/$mod/config.json')) {

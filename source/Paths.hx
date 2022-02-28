@@ -145,37 +145,24 @@ class Paths
 	inline static public function modInst(song:String, mod:String, ?difficulty:String = "")
 	{
 		
-		return Sound.fromFile(getInstPath(song, mod, difficulty));
+		return getInstPath(song, mod, difficulty);
 	}
 	inline static public function getInstPath(song:String, mod:String, ?difficulty:String = "")
 	{
-		var path = Paths.modsPath + '/$mod/songs/$song/';
-		// trace(path + 'Inst-$difficulty.ogg');
-		if (FileSystem.exists(path + 'Inst-$difficulty.ogg')) {
-			path += 'Inst-$difficulty.ogg';
-		} else {
-			if (FileSystem.exists(path + 'Inst.ogg')) {
-				path += 'Inst.ogg';
-			} else {
-				PlayState.log.push('Paths : Inst for song $song at "$path" does not exist.');
-			}
+		var inst = 'mods/$mod:assets/mods/$mod/songs/$song/Inst.ogg';
+		if (Assets.exists('mods/$mod:assets/mods/$mod/songs/$song/Inst-$difficulty.ogg')) {
+			inst = 'mods/$mod:assets/mods/$mod/songs/$song/Inst-$difficulty.ogg';
 		}
-		return path;
+		return inst;
 	}
 
 	inline static public function modVoices(song:String, mod:String, ?difficulty:String = "")
 	{
-		var path = Paths.modsPath + '/$mod/songs/$song/';
-		if (FileSystem.exists(path + 'Voices-$difficulty.ogg')) {
-			path += 'Voices-$difficulty.ogg';
-		} else {
-			if (FileSystem.exists(path + 'Voices.ogg')) {
-				path += 'Voices.ogg';
-			} else {
-				PlayState.log.push('Paths : Voices for song $song at "$path" does not exist.');
-			}
+		var voices = 'mods/$mod:assets/mods/$mod/songs/$song/Voices.ogg';
+		if (Assets.exists('mods/$mod:assets/mods/$mod/songs/$song/Voices-$difficulty.ogg')) {
+			voices = 'mods/$mod:assets/mods/$mod/songs/$song/Voices-$difficulty.ogg';
 		}
-		return Sound.fromFile(path);
+		return voices;
 	}
 
 	inline static public function stageSound(file:String)
@@ -393,10 +380,10 @@ class Paths
 	// 	#end
 	// }
 
-	// inline static public function getCharacter(key:String)
-	// {
-	// 	return FlxAtlasFrames.fromSparrow(getPath('$key.png', IMAGE, "characters"), file('$key.xml', "characters"));
-	// }
+	inline static public function getCharacter(key:String, library:String)
+	{
+		return FlxAtlasFrames.fromSparrow(getPath('characters/$key/spritesheet.png', IMAGE, library), file('characters/$key/spritesheet.xml', library));
+	}
 
 	inline static public function video(key:String, ?library:String)
 	{
@@ -450,6 +437,10 @@ class Paths
 		return FlxAtlasFrames.fromSparrow(b, Paths.getTextOutsideAssets('$folder/spritesheet.xml'));
 	}
 
+	public static function characterExists(character:String, mod:String):Bool {
+		return (FileSystem.exists('${Paths.modsPath}/$mod/characters/$character/spritesheet.png') && (FileSystem.exists('${Paths.modsPath}/$mod/characters/$character/spritesheet.xml') || FileSystem.exists('${Paths.modsPath}/$mod/characters/$character/spritesheet.json')));
+	}
+
 	inline static public function getCharacterIcon(key:String)
 	{
 		return getPath('icons/$key.png', IMAGE, "characters");
@@ -466,8 +457,8 @@ class Paths
 		return FlxAtlasFrames.fromSpriteSheetPacker(Paths.getBitmapOutsideAssets('$folder/spritesheet.png'), Paths.getTextOutsideAssets('$folder/spritesheet.txt'));
 	}
 
-	// inline static public function getPackerAtlas(key:String, ?library:String)
-	// {
-	// 	return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
-	// }
+	inline static public function getPackerAtlas(key:String, ?library:String)
+	{
+		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
+	}
 }
