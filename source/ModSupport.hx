@@ -126,7 +126,7 @@ class ModSupport {
                 }
                 assets.push({
                     type: type,
-                    id: 'assets/$libraryName/$path$f',
+                    id: ('assets/$libraryName/$path$f'),
                     path: '$path$f',
                     size: FileSystem.stat('$rootPath$path$f').size
                 });
