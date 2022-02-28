@@ -57,9 +57,7 @@ class MainMenuState extends MusicBeatState
 			optionShit.insert(4, 'toolbox');
 		}
 		if (Settings.engineSettings.data.memoryOptimization) {
-			// Paths.clearCache();
-			openfl.utils.Assets.cache.clear();
-			Assets.cache.clear();
+			Paths.clearModCache();
 		}
 			
 		#if desktop

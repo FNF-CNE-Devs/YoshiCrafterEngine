@@ -510,6 +510,7 @@ class PlayState extends MusicBeatState
 	var actualModConfig:ModConfig;
 	override public function create()
 	{
+		Paths.clearOtherModCache(songMod);
 		
 		GameOverSubstate.char = "Friday Night Funkin':bf-dead";
 		GameOverSubstate.firstDeathSFX = "Friday Night Funkin':fnf_loss_sfx";
