@@ -446,6 +446,7 @@ class Character extends FlxSprite
 	 */
 
 	public var lastNoteHitTime:Float = -60000;
+	private var unknownAnimsAlerted:Array<String> = [];
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
 		if (AnimName.startsWith("sing")) {
@@ -458,7 +459,10 @@ class Character extends FlxSprite
 			animation.play(AnimName, Force, Reversed, Frame);
 			if (animation.getByName(AnimName) == null) {
 				trace(AnimName + " doesn't exist on character " + curCharacter);
-				PlayState.log.push('Character.playAnim: $AnimName doesn\'t exist on character $curCharacter');
+				if (!unknownAnimsAlerted.contains(AnimName)) {
+					PlayState.log.push('Character.playAnim: $AnimName doesn\'t exist on character $curCharacter');
+					unknownAnimsAlerted.push(AnimName);
+				}
 				return;
 			}
 			if (isPlayer && AnimName == "singLEFT" && flipX)

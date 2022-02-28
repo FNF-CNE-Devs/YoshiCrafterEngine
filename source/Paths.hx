@@ -211,11 +211,11 @@ class Paths
 		return getPath('images/$key.png', IMAGE, library);
 	}
 
-	inline static public function stageImage(key:String)
-	{
-		var p = ModSupport.song_stage_path;
-		return getBitmapOutsideAssets('$p/$key');
-	}
+	// inline static public function stageImage(key:String)
+	// {
+	// 	var p = ModSupport.song_stage_path;
+	// 	return getBitmapOutsideAssets('$p/$key');
+	// }
 
 	inline static public function font(key:String)
 	{
@@ -460,9 +460,9 @@ class Paths
 		return (FileSystem.exists('${Paths.modsPath}/$mod/characters/$character/spritesheet.png') && (FileSystem.exists('${Paths.modsPath}/$mod/characters/$character/spritesheet.xml') || FileSystem.exists('${Paths.modsPath}/$mod/characters/$character/spritesheet.json')));
 	}
 
-	inline static public function getCharacterIcon(key:String)
+	inline static public function getCharacterIcon(key:String, library:String)
 	{
-		return getPath('icons/$key.png', IMAGE, "characters");
+		return getPath('characters/$key/icon.png', IMAGE, library);
 	}
 
 	// inline static public function getCharacterPacker(key:String)

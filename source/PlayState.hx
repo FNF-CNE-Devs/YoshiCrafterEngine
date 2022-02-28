@@ -97,7 +97,7 @@ class Rating {
 	public var antialiasing:Bool = true;
 	public var fcRating:String = "FC";
 
-	public var bitmap:BitmapData = null;
+	public var bitmap:String = null;
 
 	public function new() {}
 
@@ -107,9 +107,9 @@ class Rating {
 		var mod = splittedPath[0];
 		var path = splittedPath[1];
 		var mPath = Paths.modsPath;
-		var bData = Paths.getBitmapOutsideAssets('$mPath/$mod/images/$path.png');
+		var bData = Paths.image(path, 'mods/$mod');
 		if (bData != null) {
-			if (bitmap != null) bitmap.dispose();
+			// if (bitmap != null) bitmap.dispose();
 			image = path;
 			bitmap = bData;
 		}
@@ -2727,7 +2727,7 @@ class PlayState extends MusicBeatState
 		numberOfNotes++;
 		songScore += daRating.score;
 
-		rating.loadGraphic(daRating.bitmap.clone());
+		rating.loadGraphic(daRating.bitmap);
 		rating.screenCenter();
 		rating.x = coolText.x - 40;
 		rating.y -= 60;
