@@ -1,3 +1,4 @@
+import hscript.Expr;
 import openfl.utils.AssetLibrary;
 import openfl.utils.AssetManifest;
 import haxe.io.Path;
@@ -49,6 +50,11 @@ using StringTools;
 @:headerCode("#include <windows.h>")
 @:headerCode("#undef RegisterClass")
 #end
+
+typedef CacheExpr = {
+	var code:Expr;
+	var time:Null<Float>;
+}
 
 class ExceptionState extends FlxState {
     var text:String;
@@ -198,13 +204,42 @@ class ModSupport {
     public static function getExpressionFromPath(path:String, critical:Bool = false):hscript.Expr {
         var parser = new hscript.Parser();
 		parser.allowTypes = true;
-        var ast = null;
+        var ast:Expr = null;
 		try {
+			var cachePath = path.toLowerCase();
+			var fileData = FileSystem.stat(path);
+			var cachePath = Paths.getCachePath(path);
+			
+			if (Reflect.hasField(Settings.hscriptCache.data, cachePath)) {
+				var thing = Reflect.field(Settings.hscriptCache.data, cachePath);
+				if (Std.isOfType(thing, Dynamic)) {
+					var cache:CacheExpr = thing;
+					if (cache.time != null && cache.code != null) {
+						if (cache.time >= fileData.mtime.getTime()) {
+							ast = cache.code;
+							trace("Using cache.");
+							return ast;
+						} else {
+							trace("Cache is outdated!");
+						}
+					} else {
+						trace("Cache is invalid!");
+					}
+				} else {
+					trace("Cache is not of the right type!");
+				}
+			} else {
+				trace("Cache not found!");
+			}
 			#if sys
 			ast = parser.parseString(sys.io.File.getContent(path));
 			#else
-            trace("no sys support");
-            #end
+			trace("no sys support");
+			#end
+			Reflect.setField(Settings.hscriptCache.data, cachePath, {
+				time: fileData.mtime.getTime(),
+				code: ast
+			});
 		} catch(ex) {
 			trace(ex);
             var exThingy = Std.string(ex);

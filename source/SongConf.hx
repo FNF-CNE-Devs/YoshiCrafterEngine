@@ -80,7 +80,7 @@ class SongConf {
                 interp.setVariable("end_cutscene", "");
                 interp.setVariable("modchart", "");
                 interp.setVariable("scripts", []);
-                interp.loadFile(songConfPath);
+                interp.loadFile('${Paths.modsPath}/$mod/song_conf');
 
                 var stage:String = interp.getVariable("stage");
                 var modchart:String = interp.getVariable("modchart");
