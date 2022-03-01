@@ -1,4 +1,4 @@
-package;
+package charter;
 
 import Conductor.BPMChangeEvent;
 import Section.SwagSection;
@@ -127,7 +127,8 @@ class ChartingState extends MusicBeatState
 				speed: 1,
 				validScore: false,
 				keyNumber: 4,
-				noteTypes : ["Friday Night Funkin':Default Note"]
+				noteTypes : ["Friday Night Funkin':Default Note"],
+				events: []
 			};
 		}
 

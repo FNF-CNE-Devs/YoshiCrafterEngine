@@ -15,5 +15,10 @@
 [R] Reset Section
 
 [Hover w/ Cursor] Select the note type and character for Typing Mode.
-[Alt] Enable/Disable Typing Mode
+[Caps Lock] Enable/Disable Typing Mode
 [Player Controls] Add notes in Typing Mode
+
+EVENTS
+[Left Click] Add event
+[Left Click on event] Edit event
+[Right Click] Delete event

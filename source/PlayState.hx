@@ -1,6 +1,7 @@
 package;
 
 
+import charter.ChartingState_New;
 import flixel.graphics.FlxGraphic;
 import Script.ScriptPack;
 import openfl.display.ShaderParameter;
@@ -619,14 +620,17 @@ class PlayState extends MusicBeatState
 		persistentUpdate = true;
 		persistentDraw = true;
 
+		if (_SONG == null)
+			_SONG = Song.loadModFromJson('tutorial', 'Friday Night Funkin\'');
+
 		if (_SONG.keyNumber == null)
 			_SONG.keyNumber = 4;
 		
 		if (_SONG.noteTypes == null)
 			_SONG.noteTypes = ["Friday Night Funkin':Default Note"];
 
-		if (_SONG == null)
-			_SONG = Song.loadModFromJson('tutorial', 'Friday Night Funkin\'');
+		if (_SONG.events == null)
+			_SONG.events = [];
 
 		SONG = Reflect.copy(_SONG);
 
@@ -1677,8 +1681,6 @@ class PlayState extends MusicBeatState
 							value1: songNotes[3],
 							value2: songNotes[4]
 						});
-					} else {
-						// yoshi engine event
 					}
 					continue;
 				}
@@ -1739,6 +1741,10 @@ class PlayState extends MusicBeatState
 				
 			}
 			daBeats += 1;
+		}
+
+		for (e in SONG.events) {
+			events.push({name: e.name, time: e.time, parameters: e.parameters});
 		}
 
 		// trace(unspawnNotes.length);
@@ -2533,6 +2539,14 @@ class PlayState extends MusicBeatState
 				// please dont kill me shadowmario literally everyone asked for it
 				scripts.executeFunc("onPsychEvent", [e.name, e.value1, e.value2]);
 				psychEvents.remove(e);
+			}
+		}
+
+		for(e in events) {
+			if (e.time < Conductor.songPosition) {
+				// please dont kill me shadowmario literally everyone asked for it
+				scripts.executeFunc(e.name, e.parameters);
+				events.remove(e);
 			}
 		}
 		
