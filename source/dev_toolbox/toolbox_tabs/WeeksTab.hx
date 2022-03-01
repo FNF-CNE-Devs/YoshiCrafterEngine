@@ -204,15 +204,14 @@ class WeeksTab extends ToolboxTab {
 
     public function updateWeekInfo() {
         var w = selectedWeek;
-        var b = null;
-        var path = '${Paths.modsPath}/${ToolboxHome.selectedMod}/${w.buttonSprite}';
-        try {
-            b = Paths.getBitmapOutsideAssets(path);
-        } catch(e) {
-            trace(e);
-        }
-        if (b == null) b = new BitmapData(10, 10, 0xFF000000);
-        weekButton.loadGraphic(b);
+        var path = Paths.getPath(w.buttonSprite, IMAGE, 'mods/${ToolboxHome.selectedMod}');
+        // try {
+        //     b = Paths.getBitmapOutsideAssets(path);
+        // } catch(e) {
+        //     trace(e);
+        // }
+        // if (b == null) b = new BitmapData(10, 10, 0xFF000000);
+        weekButton.loadGraphic(path);
         weekButton.x = (2*uiX) + (((FlxG.width - (2*uiX)) / 2) - (weekButton.width / 2));
 
         txtWeekTitle.text = w.name;

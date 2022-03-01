@@ -1,6 +1,7 @@
 package;
 
 // import sys.io.File;
+import openfl.utils.Assets;
 import haxe.macro.ExprTools.ExprArrayTools;
 import haxe.Json;
 import sys.FileSystem;
@@ -204,6 +205,7 @@ class Character extends FlxSprite
 	public function loadJSON(overrideFuncs:Bool) {
 		
 		var charFull = CoolUtil.getCharacterFull(curCharacter, PlayState.songMod);
+		/*
 		var path = '${Paths.modsPath}/${charFull[0]}/characters/${charFull[1]}/Character.json';
 		if (!FileSystem.exists(path)) return;
 		try {
@@ -212,6 +214,18 @@ class Character extends FlxSprite
 			return;
 		}
 		if (json == null) return;
+		*/
+		var path = Paths.getPath('characters/${charFull[1]}/character.json', TEXT, 'mods/${charFull[0]}');
+		if (!Assets.exists(path)) {
+			PlayState.trace('Character JSON for ${charFull.join(":")} doesn\'t exist.');
+			return;
+		}
+		try {
+			json = Json.parse(Assets.getText(path));
+		} catch(e) {
+			PlayState.trace('Character JSON for ${charFull.join(":")} is invalid\n\n$e.');
+			return;
+		}
 		load(overrideFuncs);
 	}
 

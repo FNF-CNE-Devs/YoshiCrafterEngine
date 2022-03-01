@@ -84,10 +84,11 @@ class FreeplayState extends MusicBeatState
 		songs = [];
 		var fnfSongs = [];
 		for(mod in FileSystem.readDirectory('$mPath/')) {
-			if (FileSystem.exists('$mPath/$mod/data/freeplaySonglist.json')) {
+			var path = Paths.json('freeplaySonglist', 'mods/$mod');
+			if (Assets.exists(path)) {
 				var jsonContent:FreeplaySongList = null;
 				try {
-					jsonContent = Json.parse(Paths.getTextOutsideAssets('$mPath/$mod/data/freeplaySonglist.json'));
+					jsonContent = Json.parse(Assets.getText(path));
 				} catch(e) {
 					trace('Freeplay song list for $mod is invalid.\r\n$e');
 				}
@@ -231,6 +232,7 @@ class FreeplayState extends MusicBeatState
 				break;
 			}
 		}
+		if (songs[curSelected].difficulties == null || songs[curSelected].difficulties.length == 0) songs[curSelected].difficulties = ["normal"];
 		curDifficulty = Std.int(Settings.engineSettings.data.lastSelectedSongDifficulty % songs[curSelected].difficulties.length);
 		changeSelection();
 		changeDiff();

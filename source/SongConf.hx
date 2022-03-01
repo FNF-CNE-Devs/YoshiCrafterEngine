@@ -1,3 +1,4 @@
+import lime.utils.Assets;
 import mod_support_stuff.*;
 import haxe.Json;
 
@@ -34,11 +35,12 @@ class SongConf {
 
 
 
-        var songConfPath = '${Paths.modsPath}/$mod/song_conf';
-        if (FileSystem.exists('$songConfPath.json')) {
+        // var songConfPath = '${Paths.modsPath}/$mod/song_conf';
+        var songConfPath = Paths.getPath('song_conf', TEXT, 'mods/$mod');
+        if (Assets.exists('$songConfPath.json')) {
             var json:SongConfJson = null;
             try {
-                json = Json.parse(Paths.getTextOutsideAssets('${Paths.modsPath}/$mod/song_conf.json'));
+                json = Json.parse(Assets.getText('$songConfPath.json'));
             } catch(e) {
                 PlayState.trace(Std.string(e));
             }
@@ -68,7 +70,7 @@ class SongConf {
             }
         } else {
             // classic script method
-            var interp = Script.create(songConfPath);
+            var interp = Script.create('${Paths.modsPath}/$mod/song_conf');
             if (interp != null) {
                 interp.setVariable("song", song.toLowerCase().trim());
                 interp.setVariable("difficulty", PlayState.storyDifficulty);

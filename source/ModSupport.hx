@@ -167,13 +167,15 @@ class ModSupport {
             
 
             var json:ModConfig = null;
-            if (FileSystem.exists('$mFolder/$mod/config.json')) {
+            var path = Paths.getPath('config.json', TEXT, libName);
+            if (Assets.exists(path)) {
                 try {
-                    json = Json.parse(Paths.getTextOutsideAssets('$mFolder/$mod/config.json'));
+                    json = Json.parse(Assets.getText(path));
                 } catch(e) {
                     for (e in ('Failed to parse mod config for $mod.').split('\n')) PlayState.log.push(e);
                 }
             }
+                
             if (json == null) json = {
                 name: null,
                 description: null,

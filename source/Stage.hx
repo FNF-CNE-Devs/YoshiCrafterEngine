@@ -1,5 +1,6 @@
 package;
 
+import lime.utils.Assets;
 import dev_toolbox.stage_editor.FlxStageSprite;
 import flixel.math.FlxPoint;
 import haxe.io.Path;
@@ -90,7 +91,7 @@ class Stage {
 		}
 		var json:StageJSON = null;
 		try {
-			json = Json.parse(Paths.getTextOutsideAssets('${Paths.modsPath}/${splitPath[0]}/stages/${Path.withoutExtension(splitPath[1])}.json'));
+			json = Json.parse(Assets.getText(Paths.stage(Path.withoutExtension(splitPath[1]), 'mods/$mod')));
 		} catch(e) {
 			PlayState.trace('Failed to parse JSON data at $path in $mod : $e');
 		}
@@ -196,7 +197,8 @@ class Stage {
 
 		sprite.spritePath = s.src;
 		if (s.src != null) {
-			var sparrowAtlas = Paths.getSparrowAtlas_Custom('${Paths.modsPath}/${mod}/images/${s.src}');
+			var sparrowAtlas = Paths.getSparrowAtlas(s.src, 'mods/$mod');
+			// var sparrowAtlas = Paths.getSparrowAtlas_Custom('${Paths.modsPath}/${mod}/images/${s.src}');
 			if (sparrowAtlas != null) {
 				sprite.frames = sparrowAtlas;
 
@@ -244,13 +246,24 @@ class Stage {
 
 		sprite.spritePath = s.src;
 		if (s.src != null) {
-			var bitmap = Paths.getBitmapOutsideAssets('${Paths.modsPath}/${mod}/images/${s.src}.png');
-			if (bitmap != null) sprite.loadGraphic(bitmap);
+			var bitmap = Paths.image(s.src, 'mods/$mod');
+			// var bitmap = Paths.getBitmapOutsideAssets('${Paths.modsPath}/${mod}/images/${s.src}.png');
+			if (Assets.exists(bitmap)) sprite.loadGraphic(bitmap);
 		}
 		if (s.scale != null) {
 			sprite.scale.set(s.scale, s.scale);
 			sprite.updateHitbox();
 		}
 		return sprite;
+	}
+
+	public function destroy() {
+		for(s in sprites) {
+			s.destroy();
+			PlayState.current.remove(s);
+		}
+		sprites = [];
+		onBeatAnimSprites = [];
+		onBeatForceAnimSprites = [];
 	}
 }
