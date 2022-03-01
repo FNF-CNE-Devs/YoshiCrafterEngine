@@ -12,6 +12,7 @@ class HealthIcon extends FlxSprite
 	 * Used for FreeplayState! If you use it elsewhere, prob gonna annoying
 	 */
 	public var sprTracker:FlxSprite;
+	public var isPlayer:Bool;
 	public var frameIndexes(default, set):Array<Array<Int>> = [[20, 0], [0, 1]];
 	private function set_frameIndexes(f:Array<Array<Int>>):Array<Array<Int>> {
 		frameIndexes = f;
@@ -31,7 +32,7 @@ class HealthIcon extends FlxSprite
 	public function new(char:String = 'bf', isPlayer:Bool = false, ?mod:String)
 	{
 		super();
-		
+		this.isPlayer = isPlayer;
 		// if (char.indexOf(":") == -1 && mod != null) {
 		// 	if (FileSystem.exists(Paths.modsPath + '/$mod/characters/$char/icon.png'))
 		// 		char = '$mod:$char';
@@ -50,26 +51,20 @@ class HealthIcon extends FlxSprite
 		antialiasing = true;
 		scrollFactor.set();
 
-		var character = CoolUtil.getCharacterFullString(char, mod);
+		changeCharacter(char, mod);
+
+		
 		// if (HealthIcon.redirects[character] != null) {
 		// 	character = HealthIcon.redirects[character];
 		// }
 		
-		var cBF:String = Settings.engineSettings.data.customBFSkin;
-		if (PlayState.current != null) cBF = PlayState.current.engineSettings.customBFSkin;
-		var cGF:String = Settings.engineSettings.data.customGFSkin;
-		if (PlayState.current != null) cGF = PlayState.current.engineSettings.customGFSkin;
+		// var cBF:String = Settings.engineSettings.data.customBFSkin;
+		// if (PlayState.current != null) cBF = PlayState.current.engineSettings.customBFSkin;
+		// var cGF:String = Settings.engineSettings.data.customGFSkin;
+		// if (PlayState.current != null) cGF = PlayState.current.engineSettings.customGFSkin;
 		
-		var path = Paths.getCharacterFolderPath(character) + "/icon.png";
-		loadGraphic(FileSystem.exists(path) ? Paths.getBitmapOutsideAssets(path) : Paths.getBitmapOutsideAssets(Paths.modsPath + "/Friday Night Funkin'/characters/unknown/icon.png"), true, 150, 150);
-		// if ()
-		animation.add('char', [for (i in 0...frames.frames.length) i], 0, false, isPlayer);
-		animation.play('char');
-
-		if (frames.frames.length > 2) {
-			// winning icon pog
-			frameIndexes = [[80, 2], [20, 0], [0, 1]];
-		}
+		// loadGraphic(FileSystem.exists(path) ? Paths.getBitmapOutsideAssets(path) : Paths.getBitmapOutsideAssets(Paths.modsPath + "/Friday Night Funkin'/characters/unknown/icon.png"), true, 150, 150);
+		
 	}
 
 	override function update(elapsed:Float)
@@ -78,5 +73,20 @@ class HealthIcon extends FlxSprite
 
 		if (sprTracker != null)
 			setPosition(sprTracker.x + sprTracker.width + 10, sprTracker.y - 30);
+	}
+
+	public function changeCharacter(char:String, mod:String) {
+		var character = CoolUtil.getCharacterFull(char, mod);
+		var tex = Paths.getCharacterIcon(character[1], 'mods/${character[0]}');
+		loadGraphic(tex, true, 150, 150);
+		if (frames == null)
+			loadGraphic(Paths.image('icons/face', 'shared'), true, 150, 150);
+		animation.add('char', [for (i in 0...frames.frames.length) i], 0, false, isPlayer);
+		animation.play('char');
+
+		if (frames.frames.length > 2) {
+			// winning icon pog
+			frameIndexes = [[80, 2], [20, 0], [0, 1]];
+		}
 	}
 }

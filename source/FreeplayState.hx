@@ -476,7 +476,7 @@ class FreeplayState extends MusicBeatState
 				// 	Assets.cache.audio.remove(k);
 				// }
 				
-				openfl.utils.Assets.cache.clear("assets");
+				// openfl.utils.Assets.cache.clear("assets");
 
 			}
 			FlxG.switchState(new MainMenuState());

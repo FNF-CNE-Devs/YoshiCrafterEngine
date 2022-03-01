@@ -71,15 +71,31 @@ class Paths
 		if (currentLevel != null)
 		{
 			var levelPath = getLibraryPathForce(file, currentLevel);
+			
 			if (OpenFlAssets.exists(levelPath, type))
 				return levelPath;
 
 			levelPath = getLibraryPathForce(file, "shared");
+	
 			if (OpenFlAssets.exists(levelPath, type))
 				return levelPath;
 		}
 
 		return getPreloadPath(file);
+	}
+
+	public static function clearModCache() {
+		if (!Settings.engineSettings.data.memoryOptimization) return;
+		Assets.cache.clear('mods/');
+	}
+	public static function clearOtherModCache(currentMod:String) {
+		if (!Settings.engineSettings.data.memoryOptimization) return;
+		for (k=>m in ModSupport.modConfig) {
+			trace(k);
+			if (k.toLowerCase() != currentMod.toLowerCase()) {
+				Assets.cache.clear('mods/${k.toLowerCase()}');
+			}
+		}
 	}
 
 	static public function getLibraryPath(file:String, library = "preload")
@@ -89,7 +105,10 @@ class Paths
 
 	inline static function getLibraryPathForce(file:String, library:String)
 	{
-		return '$library:assets/$library/$file';
+		if (library.startsWith("mods/"))
+			return '$library:assets/$library/$file'.toLowerCase();
+		else
+			return '$library:assets/$library/$file';
 	}
 
 	inline static function getPreloadPath(file:String)
@@ -149,20 +168,20 @@ class Paths
 	}
 	inline static public function getInstPath(song:String, mod:String, ?difficulty:String = "")
 	{
-		var inst = 'mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/Inst.ogg';
-		if (Assets.exists('mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/Inst-$difficulty.ogg')) {
-			inst = 'mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/Inst-$difficulty.ogg';
+		var inst = 'mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/inst.ogg';
+		if (Assets.exists('mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/inst-$difficulty.ogg')) {
+			inst = 'mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/inst-$difficulty.ogg';
 		}
-		return inst;
+		return inst.toLowerCase();
 	}
 
 	inline static public function modVoices(song:String, mod:String, ?difficulty:String = "")
 	{
-		var voices = 'mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/Voices.ogg';
-		if (Assets.exists('mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/Voices-$difficulty.ogg')) {
-			voices = 'mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/Voices-$difficulty.ogg';
+		var voices = 'mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/voices.ogg';
+		if (Assets.exists('mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/voices-$difficulty.ogg')) {
+			voices = 'mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/voices-$difficulty.ogg';
 		}
-		return voices;
+		return voices.toLowerCase();
 	}
 
 	inline static public function stageSound(file:String)
@@ -192,11 +211,11 @@ class Paths
 		return getPath('images/$key.png', IMAGE, library);
 	}
 
-	inline static public function stageImage(key:String)
-	{
-		var p = ModSupport.song_stage_path;
-		return getBitmapOutsideAssets('$p/$key');
-	}
+	// inline static public function stageImage(key:String)
+	// {
+	// 	var p = ModSupport.song_stage_path;
+	// 	return getBitmapOutsideAssets('$p/$key');
+	// }
 
 	inline static public function font(key:String)
 	{
@@ -441,9 +460,9 @@ class Paths
 		return (FileSystem.exists('${Paths.modsPath}/$mod/characters/$character/spritesheet.png') && (FileSystem.exists('${Paths.modsPath}/$mod/characters/$character/spritesheet.xml') || FileSystem.exists('${Paths.modsPath}/$mod/characters/$character/spritesheet.json')));
 	}
 
-	inline static public function getCharacterIcon(key:String)
+	inline static public function getCharacterIcon(key:String, library:String)
 	{
-		return getPath('icons/$key.png', IMAGE, "characters");
+		return getPath('characters/$key/icon.png', IMAGE, library);
 	}
 
 	// inline static public function getCharacterPacker(key:String)

@@ -84,7 +84,8 @@ class CreditsState extends MusicBeatState {
                         var icon:FlxSprite = new FlxSprite(modMakerAlphabet.x - 100, modMakerAlphabet.y + (modMakerAlphabet.height / 2) - (125 / 2));
                         var iconPath = modMaker.icon;
                         if (iconPath != null) {
-                            var tex = Paths.getBitmapOutsideAssets('$mFolder/$mod/images/$iconPath.png');
+                            // var tex = Paths.getBitmapOutsideAssets('$mFolder/$mod/images/$iconPath.png');
+                            var tex = Paths.image(iconPath, 'mods/$mod');
                             if (tex != null) {
                                 icon.loadGraphic(tex);
                                 // icon.x -= 110;

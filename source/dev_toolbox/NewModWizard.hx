@@ -62,7 +62,7 @@ class NewModWizard extends MusicBeatState {
         tab.add(mod_description);
 
 		var label = new FlxUIText(10, mod_description.y + mod_description.height + 10, 620, "Titlebar Name");
-        var titlebarName = new FlxUIInputText(10, label.y + label.height, 500, "Friday Night Funkin - Mod Name");
+        var titlebarName = new FlxUIInputText(10, label.y + label.height, 500, "Friday Night Funkin' - Mod Name");
         tab.add(label);
         tab.add(titlebarName);
 

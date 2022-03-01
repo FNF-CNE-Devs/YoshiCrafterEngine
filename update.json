@@ -13,7 +13,8 @@
         "- New GUI Update!",
         "- i forgor :skull:",
         "- Psych Engine events support (uses onPsychEvent(name, value1, value2) in scripts)",
-        "- Centered strums (can be disabled in scripts)"
+        "- Centered strums (can be disabled in scripts)",
+        "- Character unknown animations are no longer spammed."
     ],
     "version" : [1,6,0],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"

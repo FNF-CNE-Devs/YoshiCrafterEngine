@@ -126,7 +126,7 @@ class ModSupport {
                 }
                 assets.push({
                     type: type,
-                    id: ('assets/$libraryName/$path$f'),
+                    id: ('assets/$libraryName/$path$f').toLowerCase(), // for case sensitive shit & correct linux support
                     path: '$path$f',
                     size: FileSystem.stat('$rootPath$path$f').size
                 });
@@ -148,20 +148,21 @@ class ModSupport {
             }
 
             // imma do assets lol
+            var libName = 'mods/$mod'.toLowerCase();
             var assets:AssetManifest = new AssetManifest();
-            assets.name = 'mods/$mod';
+            assets.name = libName;// for case sensitive shit & correct linux support
             assets.libraryType = null;
             assets.version = 2;
             assets.libraryArgs = [];
             assets.rootPath = '${Paths.modsPath}/$mod/';
             assets.assets = [];
-            getAssetFiles(assets.assets, '${Paths.modsPath}/$mod/', '', 'mods/$mod');
+            getAssetFiles(assets.assets, '${Paths.modsPath}/$mod/', '', libName);
             // this is going to fucking lag the game lmfao, just checking if everything works
             // trace(assets.assets);
 
-            if (openfl.utils.Assets.hasLibrary('mods/$mod'))
-                openfl.utils.Assets.unloadLibrary('mods/$mod');
-            openfl.utils.Assets.registerLibrary('mods/$mod', AssetLibrary.fromManifest(assets));
+            if (openfl.utils.Assets.hasLibrary(libName))
+                openfl.utils.Assets.unloadLibrary(libName);
+            openfl.utils.Assets.registerLibrary(libName, AssetLibrary.fromManifest(assets));
 
             
 
