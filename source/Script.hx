@@ -126,7 +126,7 @@ class ScriptPack {
         for (script in scripts) {
             var returnVal = script.executeFunc(funcName, a);
             if (returnVal != defaultReturnVal && defaultReturnVal != null) {
-                #if messTest trace("found"); #end
+                trace("found");
                 return returnVal;
             }
         }

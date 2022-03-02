@@ -1743,7 +1743,7 @@ class PlayState extends MusicBeatState
 			daBeats += 1;
 		}
 
-		for (e in SONG.events) {
+		for (e in _SONG.events) {
 			events.push({name: e.name, time: e.time, parameters: e.parameters});
 		}
 
@@ -2544,8 +2544,11 @@ class PlayState extends MusicBeatState
 
 		for(e in events) {
 			if (e.time < Conductor.songPosition) {
-				// please dont kill me shadowmario literally everyone asked for it
-				scripts.executeFunc(e.name, e.parameters);
+				trace('doing event');
+				trace(e);
+				var params:Array<Any> = [];
+				for(p in e.parameters) params.push(p);
+				scripts.executeFunc(e.name, params);
 				events.remove(e);
 			}
 		}
