@@ -409,7 +409,7 @@ class Paths
 		var jsonPath = file('characters/$key/spritesheet.json', library);
 		if (Assets.exists(jsonPath)) {
 			// json (packer)
-			return FlxAtlasFrames.fromSpriteSheetPacker(getPath('characters/$key/spritesheet.png', IMAGE, library), jsonPath);
+			return FlxAtlasFrames.fromTexturePackerJson(getPath('characters/$key/spritesheet.png', IMAGE, library), jsonPath);
 		} else {
 			// xml (sparrow)
 			return FlxAtlasFrames.fromSparrow(getPath('characters/$key/spritesheet.png', IMAGE, library), file('characters/$key/spritesheet.xml', library));
