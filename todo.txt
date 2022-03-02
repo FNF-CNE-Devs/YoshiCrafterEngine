@@ -10,14 +10,19 @@
 [x] MP4 Cutscene support (https://github.com/brightfyregit/Friday-Night-Funkin-Mp4-Video-Support)
 [x] Tap to Begin for Android devices
 [x] Check if song_conf.hx exists for any mods
-[ ] Make Chart Editor better
+[x] Make Chart Editor better
+[x] Custom Shaders without source code (VERY VERY IMPORTANT AAAAAAAAAAAAAAAAAAAAAAAAAAA)
+[x] Better Optimization
+[ ] Character Packer
+[x] Yoshi Engine events lol
+
+NEXT UPDATE
+[ ] Custom hscript states
+[ ] Custom Menus
+[ ] Custom Discord RPC
+
+ADDITIONAL
+[ ] Camera movement
 [ ] Fish Engine easter egg lol
 [ ] Dialogue (maybe????)
-[x] Custom Shaders without source code (VERY VERY IMPORTANT AAAAAAAAAAAAAAAAAAAAAAAAAAA)
-[ ] Camera movement
-[ ] Custom hscript states
-[-] Better Optimization
 [-] Better Menus
-[ ] Custom Discord RPC
-[ ] Character Packer
-[ ] Yoshi Engine events lol

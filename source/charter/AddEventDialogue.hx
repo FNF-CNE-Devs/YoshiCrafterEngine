@@ -17,14 +17,21 @@ class AddEventDialogue extends MusicBeatSubstate {
     var funcParametersBasePos:Float = 0;
     var eventParams:Array<FlxUIInputText> = [];
     var mainWindow:FlxUI;
+    var createParams:Array<String> = null;
+    var createName:String = null;
+	
+	public static var lastName:String = "your_func";
+	public static var lastParameters:Array<String> = [];
 
     var windowName:String = "";
     var okButtonText:String = "";
-    public override function new(callback:String->Array<String>->Void, windowName:String = "Add an event", okButtonText:String = "Create Event") {
+    public override function new(callback:String->Array<String>->Void, windowName:String = "Add an event", okButtonText:String = "Create Event", params:Array<String> = null, name:String = null) {
         super();
         this.callback = callback;
         this.windowName = windowName;
         this.okButtonText = okButtonText;
+		this.createName = name == null ? lastName : name;
+		this.createParams = params == null ? lastParameters : params;
     }
     public override function create() {
         super.create();
@@ -44,7 +51,7 @@ class AddEventDialogue extends MusicBeatSubstate {
 
         var allowedChars = "0123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toLowerCase(); // lazy af lmfaooo
         var functionNameLabel = new FlxUIText(10, 10, 380, "Function Name (Must only contain characters such as A-Z, 0-9 and _)");
-        var functionNameBox = new FlxUIInputText(10, functionNameLabel.y + functionNameLabel.height, 380, "your_func");
+        var functionNameBox = new FlxUIInputText(10, functionNameLabel.y + functionNameLabel.height, 380, createName);
         var functionParamsLabel = new FlxUIText(10, functionNameBox.y + functionNameBox.height + 10, 380, "Function Parameters");
 
         createButton = new FlxUIButton(200, 600 - 50, okButtonText, function() {
@@ -55,7 +62,10 @@ class AddEventDialogue extends MusicBeatSubstate {
                     return;
                 }
             }
-            callback(functionNameBox.text, [for(p in eventParams) p.text.trim()]);
+			var params = [for (p in eventParams) p.text.trim()];
+			lastName = funcName;
+			lastParameters = params;
+            callback(functionNameBox.text, params);
             close();
         });
         createButton.x -= createButton.width / 2;
@@ -94,7 +104,7 @@ class AddEventDialogue extends MusicBeatSubstate {
         closeButton.label.color = 0xFFFFFFFF;
         add(closeButton);
 
-        setParameters([""]);
+        setParameters(createParams);
     }
 
     public function setParameters(params:Array<String>) {

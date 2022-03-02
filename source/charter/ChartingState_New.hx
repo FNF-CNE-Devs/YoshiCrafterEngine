@@ -1,5 +1,6 @@
 package charter;
 
+import charter.CharterNote;
 import flixel.addons.ui.BorderDef;
 import EngineSettings.Settings;
 import flixel.input.keyboard.FlxKey;
@@ -87,6 +88,8 @@ class ChartingState_New extends MusicBeatState
 	var dummyArrow:FlxSprite;
 
 	var curRenderedNotes:FlxTypedGroup<CharterNote>;
+	var curRenderedEvents:FlxTypedGroup<CharterNote>;
+	var curRenderedEventsNames:Map<CharterNote, FlxUIText> = [];
 	var curRenderedSustains:FlxTypedGroup<FlxSprite>;
 
 	var gridBG:FlxSprite;
@@ -188,6 +191,8 @@ class ChartingState_New extends MusicBeatState
 		// add(gridBlackLine);
 
 		curRenderedNotes = new FlxTypedGroup<CharterNote>();
+		curRenderedEvents = new FlxTypedGroup<CharterNote>();
+		curRenderedEventsNames = [];
 		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
 
 		FlxG.mouse.visible = true;
@@ -841,6 +846,7 @@ class ChartingState_New extends MusicBeatState
 	}
 
 	var lastAddedNotes:Array<Dynamic> = [];
+	var renderedEvents:Array<CharterNote> = [];
 	var typingMode_char:Int = 0;
 	var typingMode_note:Int = 0;
 	override function update(elapsed:Float)
@@ -951,6 +957,29 @@ class ChartingState_New extends MusicBeatState
 						}
 					});
 				}
+				else if (FlxG.mouse.overlaps(curRenderedEvents)) {
+					for (note in curRenderedEvents.members) {
+						if (FlxG.mouse.overlaps(note))
+						{
+							for (n in _song.events) {
+								if (n.time == note.strumTime) {
+									trace("event found");
+									openSubState(new charter.AddEventDialogue(function(funcName:String, params:Array<String>) {
+										n.name = funcName;
+										n.parameters = params;
+										var label = curRenderedEventsNames[note];
+										if (label != null) {
+											label.text = '$funcName(' + [for(e in params) '"' + e + '"'].join(", ") + ')';
+											label.x = -GRID_SIZE - 10 - label.width;
+										}
+									}, "Edit event", "Apply changes", n.parameters, n.name));
+									break;
+								}
+							}
+							break;
+						}
+					}
+				}
 				else
 				{
 					var pos = FlxG.mouse.getWorldPosition(FlxG.camera);
@@ -962,7 +991,32 @@ class ChartingState_New extends MusicBeatState
 				}
 			}
 
-			
+			if (FlxG.mouse.justPressedRight && !FlxG.mouse.overlaps(UI_box)) {
+				if (FlxG.mouse.overlaps(curRenderedEvents)) {
+					for (note in curRenderedEvents.members) {
+						if (FlxG.mouse.overlaps(note))
+						{
+							for (n in _song.events) {
+								if (n.time == note.strumTime) {
+									trace("evil event found");
+									note.destroy();
+									remove(note);
+									curRenderedEvents.remove(note, true);
+									_song.events.remove(n);
+									if (curRenderedEventsNames[note] != null) {
+										var label = curRenderedEventsNames[note];
+										label.destroy();
+										remove(label);
+										curRenderedEventsNames[note] = null;
+									}
+									break;
+								}
+							}
+							break;
+						}
+					}
+				}
+			}
 
 			if (!typingShit.hasFocus)
 			{
@@ -1351,6 +1405,28 @@ class ChartingState_New extends MusicBeatState
 			curRenderedSustains.remove(curRenderedSustains.members[0], true);
 		}
 
+
+		while (curRenderedEvents.members.length > 0)
+		{
+			var e = curRenderedEvents.members[0];
+			if (e != null) {
+				e.destroy();
+				remove(e);
+			}
+			curRenderedEvents.remove(e, true);	
+		}
+		curRenderedEvents.clear();
+
+
+		for (m in curRenderedEventsNames)
+		{
+			if (m != null) {
+				m.destroy();
+				remove(m);	
+			}
+		}
+		curRenderedEventsNames = [];
+
 		var sectionInfo:Array<Dynamic> = _song.notes[curSection].sectionNotes;
 
 		if (_song.notes[curSection].changeBPM && _song.notes[curSection].bpm > 0)
@@ -1408,6 +1484,25 @@ class ChartingState_New extends MusicBeatState
 				var sustainVis:FlxSprite = new FlxSprite(note.x + (GRID_SIZE / 2),
 					note.y + GRID_SIZE).makeGraphic(8, Math.floor(FlxMath.remapToRange(daSus, 0, Conductor.stepCrochet * 16, 0, gridBG.height)));
 				curRenderedSustains.add(sustainVis);
+			}
+		}
+		for (note in _song.events) {
+			if (note.time >= curSection * (Conductor.crochet * 4) &&
+			    note.time < (curSection + 1) * (Conductor.crochet * 4)) {
+				// adds an event
+				trace("event detected!!");
+				var n = new CharterNote(note.time, -2, null, false, true);
+				n.setGraphicSize(GRID_SIZE, GRID_SIZE);
+				n.updateHitbox();
+				n.x = -GRID_SIZE;
+				n.y = Math.floor(getYfromStrum((note.time - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
+				curRenderedEvents.add(n);
+				add(n);
+				var text = new FlxUIText(-GRID_SIZE - 10, n.y + (n.height / 2), note.name + '(' + [for(e in note.parameters) '"' + e + '"'].join(", ") + ')');
+				text.x -= text.width;
+				text.y -= (text.height / 2);
+				add(text);
+				curRenderedEventsNames[n] = text;
 			}
 		}
 	}

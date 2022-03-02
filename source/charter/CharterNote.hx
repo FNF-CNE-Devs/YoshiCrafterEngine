@@ -86,6 +86,7 @@ class CharterNote extends FlxSprite
 				// PSYCH ENGINE EVENT NOTE!!!!!!!! (lol why are ppl asking this)
                 frames = Paths.getSparrowAtlas('events', 'shared');
                 animation.addByPrefix('PSYCH EVENT!!!!!', 'psych event');
+                animation.addByPrefix('YOSHI ENGINE EVENT!!!!!!', 'event');
                 antialiasing = true;
 
 			default:
@@ -149,7 +150,10 @@ class CharterNote extends FlxSprite
         createNote();
 		
 		if (noteType < 0) {
-			animation.play("PSYCH EVENT!!!!!");
+			if (noteData == -1)
+				animation.play("PSYCH EVENT!!!!!");
+			else
+				animation.play("YOSHI ENGINE EVENT!!!!!!");
 		} else {
 			switch (noteNumberScheme[noteData % noteNumberScheme.length])
 			{
