@@ -549,7 +549,7 @@ class PlayState extends MusicBeatState
 
 		// GAME ICON
 		var modFolder = Paths.modsPath;
-		trace('$modFolder/$songMod/icon.ico');
+		//trace('$modFolder/$songMod/icon.ico');
 		/*
 		#if desktop
 		if (FileSystem.exists('$modFolder/$songMod/icon.ico')) {
@@ -566,8 +566,10 @@ class PlayState extends MusicBeatState
 		} else
 		#end
 		*/
-		if (FileSystem.exists('$modFolder/$songMod/icon.png')) {
-			lime.app.Application.current.window.setIcon(Image.fromFile('$modFolder/$songMod/icon.png'));
+		var iconPath = Paths.file('icon.png', IMAGE, 'mods/$songMod');
+		trace(iconPath);
+		if (Assets.exists(iconPath)) {
+			lime.app.Application.current.window.setIcon(Assets.getImage(iconPath));
 			iconChanged = true;
 		}
 		

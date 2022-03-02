@@ -1,5 +1,6 @@
 package;
 
+import flixel.addons.display.shapes.FlxShape;
 import haxe.io.Bytes;
 import lime.ui.FileDialogType;
 import lime.ui.FileDialog;
@@ -26,7 +27,96 @@ import flixel.util.FlxColor;
 import lime.utils.Assets;
 import openfl.Lib;
 
-class OptionsNotesColors extends MusicBeatState
+class OptionsNotesColors extends MusicBeatState {
+	var selectionLevel:Int = 0;
+	
+	var redChannel:Array<FlxSprite> = [];
+	var greenChannel:Array<FlxSprite> = [];
+	var blueChannel:Array<FlxSprite> = [];
+	public override function new() {
+		super();
+		CoolUtil.addWhiteBG(this).color = 0xFF7EACCD;
+		var labels = ["R", "G", "B"];
+		for (i in 0...3) {
+			var label = new Alphabet(0, 300 + (75 * i), labels[i], true, false);
+			//label.x = 
+			add(label);
+			
+			var obj:Array<FlxSprite> = switch(i) {
+				case 0: redChannel;
+				case 1: greenChannel;
+				case 2: blueChannel;
+				default: redChannel;
+			}
+			
+			var offset:Float = 0;
+			for (channel in 0...3) {
+				var number = new FlxSprite((FlxG.width / 2) + (40 * channel), 300 + (75 * i) + 2);
+				number.frames = Paths.getSparrowAtlas("alphabet", "preload");
+				for (num in 0...10) {
+					number.animation.addByPrefix(Std.string(num), Std.string(num) + "-", 1, true);
+				}
+				number.animation.play("0");
+				add(number);
+				obj.push(number);
+				offset = number.x - (FlxG.width / 2);
+			}
+			label.x = (FlxG.width / 2) - offset - label.width;
+		}
+		updateChannels(FlxColor.fromRGB(123, 87, 230));
+	}
+	
+	public function updateChannels(color:FlxColor) {
+		var strRed = Std.string(color.red);
+		while (strRed.length < 3) strRed = " " + strRed;
+		var strGreen = Std.string(color.green);
+		while (strGreen.length < 3) strGreen = " " + strGreen;
+		var strBlue = Std.string(color.blue);
+		while (strBlue.length < 3) strBlue = " " + strBlue;
+		
+		for (channel in 0...3) {
+			var channelArray:Array<FlxSprite> = switch(channel) {
+				case 0: redChannel;
+				case 1: greenChannel;
+				case 2: blueChannel;
+				case _: redChannel;
+			};
+			var string:String = switch(channel) {
+				case 0: strRed;
+				case 1: strGreen;
+				case 2: strBlue;
+				case _: strRed;
+			};
+			for (i in 0...string.length) {
+				var num = string.charAt(i);
+				if (num == " ") {
+					if (i == string.length - 1) {
+						channelArray[i].visible = true;
+						channelArray[i].animation.play("0");
+					}
+					else
+						channelArray[i].visible = false;
+				} else {
+					channelArray[i].visible = true;
+					channelArray[i].animation.play(num);
+				}
+			}	
+		}
+		
+	}
+	
+	public override function update(elapsed:Float) {
+		super.update(elapsed);
+		if (controls.BACK) {
+			selectionLevel--;
+			switch (selectionLevel) {
+				case -1:
+					FlxG.switchState(new OptionsMenu(0, 0));
+			}
+		}
+	}
+}
+class OptionsNotesColors_Old extends MusicBeatState
 {
 	var selector:FlxText;
 	var arrowSelected:Int = 0;
@@ -56,7 +146,7 @@ class OptionsNotesColors extends MusicBeatState
 		menuBG.screenCenter();
 		menuBG.antialiasing = true;
 		add(menuBG);
-
+		
 		var legend:FlxText = new FlxText(5, FlxG.height - 52, 0,
 			"[Tab] Select Arrow | [▼][▲] Select RGB channel | [◄][►] Change selected RGB value (Hold [SHIFT] for precision)", 16);
 		legend.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
