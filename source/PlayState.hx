@@ -1519,7 +1519,8 @@ class PlayState extends MusicBeatState
 			var calculateNote = function() {
 				var note:Note = script.getVariable("note");
 				if (note.isSustainNote) {
-					note.canBeHit = (note.strumTime - (Conductor.stepCrochet * 0.6) < Conductor.songPosition) && (note.strumTime + (Conductor.stepCrochet) > Conductor.songPosition);
+					// note.canBeHit = (note.strumTime - (Conductor.stepCrochet * 0.6) < Conductor.songPosition) && (note.strumTime + (Conductor.stepCrochet) > Conductor.songPosition);
+					note.canBeHit = (note.strumTime + note.maxEarlyDiff > Conductor.songPosition && note.strumTime - Conductor.stepCrochet < Conductor.songPosition);
 				} else {
 					note.canBeHit = (note.strumTime - note.maxEarlyDiff < Conductor.songPosition && note.strumTime + note.maxLateDiff > Conductor.songPosition);
 				}
