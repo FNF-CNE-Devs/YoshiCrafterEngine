@@ -179,7 +179,7 @@ class CharacterCreator extends MusicBeatSubstate {
                 flipX: false
             };
             File.saveContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/Character.json', Json.stringify(json, "\t"));
-            File.copy(char_spritesheet + ".xml", '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/spritesheet.' + (usesJson ? "json" : "xml"));
+            File.copy(char_spritesheet + (usesJson ? ".json" : ".xml"), '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/spritesheet.' + (usesJson ? "json" : "xml"));
             File.copy(char_spritesheet + ".png", '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/spritesheet.png');
             var characterHX = 'function create() {\r\n\tcharacter.frames = Paths.getCharacter(character.curCharacter);\r\n\tcharacter.loadJSON(true);\r\n}';
             File.saveContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/Character.hx', characterHX);

@@ -406,13 +406,13 @@ class Paths
 
 	inline static public function getCharacter(key:String, library:String)
 	{
-		var jsonPath = file('characters/$key/spritesheet.json', library);
+		var jsonPath = file('characters/$key/spritesheet.json', TEXT, library);
 		if (Assets.exists(jsonPath)) {
 			// json (packer)
 			return FlxAtlasFrames.fromTexturePackerJson(getPath('characters/$key/spritesheet.png', IMAGE, library), jsonPath);
 		} else {
 			// xml (sparrow)
-			return FlxAtlasFrames.fromSparrow(getPath('characters/$key/spritesheet.png', IMAGE, library), file('characters/$key/spritesheet.xml', library));
+			return FlxAtlasFrames.fromSparrow(getPath('characters/$key/spritesheet.png', IMAGE, library), file('characters/$key/spritesheet.xml', TEXT, library));
 		}
 	}
 

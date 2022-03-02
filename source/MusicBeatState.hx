@@ -39,6 +39,7 @@ class MusicBeatState extends FlxUIState
 				} catch(e) {
 
 				}
+				ModSupport.reloadModsConfig();
 			}
 			Settings.engineSettings.flush();
 		}
