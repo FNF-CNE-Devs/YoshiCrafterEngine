@@ -1,3 +1,4 @@
+import linc.Linc;
 import mod_support_stuff.ModScript;
 import cpp.Reference;
 import cpp.Lib;
@@ -256,7 +257,7 @@ typedef LuaObject = {
     // var toLua
 }
 
-/*
+
 class LuaScript extends Script {
     public var state:llua.State;
     public var variables:Map<String, Dynamic> = [];
@@ -278,11 +279,7 @@ class LuaScript extends Script {
     }
 
 
-    function get(pointer:StatePointer):Int {
-        var text:String = Lua.tostring(state, -1); // ayyy
-        Lua.pushstring(state, "good");
-        return 0; // lua error code
-    }
+    
     
     public override function new() {
         super();
@@ -293,14 +290,18 @@ class LuaScript extends Script {
         Lua_helper.add_callback(state, "print", function(toPtr:Dynamic) {
             this.trace(Std.string(toPtr));
         });
-        // LuaL.newmetatable(state, "PlayState");
-        Lua.newtable(state);
-        var tablePos:Int = Lua.gettop(state);
-        Lua.pushvalue(state, tablePos); // to prevent table from being popped
-        Lua.setglobal(state, "PlayState");
 
-        Lua.pushcfunction(state, Callable.fromFunction(new cpp.Function(get)));
-        Lua.setfield(state, -2, "get");
+		function get(pointer):Int {
+			var text:String = Lua.tostring(state, -1); // ayyy
+			Lua.pushstring(state, "good");
+			return 0; // lua error code
+		}
+		
+        //Lua.pushcfunction(state, Callable.fromFunction(new cpp.Function(get)));
+		Lua_helper.add_callback(state, "__get", get);
+		LuaL.dostring(state, "function get(value)
+			__get(value);
+		end");
     }
 
     public override function loadFile(path:String) {
@@ -403,8 +404,8 @@ class LuaScript extends Script {
         return Convert.fromLua(state, Lua.gettop(state));
     }
 }
-*/
 
+/*
 class LuaScript extends Script {
     public var state:llua.State;
     public var variables:Map<String, Dynamic> = [];
@@ -692,4 +693,5 @@ class LuaScript extends Script {
         return Convert.fromLua(state, Lua.gettop(state));
     }
 }
+*/
 #end
