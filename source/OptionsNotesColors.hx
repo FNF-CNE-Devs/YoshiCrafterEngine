@@ -33,13 +33,57 @@ class OptionsNotesColors extends MusicBeatState {
 	var redChannel:Array<FlxSprite> = [];
 	var greenChannel:Array<FlxSprite> = [];
 	var blueChannel:Array<FlxSprite> = [];
+
+	var labels:Array<Alphabet> = [];
+
+	var selectedChannel:Int = 0;
+
+	// var selectedColor:FlxColor = 0xFFFF0000;
+	var arrowSelectorThingy:FlxSprite;
+
+	var colors:Array<FlxColor> = [
+		new FlxColor(Settings.engineSettings.data.arrowColor0),
+		new FlxColor(Settings.engineSettings.data.arrowColor1),
+		new FlxColor(Settings.engineSettings.data.arrowColor2),
+		new FlxColor(Settings.engineSettings.data.arrowColor3)
+	];
+	var arrowSprites:Array<FlxSprite> = [];
+	var selectedArrow:Int = 0;
+
 	public override function new() {
 		super();
+
 		CoolUtil.addWhiteBG(this).color = 0xFF7EACCD;
+
+
+		var arrowAnimsNames = ["purple0", "blue0", "green0", "red0"];
+		for (i in 0...4)
+		{
+			var arrow0:FlxSprite = new FlxSprite((FlxG.width / 2) + ((50 + (200 * (i - 2.25))) * 0.7), 75);
+			arrow0.frames = Paths.getSparrowAtlas("NOTE_assets_colored", "shared");
+			arrow0.animation.addByPrefix("arrow", arrowAnimsNames[i]);
+			arrow0.animation.play("arrow");
+			arrow0.shader = new ColoredNoteShader(colors[i].red, colors[i].green, colors[i].blue, false);
+			arrow0.antialiasing = true;
+			arrow0.setGraphicSize(Std.int(arrow0.width * 0.7));
+			arrowSprites.push(arrow0);
+		}
+		arrowSelectorThingy = new FlxSprite(arrowSprites[0].x + 10, arrowSprites[0].y + 10);
+		arrowSelectorThingy.loadGraphic(Paths.image("optionsArrowSelector", "shared"));
+		arrowSelectorThingy.antialiasing = true;
+		add(arrowSelectorThingy);
+		for (i in 0...arrowSprites.length)
+		{
+			add(arrowSprites[i]);
+		}
+
+
 		var labels = ["R", "G", "B"];
+		var lastLabelPos:Float = 0;
 		for (i in 0...3) {
-			var label = new Alphabet(0, 300 + (75 * i), labels[i], true, false);
+			var label = new Alphabet(0, 265 + (75 * i), labels[i], true, false);
 			//label.x = 
+			this.labels.push(label);
 			add(label);
 			
 			var obj:Array<FlxSprite> = switch(i) {
@@ -51,22 +95,32 @@ class OptionsNotesColors extends MusicBeatState {
 			
 			var offset:Float = 0;
 			for (channel in 0...3) {
-				var number = new FlxSprite((FlxG.width / 2) + (40 * channel), 300 + (75 * i) + 2);
+				var number = new FlxSprite((FlxG.width / 2) + (40 * channel), 265 + (75 * i) + 2);
 				number.frames = Paths.getSparrowAtlas("alphabet", "preload");
 				for (num in 0...10) {
-					number.animation.addByPrefix(Std.string(num), Std.string(num) + "-", 1, true);
+					number.animation.addByPrefix(Std.string(num), Std.string(num) + "-", 24, true);
 				}
 				number.animation.play("0");
+				number.antialiasing = true;
 				add(number);
 				obj.push(number);
 				offset = number.x - (FlxG.width / 2);
 			}
-			label.x = (FlxG.width / 2) - offset - label.width;
+			label.x = lastLabelPos = (FlxG.width / 2) - offset - label.width;
 		}
-		updateChannels(FlxColor.fromRGB(123, 87, 230));
+		var labels = ["Reset"];
+		for (i in 0...labels.length) {
+			var a = new Alphabet(0, 300 + (75 * (3 + i)), labels[i], true);
+			a.x = lastLabelPos;
+			this.labels.push(a);
+			add(a);
+		}
+		updateChannels();
 	}
 	
-	public function updateChannels(color:FlxColor) {
+	public function updateChannels(forceBump:Bool = false) {
+		var arrow = arrowSprites[selectedArrow];
+		var color = FlxColor.fromRGBFloat(cast(arrow.shader, ColoredNoteShader).r.value[0], cast(arrow.shader, ColoredNoteShader).g.value[0], cast(arrow.shader, ColoredNoteShader).b.value[0]);
 		var strRed = Std.string(color.red);
 		while (strRed.length < 3) strRed = " " + strRed;
 		var strGreen = Std.string(color.green);
@@ -92,11 +146,13 @@ class OptionsNotesColors extends MusicBeatState {
 				if (num == " ") {
 					if (i == string.length - 1) {
 						channelArray[i].visible = true;
+						if (channelArray[i].animation.curAnim.name != "0" || forceBump) channelArray[i].offset.y = 10;
 						channelArray[i].animation.play("0");
 					}
 					else
 						channelArray[i].visible = false;
 				} else {
+					if (channelArray[i].animation.curAnim.name != num || forceBump) channelArray[i].offset.y = 10;
 					channelArray[i].visible = true;
 					channelArray[i].animation.play(num);
 				}
@@ -105,6 +161,7 @@ class OptionsNotesColors extends MusicBeatState {
 		
 	}
 	
+	var changeAm:Float = 0;
 	public override function update(elapsed:Float) {
 		super.update(elapsed);
 		if (controls.BACK) {
@@ -114,8 +171,87 @@ class OptionsNotesColors extends MusicBeatState {
 					FlxG.switchState(new OptionsMenu(0, 0));
 			}
 		}
+		switch(selectionLevel) {
+			case 0:
+				if (controls.ACCEPT) {
+					selectionLevel++;
+				}
+				var oldSel = selectedArrow;
+				if (controls.RIGHT_P) selectedArrow++;
+				if (controls.LEFT_P) selectedArrow--;
+				if (selectedArrow < 0) selectedArrow = 3;
+				if (selectedArrow > 3) selectedArrow = 0;
+				if (oldSel != selectedArrow)
+					updateChannels(true);
+				for (channel=>e in [redChannel, greenChannel, blueChannel]) {
+					for (e in e) {
+						e.offset.x = FlxMath.lerp(e.offset.x, 0, 0.25 * 30 * elapsed);
+						e.alpha = FlxMath.lerp(e.alpha, 1, 0.25 * 30 * elapsed);
+					}
+				}
+				for (channel=>l in labels) {
+					
+					l.offset.x = FlxMath.lerp(l.offset.x, 0, 0.25 * 50 * elapsed);
+					l.alpha = FlxMath.lerp(l.alpha, 1, 0.25 * 50 * elapsed);
+				}
+			case 1:
+				if (controls.DOWN_P) selectedChannel++;
+				if (controls.UP_P) selectedChannel--;
+				if (selectedChannel < 0) selectedChannel = labels.length - 1;
+				if (selectedChannel >= labels.length) selectedChannel = 0;
+
+				var changevalue = elapsed * (FlxG.keys.pressed.SHIFT ? 75 : 30);
+				if (FlxG.keys.pressed.RIGHT) {
+					switch(selectedChannel) {
+						case 0:
+							cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).r.value = [CoolUtil.wrapFloat(cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).r.value[0] + (changevalue / 255), 0, 1)];
+						case 1:
+							cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).g.value = [CoolUtil.wrapFloat(cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).g.value[0] + (changevalue / 255), 0, 1)];
+						case 2:
+							cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).b.value = [CoolUtil.wrapFloat(cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).b.value[0] + (changevalue / 255), 0, 1)];
+					}
+				} else if (FlxG.keys.pressed.LEFT) {
+					switch(selectedChannel) {
+						case 0:
+							cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).r.value = [CoolUtil.wrapFloat(cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).r.value[0] - (changevalue / 255), 0, 1)];
+						case 1:
+							cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).g.value = [CoolUtil.wrapFloat(cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).g.value[0] - (changevalue / 255), 0, 1)];
+						case 2:
+							cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).b.value = [CoolUtil.wrapFloat(cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).b.value[0] - (changevalue / 255), 0, 1)];
+					}
+				}
+
+				for (channel=>e in [redChannel, greenChannel, blueChannel]) {
+					for (e in e) {
+						e.offset.x = FlxMath.lerp(e.offset.x, channel == selectedChannel ? -35 : 0, 0.25 * 30 * elapsed);
+						e.alpha = FlxMath.lerp(e.alpha, channel == selectedChannel ? 1 : 0.4, 0.25 * 30 * elapsed);
+					}
+				}
+				for (channel=>l in labels) {
+					
+					l.offset.x = FlxMath.lerp(l.offset.x, channel == selectedChannel ? -35 : 0, 0.25 * 50 * elapsed);
+					l.alpha = FlxMath.lerp(l.alpha, channel == selectedChannel ? 1 : 0.4, 0.25 * 50 * elapsed);
+				}
+		}
+
+		updateChannels();
+
+		for (channel=>e in [redChannel, greenChannel, blueChannel]) {
+			for (e in e) {
+				e.offset.y = FlxMath.lerp(e.offset.y, 0, 0.25 * 200 * elapsed);
+			}
+		}
+
+		arrowSelectorThingy.x = FlxMath.lerp(arrowSelectorThingy.x, arrowSprites[selectedArrow].x + 10, 0.25 * 120 * elapsed);
 	}
 }
+
+
+
+
+
+
+
 class OptionsNotesColors_Old extends MusicBeatState
 {
 	var selector:FlxText;
