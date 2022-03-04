@@ -34,7 +34,7 @@ class FNFOption extends Alphabet {
 	public override function update(elapsed:Float) {
 		super.update(elapsed);
 		if (checkbox != null) {
-			checkbox.scale.set(FlxMath.lerp(checkbox.scale.x, 0.6, CoolUtil.wrapFloat(0.25 * 30 * elapsed, 0, 1)), FlxMath.lerp(checkbox.scale.x, 0.6, CoolUtil.wrapFloat(1 * 30 * elapsed, 0, 1)));
+			checkbox.scale.set(FlxMath.lerp(checkbox.scale.x, 0.6, CoolUtil.wrapFloat(0.25 * 30 * elapsed, 0, 1)), FlxMath.lerp(checkbox.scale.y, 0.6, CoolUtil.wrapFloat(0.25 * 30 * elapsed, 0, 1)));
 		}
 	}
 
@@ -64,7 +64,7 @@ class FNFOption extends Alphabet {
 		if (checkbox != null) {
 			// checkbox.animation.play("check", true, !checked);
 			checkbox.animation.play(checked ? "checked" : "unchecked", true);
-			checkbox.scale.set(0.6 * 1.15, 0.15 * 1.15);
+			checkbox.scale.set(0.6 * 1.15, 0.6 * 1.15);
 		}
 	}
 

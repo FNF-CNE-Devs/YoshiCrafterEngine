@@ -59,19 +59,20 @@ class CreditsState extends MusicBeatState {
         var y = 0;
 
         var mods = FileSystem.readDirectory(mFolder);
+        mods.insert(0, "\\");
         for (mod in mods) {
-			var path:String = Paths.getPath('credits.json', TEXT, 'mods/$mod');
+			var path:String = Paths.getPath('credits.json', TEXT, mod == "\\" ? "preload" : 'mods/$mod');
             if (Assets.exists(path)) {
                 var json:JSONShit = null;
                 try {
-                    json = Json.parse(Assets.getText(Paths.getPath('credits.json', TEXT, 'mods/$mod')));
+                    json = Json.parse(Assets.getText(Paths.getPath('credits.json', TEXT, mod == "\\" ? "preload" : 'mods/$mod')));
                 } catch(e) {
-                    PlayState.log.push('Failed to parse credits json for $mod.\n$e');
+                    PlayState.trace('Failed to parse credits json for $mod.\n$e');
                 }
 
                 if (json != null) {
                     y++;
-                    var modTitle:Alphabet = new Alphabet(0, 125 * y, (mod == "../assets/") ? "Yoshi Engine" : ModSupport.getModName(mod), true, false);
+                    var modTitle:Alphabet = new Alphabet(0, 125 * y, (mod == "\\") ? "Yoshi Engine" : ModSupport.getModName(mod), true, false);
                     modTitle.x = 640 - (modTitle.width / 2);
                     add(modTitle);
                     y++;
@@ -85,7 +86,7 @@ class CreditsState extends MusicBeatState {
                         var iconPath = modMaker.icon;
                         if (iconPath != null) {
                             // var tex = Paths.getBitmapOutsideAssets('$mFolder/$mod/images/$iconPath.png');
-                            var tex = Paths.image(iconPath, 'mods/$mod');
+                            var tex = Paths.image(iconPath, mod == "\\" ? 'preload' : 'mods/$mod');
                             if (tex != null) {
                                 icon.loadGraphic(tex);
                                 // icon.x -= 110;

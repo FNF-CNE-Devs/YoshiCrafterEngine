@@ -149,6 +149,7 @@ class PlayState extends MusicBeatState
 	public static var log:Array<String> = [];
 	public static function trace(thing:String) {
 		for (e in thing.split("\n")) log.push(e);
+		trace(thing);
 	}
 	public static var fromCharter:Bool = false;
 	
