@@ -113,7 +113,7 @@ class ModSupport {
         return finalArray;
     }
 
-    public static function getAssetFiles(assets:Array<Dynamic>, rootPath:String, path:String, libraryName:String) {
+    public static function getAssetFiles(assets:Array<Dynamic>, rootPath:String, path:String, libraryName:String, prefix:String = "", addRoot:Bool = false) {
         for(f in FileSystem.readDirectory('$rootPath$path')) {
             if (FileSystem.isDirectory('$rootPath$path$f')) {
                 getAssetFiles(assets, rootPath, '$path$f/', libraryName);
@@ -132,8 +132,8 @@ class ModSupport {
                 }
                 assets.push({
                     type: type,
-                    id: ('assets/$libraryName/$path$f').toLowerCase(), // for case sensitive shit & correct linux support
-                    path: '$path$f',
+                    id: ('assets/$libraryName/$prefix$path$f').toLowerCase(), // for case sensitive shit & correct linux support
+                    path: (addRoot ? rootPath : '') + '$path$f',
                     size: FileSystem.stat('$rootPath$path$f').size
                 });
             }
@@ -141,6 +141,49 @@ class ModSupport {
     }
     public static function reloadModsConfig() {
         modConfig = [];
+
+        // skins shit
+        
+        var assets:AssetManifest = new AssetManifest();
+        assets.name = "skins";// for case sensitive shit & correct linux support
+        assets.libraryType = null;
+        assets.version = 2;
+        assets.libraryArgs = [];
+        // assets.rootPath = '${Paths.getSkinsPath()}';
+        assets.assets = [];
+        FileSystem.createDirectory('${Paths.getSkinsPath()}/bf/');
+        FileSystem.createDirectory('${Paths.getSkinsPath()}/gf/');
+        FileSystem.createDirectory('${Paths.getSkinsPath()}/notes/');
+        for (char in ["bf", "gf"]) {
+            for(skin in [for (e in FileSystem.readDirectory('${Paths.getSkinsPath()}$char/')) if (FileSystem.isDirectory('${Paths.getSkinsPath()}$char/$e')) e]) {
+                var path = '${Paths.getSkinsPath()}$char/$skin/';
+                trace(path);
+                for (f in FileSystem.readDirectory(path)) {
+                    var type = "TEXT";
+                    if (Path.extension(f).toLowerCase() == "png") {
+                        type = "IMAGE";
+                    }
+                    assets.assets.push({
+                        type: type,
+                        id: ('assets/skins/characters/$char/$skin/$f').toLowerCase(), // for case sensitive shit & correct linux support
+                        path: '$path$f',
+                        size: FileSystem.stat('$path$f').size
+                    });
+                }
+            }
+        }
+        try {
+            getAssetFiles(assets.assets, '${Paths.getSkinsPath()}notes/', '', 'skins', 'images/', true);
+        } catch(e) {
+            trace(e.details());
+        }
+        trace(assets.assets);
+        // getAssetFiles(assets.assets, '${Paths.modsPath}/$mod/', '', libName);
+
+        if (openfl.utils.Assets.hasLibrary("skins"))
+            openfl.utils.Assets.unloadLibrary("skins");
+        openfl.utils.Assets.registerLibrary("skins", AssetLibrary.fromManifest(assets));
+
         for(mod in getMods()) {
             trace(mod);
             try {
@@ -163,8 +206,6 @@ class ModSupport {
             assets.rootPath = '${Paths.modsPath}/$mod/';
             assets.assets = [];
             getAssetFiles(assets.assets, '${Paths.modsPath}/$mod/', '', libName);
-            // this is going to fucking lag the game lmfao, just checking if everything works
-            // trace(assets.assets);
 
             if (openfl.utils.Assets.hasLibrary(libName))
                 openfl.utils.Assets.unloadLibrary(libName);

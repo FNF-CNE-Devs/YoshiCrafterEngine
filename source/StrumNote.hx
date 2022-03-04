@@ -22,14 +22,16 @@ class StrumNote extends FlxSprite {
     }
 
     public override function update(elapsed:Float) {
+        var animName = "";
+        if (animation.curAnim != null) animName = animation.curAnim.name;
         if (isCpu) {
             cpuRemainingGlowTime -= elapsed;
-            if (cpuRemainingGlowTime <= 0 && animation.curAnim.name != "static") {
+            if (cpuRemainingGlowTime <= 0 && animName != "static") {
                 animation.play("static");
                 centerOffsets();
                 centerOrigin();
             }
-            toggleColor(animation.curAnim.name != "static" && colored);
+            toggleColor(animName != "static" && colored);
             
         }
         super.update(elapsed);

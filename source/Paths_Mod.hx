@@ -1,3 +1,4 @@
+import EngineSettings.Settings;
 import lime.utils.Assets;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.display.BitmapData;
@@ -117,8 +118,13 @@ class Paths_Mod {
 
     public function getCharacter(char:String) {
         var splitChar = CoolUtil.getCharacterFull(char, mod);
+        
         // if (!Paths.characterExists(splitChar[0], splitChar[1])) splitChar = ["Friday Night Funkin'", "unknown"];
-        return Paths.getCharacter(splitChar[1], 'mods/${splitChar[0]}');
+        if (splitChar[0] == "~") {
+            return Paths.getCharacter(splitChar[1], 'skins');
+        } else {
+            return Paths.getCharacter(splitChar[1], 'mods/${splitChar[0]}');
+        }
     }
 
     public function getPackerAtlas(key:String) {

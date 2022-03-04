@@ -1535,11 +1535,13 @@ class PlayState extends MusicBeatState
 				var note:Note = script.getVariable("note");
 				if (engineSettings.customArrowColors) {
 					// var colors:Array<Int> = (note.mustPress || EngineSettings.customArrowColors_allChars) ? PlayState.boyfriend.getColors(note.altAnim) : PlayState.dad.getColors(note.altAnim);
-					note.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas_Custom(StringTools.replace(StringTools.replace(Paths.getSkinsPath() + "notes/" + engineSettings.customArrowSkin.toLowerCase(), "/", "/"), "\r", ""));
+					// note.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas_Custom(StringTools.replace(StringTools.replace(Paths.getSkinsPath() + "notes/" + engineSettings.customArrowSkin.toLowerCase(), "/", "/"), "\r", ""));
+					note.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas(engineSettings.customArrowSkin.toLowerCase(), 'skins');
 					note.colored = true;
 					// note.color = colors[(note.noteData % 4) + 1];
 				} else {
-					note.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets', 'shared') : Paths.getSparrowAtlas_Custom(StringTools.replace(StringTools.replace(Paths.getSkinsPath() + "notes/" + engineSettings.customArrowSkin.toLowerCase(), "/", "/"), "\r", ""));
+					// note.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets', 'shared') : Paths.getSparrowAtlas_Custom(StringTools.replace(StringTools.replace(Paths.getSkinsPath() + "notes/" + engineSettings.customArrowSkin.toLowerCase(), "/", "/"), "\r", ""));
+					note.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets', 'shared') : Paths.getSparrowAtlas(engineSettings.customArrowSkin.toLowerCase(), 'skins');
 				}
 				
 				note.animation.addByPrefix('green', 'arrowUP');
@@ -1582,7 +1584,8 @@ class PlayState extends MusicBeatState
 				}
 			});
 			script.setVariable("generateStaticArrow", function(babyArrow:StrumNote, i:Int) {
-					babyArrow.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas(engineSettings.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets') : Paths.getSparrowAtlas_Custom(Paths.modsPath + "/notes/" + engineSettings.customArrowSkin.toLowerCase());
+					babyArrow.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas(engineSettings.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets') : Paths.getSparrowAtlas(engineSettings.customArrowSkin.toLowerCase(), 'skins');
+					
 					
 					babyArrow.animation.addByPrefix('green', 'arrowUP');
 					babyArrow.animation.addByPrefix('blue', 'arrowDOWN');

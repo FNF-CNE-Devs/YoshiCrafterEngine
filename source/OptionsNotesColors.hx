@@ -168,6 +168,10 @@ class OptionsNotesColors extends MusicBeatState {
 			selectionLevel--;
 			switch (selectionLevel) {
 				case -1:
+					for(k=>arrow in arrowSprites) {
+						var shader = cast(arrow.shader, ColoredNoteShader);
+						Reflect.setField(Settings.engineSettings.data, 'arrowColor$k', FlxColor.fromRGBFloat(shader.r.value[0], shader.g.value[0], shader.b.value[0]));
+					}
 					FlxG.switchState(new OptionsMenu(0, 0));
 			}
 		}
@@ -231,6 +235,26 @@ class OptionsNotesColors extends MusicBeatState {
 					
 					l.offset.x = FlxMath.lerp(l.offset.x, channel == selectedChannel ? -35 : 0, 0.25 * 50 * elapsed);
 					l.alpha = FlxMath.lerp(l.alpha, channel == selectedChannel ? 1 : 0.4, 0.25 * 50 * elapsed);
+				}
+
+				if (selectedChannel == 3 && controls.ACCEPT) {
+					// resets current note
+					var shader = cast(arrowSprites[selectedArrow].shader, ColoredNoteShader);
+					var color:FlxColor = switch(selectedArrow) {
+						case 0:
+							0xFFC24B99;
+						case 1:
+							0xFF00FFFF;
+						case 2:
+							0xFF12FA05;
+						case 3:
+							0xFFF9393F;
+						case _:
+							0xFFFFFFFF;
+					}
+					shader.r.value = [color.redFloat];
+					shader.g.value = [color.greenFloat];
+					shader.b.value = [color.blueFloat];
 				}
 		}
 

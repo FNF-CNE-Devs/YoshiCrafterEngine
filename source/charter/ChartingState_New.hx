@@ -1487,10 +1487,10 @@ class ChartingState_New extends MusicBeatState
 			}
 		}
 		for (note in _song.events) {
-			if (note.time >= curSection * (Conductor.crochet * 4) &&
-			    note.time < (curSection + 1) * (Conductor.crochet * 4)) {
+			if (Math.floor(note.time / 10) >= Math.floor(curSection * (Conductor.crochet * 4) / 10) &&
+			    Math.floor(note.time / 10) < Math.floor((curSection + 1) * (Conductor.crochet * 4) / 10)) {
 				// adds an event
-				trace("event detected!!");
+				// trace("event detected!!");
 				var n = new CharterNote(note.time, -2, null, false, true);
 				n.setGraphicSize(GRID_SIZE, GRID_SIZE);
 				n.updateHitbox();

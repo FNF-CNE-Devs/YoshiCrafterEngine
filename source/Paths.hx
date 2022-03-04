@@ -65,6 +65,7 @@ class Paths
 	
 	public static function getPath(file:String, type:AssetType, library:Null<String>)
 	{
+		if (library == "~") library = "skins";
 		if (library != null)
 			return getLibraryPath(file, library);
 
@@ -105,10 +106,10 @@ class Paths
 
 	inline static function getLibraryPathForce(file:String, library:String)
 	{
-		if (library.startsWith("mods/"))
-			return '$library:assets/$library/$file'.toLowerCase();
-		else
-			return '$library:assets/$library/$file';
+		var finalPath = '$library:assets/$library/$file';
+		if (library.startsWith("mods/") || library.toLowerCase() == "skins")
+			finalPath = finalPath.toLowerCase();
+		return finalPath;
 	}
 
 	inline static function getPreloadPath(file:String)
@@ -474,6 +475,7 @@ class Paths
 
 	inline static public function getCharacterIcon(key:String, library:String)
 	{
+		if (library == "mods/~" || library.endsWith("~")) library = "skins";
 		return getPath('characters/$key/icon.png', IMAGE, library);
 	}
 
