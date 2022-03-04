@@ -72,7 +72,16 @@ class ChartingState_New extends MusicBeatState
 
 	public static var lastSection:Int = 0;
 
-	public static var combineNoteTypes:Bool = true;
+	public static var combineNoteTypes(get, set):Bool;
+
+	public static function get_combineNoteTypes():Bool {
+		return Settings.engineSettings.data.combineNoteTypes;
+	}
+
+	public static function set_combineNoteTypes(newVar:Bool):Bool {
+		return Settings.engineSettings.data.combineNoteTypes = newVar;
+	}
+
 
 	var bpmTxt:FlxText;
 
@@ -851,6 +860,34 @@ class ChartingState_New extends MusicBeatState
 	var typingMode_note:Int = 0;
 	override function update(elapsed:Float)
 	{
+		var controlsActive = true;
+		var selectedDrop:FlxUIDropDownMenu = null;
+		@:privateAccess
+		for (tab in UI_box._tab_groups) {
+			if (tab.visible) {
+				for(t in cast(tab, FlxUI).members) {
+					if (Std.isOfType(t, FlxUIDropDownMenu)) {
+						if (cast(t, FlxUIDropDownMenu).dropPanel.visible) {
+							controlsActive = false;
+							selectedDrop = cast(t, FlxUIDropDownMenu);
+							break;
+						}
+					}
+				}
+
+				for(c in cast(tab, FlxUI).members) {
+					if (c != selectedDrop) {
+						c.active = controlsActive;
+					} else {
+						c.active = true;
+					}
+				}
+				break;
+			}
+		}
+		
+		
+
 		if (FlxG.sound.music.playing) {
 			var sec = Math.floor(Conductor.songPosition / (Conductor.crochet * 4));
 			if (sec != curSection) {

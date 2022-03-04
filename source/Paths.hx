@@ -88,6 +88,7 @@ class Paths
 	public static function clearModCache() {
 		if (!Settings.engineSettings.data.memoryOptimization) return;
 		Assets.cache.clear('mods/');
+		Assets.cache.clear('skins');
 	}
 	public static function clearOtherModCache(currentMod:String) {
 		if (!Settings.engineSettings.data.memoryOptimization) return;
@@ -97,6 +98,7 @@ class Paths
 				Assets.cache.clear('mods/${k.toLowerCase()}');
 			}
 		}
+		Assets.cache.clear('skins');
 	}
 
 	static public function getLibraryPath(file:String, library = "preload")

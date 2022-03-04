@@ -1,5 +1,6 @@
 package;
 
+import openfl.desktop.Clipboard;
 import flixel.addons.display.shapes.FlxShape;
 import haxe.io.Bytes;
 import lime.ui.FileDialogType;
@@ -258,6 +259,20 @@ class OptionsNotesColors extends MusicBeatState {
 				}
 		}
 
+
+		if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.V) { // CTRL+V
+			var clipboardText = Clipboard.generalClipboard.getData(TEXT_FORMAT, CLONE_PREFERRED);
+			if (clipboardText != null) {
+				var parsedColor:Null<FlxColor> = FlxColor.fromString(clipboardText);
+				if (parsedColor != null) {
+					// color found!!!!
+					var shader = cast(arrowSprites[selectedArrow].shader, ColoredNoteShader);
+					shader.r.value = [parsedColor.redFloat];
+					shader.g.value = [parsedColor.greenFloat];
+					shader.b.value = [parsedColor.blueFloat];
+				}
+			}
+		}
 		updateChannels();
 
 		for (channel=>e in [redChannel, greenChannel, blueChannel]) {

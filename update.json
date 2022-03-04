@@ -14,7 +14,9 @@
         "- i forgor :skull:",
         "- Psych Engine events support (uses onPsychEvent(name, value1, value2) in scripts)",
         "- Centered strums (can be disabled in scripts)",
-        "- Character unknown animations are no longer spammed."
+        "- Character unknown animations are no longer spammed.",
+        "- Fixed Charter bug that allowed you to click buttons underneath the drop down list",
+        "- Save button in keybinds editor now says \"Save\" instead of \"Exit\" (lol)"
     ],
     "version" : [1,6,0],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"
