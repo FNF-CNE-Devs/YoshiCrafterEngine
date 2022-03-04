@@ -177,17 +177,20 @@ class Paths
 	inline static public function getInstPath(song:String, mod:String, ?difficulty:String = "")
 	{
 		var inst = 'mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/inst.ogg';
-		if (Assets.exists('mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/inst-$difficulty.ogg')) {
-			inst = 'mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/inst-$difficulty.ogg';
+		if (Assets.exists('mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/inst-${difficulty.toLowerCase()}.ogg'.toLowerCase())) {
+			inst = 'mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/inst-${difficulty.toLowerCase()}.ogg'.toLowerCase();
 		}
 		return inst.toLowerCase();
 	}
 
 	inline static public function modVoices(song:String, mod:String, ?difficulty:String = "")
 	{
+		difficulty = difficulty.trim();
 		var voices = 'mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/voices.ogg';
-		if (Assets.exists('mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/voices-$difficulty.ogg')) {
-			voices = 'mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/voices-$difficulty.ogg';
+		var p = 'mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/voices-${difficulty.toLowerCase()}.ogg'.toLowerCase();
+		trace(p);
+		if (Assets.exists(p)) {
+			voices = p;
 		}
 		return voices.toLowerCase();
 	}

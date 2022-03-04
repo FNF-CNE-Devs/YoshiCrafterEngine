@@ -617,6 +617,30 @@ class OptionsMenu extends MusicBeatState
 			value: function() {return "";}
 		});
 		
+		guiOptions.options.push({
+			text : "Score Text Size",
+			description : "Sets the score text size. 16 is base game size, 20 is Psych size. Defaults to 18.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				var changed = false;
+				if (controls.LEFT_P) {
+					Settings.engineSettings.data.scoreTextSize -= 1;
+					changed = true;
+				}
+				if (controls.RIGHT_P) {
+					Settings.engineSettings.data.scoreTextSize += 1;
+					changed = true;
+				}
+				if (changed) {
+					if (Settings.engineSettings.data.scoreTextSize < 8) Settings.engineSettings.data.scoreTextSize = 8;
+					if (Settings.engineSettings.data.scoreTextSize > 40) Settings.engineSettings.data.scoreTextSize = 40;
+					o.setValue('${Std.string(Settings.engineSettings.data.scoreTextSize)}');
+				}
+			},
+			checkbox: false,
+			checkboxChecked: function() {return false;},
+			value: function() {return '${Std.string(Settings.engineSettings.data.scoreTextSize)}';}
+		});
+		
 		settings.push(guiOptions);
 	}
 

@@ -25,6 +25,7 @@ class CustomShader extends FlxFixedShader {
     //     return bitm
     // }
     public function new(frag:String, vert:String, values:Map<String, Any>) {
+        if (vert == null) vert = frag; // for syncing
         var mPath = Paths.modsPath;
 
         var fragPath = "";

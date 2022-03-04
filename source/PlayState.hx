@@ -502,6 +502,8 @@ class PlayState extends MusicBeatState
 	var p2isGF:Bool = false;
 
 	public override function destroy() {
+		scripts.executeFunc("onDestroy");
+		scripts.executeFunc("destroy");
 		if (PlayState.current == this) PlayState.current = null;
 		if (engineSettings.memoryOptimization && (!isStoryMode || (isStoryMode && storyPlaylist.length == 0))) {
 			// Paths.clearForMod(songMod);
@@ -2260,6 +2262,7 @@ class PlayState extends MusicBeatState
 
 			vocals.stop();
 			if (FlxG.sound.music != null) FlxG.sound.music.stop();
+			scripts.executeFunc("onDeath");
 
 			openSubState(new GameOverSubstate(boyfriend.x - boyfriend.charGlobalOffset.x, boyfriend.y - boyfriend.charGlobalOffset.y));
 

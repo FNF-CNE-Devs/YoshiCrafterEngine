@@ -21,15 +21,26 @@ function create() {
     date = Paths.sound("introGo-pixel");
 
     PlayState.gf.scrollFactor.set(5 / 6, 5 / 6);
+    global["shader"] = shader;
+    FlxG.camera.antialiasing = false;
+    FlxG.camera.pixelPerfectRender = true;
+    FlxG.game.stage.quality = 2;
 }
 function update(elapsed) {
 
-    PlayState.camFollow.x -= PlayState.camFollow.x % 6;
-    PlayState.camFollow.y -= PlayState.camFollow.y % 6;
+    FlxG.camera.antialiasing = false;
+    FlxG.camera.pixelPerfectRender = true;
+    FlxG.game.stage.quality = 2;
+
+    PlayState.camFollow.x -= (PlayState.camFollow.x) % 6;
+    PlayState.camFollow.y -= (PlayState.camFollow.y) % 6;
 
     shader.shaderData.uBlocksize.value = [6 / 1280 * FlxG.scaleMode.gameSize.x, 6 / 720 * FlxG.scaleMode.gameSize.y];
     // shader.shaderData.uTime.value = [t];
-    PlayState.camera.zoom = PlayState.camera.defaultZoom;
+    PlayState.camera.zoom = (FlxG.scaleMode.gameSize.x - (FlxG.scaleMode.gameSize.x % 6)) / FlxG.scaleMode.gameSize.x;
+    if (PlayState.health < 0) { // YOU WILL DIE!!!
+        shader.shaderData.uBlocksize.value = [1, 1];
+    }
 
     
     for (s in PlayState.members) {

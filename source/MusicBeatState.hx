@@ -80,6 +80,8 @@ class MusicBeatState extends FlxUIState
 			FlxG.drawFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
 			FlxG.updateFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
 		}
+		
+    	FlxG.game.stage.quality = HIGH;
 	}
 
 	override function update(elapsed:Float)

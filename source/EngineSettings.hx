@@ -139,7 +139,7 @@ import flixel.FlxG;
 	@:keep public static var scoreJoinString:String = " | ";
 
 	// Score text size, use scoreTxt.size instead of this, since it only applies at start
-	@:keep public static var scoreTextSize:Int = 16; // ayyyy
+	@:keep public static var scoreTextSize:Int = 18; // ayyyy
 	
 	/**
 	 * Sets the GUI scale. Defaults to 1
