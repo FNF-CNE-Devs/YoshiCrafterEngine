@@ -258,6 +258,7 @@ typedef LuaObject = {
 }
 
 
+/*
 class LuaScript extends Script {
     public var state:llua.State;
     public var variables:Map<String, Dynamic> = [];
@@ -404,8 +405,8 @@ class LuaScript extends Script {
         return Convert.fromLua(state, Lua.gettop(state));
     }
 }
+*/
 
-/*
 class LuaScript extends Script {
     public var state:llua.State;
     public var variables:Map<String, Dynamic> = [];
@@ -693,5 +694,4 @@ class LuaScript extends Script {
         return Convert.fromLua(state, Lua.gettop(state));
     }
 }
-*/
 #end
