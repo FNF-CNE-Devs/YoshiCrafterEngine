@@ -26,6 +26,8 @@ function create() {
     FlxG.camera.pixelPerfectRender = true;
     FlxG.game.stage.quality = 2;
 }
+var smallCamX:Float = 0;
+var smallCamY:Float = 0;
 function update(elapsed) {
 
     FlxG.camera.antialiasing = false;
@@ -35,9 +37,27 @@ function update(elapsed) {
     PlayState.camFollow.x -= (PlayState.camFollow.x) % 6;
     PlayState.camFollow.y -= (PlayState.camFollow.y) % 6;
 
-    shader.shaderData.uBlocksize.value = [6 / 1280 * FlxG.scaleMode.gameSize.x, 6 / 720 * FlxG.scaleMode.gameSize.y];
+    // FlxG.scaleMode.gameSize.x -= FlxG.scaleMode.gameSize.x % 6;
+    // FlxG.scaleMode.gameSize.y -= FlxG.scaleMode.gameSize.y % 6;
+
+    trace(FlxG.scaleMode.gameSize.x);
+    var small = FlxG.scaleMode.gameSize.x < 1280;
+    shader.shaderData.small.value = [small];
+    if (small) {
+        // shader issue, got a workaround tho
+        smallCamX = FlxMath.lerp(smallCamX, PlayState.camFollow.x + FlxG.camera.targetOffset.x - 640, CoolUtil.wrapFloat(0.04 * 60 * elapsed, 0, 1));
+        smallCamY = FlxMath.lerp(smallCamY, PlayState.camFollow.y + FlxG.camera.targetOffset.y - 360, CoolUtil.wrapFloat(0.04 * 60 * elapsed, 0, 1));
+
+        FlxG.camera.scroll.x = Math.floor(smallCamX / 6) * 6;
+        FlxG.camera.scroll.y = Math.floor(smallCamY / 6) * 6;
+    } else {
+        shader.shaderData.uBlocksize.value = [6 / 1280 * (FlxG.scaleMode.gameSize.x), 6 / 720 * FlxG.scaleMode.gameSize.y];
+        smallCamX = FlxG.camera.scroll.x;
+        smallCamY = FlxG.camera.scroll.y;
+    }
     // shader.shaderData.uTime.value = [t];
-    PlayState.camera.zoom = (FlxG.scaleMode.gameSize.x - (FlxG.scaleMode.gameSize.x % 6)) / FlxG.scaleMode.gameSize.x;
+    // FlxG.camera.zoom = (FlxG.scaleMode.gameSize.x - (FlxG.scaleMode.gameSize.x % 6)) / FlxG.scaleMode.gameSize.x;
+    FlxG.camera.zoom = 1;
     if (PlayState.health < 0) { // YOU WILL DIE!!!
         shader.shaderData.uBlocksize.value = [1, 1];
     }
