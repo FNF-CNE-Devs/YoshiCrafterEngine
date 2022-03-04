@@ -1,8 +1,9 @@
 {
     "updateLog" : [
-        "1.6.0 - CUSTOM SHADERS",
+        "1.6.0 - CUSTOM SHADERS + EVENTS",
         "",
         "- /!\\ Added support for custom shaders WITHOUT source code!",
+        "- /!\\ Added support for custom chart events (now you can stop asking me abt it)",
         "- Removed (useless) velocity stuff on notes since some people thought it affected the note position (hi kade)",
         "- Fixed a bug that happened when widescreen was turned off that made the gui go offscreen.",
         "- Added pixel perfect Week 6",
