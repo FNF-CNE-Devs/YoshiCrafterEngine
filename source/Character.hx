@@ -1,6 +1,7 @@
 package;
 
 // import sys.io.File;
+import openfl.utils.Assets;
 import haxe.macro.ExprTools.ExprArrayTools;
 import haxe.Json;
 import sys.FileSystem;
@@ -204,6 +205,7 @@ class Character extends FlxSprite
 	public function loadJSON(overrideFuncs:Bool) {
 		
 		var charFull = CoolUtil.getCharacterFull(curCharacter, PlayState.songMod);
+		/*
 		var path = '${Paths.modsPath}/${charFull[0]}/characters/${charFull[1]}/Character.json';
 		if (!FileSystem.exists(path)) return;
 		try {
@@ -212,6 +214,18 @@ class Character extends FlxSprite
 			return;
 		}
 		if (json == null) return;
+		*/
+		var path = Paths.getPath('characters/${charFull[1]}/character.json', TEXT, 'mods/${charFull[0]}');
+		if (!Assets.exists(path)) {
+			PlayState.trace('Character JSON for ${charFull.join(":")} doesn\'t exist.');
+			return;
+		}
+		try {
+			json = Json.parse(Assets.getText(path));
+		} catch(e) {
+			PlayState.trace('Character JSON for ${charFull.join(":")} is invalid\n\n$e.');
+			return;
+		}
 		load(overrideFuncs);
 	}
 
@@ -446,6 +460,7 @@ class Character extends FlxSprite
 	 */
 
 	public var lastNoteHitTime:Float = -60000;
+	private var unknownAnimsAlerted:Array<String> = [];
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
 		if (AnimName.startsWith("sing")) {
@@ -458,7 +473,10 @@ class Character extends FlxSprite
 			animation.play(AnimName, Force, Reversed, Frame);
 			if (animation.getByName(AnimName) == null) {
 				trace(AnimName + " doesn't exist on character " + curCharacter);
-				PlayState.log.push('Character.playAnim: $AnimName doesn\'t exist on character $curCharacter');
+				if (!unknownAnimsAlerted.contains(AnimName)) {
+					PlayState.log.push('Character.playAnim: $AnimName doesn\'t exist on character $curCharacter');
+					unknownAnimsAlerted.push(AnimName);
+				}
 				return;
 			}
 			if (isPlayer && AnimName == "singLEFT" && flipX)

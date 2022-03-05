@@ -27,13 +27,14 @@ class Main extends Sprite
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
 	// YOSHI ENGINE STUFF
-	public static var engineVer:Array<Int> = [1,5,2];
+	public static var engineVer:Array<Int> = [1,6,0];
 	public static var buildVer:String = "";
 
 	public static var supportedFileTypes = [
 		#if ENABLE_LUA "lua", #end
 		"hx",
-		"hscript"];
+		"hscript",
+		"hsc"];
 
 
 	// You can pretty much ignore everything from here on - your code should go in your states.

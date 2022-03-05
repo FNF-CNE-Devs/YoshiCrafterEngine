@@ -62,20 +62,21 @@ class CoolUtil
 	}
 
 	public static function getMostPresentColor(icon:BitmapData) {
-		var colors:Map<FlxColor, Int> = [];
+		var colors:Map<FlxColor, Float> = [];
 		for (x in 0...icon.width) {
 			for (y in 0...icon.height) {
-				var c:FlxColor = cast(icon.getPixel32(x, y), FlxColor).to24Bit();
+				var alphaC:FlxColor = icon.getPixel32(x, y);
+				var c:FlxColor = alphaC.to24Bit();
 				if (colors[c] == null) {
-					colors[c] = 1;
+					colors[c] = 1 * alphaC.alphaFloat;
 				} else {
-					colors[c]++;
+					colors[c] += 1 * alphaC.alphaFloat;
 				}
 			}
 		}
 
 		var maxColor:Int = 0xFF000000;
-		var maxColorAmount:Int = 0;
+		var maxColorAmount:Float = 0;
 		for (color=>amount in colors) {
 			if (amount > maxColorAmount) {
 				maxColor = color;

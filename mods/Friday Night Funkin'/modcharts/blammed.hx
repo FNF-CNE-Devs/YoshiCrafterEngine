@@ -29,14 +29,14 @@ function create() {
     streetBehind = global['streetBehind'];
     light = global['light'];
     if (EngineSettings.blammedEffect) {
-        PlayState.boyfriend.shader = new BlammedShader(255, 255, 255);
-        PlayState.boyfriend.shader.enabled.value = [false];
+        PlayState.boyfriend.shader = new CustomShader("Friday Night Funkin':blammed");
+        PlayState.boyfriend.shader.shaderData.enabled.value = [false];
 
-        PlayState.dad.shader = new BlammedShader(255, 255, 255);
-        PlayState.dad.shader.enabled.value = [false];
+        PlayState.dad.shader = new CustomShader("Friday Night Funkin':blammed");
+        PlayState.dad.shader.shaderData.enabled.value = [false];
 
-        PlayState.gf.shader = new BlammedShader(255, 255, 255);
-        PlayState.gf.shader.enabled.value = [false];
+        PlayState.gf.shader = new CustomShader("Friday Night Funkin':blammed");
+        PlayState.gf.shader.shaderData.enabled.value = [false];
 
     }
 }
@@ -44,20 +44,20 @@ function create() {
 function update(elapsed) {
     if (PlayState.iconP1 != null) {
         if (PlayState.iconP1.shader == null) {
-            PlayState.iconP1.shader = new BlammedShader(255, 255, 255);
-            PlayState.iconP1.shader.enabled.value = [false];
+            PlayState.iconP1.shader = new CustomShader("Friday Night Funkin':blammed");
+            PlayState.iconP1.shader.shaderData.enabled.value = [false];
         }
     }
     if (PlayState.iconP2 != null) {
         if (PlayState.iconP2.shader == null) {
-            PlayState.iconP2.shader = new BlammedShader(255, 255, 255);
-            PlayState.iconP2.shader.enabled.value = [false];
+            PlayState.iconP2.shader = new CustomShader("Friday Night Funkin':blammed");
+            PlayState.iconP2.shader.shaderData.enabled.value = [false];
         }
     } 
     if (PlayState.healthBarBG != null) {
         if (PlayState.healthBarBG.shader == null) {
-            PlayState.healthBarBG.shader = new BlammedShader(255, 255, 255);
-            PlayState.healthBarBG.shader.enabled.value = [false];
+            PlayState.healthBarBG.shader = new CustomShader("Friday Night Funkin':blammed");
+            PlayState.healthBarBG.shader.shaderData.enabled.value = [false];
         }
     } 
 }
@@ -71,12 +71,12 @@ function beatHit(curBeat:Int) {
             // switchPico(picoDarkMode);
             FlxG.camera.flash(0xFFFFFFFF, 2);
 
-            PlayState.boyfriend.shader.enabled.value = [true];
-            PlayState.dad.shader.enabled.value = [true];
-            PlayState.gf.shader.enabled.value = [true];
-            PlayState.iconP1.shader.enabled.value = [true];
-            PlayState.iconP2.shader.enabled.value = [true];
-            PlayState.healthBarBG.shader.enabled.value = [true];
+            PlayState.boyfriend.shader.shaderData.enabled.value = [true];
+            PlayState.dad.shader.shaderData.enabled.value = [true];
+            PlayState.gf.shader.shaderData.enabled.value = [true];
+            PlayState.iconP1.shader.shaderData.enabled.value = [true];
+            PlayState.iconP2.shader.shaderData.enabled.value = [true];
+            PlayState.healthBarBG.shader.shaderData.enabled.value = [true];
             PlayState.healthBar.visible = false;
 
             phillyTrain.visible = false;
@@ -97,12 +97,12 @@ function beatHit(curBeat:Int) {
             streetBehind.visible = true;
             street.visible = true;
             
-            PlayState.boyfriend.shader.enabled.value = [false];
-            PlayState.dad.shader.enabled.value = [false];
-            PlayState.gf.shader.enabled.value = [false];
-            PlayState.iconP1.shader.enabled.value = [false];
-            PlayState.iconP2.shader.enabled.value = [false];
-            PlayState.healthBarBG.shader.enabled.value = [false];
+            PlayState.boyfriend.shader.shaderData.enabled.value = [false];
+            PlayState.dad.shader.shaderData.enabled.value = [false];
+            PlayState.gf.shader.shaderData.enabled.value = [false];
+            PlayState.iconP1.shader.shaderData.enabled.value = [false];
+            PlayState.iconP2.shader.shaderData.enabled.value = [false];
+            PlayState.healthBarBG.shader.shaderData.enabled.value = [false];
             PlayState.healthBar.visible = true;
 
             // picoDarkMode.dispose();
@@ -114,14 +114,21 @@ function beatHit(curBeat:Int) {
     }
     
     
-    if (curBeat % 4 == 0 && EngineSettings.blammedEffect) {
+    if (curBeat % 4 == 0) {
         var color = new FlxColor(light.color);
-        PlayState.boyfriend.shader.setColors(color.red, color.green, color.blue);
+		for (i in [PlayState.boyfriend, PlayState.gf, PlayState.dad, PlayState.iconP1, PlayState.iconP2, PlayState.healthBarBG]) {
+			i.shader.shaderData.r.value = [color.redFloat];
+			i.shader.shaderData.g.value = [color.greenFloat];
+			i.shader.shaderData.b.value = [color.blueFloat];
+		}
+		/*
+        .shader.setColors(color.red, color.green, color.blue);
         PlayState.dad.shader.setColors(color.red, color.green, color.blue);
         PlayState.gf.shader.setColors(color.red, color.green, color.blue);
         PlayState.iconP1.shader.setColors(color.red, color.green, color.blue);
         PlayState.iconP2.shader.setColors(color.red, color.green, color.blue);
         PlayState.healthBarBG.shader.setColors(color.red, color.green, color.blue);
+		*/
     }
 }
 

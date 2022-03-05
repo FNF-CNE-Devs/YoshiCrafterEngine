@@ -1,4 +1,4 @@
-package;
+package charter;
 
 import Note.NoteDirection;
 import flixel.math.FlxPoint;
@@ -82,6 +82,13 @@ class CharterNote extends FlxSprite
 
 	public function createNote() {
 		switch(noteType) {
+			case -1:
+				// PSYCH ENGINE EVENT NOTE!!!!!!!! (lol why are ppl asking this)
+                frames = Paths.getSparrowAtlas('events', 'shared');
+                animation.addByPrefix('PSYCH EVENT!!!!!', 'psych event');
+                animation.addByPrefix('YOSHI ENGINE EVENT!!!!!!', 'event');
+                antialiasing = true;
+
 			default:
                 frames = Paths.getSparrowAtlas('NOTE_assets_charter', 'shared');
 
@@ -133,6 +140,8 @@ class CharterNote extends FlxSprite
 
 		this.noteData = noteData;
 
+		this.noteType = Math.floor(noteData / ChartingState_New._song.keyNumber);
+
 		scale.x *= swagWidth / _swagWidth;
 		if (!isSustainNote) {
 			scale.y *= swagWidth / _swagWidth;
@@ -140,16 +149,23 @@ class CharterNote extends FlxSprite
 
         createNote();
 		
-		switch (noteNumberScheme[noteData % noteNumberScheme.length])
-		{
-			case Left:
-				animation.play('purpleScroll');
-			case Down:
-				animation.play('blueScroll');
-			case Up:
-				animation.play('greenScroll');
-			case Right:
-				animation.play('redScroll');
+		if (noteType < 0) {
+			if (noteData == -1)
+				animation.play("PSYCH EVENT!!!!!");
+			else
+				animation.play("YOSHI ENGINE EVENT!!!!!!");
+		} else {
+			switch (noteNumberScheme[noteData % noteNumberScheme.length])
+			{
+				case Left:
+					animation.play('purpleScroll');
+				case Down:
+					animation.play('blueScroll');
+				case Up:
+					animation.play('greenScroll');
+				case Right:
+					animation.play('redScroll');
+			}
 		}
 
 		// trace(prevNote);

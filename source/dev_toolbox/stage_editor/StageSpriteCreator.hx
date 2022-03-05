@@ -151,7 +151,7 @@ class StageSpriteCreator extends MusicBeatSubstate {
         var nameTextBox:FlxUIInputText = new FlxUIInputText(10, nameLabel.y + nameLabel.height, tabWidth - 20, "Sprite");
 
         var pathLabel:FlxUIText = new FlxUIText(10, nameTextBox.y + nameTextBox.height + 10, tabWidth - 20, "Path to the Sparrow");
-        var bitmapTabField:FlxUIInputText;
+        var bitmapTabField:FlxUIInputText = null;
         var browseButton = new FlxUIButton(tabWidth - 10, pathLabel.y + pathLabel.height, "Browse...", function() {
             var fe = new FileExplorer(ToolboxHome.selectedMod, FileExplorerType.SparrowAtlas, "/images", function(p) {
                 var splitThing = [for (e in p.split("/")) if (e.trim() != "") e];

@@ -9,7 +9,6 @@ import NoteShader.ColoredNoteShader;
 import haxe.Json;
 import sys.io.File;
 import sys.FileSystem;
-import ModSupport.CharacterSkin;
 import flixel.math.FlxPoint;
 import dev_toolbox.CharacterJSON.CharacterAnim;
 import flixel.FlxG;
@@ -609,7 +608,7 @@ class CharacterEditor extends MusicBeatState {
             if (c == 0) {
                 c = 0xFFFFFFFF;
             }
-            note.shader = new ColoredNoteShader(c.red, c.green, c.blue);
+            note.shader = new ColoredNoteShader(c.red, c.green, c.blue, false);
             arrowSettings.add(note);
             arrows.push(note);
         }

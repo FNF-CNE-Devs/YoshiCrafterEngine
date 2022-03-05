@@ -30,6 +30,13 @@ class FNFOption extends Alphabet {
 	public var checkboxChecked:Bool = false;
 	public var value:Array<AlphaCharacter> = [];
 	public var desc:String = "";
+	
+	public override function update(elapsed:Float) {
+		super.update(elapsed);
+		if (checkbox != null) {
+			checkbox.scale.set(FlxMath.lerp(checkbox.scale.x, 0.6, CoolUtil.wrapFloat(0.25 * 30 * elapsed, 0, 1)), FlxMath.lerp(checkbox.scale.y, 0.6, CoolUtil.wrapFloat(0.25 * 30 * elapsed, 0, 1)));
+		}
+	}
 
 	public function new(x:Float, y:Float, text:String, desc:String, updateOnSelected:Float->Void, checkBox:Bool = false, checkBoxChecked:Bool = false, value:String = "") {
 		super(x, y, text, true, false, FlxColor.WHITE);
@@ -57,6 +64,7 @@ class FNFOption extends Alphabet {
 		if (checkbox != null) {
 			// checkbox.animation.play("check", true, !checked);
 			checkbox.animation.play(checked ? "checked" : "unchecked", true);
+			checkbox.scale.set(0.6 * 1.15, 0.6 * 1.15);
 		}
 	}
 
@@ -101,6 +109,7 @@ class FNFOption extends Alphabet {
 					add(alphaCharacter);
 					alphaCharacter.y -= 60;
 					lastLetterPos += AlphaCharacter.widths[char] != null ? (Std.int(AlphaCharacter.widths[char] / 2)) : Std.int(alphaCharacter.width) + 5;
+					alphaCharacter.offset.x = 17.5;
 				case 2:
 					alphaCharacter.createSymbol(char);
 					alphaCharacter.updateHitbox();
@@ -130,7 +139,7 @@ typedef MenuCategory = {
 	public var name:String;
 	public var description:String;
 	public var options:Array<Option>;
-	public var center:Bool;
+	public var center:Bool;	
 }
 typedef Option = {
 	public var text:String;
@@ -466,6 +475,20 @@ class OptionsMenu extends MusicBeatState
 			value: function() {return "";}
 		});
 		guiOptions.options.push({
+			text : "Bump press delay",
+			description : "If checked, will do a bump animation on the press delay label everytime you hit a note. Enabled by default.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.animateMsLabel = !Settings.engineSettings.data.animateMsLabel;
+					o.checkboxChecked = Settings.engineSettings.data.animateMsLabel;
+					o.check(Settings.engineSettings.data.animateMsLabel);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.animateMsLabel;},
+			value: function() {return "";}
+		});
+		guiOptions.options.push({
 			text : "Show accuracy",
 			description : "If enabled, will add your accuracy next to the score.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
@@ -509,7 +532,7 @@ class OptionsMenu extends MusicBeatState
 		});
 		guiOptions.options.push({
 			text : "Show ratings amount",
-			description : "If enabled, will add the number of notes hit for each rating at the bottom left of the screen.",
+			description : "If enabled, will add the number of notes hit for each rating at the right of the screen.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.showRatingTotal = !Settings.engineSettings.data.showRatingTotal;
@@ -565,7 +588,7 @@ class OptionsMenu extends MusicBeatState
 		});
 		guiOptions.options.push({
 			text : "Show watermark",
-			description : "When checked, will show a watermark at the bottom left of the screen with the mod name, the mod song and the Yoshi Engine version.",
+			description : "When checked, will show a watermark at the top right of the screen with the mod name, the mod song and the Yoshi Engine version.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.watermark = !Settings.engineSettings.data.watermark;
@@ -576,6 +599,46 @@ class OptionsMenu extends MusicBeatState
 			checkbox: true,
 			checkboxChecked: function() {return Settings.engineSettings.data.watermark;},
 			value: function() {return "";}
+		});
+		guiOptions.options.push({
+			text : "Minimal mode",
+			description : "When checked, will minimize the Score Text width.
+[When Disabled] Score: 123456 | Misses: 0 | Accuracy: 100% (Simple) | Average: 5ms | S (MFC)
+[When Enabled] 123456 pts | 0 Misses | 100% (S) | ~ 5ms | S (MFC)",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.minimizedMode = !Settings.engineSettings.data.minimizedMode;
+					o.checkboxChecked = Settings.engineSettings.data.minimizedMode;
+					o.check(Settings.engineSettings.data.minimizedMode);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.minimizedMode;},
+			value: function() {return "";}
+		});
+		
+		guiOptions.options.push({
+			text : "Score Text Size",
+			description : "Sets the score text size. 16 is base game size, 20 is Psych size. Defaults to 18.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				var changed = false;
+				if (controls.LEFT_P) {
+					Settings.engineSettings.data.scoreTextSize -= 1;
+					changed = true;
+				}
+				if (controls.RIGHT_P) {
+					Settings.engineSettings.data.scoreTextSize += 1;
+					changed = true;
+				}
+				if (changed) {
+					if (Settings.engineSettings.data.scoreTextSize < 8) Settings.engineSettings.data.scoreTextSize = 8;
+					if (Settings.engineSettings.data.scoreTextSize > 40) Settings.engineSettings.data.scoreTextSize = 40;
+					o.setValue('${Std.string(Settings.engineSettings.data.scoreTextSize)}');
+				}
+			},
+			checkbox: false,
+			checkboxChecked: function() {return false;},
+			value: function() {return '${Std.string(Settings.engineSettings.data.scoreTextSize)}';}
 		});
 		
 		settings.push(guiOptions);
@@ -628,6 +691,43 @@ class OptionsMenu extends MusicBeatState
 			value: function() {return "";}
 		});
 		customisation.options.push({
+			text : "Enable Note Motion Blur",
+			description : "Check this to enable motion blur on notes. If enabled, will make the notes smoother, but can slow down the graphics. Defaults to disabled.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.noteMotionBlurEnabled = !Settings.engineSettings.data.noteMotionBlurEnabled;
+					o.checkboxChecked = Settings.engineSettings.data.noteMotionBlurEnabled;
+					o.check(Settings.engineSettings.data.noteMotionBlurEnabled);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.noteMotionBlurEnabled;},
+			value: function() {return "";}
+		});
+		customisation.options.push({
+			text : "Note Motion Blur Multiplier",
+			description : "The multiplier of how blurry the notes will get when Enable Motion Blur is enabled. If you think the notes still feels like stuttering, increasing this option may help. Higher values means blurrier notes. Defaults to 1.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				var changed = false;
+				if (controls.LEFT_P) {
+					Settings.engineSettings.data.noteMotionBlurMultiplier -= 0.1;
+					changed = true;
+				}
+				if (controls.RIGHT_P) {
+					Settings.engineSettings.data.noteMotionBlurMultiplier += 0.1;
+					changed = true;
+				}
+				if (changed) {
+					if (Settings.engineSettings.data.noteMotionBlurMultiplier < 0.1) Settings.engineSettings.data.noteMotionBlurMultiplier = 0.1;
+					if (Settings.engineSettings.data.noteMotionBlurMultiplier > 3) Settings.engineSettings.data.noteMotionBlurMultiplier = 3;
+					o.setValue(Std.string(FlxMath.roundDecimal(Settings.engineSettings.data.noteMotionBlurMultiplier, 1)));
+				}
+			},
+			checkbox: false,
+			checkboxChecked: function() {return false;},
+			value: function() {return Std.string(FlxMath.roundDecimal(Settings.engineSettings.data.noteMotionBlurMultiplier, 1));}
+		});
+		customisation.options.push({
 			text : "Transparent note tails",
 			description : "If enabled, will make sustain notes (note tails) semi-transparent.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
@@ -658,8 +758,8 @@ class OptionsMenu extends MusicBeatState
 		
 
 		customisation.options.push({
-			text : "Customize your arrows",
-			description : "Select this to customize your arrow colors.",
+			text : "Customize Note Colors",
+			description : "Select this to customize note colors.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					FlxG.switchState(new OptionsNotesColors());

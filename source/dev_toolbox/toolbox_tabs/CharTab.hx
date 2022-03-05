@@ -50,6 +50,7 @@ class CharTab extends ToolboxTab {
         }, 25, 300, 640);
         var charLayer = 0;
         var previewButton = new FlxUIButton(10, 670, "Preview", function() {
+            if (radios.selectedIndex < 0) return;
             if (character != null) {
                 remove(character);
                 character.destroy();

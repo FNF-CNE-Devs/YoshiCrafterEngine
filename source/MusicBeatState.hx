@@ -5,6 +5,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.FlxSprite;
 import lime.graphics.Image;
+import lime.utils.Assets;
 import openfl.display.Application;
 import flixel.system.scaleModes.RatioScaleMode;
 import flixel.addons.transition.TransitionData;
@@ -14,9 +15,11 @@ import flixel.FlxG;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
 import flixel.math.FlxRect;
+import openfl.utils.Assets;
 
 typedef FlxSpriteTypedGroup = FlxTypedGroup<FlxSprite>;
 typedef FlxSpriteArray = Array<FlxSprite>;
+
 
 class MusicBeatState extends FlxUIState
 {
@@ -38,6 +41,7 @@ class MusicBeatState extends FlxUIState
 				} catch(e) {
 
 				}
+				ModSupport.reloadModsConfig();
 			}
 			Settings.engineSettings.flush();
 		}
@@ -54,7 +58,8 @@ class MusicBeatState extends FlxUIState
 		FlxG.scaleMode = new RatioScaleMode();
 		super(transIn, transOut);
 
-		if (defaultIcon == null) defaultIcon = Image.fromFile("assets/images/icon.png");
+		//if (defaultIcon == null) defaultIcon = Assets.getBitmapData(Paths.file('icon.png', IMAGE, 'mods/));
+		if (defaultIcon == null) defaultIcon = lime.utils.Assets.getImage(Paths.image("icon", "preload"));
 		lime.app.Application.current.window.title = "Friday Night Funkin' - Yoshi Engine";
 		if (PlayState.iconChanged) {
 			lime.app.Application.current.window.setIcon(defaultIcon);
@@ -75,6 +80,8 @@ class MusicBeatState extends FlxUIState
 			FlxG.drawFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
 			FlxG.updateFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
 		}
+		
+    	FlxG.game.stage.quality = HIGH;
 	}
 
 	override function update(elapsed:Float)

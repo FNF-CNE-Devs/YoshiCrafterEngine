@@ -205,6 +205,7 @@ class Note extends FlxSprite
 	public var engineSettings:Dynamic;
 	public var splashColor:FlxColor = 0xFFFFFFFF;
 	public var isLongSustain:Bool = false;
+
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?mustHit = true, ?altAnim = false)
 	{
 		super();
@@ -243,10 +244,18 @@ class Note extends FlxSprite
 		script.setVariable("note", this);
 		script.executeFunc("create");
 		if (colored) {
-			var customColors = (mustPress || engineSettings.customArrowColors_allChars) ? PlayState.current.boyfriend.getColors(altAnim) : PlayState.current.dad.getColors(altAnim);
-			var c = customColors[(noteData % (customColors.length - 1)) + 1];
-			this.shader = new ColoredNoteShader(c.red, c.green, c.blue);
-			this.splashColor = c;
+			if (Settings.engineSettings.data.rainbowNotes == true) {
+				var superCoolColor = new FlxColor(0xFFFF0000);
+				superCoolColor.hue = (strumTime / 5000 * 360) % 360;
+				this.shader = new ColoredNoteShader(superCoolColor.red, superCoolColor.green, superCoolColor.blue);
+				this.splashColor = superCoolColor;
+
+			} else {
+				var customColors = (mustPress || engineSettings.customArrowColors_allChars) ? PlayState.current.boyfriend.getColors(altAnim) : PlayState.current.dad.getColors(altAnim);
+				var c = customColors[(noteData % (customColors.length - 1)) + 1];
+				this.shader = new ColoredNoteShader(c.red, c.green, c.blue);
+				this.splashColor = c;
+			}
 		} else {
 			this.shader = new ColoredNoteShader(255, 255, 255);
 			cast(this.shader, ColoredNoteShader).enabled.value = [false];

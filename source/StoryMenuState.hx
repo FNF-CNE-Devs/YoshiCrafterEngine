@@ -2,6 +2,7 @@ package;
 
 import flixel.graphics.atlas.FlxAtlas;
 import flixel.graphics.frames.FlxTileFrames;
+import openfl.Assets;
 import openfl.display.BitmapData;
 import EngineSettings.Settings;
 import flixel.tweens.FlxEase;
@@ -74,8 +75,8 @@ class StoryMenuState extends MusicBeatState
 	var yellowBG:FlxSprite;
 
 	public static var weekData:Array<FNFWeek> = null;
-	public static var weekButtons:Array<BitmapData> = null;
-	public static var weekCharacters:Map<String, BitmapData> = null;
+	public static var weekButtons:Array<String> = null;
+	public static var weekCharacters:Map<String, String> = null;
 
 	var modWeekCharacters:Map<String, FlxSprite> = [];
 
@@ -117,16 +118,18 @@ class StoryMenuState extends MusicBeatState
 					trace(mod);
 					(mod == "Friday Night Funkin'" ? fnfWeekData : weekData).push(week);
 
-					var weekButton = Paths.getBitmapOutsideAssets(Paths.modsPath + '/$mod/$sprite');
-					if (weekButton == null) {
+					var weekButton = Paths.getPath('$sprite', IMAGE, 'mods/$mod');
+					/*
+					if (!Assets.exists(weekButton)) {
 						weekButton = new BitmapData(443, 82, true, 0x00000000);
 					}
+					*/
 					(mod == "Friday Night Funkin'" ? fnfWeekButtons : weekButtons).push(weekButton);
 
 					var f = mod + ":" + week.dad.file.trim().replace("/", "/").replace("\\", "/");
 					if (weekCharacters[f] == null) {
 						#if debug
-						trace('Creating bitmap for $f');
+						// trace('Creating bitmap for $f');
 						#end
 						var mod = week.mod;
 						var file = week.dad.file;
@@ -134,8 +137,8 @@ class StoryMenuState extends MusicBeatState
 						#if debug
 							trace(sparrowPath);
 						#end
-						var b = Paths.getBitmapOutsideAssets(sparrowPath + ".png");
-						if (b == null) b = new BitmapData(1, 1, true, 0x00000000);
+						var b = Paths.getPath('$file.png', IMAGE, 'mods/$mod');
+						// if (b == null) b = new BitmapData(1, 1, true, 0x00000000);
 						weekCharacters[f] = b;
 					}
 				}
@@ -198,30 +201,34 @@ class StoryMenuState extends MusicBeatState
 		#end
 
 		var invalid = false;
+		/*
 		for(bitmap in weekButtons) {
 			if (!bitmap.readable) {
 				invalid = true;
 				break;
 			}
 		}
+		*/
 		if (weekData == null || Settings.engineSettings.data.developerMode || invalid) { // If it never was loaded before OR if in developer mode
 			loadWeeks();
 		}
 
+		var height:Float = 0;
 		for (i in 0...weekData.length)
 		{
 			var w:FNFWeek = weekData[i];
 			var sprite:String = w.buttonSprite;
 			var m:String = w.mod;
 
-			var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, weekButtons[i].clone());
-			weekThing.y += ((weekThing.height + 20) * i);
+			var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, weekButtons[i]);
+			weekThing.y += height;
 			weekThing.targetY = i;
 			weekThing.antialiasing = true;
 			grpWeekText.add(weekThing);
 
 			weekThing.screenCenter(X);
 			weekThing.antialiasing = true;
+			height += weekThing.height + 20;
 			
 			// weekThing.updateHitbox();
 
@@ -238,14 +245,16 @@ class StoryMenuState extends MusicBeatState
 			if (modWeekCharacters['$mod:$file'] == null) {
 				var charFrames = null;
 				try {
-					charFrames = FlxAtlasFrames.fromSparrow(weekCharacters['$mod:$file'].clone(), Paths.getTextOutsideAssets(sparrowPath + ".xml", true));
+					charFrames = FlxAtlasFrames.fromSparrow(weekCharacters['$mod:$file'], Paths.getPath('$file.xml', TEXT, 'mods/$mod'));
 				} catch(e) {
 	
 				}
+				/*
 				if (charFrames == null) {
 					modWeekCharacters['$mod:$file'] = new FlxSprite(0,0).makeGraphic(1,1,FlxColor.TRANSPARENT);
 					continue;
 				}
+				*/
 				var menuCharacter = new FlxSprite((FlxG.width * 0.25) - 150);
 				
 				menuCharacter.frames = charFrames;
@@ -306,7 +315,7 @@ class StoryMenuState extends MusicBeatState
 						bitmapMod = bitmapSplit[0];
 						bitmapPath = bitmapSplit[1];
 					}
-					sprDifficulty.loadGraphic(Paths.getBitmapOutsideAssets('$modsPath/$bitmapMod/images/$bitmapPath.png'));
+					sprDifficulty.loadGraphic(Paths.image(bitmapPath, 'mods/$bitmapMod'));
 					if (sprDifficulty.width > 290) sprDifficulty.setGraphicSize(290);
 					sprDifficulty.x -= (sprDifficulty.width / 2);
 					difficultySelectors.add(sprDifficulty);
@@ -464,6 +473,7 @@ class StoryMenuState extends MusicBeatState
 			PlayState.storyDifficulty = weekData[curWeek].difficulties[curDifficulty].name;
 
 			PlayState._SONG = Song.loadModFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.songMod, PlayState.storyPlaylist[0].toLowerCase());
+			PlayState.jsonSongName = PlayState.storyPlaylist[0].toLowerCase();
 			PlayState.storyWeek = curWeek;
 			PlayState.campaignScore = 0;
 			PlayState.fromCharter = false;

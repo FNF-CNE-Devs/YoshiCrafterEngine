@@ -1,9 +1,11 @@
+import linc.Linc;
+import mod_support_stuff.ModScript;
 import cpp.Reference;
 import cpp.Lib;
 import cpp.Pointer;
 import cpp.RawPointer;
 import cpp.Callable;
-import ModSupport.ModScript;
+
 import haxe.Constraints.Function;
 import haxe.DynamicAccess;
 import lime.app.Application;
@@ -45,8 +47,6 @@ class Script {
     public static function create(path:String):Script {
         var p = path.toLowerCase();
         var ext = Path.extension(p);
-        trace('path : "$path"');
-        trace('ext :');
 
         var scriptExts = Main.supportedFileTypes;
         if (ext == "") {
@@ -59,7 +59,7 @@ class Script {
             }
         }
         switch(ext.toLowerCase()) {
-            case 'hx' | 'hscript':
+            case 'hx' | 'hscript' | 'hsc':
                 trace("HScript");
                 return new HScript();
             #if ENABLE_LUA
@@ -68,7 +68,6 @@ class Script {
                 return new LuaScript();
             #end
         }
-        trace('ext not found : $ext for $path');
         return null;
     }
 
@@ -128,7 +127,7 @@ class ScriptPack {
         for (script in scripts) {
             var returnVal = script.executeFunc(funcName, a);
             if (returnVal != defaultReturnVal && defaultReturnVal != null) {
-                #if messTest trace("found"); #end
+                trace("found");
                 return returnVal;
             }
         }
@@ -212,7 +211,7 @@ class HScript extends Script {
         fileName = Path.withoutDirectory(path);
         var p = path;
         if (Path.extension(p) == "") {
-            var exts = ["hx", "hscript"];
+            var exts = ["hx", "hsc", "hscript"];
             for (e in exts) {
                 if (FileSystem.exists('$p.$e')) {
                     p = '$p.$e';
@@ -257,6 +256,156 @@ typedef LuaObject = {
     var get:(String)->LuaObject;
     // var toLua
 }
+
+
+/*
+class LuaScript extends Script {
+    public var state:llua.State;
+    public var variables:Map<String, Dynamic> = [];
+
+    function getVar(v:String) {
+        var splittedVar = v.split(".");
+        if (splittedVar.length == 0) return null;
+        var currentObj = variables[splittedVar[0]];
+        for (i in 1...splittedVar.length) {
+            var property = Reflect.getProperty(currentObj, splittedVar[i]);
+            if (property != null) {
+                currentObj = property;
+            } else {
+                this.trace('Variable $v doesn\'t exist or is equal to null.');
+                return null;
+            }
+        }
+        return currentObj;
+    }
+
+
+    
+    
+    public override function new() {
+        super();
+        state = LuaL.newstate();
+        Lua.init_callbacks(state);
+        LuaL.openlibs(state);
+        Lua_helper.register_hxtrace(state);
+        Lua_helper.add_callback(state, "print", function(toPtr:Dynamic) {
+            this.trace(Std.string(toPtr));
+        });
+
+		function get(pointer):Int {
+			var text:String = Lua.tostring(state, -1); // ayyy
+			Lua.pushstring(state, "good");
+			return 0; // lua error code
+		}
+		
+        //Lua.pushcfunction(state, Callable.fromFunction(new cpp.Function(get)));
+		Lua_helper.add_callback(state, "__get", get);
+		LuaL.dostring(state, "function get(value)
+			__get(value);
+		end");
+    }
+
+    public override function loadFile(path:String) {
+        // LuaL.loadfile(state, path);
+        // LuaL.dostring(state, Paths.getTextOutsideAssets(path));
+        var p = path;
+        if (Path.extension(p) == "") {
+            p = p + ".lua";
+        }
+        fileName = Path.withoutDirectory(p);
+        if (FileSystem.exists(p)) {
+            if (LuaL.dostring(state, File.getContent(p)) != 0) {
+                var err = Lua.tostring(state, -1);
+                this.trace('$err');
+            }
+        } else {
+            this.trace("Lua script does not exist.");
+        }
+    }
+
+    public override function trace(text:String)
+    {
+        // LuaL.error(state, "%s");
+        
+        var lua_debug:Lua_Debug = {
+
+        }
+        Lua.getinfo(state, "S", lua_debug);
+        Lua.getinfo(state, "n", lua_debug);
+        Lua.getinfo(state, "l", lua_debug);
+
+        // Lua.getinfo
+        var bText = '$fileName: ';
+        if (lua_debug.name != null)  bText += '${lua_debug.name}()';
+        if (lua_debug.currentline == -1)  {
+            if (lua_debug.linedefined != -1) {
+                bText += 'at line ${lua_debug.linedefined}: ';
+            }
+        } else {
+            bText += 'at line ${lua_debug.currentline}: ';
+        }
+
+        for(t in text.split("\n")) PlayState.log.push(bText + t);
+        trace(text);
+    }
+
+    public override function getVariable(name:String) {
+        // Lua.getglobal()
+        return variables[name];
+    }
+
+    // public override function executeFunc(name:String) {
+    //     // Lua.getglobal()
+    //     return variables[name];
+    // }
+
+    public override function setVariable(name:String, v:Dynamic) {
+        // Lua.getglobal()
+        variables[name] = v;
+    }
+
+    public override function executeFunc(funcName:String, ?args:Array<Any>) {
+        // Gets func
+        // Lua.
+        
+        if (args == null) args = [];
+        Lua.getglobal(state, funcName);
+
+        
+        for (k=>val in args) {
+            switch (Type.typeof(val)) {
+                case Type.ValueType.TNull:
+                    Lua.pushnil(state);
+                case Type.ValueType.TBool:
+                    Lua.pushboolean(state, val);
+                case Type.ValueType.TInt:
+                    Lua.pushinteger(state, cast(val, Int));
+                case Type.ValueType.TFloat:
+                    Lua.pushnumber(state, val);
+                case Type.ValueType.TClass(String):
+                    Lua.pushstring(state, cast(val, String));
+                case Type.ValueType.TClass(Array):
+                    Convert.arrayToLua(state, val);
+                case Type.ValueType.TObject:
+                    @:privateAccess
+                    Convert.objectToLua(state, val); // {}
+                default:
+                    variables["parameter" + Std.string(k + 1)] = val;
+                    Lua.pushnil(state);
+            }
+        }
+        if (Lua.pcall(state, args.length, 1, 0) != 0) {
+            var err = Lua.tostring(state, -1);
+            if (err != "attempt to call a nil value") {
+
+                // Lua.getinfo
+                this.trace('$err');
+            }
+        }
+        return Convert.fromLua(state, Lua.gettop(state));
+    }
+}
+*/
 
 class LuaScript extends Script {
     public var state:llua.State;

@@ -1,6 +1,6 @@
 function create() {
     // DONT FORGET TO CHANGE HERE !
-    character.frames = Paths.getCharacter("~:bf/template");
+    character.frames = Paths.getCharacter(character.curCharacter);
 
     character.longAnims = ["dodge"];
 

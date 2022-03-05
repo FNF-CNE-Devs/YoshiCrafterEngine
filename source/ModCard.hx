@@ -1,6 +1,7 @@
+
+import lime.utils.Assets;
 import openfl.display.BitmapData;
 import sys.FileSystem;
-import ModSupport.ModConfig;
 import flixel.addons.ui.*;
 
 class ModCard extends FlxUITabMenu {
@@ -38,8 +39,9 @@ class ModCard extends FlxUITabMenu {
         m = mod;
         mod_name.text = mod.name != null ? mod.name : this.mod;
         mod_desc.text = mod.description != null ? mod.description : "(No description)";
-        var iconPath = '${Paths.modsPath}/${this.mod}/modIcon.png';
-        mod_icon.loadGraphic(FileSystem.exists(iconPath) ? BitmapData.fromFile(iconPath) : Paths.image("modEmptyIcon", "preload"));
+        // var iconPath = '${Paths.modsPath}/${this.mod}/modIcon.png';
+		var asset = Paths.getPath('modIcon.png', IMAGE, 'mods/${this.mod}');
+        mod_icon.loadGraphic(Assets.exists(asset) ? asset : Paths.image("modEmptyIcon", "preload"));
         mod_icon.setGraphicSize(150, 150);
         mod_icon.updateHitbox();
     }

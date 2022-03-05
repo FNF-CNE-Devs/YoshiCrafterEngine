@@ -84,10 +84,11 @@ class FreeplayState extends MusicBeatState
 		songs = [];
 		var fnfSongs = [];
 		for(mod in FileSystem.readDirectory('$mPath/')) {
-			if (FileSystem.exists('$mPath/$mod/data/freeplaySonglist.json')) {
+			var path = Paths.json('freeplaySonglist', 'mods/$mod');
+			if (Assets.exists(path)) {
 				var jsonContent:FreeplaySongList = null;
 				try {
-					jsonContent = Json.parse(Paths.getTextOutsideAssets('$mPath/$mod/data/freeplaySonglist.json'));
+					jsonContent = Json.parse(Assets.getText(path));
 				} catch(e) {
 					trace('Freeplay song list for $mod is invalid.\r\n$e');
 				}
@@ -231,6 +232,7 @@ class FreeplayState extends MusicBeatState
 				break;
 			}
 		}
+		if (songs[curSelected].difficulties == null || songs[curSelected].difficulties.length == 0) songs[curSelected].difficulties = ["normal"];
 		curDifficulty = Std.int(Settings.engineSettings.data.lastSelectedSongDifficulty % songs[curSelected].difficulties.length);
 		changeSelection();
 		changeDiff();
@@ -476,7 +478,7 @@ class FreeplayState extends MusicBeatState
 				// 	Assets.cache.audio.remove(k);
 				// }
 				
-				openfl.utils.Assets.cache.clear("assets");
+				// openfl.utils.Assets.cache.clear("assets");
 
 			}
 			FlxG.switchState(new MainMenuState());
@@ -538,6 +540,7 @@ class FreeplayState extends MusicBeatState
 		PlayState._SONG.validScore = true;
 		PlayState.isStoryMode = false;
 		PlayState.songMod = songs[curSelected].mod;
+		PlayState.jsonSongName = songs[curSelected].songName;
 		PlayState.storyDifficulty = songs[curSelected].difficulties[curDifficulty];
 		PlayState.fromCharter = false;
 

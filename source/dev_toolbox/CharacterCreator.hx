@@ -62,15 +62,24 @@ class CharacterCreator extends MusicBeatSubstate {
         tab.add(label);
         tab.add(icon_path_button);
 
-		var label = new FlxUIText(10, icon_path_button.y + icon_path_button.height + 10, 400, "Character Spritesheet");
+		var label = new FlxUIText(10, icon_path_button.y + icon_path_button.height + 10, 400, "Character Spritesheet (Sparrow / Packer)");
         var char_spritesheet:String = null;
         var spritesheet_path_button:FlxUIButton = null;
+		
+		var usesJson = false;
         spritesheet_path_button = new FlxUIButton(10, label.y + label.height, "Browse...", function() {
-            CoolUtil.openDialogue(OPEN, "Select your character's spritesheet.png or spritesheet.xml.", function(path) {
+            CoolUtil.openDialogue(OPEN, "Select your character's spritesheet.png or spritesheet.xml/json.", function(path) {
                 var areFilesThere = [false, false];
                 char_spritesheet = "";
+				usesJson = false;
                 if (Path.extension(path) == "xml") {
                     areFilesThere[1] = true;
+                    if (FileSystem.exists(Path.withoutExtension(path) + ".png")) {
+                        areFilesThere[0] = true;
+                    }
+                } else if (Path.extension(path) == "json") {
+                    areFilesThere[1] = true;
+					usesJson = true;
                     if (FileSystem.exists(Path.withoutExtension(path) + ".png")) {
                         areFilesThere[0] = true;
                     }
@@ -79,9 +88,13 @@ class CharacterCreator extends MusicBeatSubstate {
                     if (FileSystem.exists(Path.withoutExtension(path) + ".xml")) {
                         areFilesThere[1] = true;
                     }
+					if (FileSystem.exists(Path.withoutExtension(path) + ".json")) {
+						areFilesThere[1] = true;
+						usesJson = true;
+					}
                 } else {
                     spritesheet_path_button.color = 0xFFFF2222;
-                    spritesheet_path_button.label.text = "(Browse...) Selected file isn't of type XML or PNG.";
+                    spritesheet_path_button.label.text = "(Browse...) Selected file isn't of type JSON, XML or PNG.";
                     return;
                 }
 
@@ -92,7 +105,7 @@ class CharacterCreator extends MusicBeatSubstate {
                 }
                 if (!areFilesThere[1]) {
                     spritesheet_path_button.color = 0xFFFF2222;
-                    spritesheet_path_button.label.text = "(Browse...) XML file is missing.";
+                    spritesheet_path_button.label.text = "(Browse...) JSON/XML file is missing.";
                     return;
                 }
                 var bMap = BitmapData.fromFile(Path.withoutExtension(path) + ".png");
@@ -166,7 +179,7 @@ class CharacterCreator extends MusicBeatSubstate {
                 flipX: false
             };
             File.saveContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/Character.json', Json.stringify(json, "\t"));
-            File.copy(char_spritesheet + ".xml", '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/spritesheet.xml');
+            File.copy(char_spritesheet + (usesJson ? ".json" : ".xml"), '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/spritesheet.' + (usesJson ? "json" : "xml"));
             File.copy(char_spritesheet + ".png", '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/spritesheet.png');
             var characterHX = 'function create() {\r\n\tcharacter.frames = Paths.getCharacter(character.curCharacter);\r\n\tcharacter.loadJSON(true);\r\n}';
             File.saveContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/Character.hx', characterHX);

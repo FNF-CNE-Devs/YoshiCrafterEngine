@@ -1,5 +1,6 @@
 package;
 
+import flixel.system.FlxAssets.FlxGraphicAsset;
 import openfl.display.BitmapData;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.FlxG;
@@ -15,7 +16,7 @@ class MenuItem extends FlxSpriteGroup
 	public var week:FlxSprite;
 	public var flashingInt:Int = 0;
 
-	public function new(x:Float, y:Float, spriteData:BitmapData)
+	public function new(x:Float, y:Float, spriteData:FlxGraphicAsset)
 	{
 		super(x, y);
 		week = new FlxSprite().loadGraphic(spriteData);

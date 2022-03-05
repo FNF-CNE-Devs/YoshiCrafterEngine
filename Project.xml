@@ -3,7 +3,7 @@
 
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin' - Yoshi Engine" packageName="com.yoshicrafter29.yoshiengine" package="com.yoshicrafter29.yoshiengine" main="Main" version="0.2.7.1" company="yc29" />
+	<app title="Friday Night Funkin' - Yoshi Engine" packageName="com.yoshicrafter29.yoshiengine" package="com.yoshicrafter29.yoshiengine" main="Main" version="0.2.7.1" company="YoshiCrafter29" />
 	<app file="YoshiEngine" if="windows" />
 	<app file="YoshiEngine_Linux" if="linux" />
 	<app file="YoshiEngine_Mac" if="mac" />
@@ -119,6 +119,7 @@
 	<assets path='mods' library="mods" embed='false' unless="mobile"/>
 	<assets path='skins' rename='skins' embed='false' unless="mobile"/>
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
+	<assets path='art/mod.url' rename='How to make a mod.url' />
 	<assets path='Launch.bat' />
 	<!-- <assets path="documentation" rename="docs"/> -->
 	<!-- <template path='mods' /> -->
@@ -139,6 +140,7 @@
 	<!--In case you want to use the addons package-->
 	<haxelib name="flixel-addons" />
 	<haxelib name="hscript" />
+	<!-- <haxelib name="profiler" if="profiler"/> -->
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
@@ -147,7 +149,7 @@
 	<!-- <haxelib name="polymod"/> -->
 	<!-- <haxelib name="hxvm-lua"/>
 	<haxelib name="linc_lua"/> -->
-	<haxelib name="linc_luajit" />
+	<haxelib name="linc_luajit" /> <!-- https://github.com/nebulazorua/linc_luajit --> 
 	<haxelib name="akifox-asynchttp"/>
 	
 	<!-- <haxelib name="flixel-animate"/> -->
@@ -193,6 +195,7 @@
 
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
+	<!-- <haxedef name="HXCPP_PROFILER" if="profiler"/> -->
 
 	<haxedef name="ENABLE_LUA" /> <!-- LUA -->
 

@@ -21,7 +21,7 @@ function create() {
     bg.frames = Paths.getSparrowAtlas('weeb/animatedEvilSchool');
     bg.animation.addByPrefix('idle', 'background 2', 24);
     bg.animation.play('idle');
-    bg.scrollFactor.set(0.8, 0.9);
+    bg.scrollFactor.set(5 / 6, 5 / 6);
     bg.scale.set(6, 6);
     PlayState.add(bg);
 }

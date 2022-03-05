@@ -35,6 +35,9 @@ import flixel.FlxG;
 	// If true, will show player's press delay above the strums.
 	@:keep public static var showPressDelay:Bool = true;
 
+	// If true, will do the little bumping animation on the press delay label above the strums.
+	@:keep public static var animateMsLabel:Bool = true;
+
 	// If true, will show player's average delay in the info bar. (Average: 15ms)
 	@:keep public static var showAverageDelay:Bool = true;
 
@@ -101,6 +104,15 @@ import flixel.FlxG;
 	// Note offset
 	@:keep public static var noteOffset:Float = 0;
 
+	// Enable Motion Blur on notes.
+	@:keep public static var noteMotionBlurEnabled:Bool = false;
+
+	// Note motion blur multiplier
+	@:keep public static var noteMotionBlurMultiplier:Float = 1;
+
+	// Center the strums instead of keeping them like the original game.
+	@:keep public static var centerStrums:Bool = true;
+
 	
 	// If true, will show the ratings at the bottom left of the screen like this :
 	// Sick: 0
@@ -109,16 +121,25 @@ import flixel.FlxG;
 	// Shit: 0
 	@:keep public static var showRatingTotal:Bool = false;
 
+	// Whenever the score text is minimized, check options for more info
+	@:keep public static var minimizedMode:Bool = false;
+
 
 	// If true, will glow CPU strums like the player's strums when they press a note.
 	@:keep public static var glowCPUStrums:Bool = true;
 
 	// If false, will disable antialiasing on notes.
 	#if android
-	@:keep public static var noteAntialiasing:Bool = true;
-	#else
 	@:keep public static var noteAntialiasing:Bool = false;
+	#else
+	@:keep public static var noteAntialiasing:Bool = true;
 	#end
+	
+	// String that separates, for example, Accuracy: 100% from Misses: 0
+	@:keep public static var scoreJoinString:String = " | ";
+
+	// Score text size, use scoreTxt.size instead of this, since it only applies at start
+	@:keep public static var scoreTextSize:Int = 18; // ayyyy
 	
 	/**
 	 * Sets the GUI scale. Defaults to 1
@@ -144,6 +165,7 @@ import flixel.FlxG;
 	@:keep public static var lastSelectedSong:String = "Friday Night Funkin':tutorial";
 	@:keep public static var lastSelectedSongDifficulty:Int = 1; // Normal
 	@:keep public static var charEditor_showDadAndBF:Bool = true;
+	@:keep public static var combineNoteTypes:Bool = true;
 	// @:keep public static var moveCameraInStageEditor:Bool = true;
 
 	// ========================================================
@@ -241,12 +263,8 @@ class Settings {
 	 */
     public static function loadDefault() {
 		engineSettings = new FlxSave();
-		#if sys
-			engineSettings.bind("Settings", "../../YoshiCrafter29/Yoshi Engine"); // Not sure about this but it should work
-		#else
-			engineSettings.bind("Settings", "YoshiCrafter29/Yoshi Engine");
-		#end
 
+		engineSettings.bind("Settings");
 		for(k in Type.getClassFields(SuperCoolSettings)) {
 			var ogVal:Dynamic = std.Reflect.field(engineSettings.data, k);
 			if (ogVal == null) {
@@ -259,8 +277,14 @@ class Settings {
 			// }
 		}
 		engineSettings.flush();
-
+		
+		hscriptCache = new FlxSave();
+		hscriptCache.bind("_hscriptCache");
+		
+		hscriptCache.flush();
     }
+	
+	public static var hscriptCache:FlxSave = null;
 
     // public static function load(bind:Bool = true) {
 	// 	if (bind) FlxG.save.bind("Settings", "YoshiCrafter29/Yoshi Engine");

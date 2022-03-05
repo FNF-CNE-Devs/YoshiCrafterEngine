@@ -5,7 +5,7 @@ import openfl.display.BitmapData;
 import sys.io.File;
 import sys.FileSystem;
 import haxe.Json;
-import ModSupport.ModConfig;
+
 using StringTools;
 
 class Toolbox {

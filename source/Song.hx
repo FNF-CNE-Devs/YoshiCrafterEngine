@@ -1,5 +1,6 @@
 package;
 
+import PlayState.SongEvent;
 import sys.io.File;
 import Section.SwagSection;
 import haxe.Json;
@@ -10,6 +11,7 @@ using StringTools;
 
 typedef SwagSong =
 {
+	var events:Array<SongEvent>;
 	var song:String;
 	var notes:Array<SwagSection>;
 	var bpm:Int;

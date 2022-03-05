@@ -15,9 +15,13 @@ class DiscordClient
 	*/
 	public function new()
 	{
+		_create("915896776869953588");
+	}
+
+	public function _create(clientID:String) {
 		trace("Discord Client starting...");
 		DiscordRpc.start({
-			clientID: "915896776869953588",
+			clientID: clientID,
 			onReady: onReady,
 			onError: onError,
 			onDisconnected: onDisconnected

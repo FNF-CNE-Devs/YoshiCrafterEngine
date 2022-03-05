@@ -1,5 +1,6 @@
 package;
 
+import Script.HScript;
 import EngineSettings.Settings;
 import openfl.media.Sound;
 import flixel.system.FlxSound;
@@ -9,6 +10,8 @@ import flixel.FlxSubState;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+
+using StringTools;
 
 class GameOverSubstate extends MusicBeatSubstate
 {
@@ -21,8 +24,11 @@ class GameOverSubstate extends MusicBeatSubstate
 	public static var gameOverMusic = "Friday Night Funkin':gameOver";
 	public static var gameOverMusicBPM = 100;
 	public static var retrySFX = "Friday Night Funkin':gameOverEnd";
+	public static var scriptName = "";
 
 	var stageSuffix:String = "";
+
+	var script:Script;
 
 	public function new(x:Float, y:Float)
 	{
@@ -53,15 +59,53 @@ class GameOverSubstate extends MusicBeatSubstate
 		var file = sfx[1];
 		var mFolder = Paths.modsPath;
 
-		FlxG.sound.play(Sound.fromFile('$mFolder/$mod/sounds/$file' + #if web '.mp3' #else '.ogg' #end));
+		// FlxG.sound.play(Sound.fromFile('$mFolder/$mod/sounds/$file' + #if web '.mp3' #else '.ogg' #end));
+		FlxG.sound.play(Paths.sound(file, 'mods/$mod'));
+		
 		Conductor.changeBPM(gameOverMusicBPM);
 
 		// FlxG.camera.followLerp = 1;
 		// FlxG.camera.focusOn(FlxPoint.get(FlxG.width / 2, FlxG.height / 2));
-		FlxG.camera.scroll.set();
+		// FlxG.camera.scroll.set();
 		FlxG.camera.target = null;
 
 		bf.playAnim('firstDeath');
+
+		var path = null;
+		if (scriptName != null && scriptName.trim() != "") {
+			var scriptParsed = scriptName.split(":");
+			if (scriptParsed.length < 2) {
+				scriptParsed.insert(0, "Friday Night Funkin'");
+			}
+			path = '${Paths.modsPath}/${scriptParsed[0]}/${scriptParsed[1]}';
+			script = Script.create(path);
+			if (script == null) {
+				script = new HScript();
+			}
+		} else {
+			script = new HScript();
+		}
+
+		ModSupport.setScriptDefaultVars(script, PlayState.songMod, {});
+		script.setVariable("character", bf);
+		script.setVariable("state", this);
+		script.setVariable("PlayState", this);
+
+		script.setVariable("create", function() {});
+		script.setVariable("update", function(elapsed:Float) {});
+		script.setVariable("end", function() {
+			new FlxTimer().start(0.7, function(tmr:FlxTimer)
+			{
+				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
+				{
+					start();
+				});
+			});
+		});
+
+		if (path != null) 
+			script.loadFile(path);
+		script.executeFunc("create");
 	}
 
 	override function update(elapsed:Float)
@@ -96,13 +140,16 @@ class GameOverSubstate extends MusicBeatSubstate
 			var mod = sfx[0];
 			var file = sfx[1];
 			var mFolder = Paths.modsPath;
-			FlxG.sound.playMusic(Sound.fromFile('$mFolder/$mod/music/$file' + #if web '.mp3' #else '.ogg' #end));
+			// FlxG.sound.playMusic(Sound.fromFile('$mFolder/$mod/music/$file' + #if web '.mp3' #else '.ogg' #end));
+			FlxG.sound.playMusic(Paths.music(file, 'mods/$mod'));
 			bf.playAnim('deathLoop');
 		}
 
 		if (FlxG.sound.music != null)
 			if (FlxG.sound.music.playing)
 				Conductor.songPosition = FlxG.sound.music.time;
+
+		script.executeFunc("update", [elapsed]);
 	}
 
 	var danced = false;
@@ -123,6 +170,9 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	var isEnding:Bool = false;
 
+	function start() {
+		LoadingState.loadAndSwitchState(new PlayState());
+	}
 	function endBullshit():Void
 	{
 		if (!isEnding)
@@ -138,15 +188,12 @@ class GameOverSubstate extends MusicBeatSubstate
 			var mod = sfx[0];
 			var file = sfx[1];
 			var mFolder = Paths.modsPath;
-			FlxG.sound.playMusic(Sound.fromFile('$mFolder/$mod/sounds/$file' + #if web '.mp3' #else '.ogg' #end));
+			FlxG.sound.playMusic(Paths.sound(file, 'mods/$mod'));
+			//FlxG.sound.playMusic(Sound.fromFile('$mFolder/$mod/sounds/$file' + #if web '.mp3' #else '.ogg' #end));
 
-			new FlxTimer().start(0.7, function(tmr:FlxTimer)
-			{
-				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
-				{
-					LoadingState.loadAndSwitchState(new PlayState());
-				});
-			});
+			script.executeFunc("end");
+
+			
 		}
 	}
 }

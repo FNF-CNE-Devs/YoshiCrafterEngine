@@ -1,7 +1,7 @@
 function create() {
     // DONT FORGET TO CHANGE HERE !
 
-    var tex = Paths.getCharacter("~:gf/template");
+    var tex = Paths.getCharacter(character.curCharacter);
 
     character.frames = tex;
 

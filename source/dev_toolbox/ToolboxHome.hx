@@ -1,5 +1,6 @@
 package dev_toolbox;
 
+
 import Discord.DiscordClient;
 import discord_rpc.DiscordRpc;
 import dev_toolbox.toolbox_tabs.*;
@@ -19,7 +20,6 @@ import FreeplayState.FreeplaySongList;
 import openfl.display.PNGEncoderOptions;
 import sys.io.File;
 import openfl.display.BitmapData;
-import ModSupport.ModConfig;
 import lime.ui.FileDialogType;
 import sys.FileSystem;
 import flixel.util.FlxColor;

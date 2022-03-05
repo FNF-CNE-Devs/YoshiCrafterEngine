@@ -1,12 +1,28 @@
 [x] Fixed Options Menu crash
-[ ] Update charter to allow custom notes
+[x] Update charter to allow custom notes
 [x] Custom rating support (not important)
 [x] Cutscene support (IMPORTANT !!!!!!!!)
-[ ] Custom Inst / Voices support (not important)
+[x] Custom Inst / Voices support (not important)
 [x] Story Menu and Freeplay Optimization (outside Developer Mode)
 [x] Freeplay Menu Colors
 [x] freeplaySonglist.txt -> freeplaySonglist.json
 [x] Story Menu Week custom color
 [x] MP4 Cutscene support (https://github.com/brightfyregit/Friday-Night-Funkin-Mp4-Video-Support)
 [x] Tap to Begin for Android devices
-[ ] Check if song_conf.hx exists for any mods
+[x] Check if song_conf.hx exists for any mods
+[x] Make Chart Editor better
+[x] Custom Shaders without source code (VERY VERY IMPORTANT AAAAAAAAAAAAAAAAAAAAAAAAAAA)
+[x] Better Optimization
+[ ] Character Packer
+[x] Yoshi Engine events lol
+
+NEXT UPDATE
+[ ] Custom hscript states
+[ ] Custom Menus
+[ ] Custom Discord RPC
+
+ADDITIONAL
+[ ] Camera movement
+[ ] Fish Engine easter egg lol
+[ ] Dialogue (maybe????)
+[-] Better Menus

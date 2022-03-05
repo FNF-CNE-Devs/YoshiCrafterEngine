@@ -34,6 +34,7 @@ class Paths
 	}
 
 	public static var modsPath(get, null):String;
+	public static var savesPath(get, null):String;
 
 	public static function getSoundExtern(path:String) {
 		var cPath = getCachePath(path);
@@ -52,26 +53,52 @@ class Paths
 			return './mods';
 		#end
 	}
+	public static function get_savesPath() {
+		#if android
+			return FileSystem.absolutePath('${System.userDirectory}/Yoshi Engine/saves/');
+		#else
+			return FileSystem.absolutePath('./saves/');
+		#end
+	}
 
 	public static function getModsPath() {return modsPath;};
 	
-	static function getPath(file:String, type:AssetType, library:Null<String>)
+	public static function getPath(file:String, type:AssetType, library:Null<String>)
 	{
+		if (library == "~") library = "skins";
 		if (library != null)
 			return getLibraryPath(file, library);
 
 		if (currentLevel != null)
 		{
 			var levelPath = getLibraryPathForce(file, currentLevel);
+			
 			if (OpenFlAssets.exists(levelPath, type))
 				return levelPath;
 
 			levelPath = getLibraryPathForce(file, "shared");
+	
 			if (OpenFlAssets.exists(levelPath, type))
 				return levelPath;
 		}
 
 		return getPreloadPath(file);
+	}
+
+	public static function clearModCache() {
+		if (!Settings.engineSettings.data.memoryOptimization) return;
+		Assets.cache.clear('mods/');
+		Assets.cache.clear('skins');
+	}
+	public static function clearOtherModCache(currentMod:String) {
+		if (!Settings.engineSettings.data.memoryOptimization) return;
+		for (k=>m in ModSupport.modConfig) {
+			trace(k);
+			if (k.toLowerCase() != currentMod.toLowerCase()) {
+				Assets.cache.clear('mods/${k.toLowerCase()}');
+			}
+		}
+		Assets.cache.clear('skins');
 	}
 
 	static public function getLibraryPath(file:String, library = "preload")
@@ -81,7 +108,10 @@ class Paths
 
 	inline static function getLibraryPathForce(file:String, library:String)
 	{
-		return '$library:assets/$library/$file';
+		var finalPath = '$library:assets/$library/$file';
+		if (library.startsWith("mods/") || library.toLowerCase() == "skins")
+			finalPath = finalPath.toLowerCase();
+		return finalPath;
 	}
 
 	inline static function getPreloadPath(file:String)
@@ -107,6 +137,11 @@ class Paths
 	inline static public function json(key:String, ?library:String)
 	{
 		return getPath('data/$key.json', TEXT, library);
+	}
+
+	inline static public function stage(key:String, ?library:String)
+	{
+		return getPath('stages/$key.json', TEXT, library);
 	}
 
 	static public function sound(key:String, ?library:String)
@@ -137,37 +172,27 @@ class Paths
 	inline static public function modInst(song:String, mod:String, ?difficulty:String = "")
 	{
 		
-		return Sound.fromFile(getInstPath(song, mod, difficulty));
+		return getInstPath(song, mod, difficulty);
 	}
 	inline static public function getInstPath(song:String, mod:String, ?difficulty:String = "")
 	{
-		var path = Paths.modsPath + '/$mod/songs/$song/';
-		// trace(path + 'Inst-$difficulty.ogg');
-		if (FileSystem.exists(path + 'Inst-$difficulty.ogg')) {
-			path += 'Inst-$difficulty.ogg';
-		} else {
-			if (FileSystem.exists(path + 'Inst.ogg')) {
-				path += 'Inst.ogg';
-			} else {
-				PlayState.log.push('Paths : Inst for song $song at "$path" does not exist.');
-			}
+		var inst = 'mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/inst.ogg';
+		if (Assets.exists('mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/inst-${difficulty.toLowerCase()}.ogg'.toLowerCase())) {
+			inst = 'mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/inst-${difficulty.toLowerCase()}.ogg'.toLowerCase();
 		}
-		return path;
+		return inst.toLowerCase();
 	}
 
 	inline static public function modVoices(song:String, mod:String, ?difficulty:String = "")
 	{
-		var path = Paths.modsPath + '/$mod/songs/$song/';
-		if (FileSystem.exists(path + 'Voices-$difficulty.ogg')) {
-			path += 'Voices-$difficulty.ogg';
-		} else {
-			if (FileSystem.exists(path + 'Voices.ogg')) {
-				path += 'Voices.ogg';
-			} else {
-				PlayState.log.push('Paths : Voices for song $song at "$path" does not exist.');
-			}
+		difficulty = difficulty.trim();
+		var voices = 'mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/voices.ogg';
+		var p = 'mods/$mod:assets/mods/$mod/songs/${song.toLowerCase()}/voices-${difficulty.toLowerCase()}.ogg'.toLowerCase();
+		trace(p);
+		if (Assets.exists(p)) {
+			voices = p;
 		}
-		return Sound.fromFile(path);
+		return voices.toLowerCase();
 	}
 
 	inline static public function stageSound(file:String)
@@ -197,11 +222,11 @@ class Paths
 		return getPath('images/$key.png', IMAGE, library);
 	}
 
-	inline static public function stageImage(key:String)
-	{
-		var p = ModSupport.song_stage_path;
-		return getBitmapOutsideAssets('$p/$key');
-	}
+	// inline static public function stageImage(key:String)
+	// {
+	// 	var p = ModSupport.song_stage_path;
+	// 	return getBitmapOutsideAssets('$p/$key');
+	// }
 
 	inline static public function font(key:String)
 	{
@@ -219,20 +244,51 @@ class Paths
 	public static var cacheSparrow:Map<String, FlxAtlasFrames> = new Map<String, FlxAtlasFrames>();
 	public static var cacheSound:Map<String, Sound> = new Map<String, Sound>();
 	#if sys	
+	
+	public static function clearForMod(mod:String) {
+		clearCache('${modsPath}/$mod');
+	}
 
-	inline static public function clearCache() {
+	inline static public function clearCache(?startsWith:String) {
+		if (startsWith == null) startsWith = "";
 		cacheText.clear();
-		for (bData in cacheBitmap) {
-			if (bData != null) {
+		for (k=>bData in cacheBitmap) {
+			if (k.startsWith(startsWith) && bData != null) {
 				bData.dispose();
 				bData.disposeImage();
+				cacheBitmap[k] = null;
 			}
 		}
-		cacheBitmap.clear();
-		cacheBytes.clear();
-		// for (c in cacheSparrow) 
-		// 	FlxDestroyUtil.destroy(c);
-		cacheSparrow.clear();
+		if (startsWith.trim() == "") {
+			cacheBitmap.clear();
+			cacheBytes.clear();
+			// for (c in cacheSparrow) 
+			// 	FlxDestroyUtil.destroy(c);
+			cacheSparrow.clear();	
+		} else {
+			for (k => b in cacheBytes) {
+				if (k.startsWith(startsWith)) {
+					cacheBytes[k] = null;
+				}
+			}
+			for (k => b in cacheSparrow) {
+				if (k.startsWith(startsWith)) {
+					cacheSparrow[k].destroy();
+					cacheSparrow[k] = null;
+				}
+			}
+			for (k => b in cacheText) {
+				if (k.startsWith(startsWith)) {
+					cacheText[k] = null;
+				}
+			}
+			for (k => b in cacheSound) {
+				if (k.startsWith(startsWith)) {
+					cacheSound[k].close();
+					cacheSound[k] = null;
+				}
+			}
+		}
 	}
 
 	public static function getCachePath(path:String) {
@@ -354,10 +410,17 @@ class Paths
 	// 	#end
 	// }
 
-	// inline static public function getCharacter(key:String)
-	// {
-	// 	return FlxAtlasFrames.fromSparrow(getPath('$key.png', IMAGE, "characters"), file('$key.xml', "characters"));
-	// }
+	inline static public function getCharacter(key:String, library:String)
+	{
+		var jsonPath = file('characters/$key/spritesheet.json', TEXT, library);
+		if (Assets.exists(jsonPath)) {
+			// json (packer)
+			return FlxAtlasFrames.fromTexturePackerJson(getPath('characters/$key/spritesheet.png', IMAGE, library), jsonPath);
+		} else {
+			// xml (sparrow)
+			return FlxAtlasFrames.fromSparrow(getPath('characters/$key/spritesheet.png', IMAGE, library), file('characters/$key/spritesheet.xml', TEXT, library));
+		}
+	}
 
 	inline static public function video(key:String, ?library:String)
 	{
@@ -411,9 +474,14 @@ class Paths
 		return FlxAtlasFrames.fromSparrow(b, Paths.getTextOutsideAssets('$folder/spritesheet.xml'));
 	}
 
-	inline static public function getCharacterIcon(key:String)
+	public static function characterExists(character:String, mod:String):Bool {
+		return (FileSystem.exists('${Paths.modsPath}/$mod/characters/$character/spritesheet.png') && (FileSystem.exists('${Paths.modsPath}/$mod/characters/$character/spritesheet.xml') || FileSystem.exists('${Paths.modsPath}/$mod/characters/$character/spritesheet.json')));
+	}
+
+	inline static public function getCharacterIcon(key:String, library:String)
 	{
-		return getPath('icons/$key.png', IMAGE, "characters");
+		if (library == "mods/~" || library.endsWith("~")) library = "skins";
+		return getPath('characters/$key/icon.png', IMAGE, library);
 	}
 
 	// inline static public function getCharacterPacker(key:String)
@@ -427,8 +495,8 @@ class Paths
 		return FlxAtlasFrames.fromSpriteSheetPacker(Paths.getBitmapOutsideAssets('$folder/spritesheet.png'), Paths.getTextOutsideAssets('$folder/spritesheet.txt'));
 	}
 
-	// inline static public function getPackerAtlas(key:String, ?library:String)
-	// {
-	// 	return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
-	// }
+	inline static public function getPackerAtlas(key:String, ?library:String)
+	{
+		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
+	}
 }

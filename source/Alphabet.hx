@@ -352,6 +352,7 @@ class AlphaCharacter extends FlxSprite
 		if (numbers.contains(letter)) {
 			this.color = FlxColor.WHITE;
 			trace(letter);
+			this.letterColor = FlxColor.WHITE;
 			createNumber(letter);
 			y -= height;
 			return;

@@ -4,6 +4,12 @@ using StringTools;
 
 // goddamn prefix
 class FlxFixedShader extends FlxShader {
+    public var custom:Bool = false;
+    public var save:Bool = true;
+    public override function new(?save:Bool) {
+        if (save != null) this.save = save;
+        super();
+    }
     @:noCompletion private override function __initGL():Void
     {
         if (__glSourceDirty || __paramBool == null)
@@ -28,8 +34,22 @@ class FlxFixedShader extends FlxShader {
     }
 
     public function initGLforce() {
+        if (!custom) initGood(glFragmentSource, glVertexSource);
+    }
+    public function initGood(glFragmentSource:String, glVertexSource:String) {
+        // try {
+
+        // } catch(e:Exception) {
+        //     trace(e);
+        //     trace(e.message);
+        //     trace(e.stack);
+        //     trace(e.details());
+        // }
+		
         @:privateAccess
         var gl = __context.gl;
+		
+		
 
         #if android
         var prefix = "#version 300 es\n";
@@ -58,33 +78,56 @@ class FlxFixedShader extends FlxShader {
         var vertex = prefix + glVertexSource;
         var fragment = prefix + glFragmentSource;
         #end
-
-
+        
         var id = vertex + fragment;
+		
+		#if trace_everything trace('Should save: $save'); #end
+
         @:privateAccess
-        if (__context.__programs.exists(id))
+        if (__context.__programs.exists(id) && save)
         {   
+            
+		    
             @:privateAccess
             program = __context.__programs.get(id);
+            
         }
         else
         {
+            
             program = __context.createProgram(GLSL);
+            
 
             // TODO
             // program.uploadSources (vertex, fragment);
+            
             @:privateAccess
             program.__glProgram = __createGLProgram(vertex, fragment);
+            
 
             @:privateAccess
-            __context.__programs.set(id, program);
+            if (save) __context.__programs.set(id, program);
         }
-
+		
+		#if trace_everything
+			/*
+			@:privateAccess
+			trace(__context);
+			@:privateAccess
+			trace(__context.__programs);
+			@:privateAccess
+			trace(program.__glProgram);
+			*/
+		#end
+		
         if (program != null)
         {
+            
             @:privateAccess
             glProgram = program.__glProgram;
 
+            
+            
             for (input in __inputBitmapData)
             {
                 @:privateAccess
@@ -100,6 +143,7 @@ class FlxFixedShader extends FlxShader {
                 }
             }
 
+            
             for (parameter in __paramBool)
             {
                 @:privateAccess
@@ -115,6 +159,7 @@ class FlxFixedShader extends FlxShader {
                 }
             }
 
+            
             for (parameter in __paramFloat)
             {
                 @:privateAccess
@@ -130,6 +175,7 @@ class FlxFixedShader extends FlxShader {
                 }
             }
 
+            
             for (parameter in __paramInt)
             {
                 @:privateAccess
