@@ -91,10 +91,16 @@ class Note extends FlxSprite
 
 	public static var noteNumberSchemes:Map<Int, Array<NoteDirection>> = [
 		1 => [Up],
+		2 => [Left, Right],
+		3 => [Left, Up, Right],
 		4 => [Left, Down, Up, Right],
 		// 4 => [Down, Left, Right, Up], // lol
-		6 => [Left, Down, Right, Left, Up, Right],
-		9 => [Left, Down, Up, Right, Up, Left, Down, Up, Right]
+		5 => [Left, Down, Up, Up, Right],
+		6 => [Left, Up, Right, Left, Down, Right], // shaggy
+		7 => [Left, Up, Right, Up, Left, Down, Right],
+		8 => [Left, Down, Up, Right, Left, Down, Up, Right],
+		9 => [Left, Down, Up, Right, Up, Left, Down, Up, Right],
+		10 => [Left, Down, Up, Right, Up, Up, Left, Down, Up, Right]
 	];
 
 	public static var noteNumberScheme(get, null):Array<NoteDirection>;

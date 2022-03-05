@@ -112,8 +112,10 @@ class Paths_Mod {
     }
 
     public function getCharacterPacker(char:String) {
+        var splitChar = CoolUtil.getCharacterFull(char, mod);
         // TODO
         // return Paths.getModCharacterPacker(key, 'mods/$mod');
+        return FlxAtlasFrames.fromSpriteSheetPacker(Paths.getPath('characters/${splitChar[1]}/spritesheet.png', IMAGE, splitChar[0] == "~" ? 'skins' : 'mods/${splitChar[0]}'), Paths.getPath('characters/${splitChar[1]}/spritesheet.txt', TEXT, splitChar[0] == "~" ? "skins" : 'mods/${splitChar[0]}'));
     }
 
     public function getCharacter(char:String) {
