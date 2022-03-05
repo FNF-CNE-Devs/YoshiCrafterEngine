@@ -40,7 +40,6 @@ function update(elapsed) {
     // FlxG.scaleMode.gameSize.x -= FlxG.scaleMode.gameSize.x % 6;
     // FlxG.scaleMode.gameSize.y -= FlxG.scaleMode.gameSize.y % 6;
 
-    trace(FlxG.scaleMode.gameSize.x);
     var small = FlxG.scaleMode.gameSize.x < 1280;
     shader.shaderData.small.value = [small];
     if (small) {

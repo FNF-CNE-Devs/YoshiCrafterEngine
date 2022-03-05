@@ -2353,7 +2353,7 @@ class PlayState extends MusicBeatState
 						// daNote.velocity.y = -daNote.velocity.y;
 
 						daNote.y = (strum.y + pos.y - (daNote.noteOffset.y * 2));
-						if (strum.notes_angle == 0)
+						if (strum.getAngle() == 0)
 							daNote.x = (strum.x - pos.x);
 						else
 							daNote.x = (strum.x + pos.x);
@@ -2373,7 +2373,7 @@ class PlayState extends MusicBeatState
 						
 						var strumPos = strum.y + (Note.swagWidth / 2);
 						var idk = daNote.isSustainNote
-						&& (daNote.y + daNote.offset.y - daNote.frameHeight >= strum.y + Note.swagWidth / 2);
+						&& (daNote.y - daNote.offset.y + daNote.height >= strum.y + Note.swagWidth / 2);
 						if (daNote.prevNote != null) {
 							idk = idk && (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit)));
 						} else {
@@ -2508,15 +2508,15 @@ class PlayState extends MusicBeatState
 					
 					if (Std.isOfType(daNote.shader, ColoredNoteShader)) {
 						var shader = cast(daNote.shader, ColoredNoteShader);
-						var baseVal:Float = 0.0075 / 3 * 1024;
+						var baseVal:Float = 0.0075 / 3 * 1024 * 0.7;
 						var angle:Float = (daNote.isSustainNote ? strum.getAngle() : strum.angle);
 						if (angle == 0 || angle == 180) {
 							shader.x.value = [0];
-							shader.y.value = [baseVal * strum.getScrollSpeed() * engineSettings.noteMotionBlurMultiplier];
+							shader.y.value = [baseVal * strum.getScrollSpeed() * engineSettings.noteMotionBlurMultiplier / daNote.scale.y];
 						} else {
 							var scrollSpeed = baseVal * strum.getScrollSpeed();
-							shader.x.value = [Math.sin(angle / 180 * Math.PI) * scrollSpeed * engineSettings.noteMotionBlurMultiplier];
-							shader.y.value = [Math.cos(angle / 180 * Math.PI) * scrollSpeed * engineSettings.noteMotionBlurMultiplier];
+							shader.x.value = [Math.sin(angle / 180 * Math.PI) * scrollSpeed * engineSettings.noteMotionBlurMultiplier / ((daNote.scale.x + daNote.scale.y) / 2)];
+							shader.y.value = [Math.cos(angle / 180 * Math.PI) * scrollSpeed * engineSettings.noteMotionBlurMultiplier / ((daNote.scale.x + daNote.scale.y) / 2)];
 						}
 					}
 				});

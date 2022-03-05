@@ -1,24 +1,11 @@
 {
     "updateLog" : [
-        "1.6.0 - CUSTOM SHADERS + EVENTS",
+        "1.6.1 - DAY ONE PATCH",
         "",
-        "- /!\\ Added support for custom shaders WITHOUT source code!",
-        "- /!\\ Added support for custom chart events (now you can stop asking me abt it)",
-        "- Removed (useless) velocity stuff on notes since some people thought it affected the note position (hi kade)",
-        "- Fixed a bug that happened when widescreen was turned off that made the gui go offscreen.",
-        "- Added pixel perfect Week 6",
-        "- Added Note Motion Blur (Disabled by default)",
-        "- Fixed OHKO",
-        "- Fixed many bugs",
-        "- Loading screen no longer freezes the game",
-        "- New GUI Update!",
-        "- i forgor :skull:",
-        "- Psych Engine events support (uses onPsychEvent(name, value1, value2) in scripts)",
-        "- Centered strums (can be disabled in scripts)",
-        "- Character unknown animations are no longer spammed.",
-        "- Fixed Charter bug that allowed you to click buttons underneath the drop down list",
-        "- Save button in keybinds editor now says \"Save\" instead of \"Exit\" (lol)"
+        "- Fixed Downscroll sustain notes being off",
+        "- Fixed Spirit not loading",
+        "- Fixed Week 6 notes motion blur"
     ],
-    "version" : [1,6,0],
+    "version" : [1,6,1],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"
 }
