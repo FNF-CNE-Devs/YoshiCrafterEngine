@@ -1,3 +1,5 @@
+import haxe.EnumTools;
+import mod_support.ModState;
 import hscript.Expr;
 import openfl.utils.AssetLibrary;
 import openfl.utils.AssetManifest;
@@ -332,10 +334,22 @@ class ModSupport {
             var splitClassName = [for (e in className.split(".")) e.trim()];
             var realClassName = splitClassName.join(".");
             var cl = Type.resolveClass(realClassName);
-            if (cl == null) {
-                PlayState.trace('Class at $realClassName does not exist.');
+            var en = Type.resolveEnum(realClassName);
+            if (cl == null && en == null) {
+                PlayState.trace('Class / Enum at $realClassName does not exist.');
+            } else {
+                if (en != null) {
+                    // ENUM!!!!
+                    var enumThingy = {};
+                    for(c in en.getConstructors()) {
+                        Reflect.setField(enumThingy, c, en.createByName(c));
+                    }
+                    script.setVariable(splitClassName[splitClassName.length - 1], enumThingy);
+                } else {
+                    // CLASS!!!!
+                    script.setVariable(splitClassName[splitClassName.length - 1], cl);
+                }
             }
-            script.setVariable(splitClassName[splitClassName.length - 1], cl);
         });
         // script.setVariable("include", function(path:String) {
         //     var splittedPath = path.split(":");
@@ -412,6 +426,7 @@ class ModSupport {
 		script.setVariable("CustomShader", CustomShader_Helper);
 		script.setVariable("FlxControls", FlxControls);
 		script.setVariable("save", modSaves[mod]);
+		script.setVariable("ModState", ModState);
 		// script.setVariable("FlxKey", FlxKey);
 
 

@@ -514,6 +514,7 @@ class PlayState extends MusicBeatState
 	var actualModConfig:ModConfig;
 	override public function create()
 	{
+		Settings.engineSettings.data.selectedMod = songMod;
 		Paths.clearOtherModCache(songMod);
 		
 		GameOverSubstate.char = "Friday Night Funkin':bf-dead";
@@ -1587,7 +1588,7 @@ class PlayState extends MusicBeatState
 				}
 			});
 			script.setVariable("generateStaticArrow", function(babyArrow:StrumNote, i:Int) {
-					babyArrow.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas(engineSettings.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets') : Paths.getSparrowAtlas(engineSettings.customArrowSkin.toLowerCase(), 'skins');
+					babyArrow.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas(engineSettings.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets', 'shared') : Paths.getSparrowAtlas(engineSettings.customArrowSkin.toLowerCase(), 'skins');
 					
 					
 					babyArrow.animation.addByPrefix('green', 'arrowUP');
@@ -2394,10 +2395,8 @@ class PlayState extends MusicBeatState
 							// swagRect.height *= 2;
 							// trace(swagRect);
 
-							var h = (strumPos - (daNote.y + (-Conductor.stepCrochet * (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2))))) / daNote.scale.y;
-							// trace(h);
+							var h = (strumPos - (daNote.y - daNote.offset.y + (daNote.isLongSustain ? (-Conductor.stepCrochet * (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2)) / 2) : 0))) / daNote.scale.y;
 							var swagRect = new FlxRect(0, daNote.frameHeight - h, daNote.width * 2, daNote.frameHeight + h);
-							// trace(swagRect);
 							daNote.clipRect = swagRect;
 						}
 					} else {

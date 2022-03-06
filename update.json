@@ -1,10 +1,9 @@
 {
     "updateLog" : [
-        "1.6.1 - DAY ONE PATCH",
+        "1.7.0 - CUSTOM STATES AND MENUS",
         "",
-        "- Fixed Downscroll sustain notes being off",
-        "- Fixed Spirit not loading",
-        "- Fixed Week 6 notes motion blur"
+        "- /!\\ Added Custom States",
+        "- Fixed Downscroll's long strums behaving weirdly"
     ],
     "version" : [1,6,1],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"

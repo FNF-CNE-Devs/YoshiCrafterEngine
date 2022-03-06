@@ -89,7 +89,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		ModSupport.setScriptDefaultVars(script, PlayState.songMod, {});
 		script.setVariable("character", bf);
 		script.setVariable("state", this);
-		script.setVariable("PlayState", this);
+		script.setVariable("PlayState", PlayState.current);
 
 		script.setVariable("create", function() {});
 		script.setVariable("update", function(elapsed:Float) {});
