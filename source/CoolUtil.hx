@@ -20,6 +20,31 @@ class CoolUtil
 	*/
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 
+	public static function loadSong(mod:String, song:String, ?difficulty:String):Bool {
+		if (difficulty == null) difficulty = "normal";
+
+
+		// 
+		// 
+		try {
+			PlayState._SONG = Song.loadModFromJson(Highscore.formatSong(song, difficulty), mod, song);
+		} catch(e) {
+			FlxG.state.openSubState(new MenuMessage('Error while loading the chart. Make sure the ${difficulty} chart for ${song} exists in the ${mod} mod.'));
+			return false;
+		}
+		PlayState._SONG.validScore = true;
+		PlayState.isStoryMode = false;
+		PlayState.songMod = mod;
+		PlayState.jsonSongName = song;
+		PlayState.storyDifficulty = difficulty;
+		PlayState.fromCharter = false;
+		return true;
+	}
+
+	public static function loadWeek(mod:String, week:String, ?difficulty:String) {
+		
+	}
+
 	public static function calculateAverageColorLight(icon:BitmapData) {
 		var r:Float = 0;
 		var g:Float = 0;
@@ -226,11 +251,13 @@ class CoolUtil
 	public static function playMenuSFX(id:Int) {
 		switch(id) {
 			case 0:
-				FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+				FlxG.sound.play(Paths.sound('scrollMenu'), 1);
 			case 1:
-				FlxG.sound.play(Paths.sound('confirmMenu'), 0.4);
+				FlxG.sound.play(Paths.sound('confirmMenu'), 1);
 			case 2:
-				FlxG.sound.play(Paths.sound('cancelMenu'), 0.4);
+				FlxG.sound.play(Paths.sound('cancelMenu'), 1);
+			case 3:
+				FlxG.sound.play(Paths.sound('disabledMenu'), 1);
 		}
 	}
 	

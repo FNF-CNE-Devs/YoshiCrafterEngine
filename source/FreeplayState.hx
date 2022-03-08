@@ -43,10 +43,12 @@ typedef FreeplaySong = {
 	public var difficulties:Array<String>;
 	public var color:String;
 	public var bpm:Null<Int>;
+	@:optional public var disabled:Bool;
 }
 class FreeplayState extends MusicBeatState
 {
 	public static var songs:Array<SongMetadata> = null;
+	public var _songs:Array<SongMetadata> = [];
 
 	var selector:FlxText;
 	var curSelected:Int = 0;
@@ -142,13 +144,21 @@ class FreeplayState extends MusicBeatState
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
 
-		for (i in 0...songs.length)
+		for (s in songs) if (Settings.engineSettings.data.freeplayShowAll || (s.mod.toLowerCase() == Settings.engineSettings.data.selectedMod.toLowerCase())) _songs.push(s);
+		if (_songs.length == 0) {
+			var md = new SongMetadata('No soundtrack', Settings.engineSettings.data.selectedMod.toLowerCase(), 'unknown');
+			md.difficulties = ["-"];
+			md.disabled = true;
+			_songs.push(md);
+		}
+		for (i in 0..._songs.length)
 		{
-			var songName = songs[i].songName;
-			if (songs[i].displayName != null) songName = songs[i].displayName;
+			var songName = _songs[i].songName;
+			if (_songs[i].displayName != null) songName = _songs[i].displayName;
 			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songName, true, false);
 			songText.isMenuItem = true;
 			songText.targetY = i;
+			if (_songs[i].disabled) for(c in songText.members) c.color = 0xFF888888;
 			if (songText.width > FlxG.width - 256) {
 				var ratio = (FlxG.width - 256) / songText.width;
 				for (m in songText.members) {
@@ -159,12 +169,13 @@ class FreeplayState extends MusicBeatState
 			}
 			grpSongs.add(songText);
 
-			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter, false, songs[i].mod);
+			var icon:HealthIcon = new HealthIcon(_songs[i].songCharacter, false, _songs[i].mod);
 			icon.sprTracker = songText;
 
 			// using a FlxGroup is too much fuss!
 			iconArray.push(icon);
 			add(icon);
+			
 
 			// songText.x += 40;
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
@@ -226,14 +237,14 @@ class FreeplayState extends MusicBeatState
 
 		add(scoreText);
 
-		for (k=>s in songs) {
+		for (k=>s in _songs) {
 			if ('${s.mod}:${s.songName.toLowerCase()}' == Settings.engineSettings.data.lastSelectedSong) {
 				curSelected = k;
 				break;
 			}
 		}
-		if (songs[curSelected].difficulties == null || songs[curSelected].difficulties.length == 0) songs[curSelected].difficulties = ["normal"];
-		curDifficulty = Std.int(Settings.engineSettings.data.lastSelectedSongDifficulty % songs[curSelected].difficulties.length);
+		if (_songs[curSelected].difficulties == null || _songs[curSelected].difficulties.length == 0) _songs[curSelected].difficulties = ["normal"];
+		curDifficulty = Std.int(Settings.engineSettings.data.lastSelectedSongDifficulty % _songs[curSelected].difficulties.length);
 		changeSelection();
 		changeDiff();
 
@@ -306,9 +317,9 @@ class FreeplayState extends MusicBeatState
 	// }
 
 	function updateAdvancedData() {
-		var mod = ModSupport.getModName(songs[curSelected].mod);
-		var song = songs[curSelected].songName;
-		var diff = songs[curSelected].difficulties[curDifficulty];
+		var mod = ModSupport.getModName(_songs[curSelected].mod);
+		var song = _songs[curSelected].songName;
+		var diff = _songs[curSelected].difficulties[curDifficulty];
 		var daSong = 'advanced/' + Highscore.formatSong('$mod:$song', diff);
 		#if debug
 			trace(daSong);
@@ -361,20 +372,24 @@ class FreeplayState extends MusicBeatState
 
 	function playSelectedSong() {
 		instPlaying = true;
+		if (_songs[curSelected].disabled) {
+			CoolUtil.playMenuSFX(3);
+			return;
+		}
 		currentInstPath = selectedSongInstPath;
-		var ost = Sound.fromFile(currentInstPath);
+		var ost = Paths.modInst(_songs[curSelected].songName, _songs[curSelected].mod, _songs[curSelected].difficulties[curDifficulty]);
 		if (ost != null) {
 			FlxG.sound.playMusic(ost, 0);
 			FlxG.sound.music.persist = true;
 		}
-		trace(songs[curSelected].bpm);
-		if (songs[curSelected].bpm == null) {
+		trace(_songs[curSelected].bpm);
+		if (_songs[curSelected].bpm == null) {
 			iconBumping = false;
 		} else {
 			Conductor.lastSongPos = 0;
 			Conductor.songPosition = 0;
 			Conductor.bpmChangeMap = [];
-			Conductor.changeBPM(songs[curSelected].bpm);
+			Conductor.changeBPM(_songs[curSelected].bpm);
 			iconBumping = true;
 		}
 	}
@@ -485,11 +500,11 @@ class FreeplayState extends MusicBeatState
 			
 		}
 
-		if (FlxControls.pressed.ENTER || (accepted && Settings.engineSettings.data.autoplayInFreeplay) || cursorAccept)
+		if (FlxControls.justPressed.ENTER || (FlxControls.justPressed.SPACE && Settings.engineSettings.data.autoplayInFreeplay && selectedSongInstPath == currentInstPath) || cursorAccept)
 		{
 			select();
 		}
-		if (FlxControls.pressed.SPACE) {
+		if (FlxControls.justPressed.SPACE) {
 			if (selectedSongInstPath == currentInstPath) {
 				select();
 			} else {
@@ -497,7 +512,7 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 
-		if (FlxControls.justReleased.CONTROL) {
+		if (FlxControls.justPressed.CONTROL) {
 			showAdvancedData();
 		}
 	}
@@ -524,45 +539,34 @@ class FreeplayState extends MusicBeatState
 	}
 
 	function select() {
-		var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), songs[curSelected].difficulties[curDifficulty]);
-
-		trace(poop);
-
-		Settings.engineSettings.data.lastSelectedSong = '${songs[curSelected].mod}:${songs[curSelected].songName.toLowerCase()}';
-		Settings.engineSettings.data.lastSelectedSongDifficulty = curDifficulty;
-		// PlayState._SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
-		try {
-			PlayState._SONG = Song.loadModFromJson(poop, songs[curSelected].mod, songs[curSelected].songName.toLowerCase());
-		} catch(e) {
-			openSubState(new MenuMessage('Error while loading the chart. Make sure the ${songs[curSelected].difficulties[curDifficulty]} chart for ${songs[curSelected].songName} exists in the ${songs[curSelected].mod} mod.'));
+		if (_songs[curSelected].disabled) {
+			CoolUtil.playMenuSFX(3);
 			return;
 		}
-		PlayState._SONG.validScore = true;
-		PlayState.isStoryMode = false;
-		PlayState.songMod = songs[curSelected].mod;
-		PlayState.jsonSongName = songs[curSelected].songName;
-		PlayState.storyDifficulty = songs[curSelected].difficulties[curDifficulty];
-		PlayState.fromCharter = false;
 
-		// PlayState.storyWeek = songs[curSelected].week;
-		trace('CUR WEEK' + PlayState.storyWeek);
+		// PlayState._SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
+		Settings.engineSettings.data.lastSelectedSong = '${_songs[curSelected].mod}:${_songs[curSelected].songName.toLowerCase()}';
+		Settings.engineSettings.data.lastSelectedSongDifficulty = curDifficulty;
+
+		CoolUtil.loadSong(_songs[curSelected].mod, _songs[curSelected].songName.toLowerCase(), _songs[curSelected].difficulties[curDifficulty]);
+		// trace('CUR WEEK' + PlayState.storyWeek);
 		LoadingState.loadAndSwitchState(new PlayState());
 	}
 
 	function updateSongInstPath() {
-		selectedSongInstPath = Paths.getInstPath(songs[curSelected].songName, songs[curSelected].mod, songs[curSelected].difficulties[curDifficulty]);
+		selectedSongInstPath = Paths.getInstPath(_songs[curSelected].songName, _songs[curSelected].mod, _songs[curSelected].difficulties[curDifficulty]);
 	}
 	function changeDiff(change:Int = 0)
 	{
 		curDifficulty += change;
 
 		if (curDifficulty < 0)
-			curDifficulty = songs[curSelected].difficulties.length - 1;
-		if (curDifficulty >= songs[curSelected].difficulties.length)
+			curDifficulty = _songs[curSelected].difficulties.length - 1;
+		if (curDifficulty >= _songs[curSelected].difficulties.length)
 			curDifficulty = 0;
 
 		#if !switch
-		intendedScore = Highscore.getModScore(songs[curSelected].mod, songs[curSelected].songName, songs[curSelected].difficulties[curDifficulty]);
+		intendedScore = Highscore.getModScore(_songs[curSelected].mod, _songs[curSelected].songName, _songs[curSelected].difficulties[curDifficulty]);
 		#end
 		
 
@@ -575,8 +579,8 @@ class FreeplayState extends MusicBeatState
 		// 	case 2:
 		// 		diffText.text = "HARD";
 		// }
-		var dText = songs[curSelected].difficulties[curDifficulty].toUpperCase();
-		if (songs[curSelected].difficulties.length > 1) dText = '< $dText >';
+		var dText = _songs[curSelected].difficulties[curDifficulty].toUpperCase();
+		if (_songs[curSelected].difficulties.length > 1) dText = '< $dText >';
 		diffText.text = dText;
 
 		if (advancedBG.visible) {
@@ -592,37 +596,37 @@ class FreeplayState extends MusicBeatState
 		// // NGio .logEvent('Fresh');
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
-		var diff = songs[curSelected].difficulties[curDifficulty];
-		var oldNumDiff = songs[curSelected].difficulties.length;
+		var diff = _songs[curSelected].difficulties[curDifficulty];
+		var oldNumDiff = _songs[curSelected].difficulties.length;
 		curSelected += change;
 
 		if (curSelected < 0)
-			curSelected = songs.length - 1;
-		if (curSelected >= songs.length)
+			curSelected = _songs.length - 1;
+		if (curSelected >= _songs.length)
 			curSelected = 0;
 
 		if (colorTween == null) {
-			colorTween = FlxTween.color(bg, 1.5, bg.color, songs[curSelected].color, {ease: FlxEase.quintOut});
-		} else if (songs[curSelected].color == colorTween.color) {
+			colorTween = FlxTween.color(bg, 1.5, bg.color, _songs[curSelected].color, {ease: FlxEase.quintOut});
+		} else if (_songs[curSelected].color == colorTween.color) {
 
 		} else {
 			colorTween.cancel();
-			colorTween = FlxTween.color(bg, 1.5, bg.color, songs[curSelected].color, {ease: FlxEase.quintOut});
+			colorTween = FlxTween.color(bg, 1.5, bg.color, _songs[curSelected].color, {ease: FlxEase.quintOut});
 		}
 		
 
-		var difficultyShit = songs[curSelected].difficulties.indexOf(diff);
+		var difficultyShit = _songs[curSelected].difficulties.indexOf(diff);
 		if (difficultyShit != -1) {
 			curDifficulty = difficultyShit;
 		} else {
-			curDifficulty = Math.floor(curDifficulty / oldNumDiff * songs[curSelected].difficulties.length);
+			curDifficulty = Math.floor(curDifficulty / oldNumDiff * _songs[curSelected].difficulties.length);
 		}
 		changeDiff(0);
 
 		// selector.y = (70 * curSelected) + 30;
 
 		#if !switch
-		intendedScore = Highscore.getModScore(songs[curSelected].mod, songs[curSelected].songName, songs[curSelected].difficulties[curDifficulty]);
+		intendedScore = Highscore.getModScore(_songs[curSelected].mod, _songs[curSelected].songName, _songs[curSelected].difficulties[curDifficulty]);
 		// lerpScore = 0;
 		#end
 
@@ -635,7 +639,7 @@ class FreeplayState extends MusicBeatState
 		instPlaying = false;
 		instCooldown = 0;
 
-		modSourceText.text = ModSupport.getModName(songs[curSelected].mod);
+		modSourceText.text = ModSupport.getModName(_songs[curSelected].mod);
 		var bullShit:Int = 0;
 
 		for (i in 0...iconArray.length)
@@ -679,6 +683,7 @@ class SongMetadata
 	public var mod:String = "";
 	public var bpm:Null<Int> = null;
 	public var songCharacter:String = "";
+	public var disabled:Bool = false;
 
 	public var difficulties:Array<String> = ["Easy", "Normal", "Hard"];
 	public var color:FlxColor = FlxColor.fromRGB(165, 128, 255);

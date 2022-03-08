@@ -1129,6 +1129,20 @@ class OptionsMenu extends MusicBeatState
 			checkboxChecked: function() {return Settings.engineSettings.data.autopause;},
 			value: function() {return "";}
 		});
+		misc.options.push({
+			text : "Show all freeplay songs",
+			description : "When checked, will show all Freeplay songs in the Freeplay menu (with the selected mod's songs at the top). When unchecked, will hide every freeplay song except the ones from the selected mod. Checked by default. Please notice that mods can override that setting.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.freeplayShowAll = !Settings.engineSettings.data.freeplayShowAll;
+					o.checkboxChecked = Settings.engineSettings.data.freeplayShowAll;
+					o.check(Settings.engineSettings.data.freeplayShowAll);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.freeplayShowAll;},
+			value: function() {return "";}
+		});
 		// misc.options.push({
 		// 	text : "Use new charter",
 		// 	updateOnSelected: function(elapsed:Float, o:FNFOption) {

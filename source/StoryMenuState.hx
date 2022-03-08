@@ -460,19 +460,19 @@ class StoryMenuState extends MusicBeatState
 			PlayState.isStoryMode = true;
 			selectedWeek = true;
 
-			var diffic = "";
+			// var diffic = "";
 
-			switch (curDifficulty)
-			{
-				case 0:
-					diffic = '-easy';
-				case 2:
-					diffic = '-hard';
-			}
+			// switch (curDifficulty)
+			// {
+			// 	case 0:
+			// 		diffic = '-easy';
+			// 	case 2:
+			// 		diffic = '-hard';
+			// }
 
 			PlayState.storyDifficulty = weekData[curWeek].difficulties[curDifficulty].name;
 
-			PlayState._SONG = Song.loadModFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.songMod, PlayState.storyPlaylist[0].toLowerCase());
+			PlayState._SONG = Song.loadModFromJson(Highscore.formatSong(PlayState.storyPlaylist[0].toLowerCase(), weekData[curWeek].difficulties[curDifficulty].name), PlayState.songMod, PlayState.storyPlaylist[0].toLowerCase());
 			PlayState.jsonSongName = PlayState.storyPlaylist[0].toLowerCase();
 			PlayState.storyWeek = curWeek;
 			PlayState.campaignScore = 0;

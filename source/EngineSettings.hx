@@ -167,6 +167,8 @@ import flixel.FlxG;
 	@:keep public static var charEditor_showDadAndBF:Bool = true;
 	@:keep public static var combineNoteTypes:Bool = true;
 	@:keep public static var selectedMod:String = "Friday Night Funkin'"; // for ui stuff
+	@:keep public static var freeplayShowAll:Bool = true; // TODO!!!
+	@:keep public static var lastInstalledMods:Array<String> = ["Friday Night Funkin'", "YoshiEngine"];
 	
 	// @:keep public static var moveCameraInStageEditor:Bool = true;
 
