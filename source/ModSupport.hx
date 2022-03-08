@@ -1,5 +1,5 @@
 import haxe.EnumTools;
-import mod_support.ModState;
+import mod_support_stuff.ModState;
 import hscript.Expr;
 import openfl.utils.AssetLibrary;
 import openfl.utils.AssetManifest;

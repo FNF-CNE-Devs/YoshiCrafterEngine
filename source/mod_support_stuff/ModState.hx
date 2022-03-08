@@ -1,4 +1,4 @@
-package mod_support;
+package mod_support_stuff;
 
 import flixel.FlxBasic;
 import flixel.FlxG;

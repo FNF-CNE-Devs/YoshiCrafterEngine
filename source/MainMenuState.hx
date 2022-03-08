@@ -1,5 +1,8 @@
 package;
 
+import Script.HScript;
+import dev_toolbox.ToolboxMain;
+import mod_support_stuff.MenuOptions;
 import dev_toolbox.ToolboxMessage;
 import flixel.input.keyboard.FlxKey;
 import flixel.addons.ui.FlxUIButton;
@@ -31,35 +34,90 @@ using StringTools;
 
 class MainMenuState extends MusicBeatState
 {
+	var mainMenuScript:Script = null;
+
 	var curSelected:Int = 0;
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
 
+	// imagine yoshi engine on switch lmfao
 	#if !switch
-	var optionShit:Array<String> = ['story mode', 'freeplay', 'mods', 'donate', 'credits', 'options'];
+	// var optionShit:Array<String> = ['story mode', 'freeplay', 'mods', 'donate', 'credits', 'options'];
 	#else
-	var optionShit:Array<String> = ['story mode', 'freeplay', 'options'];
+	// var optionShit:Array<String> = ['story mode', 'freeplay', 'options'];
 	#end
+	var optionShit:MenuOptions = new MenuOptions();
+	var options(get, set):MenuOptions;
+	function get_options() {return optionShit;};
+	function set_options(o) {return optionShit = o;};
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
 	var backButton:FlxClickableSprite;
+	var fallBackBG:FlxSprite;
+	var bg:FlxSprite;
 
 	var factor(get, never):Float;
+
 	function get_factor() {
-		return 650 / optionShit.length;
+		return Math.min(650 / optionShit.length, 100);
 	}
 
 	override function create()
 	{
-        persistentUpdate = false;
+		optionShit.add('story mode', function() {
+			FlxG.switchState(new StoryMenuState());
+		}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'story mode basic', 'story mode white');
+		optionShit.add('freeplay', function() {
+			FlxG.switchState(new FreeplayState());
+		}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'freeplay basic', 'freeplay white');
+		optionShit.add('mods', function() {
+			FlxG.switchState(new ModMenuState());
+		}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'mods basic', 'mods white');
+		optionShit.add('donate', function() {
+			#if linux
+				Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
+			#else
+				FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
+			#end
+		}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'donate basic', 'donate white').direct = false;
+		optionShit.add('credits', function() {
+			FlxG.switchState(new CreditsState());
+		}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'credits basic', 'credits white');
+		optionShit.add('options', function() {
+			FlxTransitionableState.skipNextTransIn = true;
+			FlxTransitionableState.skipNextTransOut = true;
+			OptionsMenu.fromFreeplay = false;
+			// smooth af transition
+			FlxG.switchState(new OptionsMenu(0, -camFollow.y * 0.18));
+		}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'options basic', 'options white');
+
+        // persistentUpdate = false;
 		if (Settings.engineSettings.data.developerMode) {
-			optionShit.insert(4, 'toolbox');
+			optionShit.insert(4, 'toolbox', function() {
+				FlxG.switchState(new ToolboxMain());
+			}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'toolbox basic', 'toolbox white');
 		}
 		if (Settings.engineSettings.data.memoryOptimization) {
 			Paths.clearModCache();
 		}
 			
+		mainMenuScript = Script.create('${Paths.modsPath}/${Settings.engineSettings.data.selectedMod}/ui/MainMenuState');
+		var valid = true;
+		if (mainMenuScript == null) {
+			valid = false;
+			mainMenuScript = new HScript();
+		}
+		ModSupport.setScriptDefaultVars(mainMenuScript, Settings.engineSettings.data.selectedMod, {});
+		mainMenuScript.setVariable("create", function() {});
+		mainMenuScript.setVariable("update", function(elapsed:Float) {});
+		mainMenuScript.setVariable("beatHit", function(curBeat:Int) {});
+		mainMenuScript.setVariable("stepHit", function(curStep:Int) {});
+		mainMenuScript.setVariable("onSelect", function(obj:MenuOption) {});
+		mainMenuScript.setVariable("onSelectEnd", function(obj:MenuOption) {});
+		mainMenuScript.setVariable("state", this);
+		if (valid) mainMenuScript.loadFile('${Paths.modsPath}/${Settings.engineSettings.data.selectedMod}/ui/MainMenuState');
+		mainMenuScript.executeFunc("create");
 		#if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Main Menu", null);
@@ -68,23 +126,36 @@ class MainMenuState extends MusicBeatState
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 
+		var daFunkyMusicPath = Paths.music('freakyMenu');
+		if (Assets.exists(Paths.music('freakyMenu', 'mods/${Settings.engineSettings.data.selectedMod}')))
+			daFunkyMusicPath = Paths.music('freakyMenu', 'mods/${Settings.engineSettings.data.selectedMod}');
+
 		if (FlxG.sound.music != null)
 		{
 			if (!FlxG.sound.music.playing)
 			{
-				FlxG.sound.playMusic(Paths.music('freakyMenu'));
+				FlxG.sound.playMusic(daFunkyMusicPath);
 			}
 		} else {
-			FlxG.sound.playMusic(Paths.music('freakyMenu'));
+			FlxG.sound.playMusic(daFunkyMusicPath);
 		}
 
 		persistentUpdate = persistentDraw = true;
 
-		var fallBackBG:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xFFFDE871);
+		fallBackBG = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xFFFFFFFF);
+		fallBackBG.color = 0xFFFDE871;
 		fallBackBG.scrollFactor.set();
 		add(fallBackBG);
 
-		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
+		var menuBGPath = Paths.image('menuBG');
+		if (Assets.exists(Paths.image('menuBG', 'mods/${Settings.engineSettings.data.selectedMod}'))) {
+			menuBGPath = Paths.image('menuBG', 'mods/${Settings.engineSettings.data.selectedMod}');
+		}
+		var menuDesatPath = Paths.image('menuDesat');
+		if (Assets.exists(Paths.image('menuDesat', 'mods/${Settings.engineSettings.data.selectedMod}'))) {
+			menuDesatPath = Paths.image('menuDesat', 'mods/${Settings.engineSettings.data.selectedMod}');
+		}
+		bg = new FlxSprite(-80).loadGraphic(menuBGPath);
 		bg.scrollFactor.x = 0;
 		bg.scrollFactor.y = 0.18;
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
@@ -97,7 +168,7 @@ class MainMenuState extends MusicBeatState
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
 
-		magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuDesat'));
+		magenta = new FlxSprite(-80).loadGraphic(menuDesatPath);
 		magenta.scrollFactor.x = 0;
 		magenta.scrollFactor.y = 0.18;
 		magenta.setGraphicSize(Std.int(magenta.width * 1.1));
@@ -112,15 +183,15 @@ class MainMenuState extends MusicBeatState
 		menuItems = new FlxTypedGroup<FlxSprite>();
 		add(menuItems);
 
-		var tex = Paths.getSparrowAtlas('FNF_main_menu_assets');
 
-		for (i in 0...optionShit.length)
+		// troll
+		for (i=>option in optionShit.members)
 		{
 			// var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
 			var menuItem:FlxSprite = new FlxSprite(0, (FlxG.height / optionShit.length * i) + (FlxG.height / (optionShit.length * 2)));
-			menuItem.frames = tex;
-			menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
-			menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
+			menuItem.frames = option.frames;
+			menuItem.animation.addByPrefix('idle', option.idle, option.idleFPS == null ? 24 : option.idleFPS);
+			menuItem.animation.addByPrefix('selected', option.selected, option.selectedFPS == null ? 24 : option.selectedFPS);
 			menuItem.animation.play('idle');
 			menuItem.updateHitbox();
 			menuItem.ID = i;
@@ -164,6 +235,8 @@ class MainMenuState extends MusicBeatState
 		#end
 
 		super.create();
+		mainMenuScript.executeFunc("postCreate");
+		mainMenuScript.executeFunc("createPost");
 	}
 
 	var selectedSomethin:Bool = false;
@@ -173,10 +246,18 @@ class MainMenuState extends MusicBeatState
 	// }
 	override function update(elapsed:Float)
 	{
+		
+		mainMenuScript.executeFunc("update", [elapsed]);
 		super.update(elapsed);
 		if (subState != null) return;
 
+		if (Settings.engineSettings.data.developerMode) {
+			if (FlxControls.justPressed.F5) FlxG.resetState();
+			if (FlxControls.justPressed.F6) openSubState(new LogSubState());
+		}
+
 		if (FlxControls.justPressed.SEVEN) {
+			persistentUpdate = false;
 			if (Settings.engineSettings.data.developerMode) {
 				// psych engine shortcut lol
 				FlxG.switchState(new dev_toolbox.ToolboxMain());
@@ -238,73 +319,46 @@ class MainMenuState extends MusicBeatState
 		{
 			spr.screenCenter(X);
 		});
+		mainMenuScript.executeFunc("postUpdate", [elapsed]);
+		mainMenuScript.executeFunc("updatePost", [elapsed]);
 	}
 
 	function select() {
-		if (optionShit[curSelected] == 'donate')
-			{
-				#if linux
-				Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
-				#else
-				FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
-				#end
-			}
-			else
-			{
-				selectedSomethin = true;
-				FlxG.sound.play(Paths.sound('confirmMenu'));
+		var option = optionShit.members[curSelected];
+		mainMenuScript.executeFunc("onSelect", [option]);
+		if (option.direct == true)
+		{
+			mainMenuScript.executeFunc("onSelectEnd", [option]);
+			if (option.onSelect != null) option.onSelect();
+		}
+		else
+		{
+			selectedSomethin = true;
+			FlxG.sound.play(Paths.sound('confirmMenu'));
 
-				FlxFlicker.flicker(magenta, 1.1, 0.15, false);
+			FlxFlicker.flicker(magenta, 1.1, 0.15, false);
 
-				menuItems.forEach(function(spr:FlxSprite)
+			menuItems.forEach(function(spr:FlxSprite)
+			{
+				if (curSelected != spr.ID)
 				{
-					if (curSelected != spr.ID)
-					{
-						FlxTween.tween(spr, {alpha: 0}, 0.4, {
-							ease: FlxEase.quadOut,
-							onComplete: function(twn:FlxTween)
-							{
-								spr.kill();
-							}
-						});
-					}
-					else
-					{
-						FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
+					FlxTween.tween(spr, {alpha: 0}, 0.4, {
+						ease: FlxEase.quadOut,
+						onComplete: function(twn:FlxTween)
 						{
-							var daChoice:String = optionShit[curSelected];
-
-							switch (daChoice)
-							{
-								case 'story mode':
-									FlxG.switchState(new StoryMenuState());
-									trace("Story Menu Selected");
-								case 'freeplay':
-									FlxG.switchState(new FreeplayState());
-									trace("Freeplay Menu Selected");
-								
-								case 'mods':
-									FlxG.switchState(new ModMenuState());
-									trace ("Mods Menu Selected");
-								
-								case 'credits':
-									FlxG.switchState(new CreditsState());
-									trace ("Credits Menu Selected");
-								
-								case 'toolbox':
-									FlxG.switchState(new dev_toolbox.ToolboxMain());
-									trace ("Developer Toolbox Selected");
-
-								case 'options':
-									FlxTransitionableState.skipNextTransIn = true;
-									FlxTransitionableState.skipNextTransOut = true;
-									OptionsMenu.fromFreeplay = false;
-									FlxG.switchState(new OptionsMenu(0, -camFollow.y * 0.18));
-							}
-						});
-					}
-				});
-			}
+							spr.kill();
+						}
+					});
+				}
+				else
+				{
+					FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
+					{
+						if (option.onSelect != null) option.onSelect();
+					});
+				}
+			});
+		}
 	}
 
 	function changeItem(huh:Int = 0)
