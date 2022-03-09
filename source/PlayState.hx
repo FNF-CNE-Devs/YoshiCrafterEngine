@@ -159,6 +159,11 @@ class PlayState extends MusicBeatState
 	public var vocals:FlxSound;
 	public var inst:FlxSound;
 
+	public var section(get, null):SwagSection;
+	private function get_section() {
+		return PlayState.SONG.notes[Std.int(curStep / 16)];
+	}
+
 	public static var jsonSongName:String = "";
 
 	public var songPercentPos(get, null):Float;
@@ -1525,6 +1530,9 @@ class PlayState extends MusicBeatState
 				if (note.isSustainNote) {
 					// note.canBeHit = (note.strumTime - (Conductor.stepCrochet * 0.6) < Conductor.songPosition) && (note.strumTime + (Conductor.stepCrochet) > Conductor.songPosition);
 					note.canBeHit = (note.strumTime + note.maxEarlyDiff > Conductor.songPosition && note.strumTime - Conductor.stepCrochet < Conductor.songPosition);
+					if (note.prevSusNote != null)
+						if (!note.prevSusNote.isSustainNote)
+							note.canBeHit = (note.strumTime - note.maxEarlyDiff < Conductor.songPosition && (note.prevSusNote.wasGoodHit || note.prevSusNote.strumTime < Conductor.songPosition));
 				} else {
 					note.canBeHit = (note.strumTime - note.maxEarlyDiff < Conductor.songPosition && note.strumTime + note.maxLateDiff > Conductor.songPosition);
 				}
@@ -1579,13 +1587,7 @@ class PlayState extends MusicBeatState
 						note.animation.addByPrefix('holdpiece', "red hold piece");
 				}
 
-				note.animation.play("scroll");
-				if (note.isSustainNote) {
-					if (note.prevNote != null)
-						if (note.prevNote.animation.curAnim.name == "holdend")
-							note.prevNote.animation.play("holdpiece");
-					note.animation.play("holdend");
-				}
+				
 			});
 			script.setVariable("generateStaticArrow", function(babyArrow:StrumNote, i:Int) {
 					babyArrow.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas(engineSettings.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets', 'shared') : Paths.getSparrowAtlas(engineSettings.customArrowSkin.toLowerCase(), 'skins');
@@ -1717,6 +1719,8 @@ class PlayState extends MusicBeatState
 				var susLength:Float = swagNote.sustainLength;
 
 				susLength = susLength / Conductor.stepCrochet;
+
+				var prevSusNote = swagNote;
 				// if (!engineSettings.downscroll) unspawnNotes.push(swagNote);
 
 				// naaaaah i'm not adding this in
@@ -1729,6 +1733,7 @@ class PlayState extends MusicBeatState
 					sustainNote.scrollFactor.set();
 					sustainNote.noteOffset.y -= Note.swagWidth / 2;
 					sustainNote.alpha *= (engineSettings.transparentSubstains) ? 0.6 : 1;
+					sustainNote.prevSusNote = prevSusNote;
 					unspawnNotes.push(sustainNote);
 
 					sustainNote.mustPress = gottaHitNote;
@@ -1737,6 +1742,8 @@ class PlayState extends MusicBeatState
 					{
 						sustainNote.x += guiSize.x / 2; // general offset
 					}
+
+					prevSusNote = sustainNote;
 				}
 
 				// if (engineSettings.downscroll) ;
@@ -2313,7 +2320,7 @@ class PlayState extends MusicBeatState
 
 					// note velocity had no effect lmfao stop trying to cancel the engine cause of it
 					
-					if (daNote.tooLate && daNote.mustPress)
+					if (daNote.tooLate && daNote.mustPress && (!daNote.isSustainNote || daNote.prevSusNote == null || daNote.prevSusNote.isSustainNote || (!daNote.prevSusNote.isSustainNote && !daNote.prevSusNote.wasGoodHit)))
 					{
 						daNote.script.setVariable("note", daNote);
 						daNote.script.executeFunc("onMiss", [daNote.noteData % PlayState.SONG.keyNumber]);
@@ -3212,7 +3219,7 @@ class PlayState extends MusicBeatState
 							// botplayHitNotes.push(daNote);
 							justPressedArray[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber] = true; // (Math.abs(daNote.strumTime - Conductor.songPosition) < elapsed * 1000) || 
 						} else if (daNote.isSustainNote) {
-							botplayNoteHitMoment[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber] = Math.max(Conductor.songPosition, botplayNoteHitMoment[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber]);
+							botplayNoteHitMoment[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber] = Math.max(Conductor.songPosition + Conductor.stepCrochet, botplayNoteHitMoment[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber]);
 							pressedArray[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber] = true; // (Math.abs(daNote.strumTime - Conductor.songPosition) < elapsed * 1000) || 
 						}
 						

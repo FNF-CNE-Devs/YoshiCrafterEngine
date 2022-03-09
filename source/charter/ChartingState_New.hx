@@ -1524,22 +1524,24 @@ class ChartingState_New extends MusicBeatState
 			}
 		}
 		for (note in _song.events) {
-			if (Math.floor(note.time / 10) >= Math.floor(curSection * (Conductor.crochet * 4) / 10) &&
-			    Math.floor(note.time / 10) < Math.floor((curSection + 1) * (Conductor.crochet * 4) / 10)) {
-				// adds an event
-				// trace("event detected!!");
-				var n = new CharterNote(note.time, -2, null, false, true);
-				n.setGraphicSize(GRID_SIZE, GRID_SIZE);
-				n.updateHitbox();
-				n.x = -GRID_SIZE;
-				n.y = Math.floor(getYfromStrum((note.time - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
-				curRenderedEvents.add(n);
-				add(n);
-				var text = new FlxUIText(-GRID_SIZE - 10, n.y + (n.height / 2), note.name + '(' + [for(e in note.parameters) '"' + e + '"'].join(", ") + ')');
-				text.x -= text.width;
-				text.y -= (text.height / 2);
-				add(text);
-				curRenderedEventsNames[n] = text;
+			if (note.name != null) {
+				if (Math.floor(note.time / 10) >= Math.floor(curSection * (Conductor.crochet * 4) / 10) &&
+					Math.floor(note.time / 10) < Math.floor((curSection + 1) * (Conductor.crochet * 4) / 10)) {
+					// adds an event
+					// trace("event detected!!");
+					var n = new CharterNote(note.time, -2, null, false, true);
+					n.setGraphicSize(GRID_SIZE, GRID_SIZE);
+					n.updateHitbox();
+					n.x = -GRID_SIZE;
+					n.y = Math.floor(getYfromStrum((note.time - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
+					curRenderedEvents.add(n);
+					add(n);
+					var text = new FlxUIText(-GRID_SIZE - 10, n.y + (n.height / 2), note.name + '(' + [for(e in note.parameters) '"' + e + '"'].join(", ") + ')');
+					text.x -= text.width;
+					text.y -= (text.height / 2);
+					add(text);
+					curRenderedEventsNames[n] = text;
+				}
 			}
 		}
 	}

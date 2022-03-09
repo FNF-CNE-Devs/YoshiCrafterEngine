@@ -1,5 +1,6 @@
 package;
 
+import mod_support_stuff.SwitchModSubstate;
 import flixel.input.keyboard.FlxKey;
 import openfl.media.Sound;
 import FreeplayGraph.GraphData;
@@ -146,7 +147,7 @@ class FreeplayState extends MusicBeatState
 
 		for (s in songs) if (Settings.engineSettings.data.freeplayShowAll || (s.mod.toLowerCase() == Settings.engineSettings.data.selectedMod.toLowerCase())) _songs.push(s);
 		if (_songs.length == 0) {
-			var md = new SongMetadata('No soundtrack', Settings.engineSettings.data.selectedMod.toLowerCase(), 'unknown');
+			var md = new SongMetadata('No soundtrack', Settings.engineSettings.data.selectedMod, 'unknown');
 			md.difficulties = ["-"];
 			md.disabled = true;
 			_songs.push(md);
@@ -207,9 +208,13 @@ class FreeplayState extends MusicBeatState
 		moreInfoText.antialiasing = true;
 		add(moreInfoText);
 
-		advancedBG = new FlxSprite(scoreText.x - 6, 126).makeGraphic(Std.int(FlxG.width * 0.35), 720 - 126, 0xFF000000);
+		advancedBG = new FlxSprite(scoreText.x - 6, 126).makeGraphic(Std.int(FlxG.width * 0.35), 720 - 126 - 30, 0xFF000000);
 		advancedBG.alpha = 0.4;
 		add(advancedBG);
+
+		var bottomBG = new FlxSprite(0, FlxG.height - 30).makeGraphic(FlxG.width, 30, 0xFF000000);
+		bottomBG.alpha = 0.4;
+		add(bottomBG);
 
 		accuracyText = new FlxText(scoreText.x, moreInfoText.y + 32, 0, "Accuracy : ???% (N/A)", 24);
 		accuracyText.font = scoreText.font;
@@ -229,7 +234,7 @@ class FreeplayState extends MusicBeatState
 		add(graph);
 
 		if (!Settings.engineSettings.data.autoplayInFreeplay) {
-			var t = new FlxText(scoreBG.x + 5, 0, scoreBG.width - 10, "[Space] Listen to selected song");
+			var t = new FlxText(0, 0, FlxG.width, '[Space] Listen to selected song | Selected Mod: ${ModSupport.getModName(Settings.engineSettings.data.selectedMod)} - Press [Tab] to switch.');
 			t.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			t.y = 715 - t.height;
 			add(t);
@@ -411,6 +416,14 @@ class FreeplayState extends MusicBeatState
 	{
 		Conductor.songPosition = FlxG.sound.music == null ? 0 : FlxG.sound.music.time;
 		super.update(elapsed);
+		
+
+		if (Settings.engineSettings.data.developerMode) {
+			if (FlxControls.justPressed.F5) FlxG.resetState();
+			if (FlxControls.justPressed.F6) openSubState(new LogSubState());
+		}
+		if (FlxControls.justPressed.TAB) openSubState(new SwitchModSubstate());
+
 		shiftCooldown += elapsed;
 		for (i in iconArray) {
 			i.scale.x = i.scale.y = FlxMath.lerp(i.scale.x, 1, 0.50 * 60 * elapsed);
