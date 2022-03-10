@@ -142,6 +142,7 @@ class ModSupport {
         }
     }
     public static function reloadModsConfig() {
+        Assets.cache.clear();
         modConfig = [];
 
         // skins shit

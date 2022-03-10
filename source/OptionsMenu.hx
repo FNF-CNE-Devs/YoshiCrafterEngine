@@ -1314,22 +1314,25 @@ class OptionsMenu extends MusicBeatState
 		// FlxAtlasFrames.fromTexturePackerJson()
 		
 
-		var yBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGYoshi'));
-		yBG.setGraphicSize(Std.int(yBG.width * 1.1));
-		yBG.updateHitbox();
-		yBG.screenCenter();
+		// var yBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGYoshi'));
+		// yBG.setGraphicSize(Std.int(yBG.width * 1.1));
+		// yBG.updateHitbox();
+		// yBG.screenCenter();
+		var yBG = CoolUtil.addBG(this);
+		yBG.scrollFactor.set(1, 1);
 		yBG.y = -menuBGy + 23;
 		yBG.antialiasing = true;
 		add(yBG);
 
-		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		// var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		var menuBG = CoolUtil.addWhiteBG(this);
 		menuBG.color = 0xFFfd719b;
+		menuBG.scrollFactor.set(1, 1);
 		// menuBG.color = 0xFF494949;
-		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
-		menuBG.updateHitbox();
-		menuBG.screenCenter();
+		// menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
+		// menuBG.updateHitbox();
+		// menuBG.screenCenter();
 		menuBG.y = -menuBGy + 23;
-		// menuBG.color.
 		menuBG.antialiasing = true;
 		add(menuBG);
 
@@ -1536,6 +1539,6 @@ class OptionsMenu extends MusicBeatState
 		// FlxTween.tween(optionsAlphabets, {y: (FlxG.height / 2) - (69 / 2) - (curSelected * 80)}, 0.1, {ease : FlxEase.quadInOut});
 		// optionsAlphabets.y = ;
 
-		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+		CoolUtil.playMenuSFX(0);
 	}
 }

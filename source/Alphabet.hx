@@ -340,7 +340,7 @@ class AlphaCharacter extends FlxSprite
 	public function new(x:Float, y:Float, color:FlxColor)
 	{
 		super(x, y);
-		var tex = Paths.getSparrowAtlas('alphabet');
+		var tex = Paths.getCustomizableSparrowAtlas('alphabet');
 		frames = tex;
 
 		this.letterColor = color;

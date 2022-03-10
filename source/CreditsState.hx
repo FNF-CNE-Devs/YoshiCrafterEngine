@@ -163,7 +163,7 @@ class CreditsState extends MusicBeatState {
                 }
             }
         }
-        FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+        CoolUtil.playMenuSFX(0);
         changeSocial();
     }
     public function changeSocial(curChange:Int = 0) {
@@ -206,7 +206,7 @@ class CreditsState extends MusicBeatState {
         }
 
         if (controls.BACK) {
-			FlxG.sound.play(Paths.sound('cancelMenu'));
+			CoolUtil.playMenuSFX(2);
             FlxG.switchState(new MainMenuState());
         }
     }

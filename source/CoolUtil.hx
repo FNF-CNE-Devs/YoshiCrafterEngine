@@ -1,5 +1,6 @@
 package;
 
+import EngineSettings.Settings;
 import flixel.util.FlxColor;
 import openfl.display.BitmapData;
 import lime.ui.FileDialogType;
@@ -141,7 +142,9 @@ class CoolUtil
 
 
 	public static function addBG(f:FlxState) {
-		var bg = new FlxSprite(0,0).loadGraphic(Paths.image("menuBGYoshi", "preload"));
+		var p = Paths.image("menuBGYoshi", 'mods/${Settings.engineSettings.data.selectedMod}');
+		if (!Assets.exists(p)) p = Paths.image("menuBGYoshi", "preload");
+		var bg = new FlxSprite(0,0).loadGraphic(p);
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
 		bg.screenCenter();
 		f.add(bg);
@@ -149,7 +152,9 @@ class CoolUtil
 	}
 
 	public static function addWhiteBG(f:FlxState) {
-		var bg = new FlxSprite(0,0).loadGraphic(Paths.image("menuDesat", "preload"));
+		var p = Paths.image("menuDesat", 'mods/${Settings.engineSettings.data.selectedMod}');
+		if (!Assets.exists(p)) p = Paths.image("menuDesat", "preload");
+		var bg = new FlxSprite(0,0).loadGraphic(p);
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
 		bg.screenCenter();
 		bg.scrollFactor.set();
@@ -249,16 +254,20 @@ class CoolUtil
 	}
 
 	public static function playMenuSFX(id:Int) {
+		var soundId:String = 'scrollMenu';
 		switch(id) {
-			case 0:
-				FlxG.sound.play(Paths.sound('scrollMenu'), 1);
 			case 1:
-				FlxG.sound.play(Paths.sound('confirmMenu'), 1);
+				soundId = 'confirmMenu';
 			case 2:
-				FlxG.sound.play(Paths.sound('cancelMenu'), 1);
+				soundId = 'cancelMenu';
 			case 3:
-				FlxG.sound.play(Paths.sound('disabledMenu'), 1);
+				soundId = 'disabledMenu';
 		}
+		var mPath = Paths.sound(soundId, 'mods/${Settings.engineSettings.data.selectedMod}');
+		if (Assets.exists(mPath))
+			FlxG.sound.play(mPath);
+		else
+			FlxG.sound.play(Paths.sound(soundId), 1);
 	}
 	
 	public static function wrapFloat(value:Float, min:Float, max:Float) {

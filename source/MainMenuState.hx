@@ -253,9 +253,9 @@ class MainMenuState extends MusicBeatState
 		if (subState != null) return;
 
 		if (Settings.engineSettings.data.developerMode) {
-			if (FlxControls.justPressed.F5) FlxG.resetState();
 			if (FlxControls.justPressed.F6) openSubState(new LogSubState());
 		}
+		if (FlxControls.justPressed.F5) FlxG.resetState();
 		if (FlxControls.justPressed.TAB) openSubState(new SwitchModSubstate());
 
 		if (FlxControls.justPressed.SEVEN) {
@@ -295,13 +295,13 @@ class MainMenuState extends MusicBeatState
 		{
 			if (controls.UP_P)
 			{
-				FlxG.sound.play(Paths.sound('scrollMenu'));
+				CoolUtil.playMenuSFX(0);
 				changeItem(-1);
 			}
 
 			if (controls.DOWN_P)
 			{
-				FlxG.sound.play(Paths.sound('scrollMenu'));
+				CoolUtil.playMenuSFX(0);
 				changeItem(1);
 			}
 
@@ -336,7 +336,7 @@ class MainMenuState extends MusicBeatState
 		else
 		{
 			selectedSomethin = true;
-			FlxG.sound.play(Paths.sound('confirmMenu'));
+			CoolUtil.playMenuSFX(1);
 
 			FlxFlicker.flicker(magenta, 1.1, 0.15, false);
 
@@ -356,6 +356,7 @@ class MainMenuState extends MusicBeatState
 				{
 					FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
 					{
+						mainMenuScript.executeFunc("onSelectEnd", [option]);
 						if (option.onSelect != null) option.onSelect();
 					});
 				}

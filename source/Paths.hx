@@ -222,6 +222,14 @@ class Paths
 		return getPath('images/$key.png', IMAGE, library);
 	}
 
+	inline static public function customizableImage(key:String, ?library:String)
+	{
+		var mPath = image(key, 'mods/${Settings.engineSettings.data.selectedMod}');
+		if (!OpenFlAssets.exists(mPath))
+			mPath = image(key, library);
+		return mPath;
+	}
+
 	// inline static public function stageImage(key:String)
 	// {
 	// 	var p = ModSupport.song_stage_path;
@@ -236,6 +244,15 @@ class Paths
 	inline static public function getSparrowAtlas(key:String, ?library:String)
 	{
 		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
+	}
+
+	inline static public function getCustomizableSparrowAtlas(key:String, ?library:String)
+	{
+		var lib = 'mods/${Settings.engineSettings.data.selectedMod}';
+		if (!OpenFlAssets.exists(image(key, lib)) || !OpenFlAssets.exists(file('images/$key.xml', lib))) {
+			lib = library;
+		}
+		return FlxAtlasFrames.fromSparrow(image(key, lib), file('images/$key.xml', lib));
 	}
 
 	public static var cacheText:Map<String, String> = new Map<String, String>();

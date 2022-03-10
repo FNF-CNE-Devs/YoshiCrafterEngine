@@ -285,7 +285,7 @@ class TitleState extends MusicBeatState
 		// add(logoBl);
 
 		titleText = new FlxSprite(100, FlxG.height * 0.8);
-		titleText.frames = Paths.getSparrowAtlas('titleEnter');
+		titleText.frames = Paths.getCustomizableSparrowAtlas('titleEnter');
 		#if android
 			titleText.animation.addByPrefix('idle', "Android_Idle", 24);
 			titleText.animation.addByPrefix('press', "Android_Press", 24);
@@ -324,7 +324,7 @@ class TitleState extends MusicBeatState
 
 		credTextShit.visible = false;
 
-		ngSpr = new FlxSprite(0, FlxG.height * 0.52).loadGraphic(Paths.image('newgrounds_logo'));
+		ngSpr = new FlxSprite(0, FlxG.height * 0.52).loadGraphic(Paths.customizableImage('newgrounds_logo'));
 		add(ngSpr);
 		ngSpr.visible = false;
 		ngSpr.setGraphicSize(Std.int(ngSpr.width * 0.8));
@@ -458,7 +458,7 @@ class TitleState extends MusicBeatState
 			if (titleText != null) titleText.animation.play('press');
 
 			FlxG.camera.flash(FlxColor.WHITE, 1);
-			FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
+			CoolUtil.playMenuSFX(1);
 
 			transitioning = true;
 			// FlxG.sound.music.stop();
