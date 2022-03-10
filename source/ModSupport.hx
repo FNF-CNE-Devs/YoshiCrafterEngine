@@ -142,7 +142,12 @@ class ModSupport {
         }
     }
     public static function reloadModsConfig() {
-        Assets.cache.clear();
+        Assets.cache.clear('mods/');
+        Assets.cache.clear('shared');
+        Assets.cache.clear('preload');
+        openfl.utils.Assets.cache.clear('mods/');
+        openfl.utils.Assets.cache.clear('shared');
+        openfl.utils.Assets.cache.clear('preload');
         modConfig = [];
 
         // skins shit

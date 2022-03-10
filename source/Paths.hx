@@ -12,7 +12,7 @@ import sys.io.File;
 import lime.system.System;
 import lime.utils.AssetLibrary;
 import openfl.display.BitmapData;
-import lime.utils.Assets;
+import openfl.utils.Assets;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
