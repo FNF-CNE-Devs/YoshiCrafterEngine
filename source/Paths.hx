@@ -65,6 +65,11 @@ class Paths
 	
 	public static function getPath(file:String, type:AssetType, library:Null<String>)
 	{
+		file = file.replace("\\", "/");
+		while(file.contains("//")) {
+			file = file.replace("//", "/");
+		}
+		while(file.startsWith("/")) file = file.substr(1);
 		if (library == "~") library = "skins";
 		if (library != null)
 			return getLibraryPath(file, library);

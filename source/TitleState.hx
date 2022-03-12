@@ -68,6 +68,7 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+		reloadModsState = true;
 		trace(FlxControls.pressed);
 
 		if (!skipOldSkinCheck) {

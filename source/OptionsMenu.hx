@@ -1130,17 +1130,31 @@ class OptionsMenu extends MusicBeatState
 			value: function() {return "";}
 		});
 		misc.options.push({
-			text : "Show all freeplay songs",
-			description : "When checked, will show all Freeplay songs in the Freeplay menu (with the selected mod's songs at the top). When unchecked, will hide every freeplay song except the ones from the selected mod. Checked by default. Please notice that mods can override that setting.",
+			text : "Separate mods in menus",
+			description : "If checked, will separate each mod into their own respective list. For example, if the \"Friday Night Funkin'\" mod is selected, only songs and weeks from the Friday Night Funkin' mod will be shown in the menus. Mods with menu scripts will have this option on by default.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.freeplayShowAll = !Settings.engineSettings.data.freeplayShowAll;
-					o.checkboxChecked = Settings.engineSettings.data.freeplayShowAll;
-					o.check(Settings.engineSettings.data.freeplayShowAll);
+					o.checkboxChecked = !Settings.engineSettings.data.freeplayShowAll;
+					o.check(!Settings.engineSettings.data.freeplayShowAll);
 				}
 			},
 			checkbox: true,
-			checkboxChecked: function() {return Settings.engineSettings.data.freeplayShowAll;},
+			checkboxChecked: function() {return !Settings.engineSettings.data.freeplayShowAll;},
+			value: function() {return "";}
+		});
+		misc.options.push({
+			text : "Auto add new installed mods",
+			description : "If checked, will separate each mod into their own respective list. For example, if the \"Friday Night Funkin'\" mod is selected, only songs and weeks from the Friday Night Funkin' mod will be shown in the menus. Mods with menu scripts will have this option on by default.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.autoSwitchToLastInstalledMod = !Settings.engineSettings.data.autoSwitchToLastInstalledMod;
+					o.checkboxChecked = Settings.engineSettings.data.autoSwitchToLastInstalledMod;
+					o.check(Settings.engineSettings.data.autoSwitchToLastInstalledMod);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.autoSwitchToLastInstalledMod;},
 			value: function() {return "";}
 		});
 		// misc.options.push({

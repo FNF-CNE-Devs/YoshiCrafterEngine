@@ -66,6 +66,8 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
+		reloadModsState = true;
+		
 		optionShit.add('story mode', function() {
 			FlxG.switchState(new StoryMenuState());
 		}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'story mode basic', 'story mode white');
