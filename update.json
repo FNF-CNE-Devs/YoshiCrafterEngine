@@ -3,7 +3,8 @@
         "1.7.0 - CUSTOM STATES AND MENUS",
         "",
         "- /!\\ Added Custom States",
-        "- Fixed Downscroll's long strums behaving weirdly"
+        "- Fixed Downscroll's long strums behaving weirdly",
+        "- Pitch support for FlxSounds (including music)"
     ],
     "version" : [1,6,1],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"
