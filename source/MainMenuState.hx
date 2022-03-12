@@ -81,7 +81,7 @@ class MainMenuState extends MusicBeatState
 			#else
 				FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
 			#end
-		}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'donate basic', 'donate white').direct = false;
+		}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'donate basic', 'donate white').direct = true;
 		optionShit.add('credits', function() {
 			FlxG.switchState(new CreditsState());
 		}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'credits basic', 'credits white');
@@ -159,7 +159,7 @@ class MainMenuState extends MusicBeatState
 		bg = new FlxSprite(-80).loadGraphic(menuBGPath);
 		bg.scrollFactor.x = 0;
 		bg.scrollFactor.y = 0.18;
-		bg.setGraphicSize(Std.int(bg.width * 1.1));
+		bg.setGraphicSize(Std.int(bg.width * 1.2));
 		bg.updateHitbox();
 		bg.screenCenter();
 		bg.antialiasing = true;
@@ -172,7 +172,7 @@ class MainMenuState extends MusicBeatState
 		magenta = new FlxSprite(-80).loadGraphic(menuDesatPath);
 		magenta.scrollFactor.x = 0;
 		magenta.scrollFactor.y = 0.18;
-		magenta.setGraphicSize(Std.int(magenta.width * 1.1));
+		magenta.setGraphicSize(Std.int(magenta.width * 1.2));
 		magenta.updateHitbox();
 		magenta.screenCenter();
 		magenta.visible = false;
