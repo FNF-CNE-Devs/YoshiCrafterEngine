@@ -2123,8 +2123,11 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			// Conductor.songPosition = FlxG.sound.music.time;
-			Conductor.songPosition += FlxG.elapsed * 1000;
+			if (FlxG.sound.music.time == Conductor.songPositionOld)
+				Conductor.songPosition += FlxG.elapsed * 1000;
+			else
+				Conductor.songPosition = Conductor.songPositionOld = FlxG.sound.music.time;
+			
 
 			if (!paused)
 			{

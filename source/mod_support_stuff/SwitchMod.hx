@@ -23,13 +23,11 @@ class SwitchMod extends FlxTypedSpriteGroup<FlxSprite> {
         modTitle.x = 160;
         add(modTitle);
 
-        Thread.create(function() {
-            var bmap = Assets.getBitmapData(modImage);
-            if (bmap != null && icon.colorTransform != null) {
-                icon.loadGraphic(bmap);
-                icon.setGraphicSize(150, 150);
-                icon.updateHitbox();
-            }
-        });
+        var bmap = Assets.getBitmapData(modImage);
+        if (bmap != null && icon.colorTransform != null) {
+            icon.loadGraphic(bmap);
+            icon.setGraphicSize(150, 150);
+            icon.updateHitbox();
+        }
     }
 }

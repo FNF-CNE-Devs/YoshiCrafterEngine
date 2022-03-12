@@ -35,6 +35,7 @@ class Conductor
 	 * Song position in milliseconds
 	 */
 	public static var songPosition:Float;
+	public static var songPositionOld:Float;
 
 	/**
 	 * Last song position in milliseconds

@@ -113,10 +113,16 @@ class FreeplayState extends MusicBeatState
 		
 		if (songs == null || Settings.engineSettings.data.developerMode) loadFreeplaySongs();
 		freeplayScript = Script.create('${Paths.getModsPath()}/${Settings.engineSettings.data.selectedMod}/ui/FreeplayState');
+		var validated = true;
 		if (freeplayScript == null) {
 			freeplayScript = new HScript();
+			validated = false;
 		}
-		freeplayScript.loadFile('${Paths.getModsPath()}/${Settings.engineSettings.data.selectedMod}/ui/FreeplayState');
+		ModSupport.setScriptDefaultVars(freeplayScript, '${Settings.engineSettings.data.selectedMod}', {});
+		freeplayScript.setVariable("state", this);
+		if (validated) {
+			freeplayScript.loadFile('${Paths.getModsPath()}/${Settings.engineSettings.data.selectedMod}/ui/FreeplayState');
+		}
 		freeplayScript.executeFunc("create", []);
 
 		// var initSonglist = ModSupport.getFreeplaySongs();
