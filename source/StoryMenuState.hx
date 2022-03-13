@@ -1,5 +1,7 @@
 package;
 
+import Script.HScript;
+import mod_support_stuff.SwitchModSubstate;
 import flixel.graphics.atlas.FlxAtlas;
 import flixel.graphics.frames.FlxTileFrames;
 import openfl.Assets;
@@ -73,6 +75,8 @@ class StoryMenuState extends MusicBeatState
 	var leftArrow:FlxSprite;
 	var rightArrow:FlxSprite;
 	var yellowBG:FlxSprite;
+
+	var menuScript:Script;
 
 	public static var weekData:Array<FNFWeek> = null;
 	public var activeWeekData:Array<FNFWeek> = [];
@@ -166,9 +170,29 @@ class StoryMenuState extends MusicBeatState
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
 		}
 
+		menuScript = Script.create('${Paths.getModsPath()}/${Settings.engineSettings.data.selectedMod}/ui/FreeplayState');
+		var validated = true;
+		if (menuScript == null) {
+			menuScript = new HScript();
+			validated = false;
+		}
+		ModSupport.setScriptDefaultVars(menuScript, '${Settings.engineSettings.data.selectedMod}', {});
+		menuScript.setVariable("state", this);
+		menuScript.setVariable("setWeekLocked", function(weekName:String, locked:Bool) {
+			if (weekName == null) PlayState.trace("Week Name is null");
+			for (w in weekData) {
+				if (w.mod == Settings.engineSettings.data.selectedMod)
+			}
+		});
+		// menuScript.setVariable("addSong", addSong);
+		if (validated) {
+			menuScript.loadFile('${Paths.getModsPath()}/${Settings.engineSettings.data.selectedMod}/ui/StoryMenuState');
+		}
+		menuScript.executeFunc("create", []);
+
 		persistentUpdate = persistentDraw = true;
 
-		scoreText = new FlxText(10, 10, 0, "SCORE: 49324858", 36);
+		scoreText = new FlxText(10, 10, 0, "SCORE: -", 36);
 		scoreText.setFormat("VCR OSD Mono", 32);
 
 		txtWeekTitle = new FlxText(FlxG.width * 0.7, 10, 0, "", 32);
@@ -181,7 +205,7 @@ class StoryMenuState extends MusicBeatState
 		rankText.size = scoreText.size;
 		rankText.screenCenter(X);
 
-		var ui_tex = Paths.getSparrowAtlas('campaign_menu_UI_assets');
+		var ui_tex = Paths.getCustomizableSparrowAtlas('campaign_menu_UI_assets');
 		yellowBG = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, FlxColor.WHITE);
 		yellowBG.color = 0xFFF9CF51;
 
@@ -226,7 +250,7 @@ class StoryMenuState extends MusicBeatState
 	
 				var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, weekButtons[i]);
 				weekThing.y += height;
-				weekThing.targetY = i;
+				weekThing.targetY = grpWeekText.length; //big brain
 				weekThing.antialiasing = true;
 				grpWeekText.add(weekThing);
 	
@@ -338,6 +362,17 @@ class StoryMenuState extends MusicBeatState
 		// difficultySelectors.add(sprDifficulty);
 		
 
+		if (activeWeekData.length <= 0) {
+			add(yellowBG);
+			add(grpWeekCharacters);
+			add(txtTracklist);
+			// add(rankText);
+			add(scoreText);
+			add(txtWeekTitle);
+			
+			super.create();
+			return;
+		}
 		leftArrow = new FlxSprite(FlxG.width - (1280 - (1190 - 175 + 48)), grpWeekText.members[0].y + 10);
 		leftArrow.frames = ui_tex;
 		leftArrow.animation.addByPrefix('idle', "arrow left");
@@ -373,7 +408,6 @@ class StoryMenuState extends MusicBeatState
 		// add(rankText);
 		add(scoreText);
 		add(txtWeekTitle);
-
 		updateText();
 
 		trace("Line 165");
@@ -383,6 +417,21 @@ class StoryMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		
+		if (Settings.engineSettings.data.developerMode) {
+			if (FlxControls.justPressed.F6) openSubState(new LogSubState());
+		}
+		if (FlxControls.justPressed.F5) FlxG.resetState();
+		if (FlxControls.justPressed.TAB) {
+			persistentUpdate = false;
+			openSubState(new SwitchModSubstate());
+		}
+		
+		if (activeWeekData.length <= 0) {
+			if (controls.BACK) FlxG.switchState(new MainMenuState());
+			super.update(elapsed);
+			return;
+		}
 		// scoreText.setFormat('VCR OSD Mono', 32);
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.5 * 60 * elapsed));
 

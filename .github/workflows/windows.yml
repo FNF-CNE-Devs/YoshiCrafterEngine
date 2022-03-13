@@ -46,7 +46,7 @@ jobs:
           haxelib git faxe https://github.com/uhrobots/faxe
           haxelib git polymod https://github.com/MasterEric/polymod.git
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
-          haxelib run lime build windows
+          haxelib run lime build windows -no dce
           
       - uses: actions/upload-artifact@v2
         with:

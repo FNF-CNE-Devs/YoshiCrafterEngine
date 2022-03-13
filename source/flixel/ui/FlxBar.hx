@@ -61,6 +61,11 @@ class FlxBar extends FlxSprite
 	public var percent(get, set):Float;
 
 	/**
+	 * The percentage of how full the bar is (a value between 0 and 100)
+	 */
+	public var floorPercent(get, null):Int;
+
+	/**
 	 * The current value - must always be between min and max
 	 */
 	@:isVar
@@ -812,7 +817,7 @@ class FlxBar extends FlxSprite
 				if (frontFrames != null)
 				{
 					_filledFlxRect.copyFromFlash(_filledBarRect).round();
-					if (Std.int(percent) > 0)
+					if (floorPercent > 0)
 					{
 						_frontFrame = frontFrames.frame.clipTo(_filledFlxRect, _frontFrame);
 					}
@@ -855,7 +860,7 @@ class FlxBar extends FlxSprite
 		if (alpha == 0)
 			return;
 
-		if (percent > 0 && _frontFrame.type != FlxFrameType.EMPTY)
+		if (floorPercent > 0 && _frontFrame.type != FlxFrameType.EMPTY)
 		{
 			for (camera in cameras)
 			{
@@ -921,6 +926,17 @@ class FlxBar extends FlxSprite
 
         // why the fuck would we need to floor that it's literally returning as a float
 		return ((value - min) / range) * _maxPercent;
+	}
+
+
+	function get_floorPercent():Int
+	{
+		if (value > max)
+		{
+			return _maxPercent;
+		}
+
+		return Math.floor((value - min) / range * _maxPercent);
 	}
 
 	function set_percent(newPct:Float):Float

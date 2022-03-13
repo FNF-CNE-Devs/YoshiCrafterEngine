@@ -3,8 +3,6 @@ package;
 import flixel.addons.plugin.control.FlxControl;
 import flixel.group.FlxSpriteGroup;
 import sys.io.File;
-import com.akifox.asynchttp.HttpResponse;
-import com.akifox.asynchttp.HttpRequest;
 import sys.FileSystem;
 import haxe.Exception;
 import haxe.Json;
@@ -471,33 +469,22 @@ class TitleState extends MusicBeatState
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
 				// Check if version is outdated
-				var request = new HttpRequest({
-					url: #if pastebinTest
-					"https://pastebin.com/raw/rtVtsaiB"
-					#elseif timeoutTest
-					"http://10.255.255.1/test"
-					#else
-					"https://raw.githubusercontent.com/YoshiCrafter29/YoshiEngine/main/update.json"
-					#end,
-					async: true,
-					callback: function(response:HttpResponse) {
+				Thread.create(function() {
+					try {
+						var data = Http.requestUrl("https://raw.githubusercontent.com/YoshiCrafter29/YoshiEngine/main/update.json");
 						updateIcon.visible = false;
 						updateAlphabet.visible = false;
 						updateRibbon.visible = false;
-						if (response.isOK) {
-							onUpdateData(response.content);
-						} else {
-							trace(response.status);
-							FlxG.switchState(new MainMenuState());
-						}
+						onUpdateData(data);
+					} catch(e) {
+						trace(e);
+						FlxG.switchState(new MainMenuState());
 					}
 				});
 				updateIcon.visible = true;
 				updateAlphabet.visible = true;
 				updateRibbon.visible = true;
 				updateRibbon.alpha = 0;
-				request.send();
-				
 			});
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}

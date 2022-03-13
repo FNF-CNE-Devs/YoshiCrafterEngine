@@ -235,6 +235,9 @@ class PlayState extends MusicBeatState
 	public var curSection:Int = 0;
 	
 	public var camFollow:FlxObject;
+	public var camFollowLerp(get, set):Float;
+	private function get_camFollowLerp():Float {return FlxG.camera.followLerp;}
+	private function set_camFollowLerp(v:Float):Float {return FlxG.camera.followLerp = v;}
 	
 	static public var prevCamFollow:FlxObject;
 	
@@ -959,6 +962,7 @@ class PlayState extends MusicBeatState
 		// doof.finishThing = startCountdown;
 
 		Conductor.songPosition = -5000;
+		Conductor.songPositionOld = -5000;
 
 		strumLine = new FlxSprite(0, (engineSettings.downscroll ? guiSize.y - 150 : 50)).makeGraphic(Std.int(guiSize.x), 10);
 		strumLine.scrollFactor.set();

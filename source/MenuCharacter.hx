@@ -13,7 +13,7 @@ class MenuCharacter extends FlxSprite
 
 		this.character = character;
 
-		var tex = Paths.getSparrowAtlas('campaign_menu_UI_characters');
+		var tex = Paths.getCustomizableSparrowAtlas('campaign_menu_UI_main_characters'); // just drop the campaign_menu_UI_main_characters.png and xml file in your mod and they'll be used instead of the og ones, kind of a lazy fix for now
 		frames = tex;
 
 		animation.addByPrefix('bf', "BF idle dance white", 24);

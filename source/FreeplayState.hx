@@ -682,19 +682,21 @@ class FreeplayState extends MusicBeatState
 
 	function changeSelection(change:Int = 0)
 	{
-		if (freeplayScript.executeFunc("onChangeSelection", [curSelected, change]) != false) {
+		var diff = _songs[curSelected].difficulties[curDifficulty];
+		var oldNumDiff = _songs[curSelected].difficulties.length;
+		var oldSelected = curSelected;
+		curSelected += change;
+
+		if (curSelected < 0)
+			curSelected = _songs.length - 1;
+		if (curSelected >= _songs.length)
+			curSelected = 0;
+
+		if (freeplayScript.executeFunc("onChangeSelection", [curSelected]) != false) {
 
 			// // NGio .logEvent('Fresh');
 			CoolUtil.playMenuSFX(0);
 
-			var diff = _songs[curSelected].difficulties[curDifficulty];
-			var oldNumDiff = _songs[curSelected].difficulties.length;
-			curSelected += change;
-
-			if (curSelected < 0)
-				curSelected = _songs.length - 1;
-			if (curSelected >= _songs.length)
-				curSelected = 0;
 
 			if (colorTween == null) {
 				colorTween = FlxTween.color(bg, 1.5, bg.color, _songs[curSelected].color, {ease: FlxEase.quintOut});
@@ -760,8 +762,10 @@ class FreeplayState extends MusicBeatState
 			}
 			freeplayScript.executeFunc("onChangeSelectionPost", [curSelected]);
 		}
-		else
+		else {
+			curSelected = oldSelected;
 			CoolUtil.playMenuSFX(3);
+		}
 	}
 
 	public override function destroy() {

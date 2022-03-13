@@ -3,8 +3,12 @@
         "1.7.0 - CUSTOM STATES AND MENUS",
         "",
         "- /!\\ Added Custom States",
+        "- Added support for replaceable menu assets",
         "- Fixed Downscroll's long strums behaving weirdly",
-        "- Pitch support for FlxSounds (including music)"
+        "- Pitch support for FlxSounds (including music)",
+        "- Fixed input system issues and note shaking.",
+        "- Fixed FlxBar and FlxCamera",
+        "- Removed akifox-asynchttp"
     ],
     "version" : [1,6,1],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"
