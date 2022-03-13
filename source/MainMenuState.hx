@@ -284,7 +284,7 @@ class MainMenuState extends MusicBeatState
 		}
 		if (FlxG.mouse.pressed && !selectedSomethin
 			#if MOBILE_UI
-			&& !backButton.hovering
+			&& !backButton.hovering && mouseControls
 			#end
 			)
 			select();
