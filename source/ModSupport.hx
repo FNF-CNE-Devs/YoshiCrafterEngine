@@ -199,7 +199,6 @@ class ModSupport {
             if (reloadAll || modConfig[mod] == null)
                 newMod = newMod || loadMod(mod);
         Settings.engineSettings.data.lastInstalledMods = mods;
-        trace(Settings.engineSettings.data.lastInstalledMods);
         return newMod;
     }
 

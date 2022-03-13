@@ -76,6 +76,7 @@ class StoryMenuState extends MusicBeatState
 	var leftArrow:FlxSprite;
 	var rightArrow:FlxSprite;
 	var yellowBG:FlxSprite;
+	var blackBG:FlxSprite;
 
 	var switchMod:FlxText;
 
@@ -205,6 +206,8 @@ class StoryMenuState extends MusicBeatState
 		var ui_tex = Paths.getCustomizableSparrowAtlas('campaign_menu_UI_assets');
 		yellowBG = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, FlxColor.WHITE);
 		yellowBG.color = 0xFFF9CF51;
+		blackBG = new FlxSprite(0, 0).makeGraphic(FlxG.width, 56, FlxColor.BLACK);
+		blackBG.color = 0xFFF9CF51;
 
 		grpWeekText = new FlxTypedGroup<MenuItem>();
 		add(grpWeekText);
@@ -394,6 +397,7 @@ class StoryMenuState extends MusicBeatState
 		add(switchMod);
 
 		if (activeWeekData.length <= 0) {
+			add(blackBG);
 			add(yellowBG);
 			add(grpWeekCharacters);
 			add(txtTracklist);
@@ -427,6 +431,7 @@ class StoryMenuState extends MusicBeatState
 
 		trace("Line 150");
 
+		add(blackBG);
 		add(yellowBG);
 		add(grpWeekCharacters);
 		for(c in modWeekCharacters) add(c);

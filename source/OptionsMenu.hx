@@ -1334,6 +1334,7 @@ class OptionsMenu extends MusicBeatState
 		// yBG.screenCenter();
 		var yBG = CoolUtil.addBG(this);
 		yBG.scrollFactor.set(1, 1);
+		yBG.scale.x = yBG.scale.y = 1.2;
 		yBG.y = -menuBGy + 23;
 		yBG.antialiasing = true;
 		add(yBG);
