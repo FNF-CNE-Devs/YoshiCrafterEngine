@@ -206,13 +206,10 @@ class FreeplayState extends MusicBeatState
 		// 	songs.push(new SongMetadata(splittedThingy[1], splittedThingy[0], splittedThingy[2]));
 		// }
 
-		/* 
 			if (FlxG.sound.music != null)
 			{
-				if (!FlxG.sound.music.playing)
-					FlxG.sound.playMusic(Paths.music('freakyMenu'));
+				CoolUtil.playMenuMusic();
 			}
-		 */
 
 		#if desktop
 		// Updating Discord Rich Presence

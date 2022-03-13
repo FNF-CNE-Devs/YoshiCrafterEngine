@@ -42,6 +42,10 @@ class SwitchModSubstate extends MusicBeatSubstate {
         if (controls.UP_P) changeSelection(-1);
         if (controls.DOWN_P) changeSelection(1);
         if (controls.ACCEPT) {
+            if (FlxG.sound.music != null) {
+                FlxG.sound.music.fadeOut(0.25, 0);
+                FlxG.sound.music.persist = false;
+            }
             CoolUtil.playMenuSFX(1);
             Settings.engineSettings.data.selectedMod = mods[selected].modDataName;
             close();

@@ -151,6 +151,16 @@ class CoolUtil
 		return bg;
 	}
 
+	public static function playMenuMusic(fade:Bool = false, force:Bool = false) {
+		if (force || FlxG.sound.music == null || !FlxG.sound.music.playing) {
+			var daFunkyMusicPath = Paths.music('freakyMenu');
+			if (Assets.exists(Paths.music('freakyMenu', 'mods/${Settings.engineSettings.data.selectedMod}')))
+				daFunkyMusicPath = Paths.music('freakyMenu', 'mods/${Settings.engineSettings.data.selectedMod}');
+			FlxG.sound.playMusic(daFunkyMusicPath, fade ? 0 : 1);
+			if (fade) FlxG.sound.music.fadeIn(4, 0, 0.7);
+		}
+	}
+
 	public static function addWhiteBG(f:FlxState) {
 		var p = Paths.image("menuDesat", 'mods/${Settings.engineSettings.data.selectedMod}');
 		if (!Assets.exists(p)) p = Paths.image("menuDesat", "preload");

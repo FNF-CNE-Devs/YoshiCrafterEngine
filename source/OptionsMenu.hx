@@ -1487,7 +1487,7 @@ class OptionsMenu extends MusicBeatState
 		if (controls.DOWN_P)
 			changeSelection(1);
 		
-		optionsAlphabets.y = FlxMath.lerp(optionsAlphabets.y, (FlxG.height / 2) - (69 / 2) - (curSelected * 80), CoolUtil.wrapFloat(0.1 / 60 / elapsed, 0, 1));
+		optionsAlphabets.y = FlxMath.lerp(optionsAlphabets.y, (FlxG.height / 2) - (69 / 2) - (curSelected * 80), CoolUtil.wrapFloat(0.1 * 60 * elapsed, 0, 1));
 		
 
 		for (i in 0...optionsAlphabets.members.length) {

@@ -130,19 +130,17 @@ class MainMenuState extends MusicBeatState
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 
-		var daFunkyMusicPath = Paths.music('freakyMenu');
-		if (Assets.exists(Paths.music('freakyMenu', 'mods/${Settings.engineSettings.data.selectedMod}')))
-			daFunkyMusicPath = Paths.music('freakyMenu', 'mods/${Settings.engineSettings.data.selectedMod}');
+		CoolUtil.playMenuMusic();
 
-		if (FlxG.sound.music != null)
-		{
-			if (!FlxG.sound.music.playing)
-			{
-				FlxG.sound.playMusic(daFunkyMusicPath);
-			}
-		} else {
-			FlxG.sound.playMusic(daFunkyMusicPath);
-		}
+		// if (FlxG.sound.music != null)
+		// {
+		// 	if (!FlxG.sound.music.playing)
+		// 	{
+		// 		FlxG.sound.playMusic(daFunkyMusicPath);
+		// 	}
+		// } else {
+		// 	FlxG.sound.playMusic(daFunkyMusicPath);
+		// }
 
 		persistentUpdate = persistentDraw = true;
 

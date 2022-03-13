@@ -2654,7 +2654,7 @@ class PlayState extends MusicBeatState
 	
 				if (storyPlaylist.length <= 0)
 				{
-					FlxG.sound.playMusic(Paths.music('freakyMenu'));
+					CoolUtil.playMenuMusic();
 	
 					transIn = FlxTransitionableState.defaultTransIn;
 					transOut = FlxTransitionableState.defaultTransOut;
