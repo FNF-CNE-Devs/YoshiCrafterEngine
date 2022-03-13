@@ -451,7 +451,7 @@ class StoryMenuState extends MusicBeatState
 	{
 		menuScript.executeFunc("preUpdate", [elapsed]);
 		
-		if (Settings.engineSettings.data.developerMode || FlxControls.justPressed.F6) {
+		if (Settings.engineSettings.data.developerMode && FlxControls.justPressed.F6) {
 			persistentUpdate = false;
 			openSubState(new LogSubState());
 		}
