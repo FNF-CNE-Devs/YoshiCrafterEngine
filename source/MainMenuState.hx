@@ -57,6 +57,7 @@ class MainMenuState extends MusicBeatState
 	var backButton:FlxClickableSprite;
 	var fallBackBG:FlxSprite;
 	var bg:FlxSprite;
+	var mouseControls:Bool = true;
 
 	var factor(get, never):Float;
 
@@ -269,7 +270,7 @@ class MainMenuState extends MusicBeatState
 				openSubState(new ThisAintPsych());
 			}
 		}
-		if ((FlxG.mouse.getScreenPosition().x != oldPos.x || FlxG.mouse.getScreenPosition().y != oldPos.y) && !selectedSomethin){
+		if ((FlxG.mouse.getScreenPosition().x != oldPos.x || FlxG.mouse.getScreenPosition().y != oldPos.y) && !selectedSomethin && mouseControls){
 			oldPos = FlxG.mouse.getScreenPosition();
 			for (i in 0...menuItems.length) {
 				// if (FlxG.mouse.overlaps(menuItems.members[i])) {
