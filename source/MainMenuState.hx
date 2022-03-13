@@ -206,7 +206,7 @@ class MainMenuState extends MusicBeatState
 			menuItems.add(menuItem);
 		}
 
-		FlxG.camera.follow(camFollow, null, 0.06 * 60 / Settings.engineSettings.data.fpsCap);
+		FlxG.camera.follow(camFollow, null, 0.06);
 
 		var fnfVer = Application.current.meta.get('version');
 		var yoshiEngineVer = Main.engineVer.join(".");

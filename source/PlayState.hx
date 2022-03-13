@@ -354,7 +354,7 @@ class PlayState extends MusicBeatState
 			FlxG.scaleMode = new RatioScaleMode();
 			FlxG.camera.width = 1280;
 			FlxG.camera.height = 720;
-			FlxG.camera.follow(camFollow, LOCKON, 0.04 * 60 / Settings.engineSettings.data.fpsCap);
+			FlxG.camera.follow(camFollow, LOCKON, 0.04);
 			camHUD.x = 0;
 			camHUD.y = 0;
 		}
@@ -983,7 +983,7 @@ class PlayState extends MusicBeatState
 
 		add(camFollow);
 
-		FlxG.camera.follow(camFollow, LOCKON, 0.04 * 60 / Settings.engineSettings.data.fpsCap);
+		FlxG.camera.follow(camFollow, LOCKON, 0.04);
 		FlxG.camera.zoom = defaultCamZoom;
 		FlxG.camera.focusOn(camFollow.getPosition());
 
