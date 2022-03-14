@@ -178,6 +178,7 @@ class FreeplayState extends MusicBeatState
 	}
 	override function create()
 	{
+		freeplayScript.executeFunc("preCreate", []);
 		reloadModsState = true;
 		// Assets.loadLibrary("songs");
 		
@@ -276,17 +277,18 @@ class FreeplayState extends MusicBeatState
 		graph.flipX = true;
 		graph.scale.x = graph.scale.y = 0.5;
 
+		freeplayScript.executeFunc("create", []);
 		
-		refresh();
+		add(advancedBG);
 		add(scoreBG);
 		add(diffText);
 		add(modSourceText);
 		add(moreInfoText);
-		add(advancedBG);
 		add(bottomBG);
 		add(accuracyText);
 		add(missesText);
 		add(graph);
+		refresh();
 
 		if (!Settings.engineSettings.data.autoplayInFreeplay) {
 			var t = new FlxText(0, 0, FlxG.width, '[Space] Listen to selected song | Selected Mod: ${ModSupport.getModName(Settings.engineSettings.data.selectedMod)} - Press [Tab] to switch.');
@@ -346,6 +348,7 @@ class FreeplayState extends MusicBeatState
 
 		super.create();
 		freeplayScript.executeFunc("createPost", []);
+		freeplayScript.executeFunc("postCreate", []);
 	}
 
 	// public function addSong(songName:String, modName:String, songCharacter:String)
@@ -413,8 +416,8 @@ class FreeplayState extends MusicBeatState
 				r.borderColor = FlxColor.BLACK;
 				r.color = h.color;
 				r.antialiasing = true;
-				add(r);
 				ratingTexts.push(r);
+				add(r);
 				tAm++;
 			}
 			shit.push({color : 0xFF222222, number : advancedData.misses});

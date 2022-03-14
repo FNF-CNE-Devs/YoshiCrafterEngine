@@ -52,7 +52,7 @@ class CreditsState extends MusicBeatState {
         add(socialThingy);
 
         camFollow = new FlxSprite(FlxG.width / 2, 0);
-        FlxG.camera.follow(camFollow, LOCKON, 0.04);
+        FlxG.camera.follow(camFollow, LOCKON, 0.08);
         FlxG.camera.zoom = 0.75;
 
         var mFolder = Paths.modsPath;

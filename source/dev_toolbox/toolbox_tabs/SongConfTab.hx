@@ -94,7 +94,7 @@ class SongConfTab extends ToolboxTab {
 
         var applyButton = new FlxUIButton(10, 650, "Apply Changes", function() {
             for(e in songConfJson.songs) {
-                if (e.name.toLowerCase() == songName.text) {
+                if (e.name.toLowerCase() == songName.text.toLowerCase()) {
                     songConfJson.songs.remove(e);
                     break;
                 }
@@ -110,12 +110,7 @@ class SongConfTab extends ToolboxTab {
             save();
         });
         applyButton.y -= applyButton.height;
-        var addScript = new FlxUIButton(10+applyButton.x+applyButton.width, applyButton.y, "Add Script", function() {
-            var array = [];
-            (array = [for(s in scripts) s.text]).push("");
-            updateScriptInputs(array);
-        });
-        var pushScript = new FlxUIButton(10 + addScript.x + addScript.width, applyButton.y, "Select Script", function() {
+        var pushScript = new FlxUIButton(10 + applyButton.x + applyButton.width, applyButton.y, "Add Script", function() {
 			home.openSubState(new FileExplorer(ToolboxHome.selectedMod, FileExplorerType.Script, "", function(p) {
 				var array = [];
 				var f = Path.withoutExtension(p).replace("\\", "/");
@@ -127,6 +122,11 @@ class SongConfTab extends ToolboxTab {
         var removeScript = new FlxUIButton(10+pushScript.x+pushScript.width, applyButton.y, "Remove Script", function() {
             var array = [];
             array = ([for(s in scripts) s.text]).splice(0, scripts.length - 1);
+            updateScriptInputs(array);
+        });
+        var addScript = new FlxUIButton(10+removeScript.x+removeScript.width, applyButton.y, "Add Empty", function() {
+            var array = [];
+            (array = [for(s in scripts) s.text]).push("");
             updateScriptInputs(array);
         });
 

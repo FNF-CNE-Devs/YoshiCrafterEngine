@@ -2,7 +2,6 @@ package dev_toolbox.stage_editor;
 
 import flixel.FlxSprite;
 import haxe.Json;
-import lime.ui.Window.Stage;
 import sys.io.File;
 import sys.FileSystem;
 import flixel.FlxG;

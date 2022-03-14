@@ -1342,6 +1342,7 @@ class OptionsMenu extends MusicBeatState
 		// var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		var menuBG = CoolUtil.addWhiteBG(this);
 		menuBG.color = 0xFFfd719b;
+		menuBG.scale.x = menuBG.scale.y = 1.2;
 		menuBG.scrollFactor.set(1, 1);
 		// menuBG.color = 0xFF494949;
 		// menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));

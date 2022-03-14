@@ -270,7 +270,6 @@ class StoryMenuState extends MusicBeatState
 			grpWeekText.add(weekThing);
 
 			weekThing.screenCenter(X);
-			weekThing.antialiasing = true;
 			height += weekThing.height + 20;
 
 			if (w.locked == true)
@@ -354,9 +353,8 @@ class StoryMenuState extends MusicBeatState
 
 		trace("Line 124");
 
-
 		for(week in weekData) {
-			if (week.mod == Settings.engineSettings.data.selectedMod || Settings.engineSettings.data.freeplayShowAll) {
+			if (week.mod == Settings.engineSettings.data.selectedMod) {
 				for (diff in week.difficulties) {
 					if (difficultySprites[diff.sprite] == null) {
 						var modsPath = Paths.modsPath;
