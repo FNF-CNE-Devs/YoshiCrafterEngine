@@ -1,5 +1,6 @@
 package dev_toolbox.file_explorer;
 
+import openfl.utils.Assets;
 import sys.io.Process;
 import haxe.io.Path;
 import sys.FileSystem;
@@ -221,6 +222,7 @@ class FileExplorer extends MusicBeatSubstate {
         upButton.resize(20, 20);
 
         var refreshButton = new FlxUIButton(upButton.x + upButton.width + 10, 10, "", function() {
+			ModSupport.loadMod(mod);
             navigateTo(path);
         });
         refreshButton.resize(20, 20);
