@@ -211,7 +211,7 @@ class MainMenuState extends MusicBeatState
 		var yoshiEngineVer = Main.engineVer.join(".");
 		var buildVer = Main.buildVer;
 		if (buildVer.trim() != "") buildVer = " " + buildVer.trim();
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, 'Yoshi Engine v$yoshiEngineVer$buildVer - FNF v$fnfVer - Selected Mod: ${ModSupport.getModName(Settings.engineSettings.data.selectedMod)} (Press TAB to switch)', 12);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, 'Yoshi Engine v$yoshiEngineVer$buildVer - FNF v$fnfVer - Selected Mod: ${ModSupport.getModName(Settings.engineSettings.data.selectedMod)} (Press \\ (Backslash) to switch)', 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
@@ -257,7 +257,7 @@ class MainMenuState extends MusicBeatState
 			if (FlxControls.justPressed.F6) openSubState(new LogSubState());
 		}
 		if (FlxControls.justPressed.F5) FlxG.resetState();
-		if (FlxControls.justPressed.TAB) openSubState(new SwitchModSubstate());
+		if (FlxControls.justPressed.BACKSLASH) openSubState(new SwitchModSubstate());
 
 		if (FlxControls.justPressed.SEVEN) {
 			persistentUpdate = false;
