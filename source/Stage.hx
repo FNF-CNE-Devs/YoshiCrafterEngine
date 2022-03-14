@@ -266,4 +266,8 @@ class Stage {
 		onBeatAnimSprites = [];
 		onBeatForceAnimSprites = [];
 	}
+	
+	public function update(elapsed:Float) {
+		// useless for now, but may add stuff
+	}
 }

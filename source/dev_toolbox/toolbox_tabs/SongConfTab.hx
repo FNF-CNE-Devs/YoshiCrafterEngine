@@ -1,8 +1,10 @@
 package dev_toolbox.toolbox_tabs;
 
+import dev_toolbox.file_explorer.FileExplorer;
 import flixel.addons.ui.*;
 import SongConf.SongConfSong;
 import flixel.FlxSprite;
+import haxe.io.Path;
 import sys.io.File;
 import flixel.FlxG;
 import flixel.util.FlxColor;
@@ -113,10 +115,14 @@ class SongConfTab extends ToolboxTab {
             (array = [for(s in scripts) s.text]).push("");
             updateScriptInputs(array);
         });
-        var pushScript = new FlxUIButton(10+addScript.x+addScript.width, applyButton.y, "Push Script", function() {
-            var array = [];
-            (array = [for(s in scripts) s.text]).push("");
-            updateScriptInputs(array);
+        var pushScript = new FlxUIButton(10 + addScript.x + addScript.width, applyButton.y, "Select Script", function() {
+			home.openSubState(new FileExplorer(ToolboxHome.selectedMod, FileExplorerType.Script, "", function(p) {
+				var array = [];
+				var f = Path.withoutExtension(p).replace("\\", "/");
+				while (f.startsWith("/")) f = f.substr(1);
+				(array = [for(s in scripts) s.text]).push(f);
+				updateScriptInputs(array);
+			}));
         });
         var removeScript = new FlxUIButton(10+pushScript.x+pushScript.width, applyButton.y, "Remove Script", function() {
             var array = [];
@@ -132,6 +138,7 @@ class SongConfTab extends ToolboxTab {
         confSettings.add(scriptsLabel);
         confSettings.add(applyButton);
         confSettings.add(addScript);
+        confSettings.add(pushScript);
         confSettings.add(removeScript);
         // songSettings.add(scriptsInput);
 
@@ -170,7 +177,7 @@ class SongConfTab extends ToolboxTab {
     public function refreshSongs() {
         if (songConfJson.songs == null) songConfJson.songs = [];
         var addedSongs = [for(e in songConfJson.songs) e.name.toLowerCase()];
-        for (s in [for (f in FileSystem.readDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/songs/')) if (!FileSystem.isDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/songs/$f')) f])  {
+        for (s in [for (f in FileSystem.readDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/songs/')) if (FileSystem.isDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/songs/$f')) f])  {
             if (!addedSongs.contains(s.toLowerCase())) {
                 songConfJson.songs.push({
                     name: s,

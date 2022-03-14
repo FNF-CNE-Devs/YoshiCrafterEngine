@@ -19,6 +19,7 @@ enum FileExplorerType {
     HScript;
     Lua;
     OGG;
+	Script;
 }
 
 @:enum
@@ -181,6 +182,8 @@ class FileExplorer extends MusicBeatSubstate {
                 ".hx or .hscript script";
             case Lua:
                 ".lua script";
+            case Script:
+                "script";
             case OGG:
                 "OGG sound";
         }
@@ -197,7 +200,9 @@ class FileExplorer extends MusicBeatSubstate {
             case JSON:
                 "json";
             case HScript:
-                "hx;hscript";
+                "hx;hscript;hsc";
+            case Script:
+                "hx;hscript;hsc;lua";
             case Lua:
                 "lua";
             case OGG:

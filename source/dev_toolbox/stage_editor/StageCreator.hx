@@ -2,6 +2,7 @@ package dev_toolbox.stage_editor;
 
 import flixel.FlxSprite;
 import haxe.Json;
+import lime.ui.Window.Stage;
 import sys.io.File;
 import sys.FileSystem;
 import flixel.FlxG;
@@ -44,7 +45,7 @@ function beatHit(curBeat) {
 
         var addButton = new FlxUIButton(250, warning.y + warning.height + 10, "Create", function() {
             var name = stageName.text.trim();
-            var path = '${Paths.modsPath}/${ToolboxHome.selectedMod}/stages/${name}.json';
+            var path = '${Paths.modsPath}/${ToolboxHome.selectedMod}/stages/${name}';
             if (name == "") {
                 showMessage('Error', 'You need to type a name.');
                 return;
@@ -54,7 +55,17 @@ function beatHit(curBeat) {
                 return;
             }
             
-            File.saveContent(path, Json.stringify(Templates.stageTemplate, "\t"));
+            File.saveContent('$path.json', Json.stringify(Templates.stageTemplate, "\t"));
+            File.saveContent('$path.hx', 'var stage:Stage = null;
+function create() {
+	stage = loadStage(\'{0}\');
+}
+function update(elapsed) {
+	stage.update(elapsed);
+}
+function beatHit(curBeat) {
+	stage.onBeat();
+}'.replace('{0}', name));
 
             close();
             FlxG.switchState(new StageEditor(name));
