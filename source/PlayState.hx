@@ -306,6 +306,9 @@ class PlayState extends MusicBeatState
 	public var talking:Bool = true;
 	public var songScore:Int = 0;
 	public var scoreTxt:FlxText;
+	public var scoreText(get, set):FlxText;
+	public function get_scoreText() {return scoreTxt;}
+	public function set_scoreText(t:FlxText) {return scoreTxt = t;}
 	public var scoreTxtTween:FlxTween;
 	public var watermark:FlxText;
 	public var scoreWarning:FlxText;
