@@ -145,6 +145,9 @@ class PlayState extends MusicBeatState
 	static public var storyWeek:Int = 0;
 	static public var storyPlaylist:Array<String> = [];
 	static public var storyDifficulty:String = "Normal";
+	static public var difficulty(get, set):String;
+	static public function get_difficulty() {return storyDifficulty;}
+	static public function set_difficulty(s:String) {return storyDifficulty = s;}
 	public static var actualModWeek:FNFWeek;
 	public static var log:Array<String> = [];
 	public static function trace(thing:String) {
@@ -152,6 +155,8 @@ class PlayState extends MusicBeatState
 		trace(thing);
 	}
 	public static var fromCharter:Bool = false;
+
+	public var _ = PlayState;
 	
 	public var halloweenLevel:Bool = false;
 	public var validScore:Bool = true;

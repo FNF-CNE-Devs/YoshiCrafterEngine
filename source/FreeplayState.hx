@@ -178,7 +178,6 @@ class FreeplayState extends MusicBeatState
 	}
 	override function create()
 	{
-		freeplayScript.executeFunc("preCreate", []);
 		reloadModsState = true;
 		// Assets.loadLibrary("songs");
 		
