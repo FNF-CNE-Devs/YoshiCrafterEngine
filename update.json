@@ -9,7 +9,8 @@
         "- Fixed input system issues and note shaking.",
         "- Fixed FlxBar and FlxCamera",
         "- Removed akifox-asynchttp",
-        "- Fixed the Play Song feature in Freeplay"
+        "- Fixed the Play Song feature in Freeplay",
+		"- Fixed Stage Editor import bug"
     ],
     "version" : [1,6,1],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"
