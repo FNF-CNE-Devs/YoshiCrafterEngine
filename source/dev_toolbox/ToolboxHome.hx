@@ -84,7 +84,15 @@ class ToolboxHome extends MusicBeatState {
                 GFskins: [],
                 skinnableBFs : [],
                 skinnableGFs : [],
-                locked: false
+                locked: false,
+                intro: {
+					bpm: 102,
+					authors: ['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er'],
+					present: 'present',
+					assoc: ['In association', 'with'],
+					newgrounds: 'newgrounds',
+					gameName: ['Friday Night Funkin\'', 'Yoshi', 'Engine']
+                }
             };
             ModSupport.modConfig[mod] = conf;
         }

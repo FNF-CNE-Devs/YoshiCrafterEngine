@@ -177,7 +177,8 @@ class SongConfTab extends ToolboxTab {
     public function refreshSongs() {
         if (songConfJson.songs == null) songConfJson.songs = [];
         var addedSongs = [for(e in songConfJson.songs) e.name.toLowerCase()];
-        for (s in [for (f in FileSystem.readDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/songs/')) if (FileSystem.isDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/songs/$f')) f])  {
+        var allSongs = [for (f in FileSystem.readDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/songs/')) if (FileSystem.isDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/songs/$f')) f.toLowerCase()];
+        for (s in allSongs)  {
             if (!addedSongs.contains(s.toLowerCase())) {
                 songConfJson.songs.push({
                     name: s,
@@ -186,6 +187,13 @@ class SongConfTab extends ToolboxTab {
                     end_cutscene: null,
                     difficulties: []
                 });
+            }
+        }
+        var diffArray = [for(s in addedSongs) if (!allSongs.contains(s)) s];
+        trace(diffArray);
+        for(s in songConfJson.songs) {
+            if (diffArray.contains(s.name.toLowerCase())) {
+                songConfJson.songs.remove(s);
             }
         }
         var songs = [for(e in songConfJson.songs) e.name];

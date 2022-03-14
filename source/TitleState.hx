@@ -1,5 +1,7 @@
 package;
 
+import ModConfig.ConfIntro;
+import mod_support_stuff.SwitchModSubstate;
 import flixel.addons.plugin.control.FlxControl;
 import flixel.group.FlxSpriteGroup;
 import sys.io.File;
@@ -46,7 +48,8 @@ typedef TitleScreen = {
 }
 class TitleState extends MusicBeatState
 {
-	static var initialized:Bool = false;
+	public static var skipOldSkinCheck = false;
+	public static var initialized:Bool = false;
 
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
@@ -61,7 +64,11 @@ class TitleState extends MusicBeatState
 	var updateAlphabet:Alphabet;
 	var updateIcon:FlxSprite;
 	var updateRibbon:FlxSprite;
-	public static var skipOldSkinCheck = false;
+
+	var script:Script = null;
+	var titleSpriteGrp:FlxSpriteGroup = null;
+
+	var introConf:ConfIntro = null;
 
 
 	override public function create():Void
@@ -168,11 +175,12 @@ class TitleState extends MusicBeatState
 	var danceLeft:Bool = false;
 	var titleText:FlxSprite;
 
-	var titleScreens:Array<TitleScreen>;
-	var activeTitleScreen = -1;
+	// var titleScreens:Array<TitleScreen>;
+	// var activeTitleScreen = -1;
 
 	var isInTransition = false;
 
+	/*
 	function switchTitleScreen() {
 		if (isInTransition) return;
 		if (titleScreens.length < 2) {
@@ -214,6 +222,7 @@ class TitleState extends MusicBeatState
 			}});
 		}
 	}
+	*/
 	function startIntro()
 	{
 		if (!initialized)
@@ -233,7 +242,32 @@ class TitleState extends MusicBeatState
 			// FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
 
-		Conductor.changeBPM(102);
+		var conf = null;
+		if ((conf = ModSupport.modConfig[Settings.engineSettings.data.selectedMod]) != null) {
+			if (conf.intro != null) {
+				introConf = conf.intro;
+				// if (introConf.bpm != null && introConf.bpm > 0) {
+				// 	bpm = introConf.bpm;
+				// }
+				if (introConf.bpm == null) introConf.bpm = 102;
+				if (introConf.authors == null) introConf.authors = ['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er'];
+				if (introConf.present == null) introConf.present = 'present';
+				if (introConf.assoc == null) introConf.assoc = ['In association', 'with'];
+				if (introConf.newgrounds == null) introConf.newgrounds = 'newgrounds';
+				if (introConf.gameName == null) introConf.gameName = ['Friday Night Funkin\'', 'Yoshi', 'Engine'];
+			} else {
+				introConf = {
+					bpm: 102,
+					authors: ['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er'],
+					present: 'present',
+					assoc: ['In association', 'with'],
+					newgrounds: 'newgrounds',
+					gameName: ['Friday Night Funkin\'', 'Yoshi', 'Engine']
+				};
+			}
+		}
+
+		Conductor.changeBPM(introConf.bpm);
 		persistentUpdate = true;
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
@@ -242,26 +276,24 @@ class TitleState extends MusicBeatState
 		// bg.updateHitbox();
 		add(bg);
 		
-		titleScreens = [];
-		var keys = ModSupport.modConfig.keys();
-		while(keys.hasNext()) {
-			var k = keys.next();
-			var path = '${Paths.modsPath}/$k/data';
-			if (FileSystem.exists(path) && FileSystem.isDirectory(path)) {
-				var script = Script.create('$path/titlescreen');
-				if (script != null) {
-					var spriteGrp = new FlxSpriteGroup(0, 0);
-					ModSupport.setScriptDefaultVars(script, k, {});
-					script.setVariable("create", function() {});
-					script.setVariable("beatHit", function() {});
-					script.setVariable("add", spriteGrp.add);
-					script.loadFile('$path/titlescreen');
-					script.executeFunc("create");
-					titleScreens.push({
-						script: script,
-						grp: spriteGrp
-					});
-				}
+		var path = '${Paths.modsPath}/${Settings.engineSettings.data.selectedMod}/data';
+		if (FileSystem.exists(path) && FileSystem.isDirectory(path)) {
+			script = Script.create('$path/titlescreen');
+			var mod = Settings.engineSettings.data.selectedMod;
+			if (script == null) {
+				path = '${Paths.modsPath}/Friday Night Funkin\'/data';
+				mod = 'Friday Night Funkin\'';
+				script = Script.create('$path/titlescreen');
+			}
+			if (script != null) {
+				titleSpriteGrp = new FlxSpriteGroup(0, 0);
+				ModSupport.setScriptDefaultVars(script, mod, {});
+				script.setVariable("create", function() {});
+				script.setVariable("beatHit", function() {});
+				script.setVariable("add", titleSpriteGrp.add);
+				script.loadFile('$path/titlescreen');
+				script.executeFunc("create");
+				add(titleSpriteGrp);
 			}
 		}
 
@@ -407,6 +439,10 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.keys.justPressed.TAB && skippedIntro) {
+			persistentUpdate = false;
+			openSubState(new SwitchModSubstate());
+		}
 		if (updateRibbon != null) {
 			updateRibbon.alpha = Math.min(1, updateRibbon.alpha + (elapsed / 0.2));
 		}
@@ -435,8 +471,7 @@ class TitleState extends MusicBeatState
 
 		if (gamepad != null)
 		{
-			if (gamepad.justPressed.START)
-				pressedEnter = true;
+			if (gamepad.justPressed.START)				pressedEnter = true;
 
 			#if switch
 			if (gamepad.justPressed.B)
@@ -573,12 +608,12 @@ class TitleState extends MusicBeatState
 	{
 		super.beatHit();
 
-		if (skippedIntro) {
-			if (activeTitleScreen > -1) titleScreens[activeTitleScreen].script.executeFunc("beatHit");
-			if ((curBeat - skipBeat) % 24 == 0) {
-				switchTitleScreen();
-			}
-		}
+		// if (skippedIntro) {
+		// 	if (activeTitleScreen > -1) titleScreens[activeTitleScreen].script.executeFunc("beatHit");
+		// 	if ((curBeat - skipBeat) % 24 == 0) {
+		// 		switchTitleScreen();
+		// 	}
+		// }
 		// if (logoBl != null) logoBl.animation.play('bump');
 		// danceLeft = !danceLeft;
 		// if (gfDance != null) {
@@ -587,16 +622,17 @@ class TitleState extends MusicBeatState
 		// 	else
 		// 		gfDance.animation.play('danceLeft');
 		// }
+		if (script != null) script.executeFunc("beatHit", [curBeat]);
 
 		FlxG.log.add(curBeat);
 
 		switch (curBeat)
 		{
 			case 1:
-				createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
+				createCoolText(introConf.authors);
 			// credTextShit.visible = true;
 			case 3:
-				addMoreText('present');
+				addMoreText(introConf.present);
 			// credTextShit.text += '\npresent...';
 			// credTextShit.addText();
 			case 4:
@@ -605,9 +641,9 @@ class TitleState extends MusicBeatState
 			// credTextShit.text = 'In association \nwith';
 			// credTextShit.screenCenter();
 			case 5:
-				createCoolText(['In association', 'with']);
+				createCoolText(introConf.assoc);
 			case 7:
-				addMoreText('newgrounds');
+				addMoreText(introConf.newgrounds);
 				ngSpr.visible = true;
 			// credTextShit.text += '\nNewgrounds';
 			case 8:
@@ -629,13 +665,13 @@ class TitleState extends MusicBeatState
 			// credTextShit.text = "Friday";
 			// credTextShit.screenCenter();
 			case 13:
-				addMoreText('Friday Night Funkin\'');
+				addMoreText(introConf.gameName[0]);
 			// credTextShit.visible = true;
 			case 14:
-				addMoreText('Yoshi');
+				addMoreText(introConf.gameName[1]);
 			// credTextShit.text += '\nNight';
 			case 15:
-				addMoreText('Engine'); // credTextShit.text += '\nFunkin';
+				addMoreText(introConf.gameName[2]); // credTextShit.text += '\nFunkin';
 
 			case 16:
 				skipBeat = 16;
@@ -647,6 +683,8 @@ class TitleState extends MusicBeatState
 
 	function skipIntro():Void
 	{
+		
+
 		if (!skippedIntro)
 		{
 			remove(ngSpr);
@@ -655,6 +693,10 @@ class TitleState extends MusicBeatState
 			remove(credGroup);
 			skippedIntro = true;
 		}
-		switchTitleScreen();
+		if (EngineSettings.Settings.engineSettings != null) {
+			FlxG.drawFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
+			FlxG.updateFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
+		}
+		// switchTitleScreen();
 	}
 }

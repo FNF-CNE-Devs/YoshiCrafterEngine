@@ -122,7 +122,15 @@ class NewModWizard extends MusicBeatState {
                 skinnableBFs: [],
                 BFskins: [],
                 GFskins: [],
-                locked: false
+                locked: false,
+                intro: {
+					bpm: 102,
+					authors: ['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er'],
+					present: 'present',
+					assoc: ['In association', 'with'],
+					newgrounds: 'newgrounds',
+					gameName: ['Friday Night Funkin\'', 'Yoshi', 'Engine']
+                }
             }
 
             Toolbox.createMod(json, folderName, modIcon.pixels, icon.pixels);

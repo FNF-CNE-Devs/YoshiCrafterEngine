@@ -15,7 +15,7 @@ class SwitchModSubstate extends MusicBeatSubstate {
 
     public override function create() {
         super.create();
-        cast(add(new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xAA000000)), FlxSprite).scrollFactor.set(0, 0);
+        cast(add(new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xAA222222)), FlxSprite).scrollFactor.set(0, 0);
 
         var i:Int = 0;
         for(mod=>config in ModSupport.modConfig) {
@@ -42,6 +42,7 @@ class SwitchModSubstate extends MusicBeatSubstate {
         if (controls.UP_P) changeSelection(-1);
         if (controls.DOWN_P) changeSelection(1);
         if (controls.ACCEPT) {
+            if (Std.isOfType(FlxG.state, TitleState)) TitleState.initialized = false;
             if (FlxG.sound.music != null) {
                 FlxG.sound.music.fadeOut(0.25, 0);
                 FlxG.sound.music.persist = false;

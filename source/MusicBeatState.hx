@@ -176,7 +176,7 @@ class MusicBeatState extends FlxUIState
 		
 	}
 
-    function showMessage(title:String, text:String) {
+    public function showMessage(title:String, text:String) {
         var m = ToolboxMessage.showMessage(title, text);
         m.cameras = cameras;
         openSubState(m);

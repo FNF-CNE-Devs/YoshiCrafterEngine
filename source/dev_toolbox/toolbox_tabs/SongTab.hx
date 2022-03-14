@@ -178,7 +178,60 @@ class SongTab extends ToolboxTab {
         var createButton = new FlxUIButton(10, 670, "Add", function() {
             state.openSubState(new SongCreator(this));
         });
+        var deleteButton = new FlxUIButton(createButton.x + createButton.width + 10, 670, "Remove", function() {
+            if (songsRadioList.selectedIndex == -1) {
+                home.showMessage("Error", "You need to select a song to delete.");
+                return;
+            }
+            home.openSubState(new ToolboxMessage('Warning', 'Do you really want to delete ${songsRadioList.selectedLabel}?\nThis operation will also delete the charts.', [
+                {
+                    label: "Yes",
+                    onClick: function(e) {
+                        for(s in freeplaySonglist.songs) {
+                            if (s.name.toLowerCase() == songsRadioList.selectedLabel.toLowerCase()) {
+                                freeplaySonglist.songs.remove(s);
+                                break;
+                            }
+                        }
+                        save();
+                        var deletedCharts = true;
+                        var deletedSong = true;
+                        try {
+                            CoolUtil.deleteFolder('${Paths.modsPath}/${ToolboxHome.selectedMod}/songs/${songsRadioList.selectedLabel}/');
+                            FileSystem.deleteDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/songs/${songsRadioList.selectedLabel}/');
+                        } catch(e) {
+                            deletedSong = false;
+                        }
+                        try {
+                            CoolUtil.deleteFolder('${Paths.modsPath}/${ToolboxHome.selectedMod}/data/${songsRadioList.selectedLabel}/');
+                            FileSystem.deleteDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/data/${songsRadioList.selectedLabel}/');
+                        } catch(e) {
+                            deletedCharts = false;
+                        }
+                        if (!deletedSong && !deletedCharts) {
+                            home.showMessage("Error", "Failed to delete both the charts and the song audio files.");
+                        } else if (!deletedSong) {
+                            home.showMessage("Error", "Failed to delete the song audio files.");
+                        } else if (!deletedCharts) {
+                            home.showMessage("Error", "Failed to delete the song charts.");
+                        }
+
+                        refreshSongs();
+
+
+                        remove(displayAlphabet);
+                        remove(displayHealthIcon);
+                        remove(songTabThingy);
+                    }
+                },
+                {
+                    label: "No",
+                    onClick: function(e) {}
+                }
+            ]));
+        });
         add(createButton);
+        add(deleteButton);
     }
 
     
