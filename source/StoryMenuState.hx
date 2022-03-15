@@ -382,7 +382,7 @@ class StoryMenuState extends MusicBeatState
 		// difficultySelectors.add(sprDifficulty);
 
 
-		switchMod = new FlxText(10, 10, 0, '${Settings.engineSettings.data.selectedMod}\n[Tab] to switch\n', 24);
+		switchMod = new FlxText(10, 10, 0, '${ModSupport.getModName(Settings.engineSettings.data.selectedMod)}\n[Tab] to switch\n', 24);
 		switchMod.alignment = CENTER;
 		switchMod.font = rankText.font;
 		switchMod.color = 0xFFFFFFFF;
@@ -400,6 +400,10 @@ class StoryMenuState extends MusicBeatState
 			add(scoreText);
 			add(txtWeekTitle);
 			
+			var text = new FlxText(10, yellowBG.y + yellowBG.height + 10, FlxG.width - 20, "This mod does not contain any Story Mode weeks.", 18);
+			text.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			text.alpha = 0.66;
+			add(text);
 			super.create();
 			return;
 		}
