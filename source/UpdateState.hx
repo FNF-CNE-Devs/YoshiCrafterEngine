@@ -1,4 +1,9 @@
 package ;
+import openfl.system.System;
+import sys.io.Process;
+import openfl.events.Event;
+import openfl.events.ProgressEvent;
+import sys.Http;
 import cpp.vm.Thread;
 import flixel.ui.FlxBar;
 import flixel.FlxG;
@@ -28,6 +33,63 @@ class UpdateState extends MusicBeatState
 		this.fileList = fileList;
 	}
 	
+	function doFile() {
+		var f = fileList.shift();
+		var downloadStream = new URLLoader();
+		downloadStream.dataFormat = BINARY;
+
+		//dumbass
+		var request = new URLRequest('$baseURL/$f');
+
+		var array = [];
+		var dir = [for (k => e in (array = f.replace("\\", "/").split("/"))) if (k < array.length - 1) e].join("/");
+		FileSystem.createDirectory('./_cache/$dir');
+		var fileOutput:FileOutput = File.write('./_cache/$f', true);
+		var good = true;
+		// downloadStream.addEventListener(Event.OPEN, function(e) {trace("Opened");good = true;});
+		downloadStream.addEventListener(Event.COMPLETE, function(e) {
+			var data:ByteArray = new ByteArray();
+			downloadStream.data.readBytes(data, 0, downloadStream.data.length - downloadStream.data.position);
+			trace(data.length);
+			fileOutput.writeBytes(data, 0, data.length);
+			fileOutput.flush();
+
+			fileOutput.close();
+			downloadedFiles++;
+			if (fileList.length > 0) {
+				doFile();
+			} else {
+				// apply update
+
+				// copy file to prevent overriding issues
+				File.copy('YoshiEngine.exe', 'temp.exe');
+
+				// launch that file
+				new Process('start /B temp.exe update', null);
+				System.exit(0);
+			}
+		});
+		downloadStream.addEventListener(ProgressEvent.PROGRESS, function(e) {
+			// if (good) {
+				if (downloadStream.data == null) {
+					// trace("data is null");
+					return;
+				}
+				var data:ByteArray = new ByteArray();
+				downloadStream.data.readBytes(data, 0, downloadStream.data.length - downloadStream.data.position);
+				trace(data.length);
+				fileOutput.writeBytes(data, 0, data.length);
+				fileOutput.flush();
+			// } else {
+			// 	trace("Isn't good yet");
+			// }
+		});
+
+
+		downloadStream.load(request);
+
+		
+	}
 	public override function create() {
 		super.create();
 		CoolUtil.addBG(this);
@@ -39,12 +101,12 @@ class UpdateState extends MusicBeatState
 		add(downloadBar);
 		
 	
-		
+		doFile();
+		/*
 		//Thread.create(function() {
 			try {
 				// download stuff
 				for (k => f in fileList) {
-					/*
 					var downloadStream = new URLStream();
 					var request = new URLRequest('$baseURL/$f');
 					//request.data.token = "";
@@ -54,23 +116,28 @@ class UpdateState extends MusicBeatState
 					FileSystem.createDirectory('./_cache/$dir');
 					var fileOutput:FileOutput = File.write('./_cache/$f', false);
 					var am = 0;
+					var done = false;
+					var progress = false;
 					//downloadStream.
+					downloadStream.addEventListener(Event.COMPLETE, function(e) {done = true;});
+					downloadStream.addEventListener(ProgressEvent.PROGRESS, function(e) {progress = true;});
 					@:privateAccess
-					while (downloadStream.__loader.bytesLoaded < downloadStream.__loader.bytesTotal) {
-						var data = new ByteArray();
-						@:privateAccess
-						downloadStream.readBytes(data, am, downloadStream.__loader.bytesLoaded - am);
-						if (downloadStream.__loader.bytesLoaded - am > 0) fileOutput.writeString(data.toString());
-						am = downloadStream.__loader.bytesLoaded;
+					while (!done) {
+						if (progress) {
+							progress = false;
+							trace('bytesAvailable: ${downloadStream.bytesAvailable} - am: $am');
+							var data = new ByteArray();
+							@:privateAccess
+							downloadStream.readBytes(data, 0, downloadStream.bytesAvailable);
+							fileOutput.writeBytes(data, 0, data.length);
+						}
 						
-						trace('bytesAvailable: ${downloadStream.bytesAvailable} - am: $am');
 						//fileOutput.
 					}
 					trace('disconnected');
 					fileOutput.close();
 					//downloadStream.readBytes(
 					downloadedFiles = k + 1;
-					*/
 					
 					var request = new URLRequest('$baseURL/$f');
 					var loader = new URLLoader();
@@ -79,25 +146,23 @@ class UpdateState extends MusicBeatState
 					
 					loader.addEventListener(flash.events.Event.COMPLETE, function(e) {completed = true;});
 					loader.load(request);
-					
+
+					/*
 					var array = [];
 					var dir = [for (k => e in (array = f.replace("\\", "/").split("/"))) if (k < array.length - 1) e].join("/");
 					FileSystem.createDirectory('./_cache/$dir');
 					var fileOutput:FileOutput = File.write('./_cache/$f', false);
-					var am = 0;
 					
-					//loader.load(loader);
-					@:privateAccess
-					while (!completed) {
-						trace(loader.bytesLoaded);
-						trace(loader.bytesTotal);
-					}
-					fileOutput.writeString(loader.data.toString());
+					trace('$baseURL/$f');
+					fileOutput.writeString(Http.requestUrl('$baseURL/$f'));
+					fileOutput.flush();
+					fileOutput.close();
 				}
 			} catch (e) {
 				trace(e.details());
 			}
 		//});
+		*/
 	}
 	public override function update(elapsed:Float) {
 		super.update(elapsed);

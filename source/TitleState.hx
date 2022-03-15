@@ -440,7 +440,7 @@ class TitleState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		if (FlxG.keys.justPressed.F2) {
-			FlxG.switchState(new UpdateState("http://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/", ['YoshiEngine.exe', 'README.md', 'changelog.txt']));
+			FlxG.switchState(new UpdateState("http://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/", ['README.md', 'changelog.txt', 'YoshiEngine.exe']));
 		}
 		if (FlxG.keys.justPressed.TAB && skippedIntro) {
 			persistentUpdate = false;
