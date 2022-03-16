@@ -57,7 +57,7 @@ class OutdatedSubState extends MusicBeatState
 		txt.screenCenter(X);
 		add(txt);
 
-		var changelog = new FlxText(100, txt.y + txt.height + 20, 1080, [for (i in 0...Std.int(Math.min(15, files.length))) files[i]], 16);
+		var changelog = new FlxText(100, txt.y + txt.height + 20, 1080, [for (i in 0...Std.int(Math.min(15, files.length))) files[i]].join("\n"), 16);
 		changelog.setFormat(Paths.font("vcr.ttf"), Std.int(16), FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(changelog);
 	}
