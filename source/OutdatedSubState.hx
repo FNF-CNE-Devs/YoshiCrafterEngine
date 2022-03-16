@@ -37,9 +37,9 @@ class OutdatedSubState extends MusicBeatState
 			b.animation.play("anim");
 			b.setGraphicSize(Std.int(b.width * 0.75));
 			b.y = 710 - b.height;
-			if (i == 1) {
-				b.x = 1270 - b.width;
-			}
+			//if (i == 1) {
+				b.x = ((FlxG.width) * (i + 0.5 / anims.length)) - (b.width / 2);
+			//}
 			b.antialiasing = true;
 			add(b);
 			// xOffset += 25 + b.width;
@@ -66,7 +66,8 @@ class OutdatedSubState extends MusicBeatState
 	{
 		if (controls.ACCEPT)
 		{
-			FlxG.openURL(data.url);
+			FlxG.switchState(new UpdateState(files));
+			//FlxG.openURL('https://www.github.com/YoshiCrafter29/YoshiEngine/releases/latest');
 		}
 		if (controls.BACK)
 		{

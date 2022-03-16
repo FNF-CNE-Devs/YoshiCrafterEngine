@@ -507,7 +507,8 @@ class TitleState extends MusicBeatState
 				// Check if version is outdated
 				Thread.create(function() {
 					try {
-						var data = Http.requestUrl("https://raw.githubusercontent.com/YoshiCrafter29/YoshiEngine/main/update.json");
+						//var data = Http.requestUrl("https://raw.githubusercontent.com/YoshiCrafter29/YoshiEngine/main/update.json");
+						var data = Http.requestUrl("https://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/_changes/list.txt");
 						updateIcon.visible = false;
 						updateAlphabet.visible = false;
 						updateRibbon.visible = false;
