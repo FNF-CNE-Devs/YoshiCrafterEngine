@@ -147,6 +147,19 @@ class CoolUtil
 		var bg = new FlxSprite(0,0).loadGraphic(p);
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
 		bg.screenCenter();
+		bg.antialiasing = true;
+		f.add(bg);
+		return bg;
+	}
+
+
+	public static function addUpdateBG(f:FlxState) {
+		// siivkoi i love your art thanks again
+		var p = Paths.image("Yoshi_Engine_download_screen", "preload");
+		var bg = new FlxSprite(0,0).loadGraphic(p);
+		bg.screenCenter();
+		bg.scrollFactor.set(0, 0);
+		bg.antialiasing = true;
 		f.add(bg);
 		return bg;
 	}
@@ -168,6 +181,7 @@ class CoolUtil
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
 		bg.screenCenter();
 		bg.scrollFactor.set();
+		bg.antialiasing = true;
 		f.add(bg);
 		return bg;
 	}

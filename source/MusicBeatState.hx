@@ -76,6 +76,8 @@ class MusicBeatState extends FlxUIState
 			lime.app.Application.current.window.setIcon(defaultIcon);
 			PlayState.iconChanged = false;
 		}
+		
+    	FlxG.game.stage.quality = Settings.engineSettings.data.stageQuality;
 	}
 
 	inline function get_controls():Controls
@@ -91,8 +93,6 @@ class MusicBeatState extends FlxUIState
 			FlxG.drawFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
 			FlxG.updateFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
 		}
-		
-    	FlxG.game.stage.quality = HIGH;
 	}
 
 	override function update(elapsed:Float)

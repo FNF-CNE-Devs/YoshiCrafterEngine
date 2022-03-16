@@ -636,6 +636,7 @@ class LuaScript extends Script {
 
         for(t in text.split("\n")) PlayState.log.push(bText + t);
         trace(text);
+        Lua.settop(state, 0);
     }
 
     public override function getVariable(name:String) {
@@ -692,6 +693,7 @@ class LuaScript extends Script {
             }
         }
         return Convert.fromLua(state, Lua.gettop(state));
+        Lua.settop(state, 0);
     }
 }
 #end

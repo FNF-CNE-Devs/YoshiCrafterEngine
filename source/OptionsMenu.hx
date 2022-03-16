@@ -920,13 +920,13 @@ class OptionsMenu extends MusicBeatState
 
 	function addPerformanceCategory() {
 		var performance:MenuCategory = {
-			name : "Optimisation and Performances",
+			name : "Graphic Settings",
 			description : "Optimise the engine with memory and graphics settings.",
 			options : [],
 			center : false
 		};
 		performance.options.push({
-			text : "[Optimisation and Performances]",
+			text : "[Graphic Settings]",
 			description : "",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				
@@ -934,6 +934,37 @@ class OptionsMenu extends MusicBeatState
 			checkbox: false,
 			checkboxChecked: function() {return false;},
 			value: function() {return "";}
+		});
+		
+		var stageQualities = ["Best", "High", "Low", "Medium"];
+		performance.options.push(
+		{
+			text : "Stage Quality",
+			description : "Sets the Stage Quality of the game. You can choose between 4 different types:
+- Low: No antialiasing, no bitmap smoothing
+- Medium: 2x2 pixel grid antialiasing, no bitmap smoothing
+- High: 4x4 pixel grid antialiasing, smooths bitmaps if the game is static
+- Best: 4x4 pixel grid antialiasing, always smooth bitmaps",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				var changed = false;
+				if (controls.RIGHT_P) {
+					changed = true;
+					Settings.engineSettings.data.stageQuality++;
+				}
+				if (controls.LEFT_P) {
+					changed = true;
+					Settings.engineSettings.data.stageQuality--;
+				}
+				if (changed) {
+					if (Settings.engineSettings.data.stageQuality < 0) Settings.engineSettings.data.stageQuality = stageQualities.length - 1;
+					else if (Settings.engineSettings.data.stageQuality >= stageQualities.length) Settings.engineSettings.data.stageQuality = 0;
+					o.setValue(stageQualities[Settings.engineSettings.data.stageQuality]);
+					FlxG.game.stage.quality = Settings.engineSettings.data.stageQuality;
+				}
+			},
+			checkbox: false,
+			checkboxChecked: function() {return false;},
+			value: function() {return stageQualities[Settings.engineSettings.data.stageQuality];}
 		});
 		
 		performance.options.push(

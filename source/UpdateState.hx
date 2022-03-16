@@ -120,12 +120,12 @@ class UpdateState extends MusicBeatState
 	}
 	public override function create() {
 		super.create();
-		CoolUtil.addBG(this);
+		CoolUtil.addUpdateBG(this);
 		
 		var downloadBar = new FlxBar(0, 0, LEFT_TO_RIGHT, Std.int(FlxG.width * 0.75), 30, this, "downloadedFiles", 0, fileList.length);
-		downloadBar.createGradientBar([0x88222222], [0xFF150978, 0xFF51046A], 90, true, 0xFF000000);
+		downloadBar.createGradientBar([0x88222222], [0xFF7163F1, 0xFFD15CF8], 1, 90, true, 0xFF000000);
 		downloadBar.screenCenter(X);
-		downloadBar.y = FlxG.height * 0.75;
+		downloadBar.y = FlxG.height - 45;
 		downloadBar.scrollFactor.set(0, 0);
 		add(downloadBar);
 		
