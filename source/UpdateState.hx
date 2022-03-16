@@ -1,4 +1,7 @@
 package ;
+import flixel.util.FlxColor;
+import flixel.util.FlxColor;
+import flixel.text.FlxText;
 import openfl.system.System;
 import sys.io.Process;
 import openfl.events.Event;
@@ -26,16 +29,38 @@ class UpdateState extends MusicBeatState
 	public var fileList:Array<String> = [];
 	public var baseURL:String;
 	public var downloadedFiles:Int = 0;
+	public var percentLabel:FlxText;
+	public var currentFileLabel:FlxText;
+	public var totalFiles:Int = 0;
 	public function new(baseURL:String = "http://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/", fileList:Array<String>) 
 	{
 		super();
 		this.baseURL = baseURL;
 		this.fileList = fileList;
+		totalFiles = fileList.length;
 	}
 	
+	function getSpeedLabel(num:Int):String{
+        var size:Float = num;
+        var data = 0;
+        var dataTexts = ["B", "KB", "MB", "GB", "TB", "PB"];
+        while(size > 1024 && data < dataTexts.length - 1) {
+          data++;
+          size = size / 1024;
+        }
+        
+        size = Math.round(size * 100) / 100;
+        return size + dataTexts[data]+"/s";
+    }
+
+	var currentLoadedStream:URLLoader = null;
+	var currentFile:String;
+
 	function doFile() {
 		var f = fileList.shift();
+		currentFile = f;
 		var downloadStream = new URLLoader();
+		currentLoadedStream = downloadStream;
 		downloadStream.dataFormat = BINARY;
 
 		//dumbass
@@ -46,6 +71,8 @@ class UpdateState extends MusicBeatState
 		FileSystem.createDirectory('./_cache/$dir');
 		var fileOutput:FileOutput = File.write('./_cache/$f', true);
 		var good = true;
+		currentFileLabel.text = 'Downloading File: $f (${totalFiles - fileList.length}/${totalFiles})';
+		
 		// downloadStream.addEventListener(Event.OPEN, function(e) {trace("Opened");good = true;});
 		downloadStream.addEventListener(Event.COMPLETE, function(e) {
 			var data:ByteArray = new ByteArray();
@@ -56,6 +83,7 @@ class UpdateState extends MusicBeatState
 
 			fileOutput.close();
 			downloadedFiles++;
+			percentLabel.text = '${Math.floor(downloadedFiles / totalFiles * 100)}%';
 			if (fileList.length > 0) {
 				doFile();
 			} else {
@@ -95,11 +123,21 @@ class UpdateState extends MusicBeatState
 		CoolUtil.addBG(this);
 		
 		var downloadBar = new FlxBar(0, 0, LEFT_TO_RIGHT, Std.int(FlxG.width * 0.75), 30, this, "downloadedFiles", 0, fileList.length);
+		downloadBar.createGradientBar([0x88222222], [0xFF150978, 0xFF51046A], 90, true, 0xFF000000);
 		downloadBar.screenCenter(X);
 		downloadBar.y = FlxG.height * 0.75;
 		downloadBar.scrollFactor.set(0, 0);
 		add(downloadBar);
 		
+		percentLabel = new FlxText(downloadBar.x, downloadBar.y + (downloadBar.height / 2), downloadBar.width, "0%");
+		percentLabel.setFormat(Paths.font("vcr.ttf"), 22, FlxColor.WHITE, CENTER, OUTLINE, 0xFF000000);
+		percentLabel.y -= percentLabel.height / 2;
+		add(percentLabel);
+		
+		currentFileLabel = new FlxText(downloadBar.x, downloadBar.y - 10, downloadBar.width, "");
+		currentFileLabel.setFormat(Paths.font("vcr.ttf"), 22, FlxColor.WHITE, CENTER, OUTLINE, 0xFF000000);
+		currentFileLabel.y -= percentLabel.height;
+		add(currentFileLabel);
 	
 		doFile();
 		/*
@@ -165,6 +203,9 @@ class UpdateState extends MusicBeatState
 		*/
 	}
 	public override function update(elapsed:Float) {
+		// if (currentFile != null && currentLoadedStream != null) {
+		// 	currentFileLabel.text = 'Downloading File: $currentFile';
+		// }
 		super.update(elapsed);
 	}
 }

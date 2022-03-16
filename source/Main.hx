@@ -64,10 +64,15 @@ class Main extends Sprite
 			copyFolder('./_cache', '.');
 			CoolUtil.deleteFolder('./_cache/');
 			FileSystem.deleteDirectory('./_cache/');
-			new Process('start /B YoshiEngine.exe update', null);
+			new Process('start /B YoshiEngine.exe', null);
 			System.exit(0);
 		} else {
-			if (FileSystem.exists("temp.exe")) FileSystem.deleteFile('temp.exe');
+			try {
+				// in case to prevent crashes
+				if (FileSystem.exists("temp.exe")) FileSystem.deleteFile('temp.exe');
+			} catch(e) {
+
+			}
 			#if cpp
 			cpp.Lib.print("main");
 			Lib.current.addChild(new Main());

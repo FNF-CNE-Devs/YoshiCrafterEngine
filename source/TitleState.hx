@@ -243,28 +243,26 @@ class TitleState extends MusicBeatState
 		}
 
 		var conf = null;
-		if ((conf = ModSupport.modConfig[Settings.engineSettings.data.selectedMod]) != null) {
-			if (conf.intro != null) {
-				introConf = conf.intro;
-				// if (introConf.bpm != null && introConf.bpm > 0) {
-				// 	bpm = introConf.bpm;
-				// }
-				if (introConf.bpm == null) introConf.bpm = 102;
-				if (introConf.authors == null) introConf.authors = ['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er'];
-				if (introConf.present == null) introConf.present = 'present';
-				if (introConf.assoc == null) introConf.assoc = ['In association', 'with'];
-				if (introConf.newgrounds == null) introConf.newgrounds = 'newgrounds';
-				if (introConf.gameName == null) introConf.gameName = ['Friday Night Funkin\'', 'Yoshi', 'Engine'];
-			} else {
-				introConf = {
-					bpm: 102,
-					authors: ['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er'],
-					present: 'present',
-					assoc: ['In association', 'with'],
-					newgrounds: 'newgrounds',
-					gameName: ['Friday Night Funkin\'', 'Yoshi', 'Engine']
-				};
-			}
+		if ((conf = ModSupport.modConfig[Settings.engineSettings.data.selectedMod]) != null && conf.intro != null) {
+			introConf = conf.intro;
+			// if (introConf.bpm != null && introConf.bpm > 0) {
+			// 	bpm = introConf.bpm;
+			// }
+			if (introConf.bpm == null) introConf.bpm = 102;
+			if (introConf.authors == null) introConf.authors = ['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er'];
+			if (introConf.present == null) introConf.present = 'present';
+			if (introConf.assoc == null) introConf.assoc = ['In association', 'with'];
+			if (introConf.newgrounds == null) introConf.newgrounds = 'newgrounds';
+			if (introConf.gameName == null) introConf.gameName = ['Friday Night Funkin\'', 'Yoshi', 'Engine'];
+		} else {
+			introConf = {
+				bpm: 102,
+				authors: ['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er'],
+				present: 'present',
+				assoc: ['In association', 'with'],
+				newgrounds: 'newgrounds',
+				gameName: ['Friday Night Funkin\'', 'Yoshi', 'Engine']
+			};
 		}
 
 		Conductor.changeBPM(introConf.bpm);
