@@ -538,6 +538,24 @@ class TitleState extends MusicBeatState
 	}
 
 	function onUpdateData(data:String) {
+		var versions = [for(e in data.split("\n")) if (e.trim() != "") e];
+		var currentVerPos = versions.indexOf(Main.engineVer.join("."));
+		var files:Array<String> = [];
+		for(i in currentVerPos+1...versions.length) {
+			var data:String = "";
+			try {
+				data = Http.requestUrl('https://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/_changes/${versions[i]}.txt');
+			} catch(e) {
+				trace(versions[i] + " data is incorrect");
+			}
+			var parsedFiles = [for(e in data.split("\n")) if (e.trim() != "") e];
+			for(f in parsedFiles) {
+				if (!files.contains(f)) {
+					files.push(f);
+				}
+			}
+		}
+		/*
 		// var version:String = "v" + Application.current.meta.get('version');
 		var jsonData:YoshiEngineVersion = Json.parse(data.trim());
 		var outDated = false;
@@ -558,9 +576,11 @@ class TitleState extends MusicBeatState
 				break;
 			}
 		}
-		if (outDated)
+		*/
+		#if enable_updates
+		if (currentVerPos+1 < versions.length)
 		{
-			FlxG.switchState(new OutdatedSubState(jsonData));
+			FlxG.switchState(new OutdatedSubState(files, versions[versions.length - 1]));
 			// trace('OLD VERSION!');
 			// trace('old ver');
 			// trace(version.trim());
@@ -569,9 +589,11 @@ class TitleState extends MusicBeatState
 		}
 		else
 		{
-
-			FlxG.switchState(new MainMenuState());
+		#end
+		FlxG.switchState(new MainMenuState());
+		#if enable_updates
 		}
+		#end
 	}
 	function createCoolText(textArray:Array<String>)
 	{

@@ -11,9 +11,11 @@ class OutdatedSubState extends MusicBeatState
 {
 	public static var leftState:Bool = false;
 
-	var data:YoshiEngineVersion;
-	public function new(data:YoshiEngineVersion) {
-		this.data = data;
+	var files:Array<String>;
+	var ver:String;
+	public function new(files:Array<String>, ver:String) {
+		this.files = files;
+		this.ver = ver;
 		super();
 	}
 	override function create()
@@ -45,7 +47,7 @@ class OutdatedSubState extends MusicBeatState
 
 
 		var localVer = Main.engineVer.join(".");
-		var latestVer = data.version.join(".");
+		var latestVer = ver;
 
 		var txt:FlxText = new FlxText(0, 10, FlxG.width,
 			"HEY ! Your Yoshi Engine is outdated !\n"
@@ -55,7 +57,7 @@ class OutdatedSubState extends MusicBeatState
 		txt.screenCenter(X);
 		add(txt);
 
-		var changelog = new FlxText(100, txt.y + txt.height + 20, 1080, data.updateLog.join("\n"), 16);
+		var changelog = new FlxText(100, txt.y + txt.height + 20, 1080, [for (i in 0...Std.int(Math.min(15, files.length))) files[i]], 16);
 		changelog.setFormat(Paths.font("vcr.ttf"), Std.int(16), FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(changelog);
 	}
