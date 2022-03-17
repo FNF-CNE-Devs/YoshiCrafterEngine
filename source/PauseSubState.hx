@@ -1,5 +1,6 @@
 package;
 
+import lime.utils.Assets;
 import dev_toolbox.ToolboxHome;
 import dev_toolbox.stage_editor.StageEditor;
 import ControlsSettingsSubState.ControlsSettingsSub;
@@ -60,7 +61,9 @@ class PauseSubState extends MusicBeatSubstate
 		script.executeFunc("preCreate");
 		
 
-		pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
+		var p = Paths.music('breakfast', 'mods/${PlayState.songMod}');
+		if (!Assets.exists(p)) p = Paths.music('breakfast');
+		pauseMusic = new FlxSound().loadEmbedded(p, true, true);
 		pauseMusic.volume = 0;
 		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
 
