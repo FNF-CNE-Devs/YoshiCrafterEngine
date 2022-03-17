@@ -10,7 +10,8 @@
         "- Fixed FlxBar and FlxCamera",
         "- Removed akifox-asynchttp",
         "- Fixed the Play Song feature in Freeplay",
-		"- Fixed Stage Editor import bug"
+		"- Fixed Stage Editor import bug",
+        "- Fixed Vocals desync issue"
     ],
     "version" : [1,6,1],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"

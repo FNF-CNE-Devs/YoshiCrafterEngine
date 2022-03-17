@@ -2137,8 +2137,12 @@ class PlayState extends MusicBeatState
 		{
 			if (FlxG.sound.music.time == Conductor.songPositionOld)
 				Conductor.songPosition += FlxG.elapsed * 1000;
-			else
+			else {
+				// sync
 				Conductor.songPosition = Conductor.songPositionOld = FlxG.sound.music.time;
+				if (Math.abs(vocals.time - Conductor.songPosition) > 35) vocals.time = Conductor.songPosition;
+			}
+				
 			
 
 			if (!paused)
