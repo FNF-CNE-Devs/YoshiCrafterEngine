@@ -35,11 +35,11 @@ using StringTools;
 
 class MainMenuState extends MusicBeatState
 {
-	var mainMenuScript:Script = null;
+	public var mainMenuScript:Script = null;
 
-	var curSelected:Int = 0;
+	public var curSelected:Int = 0;
 
-	var menuItems:FlxTypedGroup<FlxSprite>;
+	public var menuItems:FlxTypedGroup<FlxSprite>;
 
 	// imagine yoshi engine on switch lmfao
 	#if !switch
@@ -47,19 +47,19 @@ class MainMenuState extends MusicBeatState
 	#else
 	// var optionShit:Array<String> = ['story mode', 'freeplay', 'options'];
 	#end
-	var optionShit:MenuOptions = new MenuOptions();
-	var options(get, set):MenuOptions;
+	public var optionShit:MenuOptions = new MenuOptions();
+	public var options(get, set):MenuOptions;
 	function get_options() {return optionShit;};
 	function set_options(o) {return optionShit = o;};
 
-	var magenta:FlxSprite;
-	var camFollow:FlxObject;
-	var backButton:FlxClickableSprite;
-	var fallBackBG:FlxSprite;
-	var bg:FlxSprite;
-	var mouseControls:Bool = true;
+	public var magenta:FlxSprite;
+	public var camFollow:FlxObject;
+	public var backButton:FlxClickableSprite;
+	public var fallBackBG:FlxSprite;
+	public var bg:FlxSprite;
+	public var mouseControls:Bool = true;
 
-	var factor(get, never):Float;
+	public var factor(get, never):Float;
 
 	function get_factor() {
 		return Math.min(650 / optionShit.length, 100);
@@ -268,25 +268,26 @@ class MainMenuState extends MusicBeatState
 				openSubState(new ThisAintPsych());
 			}
 		}
-		if ((FlxG.mouse.getScreenPosition().x != oldPos.x || FlxG.mouse.getScreenPosition().y != oldPos.y) && !selectedSomethin && mouseControls){
-			oldPos = FlxG.mouse.getScreenPosition();
-			for (i in 0...menuItems.length) {
-				// if (FlxG.mouse.overlaps(menuItems.members[i])) {
-				var pos = FlxG.mouse.getPositionInCameraView(FlxG.camera);
-				if (pos.y > i / menuItems.length * FlxG.height && pos.y < (i + 1) / menuItems.length * FlxG.height && curSelected != i) {
-					curSelected = i;
-					changeItem();
-					break;
+		if (mouseControls) {
+			if ((FlxG.mouse.getScreenPosition().x != oldPos.x || FlxG.mouse.getScreenPosition().y != oldPos.y) && !selectedSomethin){
+				oldPos = FlxG.mouse.getScreenPosition();
+				for (i in 0...menuItems.length) {
+					// if (FlxG.mouse.overlaps(menuItems.members[i])) {
+					var pos = FlxG.mouse.getPositionInCameraView(FlxG.camera);
+					if (pos.y > i / menuItems.length * FlxG.height && pos.y < (i + 1) / menuItems.length * FlxG.height && curSelected != i) {
+						curSelected = i;
+						changeItem();
+						break;
+					}
 				}
 			}
 		}
-		if (FlxG.mouse.pressed && !selectedSomethin
-			#if MOBILE_UI
-			&& !backButton.hovering && mouseControls
-			#end
-			)
-			select();
-
+			if (FlxG.mouse.pressed && !selectedSomethin
+				#if MOBILE_UI
+				&& !backButton.hovering
+				#end
+				)
+				select();
 		if (FlxG.sound.music.volume < 0.8)
 		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
