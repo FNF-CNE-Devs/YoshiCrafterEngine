@@ -278,6 +278,7 @@ class FreeplayState extends MusicBeatState
 
 		freeplayScript.executeFunc("create", []);
 		
+		refresh();
 		add(advancedBG);
 		add(scoreBG);
 		add(diffText);
@@ -287,7 +288,6 @@ class FreeplayState extends MusicBeatState
 		add(accuracyText);
 		add(missesText);
 		add(graph);
-		refresh();
 
 		if (!Settings.engineSettings.data.autoplayInFreeplay) {
 			var t = new FlxText(0, 0, FlxG.width, '[Space] Listen to selected song | Selected Mod: ${ModSupport.getModName(Settings.engineSettings.data.selectedMod)} - Press [Tab] to switch.');

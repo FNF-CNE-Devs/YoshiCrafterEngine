@@ -1365,22 +1365,29 @@ class OptionsMenu extends MusicBeatState
 		// yBG.updateHitbox();
 		// yBG.screenCenter();
 		var yBG = CoolUtil.addBG(this);
-		yBG.scrollFactor.set(1, 1);
+		yBG.x = -80;
+		yBG.scrollFactor.x = 0;
+		yBG.scrollFactor.y = 0.18;
 		yBG.scale.x = yBG.scale.y = 1.2;
-		yBG.y = -menuBGy + 23;
-		yBG.antialiasing = true;
+		yBG.updateHitbox();
+		yBG.screenCenter();
+		yBG.y -= menuBGy;
 		add(yBG);
 
 		// var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		var menuBG = CoolUtil.addWhiteBG(this);
 		menuBG.color = 0xFFfd719b;
+		menuBG.x = -80;
+		menuBG.scrollFactor.x = 0;
+		menuBG.scrollFactor.y = 0.18;
 		menuBG.scale.x = menuBG.scale.y = 1.2;
-		menuBG.scrollFactor.set(1, 1);
+		menuBG.updateHitbox();
+		menuBG.screenCenter();
+		menuBG.y -= menuBGy;
 		// menuBG.color = 0xFF494949;
 		// menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
 		// menuBG.updateHitbox();
 		// menuBG.screenCenter();
-		menuBG.y = -menuBGy + 23;
 		menuBG.antialiasing = true;
 		add(menuBG);
 

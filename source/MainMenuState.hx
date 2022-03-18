@@ -93,7 +93,7 @@ class MainMenuState extends MusicBeatState
 			FlxTransitionableState.skipNextTransOut = true;
 			OptionsMenu.fromFreeplay = false;
 			// smooth af transition
-			FlxG.switchState(new OptionsMenu(0, -camFollow.y * 0.18));
+			FlxG.switchState(new OptionsMenu(0, -FlxG.camera.scroll.y * 0.18));
 		}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'options basic', 'options white');
 
         // persistentUpdate = false;
