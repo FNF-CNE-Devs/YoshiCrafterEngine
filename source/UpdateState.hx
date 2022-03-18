@@ -1,4 +1,6 @@
 package ;
+import openfl.events.IOErrorEvent;
+import openfl.events.ErrorEvent;
 import flixel.util.FlxColor;
 import flixel.util.FlxColor;
 import flixel.text.FlxText;
@@ -32,6 +34,8 @@ class UpdateState extends MusicBeatState
 	public var percentLabel:FlxText;
 	public var currentFileLabel:FlxText;
 	public var totalFiles:Int = 0;
+
+	var error:Bool = false;
 	public function new(baseURL:String = "http://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/", fileList:Array<String>) 
 	{
 		super();
@@ -64,16 +68,27 @@ class UpdateState extends MusicBeatState
 		downloadStream.dataFormat = BINARY;
 
 		//dumbass
-		var request = new URLRequest('$baseURL/$f');
+		var request = new URLRequest('$baseURL/$f'.replace(" ", "%20"));
 
 		var array = [];
 		var dir = [for (k => e in (array = f.replace("\\", "/").split("/"))) if (k < array.length - 1) e].join("/");
 		FileSystem.createDirectory('./_cache/$dir');
+		
+		if (FileSystem.exists('./_cache/$f') && FileSystem.stat('./_cache/$f').size > 0) { // prevents redownloading of the entire thing after it failed
+			doFile();
+			return;
+		}
 		var fileOutput:FileOutput = File.write('./_cache/$f', true);
 		var good = true;
 		currentFileLabel.text = 'Downloading File: $f (${totalFiles - fileList.length}/${totalFiles})';
 		
 		// downloadStream.addEventListener(Event.OPEN, function(e) {trace("Opened");good = true;});
+		downloadStream.addEventListener(IOErrorEvent.IO_ERROR, function(e) {
+			openSubState(new MenuMessage('Failed to download $f. Make sure you have a working internet connection, and try again.', function() {
+				FlxG.switchState(new MainMenuState());
+			}));
+			persistentUpdate = false;
+		});
 		downloadStream.addEventListener(Event.COMPLETE, function(e) {
 			var data:ByteArray = new ByteArray();
 			downloadStream.data.readBytes(data, 0, downloadStream.data.length - downloadStream.data.position);
@@ -120,6 +135,7 @@ class UpdateState extends MusicBeatState
 	}
 	public override function create() {
 		super.create();
+		FlxG.autoPause = false;
 		CoolUtil.addUpdateBG(this);
 		
 		var downloadBar = new FlxBar(0, 0, LEFT_TO_RIGHT, Std.int(FlxG.width * 0.75), 30, this, "downloadedFiles", 0, fileList.length);
@@ -134,7 +150,7 @@ class UpdateState extends MusicBeatState
 		percentLabel.y -= percentLabel.height / 2;
 		add(percentLabel);
 		
-		currentFileLabel = new FlxText(downloadBar.x, downloadBar.y - 10, downloadBar.width, "");
+		currentFileLabel = new FlxText(0, downloadBar.y - 10, FlxG.width, "");
 		currentFileLabel.setFormat(Paths.font("vcr.ttf"), 22, FlxColor.WHITE, CENTER, OUTLINE, 0xFF000000);
 		currentFileLabel.y -= percentLabel.height;
 		add(currentFileLabel);

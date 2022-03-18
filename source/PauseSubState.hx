@@ -48,6 +48,7 @@ class PauseSubState extends MusicBeatSubstate
 			valid = false;
 			script = new HScript();
 		}
+		ModSupport.setScriptDefaultVars(script, PlayState.songMod, {});
 		script.setVariable("preCreate", function() {});
 		script.setVariable("create", function() {});
 		script.setVariable("postCreate", function() {});

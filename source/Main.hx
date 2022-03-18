@@ -1,5 +1,6 @@
 package;
 
+import lime.ui.Window;
 import sys.io.Process;
 import lime.system.System;
 import sys.io.File;
@@ -31,7 +32,7 @@ class Main extends Sprite
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
 	// YOSHI ENGINE STUFF
-	public static var engineVer:Array<Int> = [1,7,0];
+	public static var engineVer:Array<Int> = [1,6,9];
 	public static var buildVer:String = "";
 
 	public static var supportedFileTypes = [
@@ -57,7 +58,11 @@ class Main extends Sprite
 					if (FileSystem.isDirectory('$path/$f')) {
 						copyFolder('$path/$f', '$destPath/$f');
 					} else {
-						File.copy('$path/$f', '$destPath/$f');
+						try {
+							File.copy('$path/$f', '$destPath/$f');
+						} catch(e) {
+							Application.current.window.alert('Could not copy $path/$f, press OK to skip.', 'Error');
+						}
 					}
 				}
 			}

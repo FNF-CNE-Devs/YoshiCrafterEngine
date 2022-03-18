@@ -166,7 +166,6 @@ class ModSupport {
             for (char in ["bf", "gf"]) {
                 for(skin in [for (e in FileSystem.readDirectory('${Paths.getSkinsPath()}$char/')) if (FileSystem.isDirectory('${Paths.getSkinsPath()}$char/$e')) e]) {
                     var path = '${Paths.getSkinsPath()}$char/$skin/';
-                    trace(path);
                     for (f in FileSystem.readDirectory(path)) {
                         var type = "TEXT";
                         if (Path.extension(f).toLowerCase() == "png") {

@@ -110,6 +110,8 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	override function update(elapsed:Float)
 	{
+		script.executeFunc("preUpdate", [elapsed]);
+
 		super.update(elapsed);
 
 		if (controls.ACCEPT)
@@ -126,6 +128,8 @@ class GameOverSubstate extends MusicBeatSubstate
 			else
 				FlxG.switchState(new FreeplayState());
 		}
+
+		script.executeFunc("update", [elapsed]);
 
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.curFrame == 12)
 		{
@@ -149,7 +153,9 @@ class GameOverSubstate extends MusicBeatSubstate
 			if (FlxG.sound.music.playing)
 				Conductor.songPosition = FlxG.sound.music.time;
 
-		script.executeFunc("update", [elapsed]);
+		script.executeFunc("updatePost", [elapsed]);
+		script.executeFunc("postUpdate", [elapsed]);
+
 	}
 
 	var danced = false;
@@ -166,6 +172,8 @@ class GameOverSubstate extends MusicBeatSubstate
 				}
 			}
 		}
+		
+		script.executeFunc("beatHit", [curBeat]);
 	}
 
 	var isEnding:Bool = false;
@@ -175,6 +183,8 @@ class GameOverSubstate extends MusicBeatSubstate
 	}
 	function endBullshit():Void
 	{
+		
+		script.executeFunc("onEnd", []);
 		if (!isEnding)
 		{
 			isEnding = true;

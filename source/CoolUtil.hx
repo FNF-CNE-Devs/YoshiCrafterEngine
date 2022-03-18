@@ -1,5 +1,6 @@
 package;
 
+import lime.app.Application;
 import EngineSettings.Settings;
 import flixel.util.FlxColor;
 import openfl.display.BitmapData;
@@ -207,7 +208,11 @@ class CoolUtil
 				deleteFolder(delete + "/" + file);
 				FileSystem.deleteDirectory(delete + "/" + file);
 			} else {
-				FileSystem.deleteFile(delete + "/" + file);
+				try {
+					FileSystem.deleteFile(delete + "/" + file);
+				} catch(e) {
+					Application.current.window.alert("Could not delete " + delete + "/" + file + ", click OK to skip.");
+				}
 			}
 		}
 		#end

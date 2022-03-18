@@ -556,6 +556,8 @@ class TitleState extends MusicBeatState
 				}
 			}
 		}
+
+		var changeLog:String = Http.requestUrl('https://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/_changes/changelog.txt');
 		/*
 		// var version:String = "v" + Application.current.meta.get('version');
 		var jsonData:YoshiEngineVersion = Json.parse(data.trim());
@@ -579,9 +581,12 @@ class TitleState extends MusicBeatState
 		}
 		*/
 		#if enable_updates
+		trace(currentVerPos);
+		trace(versions.length);
 		if (currentVerPos+1 < versions.length)
 		{
-			FlxG.switchState(new OutdatedSubState(files, versions[versions.length - 1]));
+			trace("OLD VER!!!");
+			FlxG.switchState(new OutdatedSubState(files, versions[versions.length - 1], changeLog));
 			// trace('OLD VERSION!');
 			// trace('old ver');
 			// trace(version.trim());

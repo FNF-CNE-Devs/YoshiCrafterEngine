@@ -13,9 +13,11 @@ class OutdatedSubState extends MusicBeatState
 
 	var files:Array<String>;
 	var ver:String;
-	public function new(files:Array<String>, ver:String) {
+	var changelog:String;
+	public function new(files:Array<String>, ver:String, changelog:String) {
 		this.files = files;
 		this.ver = ver;
+		this.changelog = changelog;
 		super();
 	}
 	override function create()
@@ -57,7 +59,7 @@ class OutdatedSubState extends MusicBeatState
 		txt.screenCenter(X);
 		add(txt);
 
-		var changelog = new FlxText(100, txt.y + txt.height + 20, 1080, [for (i in 0...Std.int(Math.min(15, files.length))) files[i]].join("\n"), 16);
+		var changelog = new FlxText(100, txt.y + txt.height + 20, 1080, changelog, 16);
 		changelog.setFormat(Paths.font("vcr.ttf"), Std.int(16), FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(changelog);
 	}
@@ -66,8 +68,11 @@ class OutdatedSubState extends MusicBeatState
 	{
 		if (controls.ACCEPT)
 		{
-			FlxG.switchState(new UpdateState(files));
-			//FlxG.openURL('https://www.github.com/YoshiCrafter29/YoshiEngine/releases/latest');
+			#if windows
+				FlxG.switchState(new UpdateState(files));
+			#else
+				FlxG.openURL('https://www.github.com/YoshiCrafter29/YoshiEngine/releases/latest');
+			#end
 		}
 		if (controls.BACK)
 		{

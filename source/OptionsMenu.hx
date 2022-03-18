@@ -1076,7 +1076,8 @@ class OptionsMenu extends MusicBeatState
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Paths.clearCache();
-					o.setValue("Cache Deleted");
+					Paths.clearModCache();
+					o.setValue("Cache Cleared");
 				}
 			},
 			checkbox: false,

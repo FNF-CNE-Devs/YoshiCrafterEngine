@@ -11,8 +11,9 @@
         "- Removed akifox-asynchttp",
         "- Fixed the Play Song feature in Freeplay",
 		"- Fixed Stage Editor import bug",
-        "- Fixed Vocals desync issue"
+        "- Fixed Vocals desync issue",
+        "- New updater! Yoshi Engine updates now can be installed in game (windows only for now)"
     ],
-    "version" : [1,6,1],
+    "version" : [1,7,0],
     "url" : "https://github.com/YoshiCrafter29/YoshiEngine/releases/latest"
 }
