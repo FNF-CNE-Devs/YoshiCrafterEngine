@@ -1609,7 +1609,7 @@ class PlayState extends MusicBeatState
 
 				
 			});
-			script.setVariable("generateStaticArrow", function(babyArrow:StrumNote, i:Int) {
+			script.setVariable("generateStaticArrow", function(babyArrow:StrumNote, i:Int, player:Int) {
 					babyArrow.frames = (engineSettings.customArrowSkin == "default") ? Paths.getCustomizableSparrowAtlas(engineSettings.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets', 'shared') : Paths.getSparrowAtlas(engineSettings.customArrowSkin.toLowerCase(), 'skins');
 					
 					
@@ -1693,8 +1693,8 @@ class PlayState extends MusicBeatState
 				health -= script.getVariable("note").isSustainNote ? 0.03125 : 0.125;
 			});
 			// script.execute(ModSupport.getExpressionFromPath(Paths.modsPath + '/$noteScriptMod/notes/$noteScriptName.hx', true));
-			script.loadFile(p);
 			ModSupport.setScriptDefaultVars(script, noteScriptMod, {});
+			script.loadFile(p);
 			noteScripts.push(script);
 		}
 
@@ -1819,7 +1819,7 @@ class PlayState extends MusicBeatState
 					
 				
 			// }
-			noteScripts[0].executeFunc("generateStaticArrow", [babyArrow, i]);
+			noteScripts[0].executeFunc("generateStaticArrow", [babyArrow, i, player]);
 			babyArrow.x += Note.swagWidth * i;
 
 			babyArrow.updateHitbox();
