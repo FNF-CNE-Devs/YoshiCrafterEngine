@@ -29,7 +29,11 @@ class OutdatedSubState extends MusicBeatState
 		bg.screenCenter();
 		add(bg);
 
+		#if windows
+		var anims = ['enter to update', 'space to check github', 'backspace to skip'];
+		#else
 		var anims = ['enter to update', 'backspace to skip'];
+		#end
 		// var xOffset:Float = 10;
 
 		for (i in 0...anims.length) {
@@ -40,7 +44,7 @@ class OutdatedSubState extends MusicBeatState
 			b.setGraphicSize(Std.int(b.width * 0.75));
 			b.y = 710 - b.height;
 			//if (i == 1) {
-				b.x = ((FlxG.width) * (i + 0.5 / anims.length)) - (b.width / 2);
+				b.x = ((FlxG.width) * ((i + 0.5) / anims.length)) - (b.width / 2);
 			//}
 			b.antialiasing = true;
 			add(b);
@@ -66,13 +70,17 @@ class OutdatedSubState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if (controls.ACCEPT)
+		if (FlxG.keys.justPressed.ENTER)
 		{
 			#if windows
 				FlxG.switchState(new UpdateState(files));
 			#else
 				FlxG.openURL('https://www.github.com/YoshiCrafter29/YoshiEngine/releases/latest');
 			#end
+		}
+		if (FlxG.keys.justPressed.SPACE)
+		{
+			FlxG.openURL('https://www.github.com/YoshiCrafter29/YoshiEngine/releases/latest');
 		}
 		if (controls.BACK)
 		{

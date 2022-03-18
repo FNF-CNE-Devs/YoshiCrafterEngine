@@ -75,6 +75,7 @@ class UpdateState extends MusicBeatState
 		FileSystem.createDirectory('./_cache/$dir');
 		
 		if (FileSystem.exists('./_cache/$f') && FileSystem.stat('./_cache/$f').size > 0) { // prevents redownloading of the entire thing after it failed
+			downloadedFiles++;
 			doFile();
 			return;
 		}
