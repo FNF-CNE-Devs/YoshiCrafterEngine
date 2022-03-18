@@ -1,6 +1,8 @@
 package;
 
 // import sys.io.File;
+import mod_support_stuff.FlxColor_Helper;
+import Script.HScript;
 import openfl.utils.Assets;
 import haxe.macro.ExprTools.ExprArrayTools;
 import haxe.Json;
@@ -133,6 +135,10 @@ class Character extends FlxSprite
 		
 		var p = Paths.getCharacterFolderPath(curCharacter) + "/Character";
 		characterScript = Script.create(p);
+		if (characterScript == null) {
+			trace(Paths.getCharacterFolderPath(curCharacter) + "/Character is missing");
+			characterScript = new HScript();
+		}
 		characterScript.setVariable("curCharacter", curCharacter);
 		characterScript.setVariable("character", this);
 		characterScript.setVariable("textureOverride", textureOverride);
@@ -317,7 +323,16 @@ class Character extends FlxSprite
 			Settings.engineSettings.data.arrowColor2,
 			Settings.engineSettings.data.arrowColor3
 		];
-		var c:Array<Int> = characterScript.executeFunc("getColors", [altAnim]);
+		var c2:Array<Dynamic> = characterScript.executeFunc("getColors", [altAnim]);
+		if (c2 == null) c2 = [];
+		var c:Array<Int> = [];
+		for(e in c2) {
+			if (Std.isOfType(e, Int)) {
+				c.push(e);
+			} else if (Std.isOfType(e, FlxColor_Helper)) {
+				c.push(cast(e, FlxColor_Helper).color);
+			}
+		}
 		var invalid = false;
 		invalid = c == null;
 		if (!invalid) invalid = c.length < 1;

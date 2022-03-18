@@ -52,7 +52,7 @@ class CreditsState extends MusicBeatState {
         add(socialThingy);
 
         camFollow = new FlxSprite(FlxG.width / 2, 0);
-        FlxG.camera.follow(camFollow, LOCKON, 0.04);
+        FlxG.camera.follow(camFollow, LOCKON, 0.08);
         FlxG.camera.zoom = 0.75;
 
         var mFolder = Paths.modsPath;
@@ -163,7 +163,7 @@ class CreditsState extends MusicBeatState {
                 }
             }
         }
-        FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+        CoolUtil.playMenuSFX(0);
         changeSocial();
     }
     public function changeSocial(curChange:Int = 0) {
@@ -206,7 +206,7 @@ class CreditsState extends MusicBeatState {
         }
 
         if (controls.BACK) {
-			FlxG.sound.play(Paths.sound('cancelMenu'));
+			CoolUtil.playMenuSFX(2);
             FlxG.switchState(new MainMenuState());
         }
     }

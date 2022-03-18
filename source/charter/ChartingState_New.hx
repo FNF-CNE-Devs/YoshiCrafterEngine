@@ -932,6 +932,7 @@ class ChartingState_New extends MusicBeatState
 				if (FlxControls.anyJustPressed([key])) {
 					if (combineNoteTypes) {
 						addNote(i + (((typingMode_note * 2) + (_song.notes[curSection].mustHitSection ? typingMode_char : ((typingMode_char + 1) % 2))) * _song.keyNumber) + (Math.floor(_song.keyNumber * 2 * Math.max(0, noteTypeRadioGroup.selectedIndex))), Math.floor(Conductor.songPosition / Conductor.stepCrochet) * Conductor.stepCrochet);
+						
 					} else {
 						addNote(i + (((typingMode_note * 2) + (_song.notes[curSection].mustHitSection ? typingMode_char : ((typingMode_char + 1) % 2))) * _song.keyNumber), Math.floor(Conductor.songPosition / Conductor.stepCrochet) * Conductor.stepCrochet); 
 					}
@@ -1510,7 +1511,7 @@ class ChartingState_New extends MusicBeatState
 			}
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();
-			note.x = Math.floor(daNoteInfo * GRID_SIZE) % gridBG.width;
+			note.x = Math.floor(daNoteInfo * GRID_SIZE) % (gridBG.width + gridBG.x); // removes event offset
 			note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
 
 			curRenderedNotes.add(note);
@@ -1524,22 +1525,24 @@ class ChartingState_New extends MusicBeatState
 			}
 		}
 		for (note in _song.events) {
-			if (Math.floor(note.time / 10) >= Math.floor(curSection * (Conductor.crochet * 4) / 10) &&
-			    Math.floor(note.time / 10) < Math.floor((curSection + 1) * (Conductor.crochet * 4) / 10)) {
-				// adds an event
-				// trace("event detected!!");
-				var n = new CharterNote(note.time, -2, null, false, true);
-				n.setGraphicSize(GRID_SIZE, GRID_SIZE);
-				n.updateHitbox();
-				n.x = -GRID_SIZE;
-				n.y = Math.floor(getYfromStrum((note.time - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
-				curRenderedEvents.add(n);
-				add(n);
-				var text = new FlxUIText(-GRID_SIZE - 10, n.y + (n.height / 2), note.name + '(' + [for(e in note.parameters) '"' + e + '"'].join(", ") + ')');
-				text.x -= text.width;
-				text.y -= (text.height / 2);
-				add(text);
-				curRenderedEventsNames[n] = text;
+			if (note.name != null) {
+				if (Math.floor(note.time / 10) >= Math.floor(curSection * (Conductor.crochet * 4) / 10) &&
+					Math.floor(note.time / 10) < Math.floor((curSection + 1) * (Conductor.crochet * 4) / 10)) {
+					// adds an event
+					// trace("event detected!!");
+					var n = new CharterNote(note.time, -2, null, false, true);
+					n.setGraphicSize(GRID_SIZE, GRID_SIZE);
+					n.updateHitbox();
+					n.x = -GRID_SIZE;
+					n.y = Math.floor(getYfromStrum((note.time - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
+					curRenderedEvents.add(n);
+					add(n);
+					var text = new FlxUIText(-GRID_SIZE - 10, n.y + (n.height / 2), note.name + '(' + [for(e in note.parameters) '"' + e + '"'].join(", ") + ')');
+					text.x -= text.width;
+					text.y -= (text.height / 2);
+					add(text);
+					curRenderedEventsNames[n] = text;
+				}
 			}
 		}
 	}
@@ -1626,7 +1629,10 @@ class ChartingState_New extends MusicBeatState
 		if (noteStrum == null) noteStrum = getStrumTime(dummyArrow.y) + sectionStartTime();
 		if (noteData == null) {
 			if (combineNoteTypes) {
-				noteData = Math.floor(Math.floor(FlxG.mouse.x / GRID_SIZE) + (_song.keyNumber * 2 * Math.max(noteTypeRadioGroup.selectedIndex, 0)));
+				if (FlxG.mouse.x < 0)
+					noteData = -1;
+				else
+					noteData = Math.floor(Math.floor(FlxG.mouse.x / GRID_SIZE) + (_song.keyNumber * 2 * Math.max(noteTypeRadioGroup.selectedIndex, 0)));
 			} else {
 				noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 			}

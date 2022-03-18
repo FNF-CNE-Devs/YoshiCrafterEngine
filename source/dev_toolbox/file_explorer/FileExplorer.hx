@@ -1,5 +1,6 @@
 package dev_toolbox.file_explorer;
 
+import openfl.utils.Assets;
 import sys.io.Process;
 import haxe.io.Path;
 import sys.FileSystem;
@@ -18,6 +19,7 @@ enum FileExplorerType {
     HScript;
     Lua;
     OGG;
+	Script;
 }
 
 @:enum
@@ -180,6 +182,8 @@ class FileExplorer extends MusicBeatSubstate {
                 ".hx or .hscript script";
             case Lua:
                 ".lua script";
+            case Script:
+                "script";
             case OGG:
                 "OGG sound";
         }
@@ -196,7 +200,9 @@ class FileExplorer extends MusicBeatSubstate {
             case JSON:
                 "json";
             case HScript:
-                "hx;hscript";
+                "hx;hscript;hsc";
+            case Script:
+                "hx;hscript;hsc;lua";
             case Lua:
                 "lua";
             case OGG:
@@ -221,6 +227,7 @@ class FileExplorer extends MusicBeatSubstate {
         upButton.resize(20, 20);
 
         var refreshButton = new FlxUIButton(upButton.x + upButton.width + 10, 10, "", function() {
+			ModSupport.loadMod(mod);
             navigateTo(path);
         });
         refreshButton.resize(20, 20);

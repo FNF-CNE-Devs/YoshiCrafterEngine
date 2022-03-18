@@ -1,10 +1,10 @@
 package;
 
+import ModConfig.ConfIntro;
+import mod_support_stuff.SwitchModSubstate;
 import flixel.addons.plugin.control.FlxControl;
 import flixel.group.FlxSpriteGroup;
 import sys.io.File;
-import com.akifox.asynchttp.HttpResponse;
-import com.akifox.asynchttp.HttpRequest;
 import sys.FileSystem;
 import haxe.Exception;
 import haxe.Json;
@@ -48,7 +48,8 @@ typedef TitleScreen = {
 }
 class TitleState extends MusicBeatState
 {
-	static var initialized:Bool = false;
+	public static var skipOldSkinCheck = false;
+	public static var initialized:Bool = false;
 
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
@@ -63,11 +64,16 @@ class TitleState extends MusicBeatState
 	var updateAlphabet:Alphabet;
 	var updateIcon:FlxSprite;
 	var updateRibbon:FlxSprite;
-	public static var skipOldSkinCheck = false;
+
+	var script:Script = null;
+	var titleSpriteGrp:FlxSpriteGroup = null;
+
+	var introConf:ConfIntro = null;
 
 
 	override public function create():Void
 	{
+		reloadModsState = true;
 		trace(FlxControls.pressed);
 
 		if (!skipOldSkinCheck) {
@@ -169,11 +175,12 @@ class TitleState extends MusicBeatState
 	var danceLeft:Bool = false;
 	var titleText:FlxSprite;
 
-	var titleScreens:Array<TitleScreen>;
-	var activeTitleScreen = -1;
+	// var titleScreens:Array<TitleScreen>;
+	// var activeTitleScreen = -1;
 
 	var isInTransition = false;
 
+	/*
 	function switchTitleScreen() {
 		if (isInTransition) return;
 		if (titleScreens.length < 2) {
@@ -215,6 +222,7 @@ class TitleState extends MusicBeatState
 			}});
 		}
 	}
+	*/
 	function startIntro()
 	{
 		if (!initialized)
@@ -229,12 +237,35 @@ class TitleState extends MusicBeatState
 			// music.loadStream(Paths.music('freakyMenu'));
 			// FlxG.sound.list.add(music);
 			// music.play();
-			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+			CoolUtil.playMenuMusic(true);
 
-			FlxG.sound.music.fadeIn(4, 0, 0.7);
+			// FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
 
-		Conductor.changeBPM(102);
+		var conf = null;
+		if ((conf = ModSupport.modConfig[Settings.engineSettings.data.selectedMod]) != null && conf.intro != null) {
+			introConf = conf.intro;
+			// if (introConf.bpm != null && introConf.bpm > 0) {
+			// 	bpm = introConf.bpm;
+			// }
+			if (introConf.bpm == null) introConf.bpm = 102;
+			if (introConf.authors == null) introConf.authors = ['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er'];
+			if (introConf.present == null) introConf.present = 'present';
+			if (introConf.assoc == null) introConf.assoc = ['In association', 'with'];
+			if (introConf.newgrounds == null) introConf.newgrounds = 'newgrounds';
+			if (introConf.gameName == null) introConf.gameName = ['Friday Night Funkin\'', 'Yoshi', 'Engine'];
+		} else {
+			introConf = {
+				bpm: 102,
+				authors: ['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er'],
+				present: 'present',
+				assoc: ['In association', 'with'],
+				newgrounds: 'newgrounds',
+				gameName: ['Friday Night Funkin\'', 'Yoshi', 'Engine']
+			};
+		}
+
+		Conductor.changeBPM(introConf.bpm);
 		persistentUpdate = true;
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
@@ -243,26 +274,24 @@ class TitleState extends MusicBeatState
 		// bg.updateHitbox();
 		add(bg);
 		
-		titleScreens = [];
-		var keys = ModSupport.modConfig.keys();
-		while(keys.hasNext()) {
-			var k = keys.next();
-			var path = '${Paths.modsPath}/$k/data';
-			if (FileSystem.exists(path) && FileSystem.isDirectory(path)) {
-				var script = Script.create('$path/titlescreen');
-				if (script != null) {
-					var spriteGrp = new FlxSpriteGroup(0, 0);
-					ModSupport.setScriptDefaultVars(script, k, {});
-					script.setVariable("create", function() {});
-					script.setVariable("beatHit", function() {});
-					script.setVariable("add", spriteGrp.add);
-					script.loadFile('$path/titlescreen');
-					script.executeFunc("create");
-					titleScreens.push({
-						script: script,
-						grp: spriteGrp
-					});
-				}
+		var path = '${Paths.modsPath}/${Settings.engineSettings.data.selectedMod}/data';
+		if (FileSystem.exists(path) && FileSystem.isDirectory(path)) {
+			script = Script.create('$path/titlescreen');
+			var mod = Settings.engineSettings.data.selectedMod;
+			if (script == null) {
+				path = '${Paths.modsPath}/Friday Night Funkin\'/data';
+				mod = 'Friday Night Funkin\'';
+				script = Script.create('$path/titlescreen');
+			}
+			if (script != null) {
+				titleSpriteGrp = new FlxSpriteGroup(0, 0);
+				ModSupport.setScriptDefaultVars(script, mod, {});
+				script.setVariable("create", function() {});
+				script.setVariable("beatHit", function() {});
+				script.setVariable("add", titleSpriteGrp.add);
+				script.loadFile('$path/titlescreen');
+				script.executeFunc("create");
+				add(titleSpriteGrp);
 			}
 		}
 
@@ -285,7 +314,7 @@ class TitleState extends MusicBeatState
 		// add(logoBl);
 
 		titleText = new FlxSprite(100, FlxG.height * 0.8);
-		titleText.frames = Paths.getSparrowAtlas('titleEnter');
+		titleText.frames = Paths.getCustomizableSparrowAtlas('titleEnter');
 		#if android
 			titleText.animation.addByPrefix('idle', "Android_Idle", 24);
 			titleText.animation.addByPrefix('press', "Android_Press", 24);
@@ -324,7 +353,7 @@ class TitleState extends MusicBeatState
 
 		credTextShit.visible = false;
 
-		ngSpr = new FlxSprite(0, FlxG.height * 0.52).loadGraphic(Paths.image('newgrounds_logo'));
+		ngSpr = new FlxSprite(0, FlxG.height * 0.52).loadGraphic(Paths.customizableImage('newgrounds_logo'));
 		add(ngSpr);
 		ngSpr.visible = false;
 		ngSpr.setGraphicSize(Std.int(ngSpr.width * 0.8));
@@ -408,6 +437,15 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		/*
+		if (FlxG.keys.justPressed.F2) {
+			FlxG.switchState(new UpdateState("http://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/", ['README.md', 'changelog.txt', 'YoshiEngine.exe']));
+		}
+		*/
+		if (FlxG.keys.justPressed.TAB && skippedIntro) {
+			persistentUpdate = false;
+			openSubState(new SwitchModSubstate());
+		}
 		if (updateRibbon != null) {
 			updateRibbon.alpha = Math.min(1, updateRibbon.alpha + (elapsed / 0.2));
 		}
@@ -436,8 +474,7 @@ class TitleState extends MusicBeatState
 
 		if (gamepad != null)
 		{
-			if (gamepad.justPressed.START)
-				pressedEnter = true;
+			if (gamepad.justPressed.START)				pressedEnter = true;
 
 			#if switch
 			if (gamepad.justPressed.B)
@@ -458,7 +495,7 @@ class TitleState extends MusicBeatState
 			if (titleText != null) titleText.animation.play('press');
 
 			FlxG.camera.flash(FlxColor.WHITE, 1);
-			FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
+			CoolUtil.playMenuSFX(1);
 
 			transitioning = true;
 			// FlxG.sound.music.stop();
@@ -470,33 +507,23 @@ class TitleState extends MusicBeatState
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
 				// Check if version is outdated
-				var request = new HttpRequest({
-					url: #if pastebinTest
-					"https://pastebin.com/raw/rtVtsaiB"
-					#elseif timeoutTest
-					"http://10.255.255.1/test"
-					#else
-					"https://raw.githubusercontent.com/YoshiCrafter29/YoshiEngine/main/update.json"
-					#end,
-					async: true,
-					callback: function(response:HttpResponse) {
+				Thread.create(function() {
+					try {
+						//var data = Http.requestUrl("https://raw.githubusercontent.com/YoshiCrafter29/YoshiEngine/main/update.json");
+						var data = Http.requestUrl("https://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/_changes/list.txt");
 						updateIcon.visible = false;
 						updateAlphabet.visible = false;
 						updateRibbon.visible = false;
-						if (response.isOK) {
-							onUpdateData(response.content);
-						} else {
-							trace(response.status);
-							FlxG.switchState(new MainMenuState());
-						}
+						onUpdateData(data);
+					} catch(e) {
+						trace(e);
+						FlxG.switchState(new MainMenuState());
 					}
 				});
 				updateIcon.visible = true;
 				updateAlphabet.visible = true;
 				updateRibbon.visible = true;
 				updateRibbon.alpha = 0;
-				request.send();
-				
 			});
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
@@ -514,6 +541,26 @@ class TitleState extends MusicBeatState
 	}
 
 	function onUpdateData(data:String) {
+		var versions = [for(e in data.split("\n")) if (e.trim() != "") e];
+		var currentVerPos = versions.indexOf(Main.engineVer.join("."));
+		var files:Array<String> = [];
+		for(i in currentVerPos+1...versions.length) {
+			var data:String = "";
+			try {
+				data = Http.requestUrl('https://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/_changes/${versions[i]}.txt');
+			} catch(e) {
+				trace(versions[i] + " data is incorrect");
+			}
+			var parsedFiles = [for(e in data.split("\n")) if (e.trim() != "") e];
+			for(f in parsedFiles) {
+				if (!files.contains(f)) {
+					files.push(f);
+				}
+			}
+		}
+
+		var changeLog:String = Http.requestUrl('https://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/_changes/changelog.txt');
+		/*
 		// var version:String = "v" + Application.current.meta.get('version');
 		var jsonData:YoshiEngineVersion = Json.parse(data.trim());
 		var outDated = false;
@@ -534,9 +581,14 @@ class TitleState extends MusicBeatState
 				break;
 			}
 		}
-		if (outDated)
+		*/
+		#if enable_updates
+		trace(currentVerPos);
+		trace(versions.length);
+		if (currentVerPos+1 < versions.length)
 		{
-			FlxG.switchState(new OutdatedSubState(jsonData));
+			trace("OLD VER!!!");
+			FlxG.switchState(new OutdatedSubState(files, versions[versions.length - 1], changeLog));
 			// trace('OLD VERSION!');
 			// trace('old ver');
 			// trace(version.trim());
@@ -545,9 +597,11 @@ class TitleState extends MusicBeatState
 		}
 		else
 		{
-
-			FlxG.switchState(new MainMenuState());
+		#end
+		FlxG.switchState(new MainMenuState());
+		#if enable_updates
 		}
+		#end
 	}
 	function createCoolText(textArray:Array<String>)
 	{
@@ -585,12 +639,12 @@ class TitleState extends MusicBeatState
 	{
 		super.beatHit();
 
-		if (skippedIntro) {
-			if (activeTitleScreen > -1) titleScreens[activeTitleScreen].script.executeFunc("beatHit");
-			if ((curBeat - skipBeat) % 24 == 0) {
-				switchTitleScreen();
-			}
-		}
+		// if (skippedIntro) {
+		// 	if (activeTitleScreen > -1) titleScreens[activeTitleScreen].script.executeFunc("beatHit");
+		// 	if ((curBeat - skipBeat) % 24 == 0) {
+		// 		switchTitleScreen();
+		// 	}
+		// }
 		// if (logoBl != null) logoBl.animation.play('bump');
 		// danceLeft = !danceLeft;
 		// if (gfDance != null) {
@@ -599,16 +653,17 @@ class TitleState extends MusicBeatState
 		// 	else
 		// 		gfDance.animation.play('danceLeft');
 		// }
+		if (script != null) script.executeFunc("beatHit", [curBeat]);
 
 		FlxG.log.add(curBeat);
 
 		switch (curBeat)
 		{
 			case 1:
-				createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
+				createCoolText(introConf.authors);
 			// credTextShit.visible = true;
 			case 3:
-				addMoreText('present');
+				addMoreText(introConf.present);
 			// credTextShit.text += '\npresent...';
 			// credTextShit.addText();
 			case 4:
@@ -617,9 +672,9 @@ class TitleState extends MusicBeatState
 			// credTextShit.text = 'In association \nwith';
 			// credTextShit.screenCenter();
 			case 5:
-				createCoolText(['In association', 'with']);
+				createCoolText(introConf.assoc);
 			case 7:
-				addMoreText('newgrounds');
+				addMoreText(introConf.newgrounds);
 				ngSpr.visible = true;
 			// credTextShit.text += '\nNewgrounds';
 			case 8:
@@ -641,13 +696,13 @@ class TitleState extends MusicBeatState
 			// credTextShit.text = "Friday";
 			// credTextShit.screenCenter();
 			case 13:
-				addMoreText('Friday Night Funkin\'');
+				addMoreText(introConf.gameName[0]);
 			// credTextShit.visible = true;
 			case 14:
-				addMoreText('Yoshi');
+				addMoreText(introConf.gameName[1]);
 			// credTextShit.text += '\nNight';
 			case 15:
-				addMoreText('Engine'); // credTextShit.text += '\nFunkin';
+				addMoreText(introConf.gameName[2]); // credTextShit.text += '\nFunkin';
 
 			case 16:
 				skipBeat = 16;
@@ -659,6 +714,8 @@ class TitleState extends MusicBeatState
 
 	function skipIntro():Void
 	{
+		
+
 		if (!skippedIntro)
 		{
 			remove(ngSpr);
@@ -667,6 +724,10 @@ class TitleState extends MusicBeatState
 			remove(credGroup);
 			skippedIntro = true;
 		}
-		switchTitleScreen();
+		if (EngineSettings.Settings.engineSettings != null) {
+			FlxG.drawFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
+			FlxG.updateFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
+		}
+		// switchTitleScreen();
 	}
 }

@@ -920,13 +920,13 @@ class OptionsMenu extends MusicBeatState
 
 	function addPerformanceCategory() {
 		var performance:MenuCategory = {
-			name : "Optimisation and Performances",
+			name : "Graphic Settings",
 			description : "Optimise the engine with memory and graphics settings.",
 			options : [],
 			center : false
 		};
 		performance.options.push({
-			text : "[Optimisation and Performances]",
+			text : "[Graphic Settings]",
 			description : "",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				
@@ -934,6 +934,37 @@ class OptionsMenu extends MusicBeatState
 			checkbox: false,
 			checkboxChecked: function() {return false;},
 			value: function() {return "";}
+		});
+		
+		var stageQualities = ["Best", "High", "Low", "Medium"];
+		performance.options.push(
+		{
+			text : "Stage Quality",
+			description : "Sets the Stage Quality of the game. You can choose between 4 different types:
+- Low: No antialiasing, no bitmap smoothing
+- Medium: 2x2 pixel grid antialiasing, no bitmap smoothing
+- High: 4x4 pixel grid antialiasing, smooths bitmaps if the game is static
+- Best: 4x4 pixel grid antialiasing, always smooth bitmaps",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				var changed = false;
+				if (controls.RIGHT_P) {
+					changed = true;
+					Settings.engineSettings.data.stageQuality++;
+				}
+				if (controls.LEFT_P) {
+					changed = true;
+					Settings.engineSettings.data.stageQuality--;
+				}
+				if (changed) {
+					if (Settings.engineSettings.data.stageQuality < 0) Settings.engineSettings.data.stageQuality = stageQualities.length - 1;
+					else if (Settings.engineSettings.data.stageQuality >= stageQualities.length) Settings.engineSettings.data.stageQuality = 0;
+					o.setValue(stageQualities[Settings.engineSettings.data.stageQuality]);
+					FlxG.game.stage.quality = Settings.engineSettings.data.stageQuality;
+				}
+			},
+			checkbox: false,
+			checkboxChecked: function() {return false;},
+			value: function() {return stageQualities[Settings.engineSettings.data.stageQuality];}
 		});
 		
 		performance.options.push(
@@ -1045,7 +1076,8 @@ class OptionsMenu extends MusicBeatState
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Paths.clearCache();
-					o.setValue("Cache Deleted");
+					Paths.clearModCache();
+					o.setValue("Cache Cleared");
 				}
 			},
 			checkbox: false,
@@ -1127,6 +1159,34 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: function() {return Settings.engineSettings.data.autopause;},
+			value: function() {return "";}
+		});
+		misc.options.push({
+			text : "Separate mods in menus",
+			description : "If checked, will separate each mod into their own respective list. For example, if the \"Friday Night Funkin'\" mod is selected, only songs and weeks from the Friday Night Funkin' mod will be shown in the menus. Mods with menu scripts will have this option on by default.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.freeplayShowAll = !Settings.engineSettings.data.freeplayShowAll;
+					o.checkboxChecked = !Settings.engineSettings.data.freeplayShowAll;
+					o.check(!Settings.engineSettings.data.freeplayShowAll);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return !Settings.engineSettings.data.freeplayShowAll;},
+			value: function() {return "";}
+		});
+		misc.options.push({
+			text : "Auto add new installed mods",
+			description : "If checked, will separate each mod into their own respective list. For example, if the \"Friday Night Funkin'\" mod is selected, only songs and weeks from the Friday Night Funkin' mod will be shown in the menus. Mods with menu scripts will have this option on by default.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.autoSwitchToLastInstalledMod = !Settings.engineSettings.data.autoSwitchToLastInstalledMod;
+					o.checkboxChecked = Settings.engineSettings.data.autoSwitchToLastInstalledMod;
+					o.check(Settings.engineSettings.data.autoSwitchToLastInstalledMod);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.autoSwitchToLastInstalledMod;},
 			value: function() {return "";}
 		});
 		// misc.options.push({
@@ -1300,22 +1360,34 @@ class OptionsMenu extends MusicBeatState
 		// FlxAtlasFrames.fromTexturePackerJson()
 		
 
-		var yBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGYoshi'));
-		yBG.setGraphicSize(Std.int(yBG.width * 1.1));
+		// var yBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGYoshi'));
+		// yBG.setGraphicSize(Std.int(yBG.width * 1.1));
+		// yBG.updateHitbox();
+		// yBG.screenCenter();
+		var yBG = CoolUtil.addBG(this);
+		yBG.x = -80;
+		yBG.scrollFactor.x = 0;
+		yBG.scrollFactor.y = 0.18;
+		yBG.scale.x = yBG.scale.y = 1.2;
 		yBG.updateHitbox();
 		yBG.screenCenter();
-		yBG.y = -menuBGy + 23;
-		yBG.antialiasing = true;
+		yBG.y -= menuBGy;
 		add(yBG);
 
-		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		// var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		var menuBG = CoolUtil.addWhiteBG(this);
 		menuBG.color = 0xFFfd719b;
-		// menuBG.color = 0xFF494949;
-		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
+		menuBG.x = -80;
+		menuBG.scrollFactor.x = 0;
+		menuBG.scrollFactor.y = 0.18;
+		menuBG.scale.x = menuBG.scale.y = 1.2;
 		menuBG.updateHitbox();
 		menuBG.screenCenter();
-		menuBG.y = -menuBGy + 23;
-		// menuBG.color.
+		menuBG.y -= menuBGy;
+		// menuBG.color = 0xFF494949;
+		// menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
+		// menuBG.updateHitbox();
+		// menuBG.screenCenter();
 		menuBG.antialiasing = true;
 		add(menuBG);
 
@@ -1455,7 +1527,7 @@ class OptionsMenu extends MusicBeatState
 		if (controls.DOWN_P)
 			changeSelection(1);
 		
-		optionsAlphabets.y = FlxMath.lerp(optionsAlphabets.y, (FlxG.height / 2) - (69 / 2) - (curSelected * 80), CoolUtil.wrapFloat(0.1 / 60 / elapsed, 0, 1));
+		optionsAlphabets.y = FlxMath.lerp(optionsAlphabets.y, (FlxG.height / 2) - (69 / 2) - (curSelected * 80), CoolUtil.wrapFloat(0.1 * 60 * elapsed, 0, 1));
 		
 
 		for (i in 0...optionsAlphabets.members.length) {
@@ -1522,6 +1594,6 @@ class OptionsMenu extends MusicBeatState
 		// FlxTween.tween(optionsAlphabets, {y: (FlxG.height / 2) - (69 / 2) - (curSelected * 80)}, 0.1, {ease : FlxEase.quadInOut});
 		// optionsAlphabets.y = ;
 
-		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+		CoolUtil.playMenuSFX(0);
 	}
 }

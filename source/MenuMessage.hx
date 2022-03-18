@@ -4,7 +4,8 @@ import flixel.FlxG;
 
 class MenuMessage extends MusicBeatSubstate {
     var wasUnpressed = false;
-    public override function new(message:String) {
+    var callback:Void->Void = null;
+    public override function new(message:String, ?callback:Void->Void) {
         super();
         add(new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000));
         add(new FlxSprite(1280 / 4, 720 / 4).makeGraphic(640, 360, 0x88000000));
@@ -19,6 +20,8 @@ class MenuMessage extends MusicBeatSubstate {
         okButton.updateHitbox();
         okButton.setPosition(1280 * 0.75 - 10 - okButton.width, 720 * 0.75 - 10 - okButton.height);
         add(okButton);
+
+        this.callback = callback;
     }
 
     public override function update(elapsed:Float) {
@@ -27,6 +30,7 @@ class MenuMessage extends MusicBeatSubstate {
             wasUnpressed = true;
         }
         if (FlxControls.justPressed.BACKSPACE && wasUnpressed) {
+            if (callback != null) callback();
             close();
         }
     }

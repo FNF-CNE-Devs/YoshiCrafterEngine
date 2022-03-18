@@ -1,5 +1,10 @@
 package;
 
+import lime.ui.Window;
+import sys.io.Process;
+import lime.system.System;
+import sys.io.File;
+import sys.FileSystem;
 import flixel.FlxG;
 import lime.utils.Log;
 import haxe.CallStack;
@@ -27,7 +32,7 @@ class Main extends Sprite
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
 	// YOSHI ENGINE STUFF
-	public static var engineVer:Array<Int> = [1,6,1];
+	public static var engineVer:Array<Int> = [1,7,0];
 	public static var buildVer:String = "";
 
 	public static var supportedFileTypes = [
@@ -42,13 +47,45 @@ class Main extends Sprite
 
 	public static function main():Void
 	{
-		#if cpp
-		cpp.Lib.print("main");
-		Lib.current.addChild(new Main());
-		#else
-		trace("main");
-		Lib.current.addChild(new Main());
-		#end
+		var args = Sys.args();
+		if (args.contains('update')) {
+			// copy
+			var copyFolder:String->String->Void = null;
+			copyFolder = function(path, destPath) {
+				FileSystem.createDirectory(path);
+				FileSystem.createDirectory(destPath);
+				for (f in FileSystem.readDirectory(path)) {
+					if (FileSystem.isDirectory('$path/$f')) {
+						copyFolder('$path/$f', '$destPath/$f');
+					} else {
+						try {
+							File.copy('$path/$f', '$destPath/$f');
+						} catch(e) {
+							Application.current.window.alert('Could not copy $path/$f, press OK to skip.', 'Error');
+						}
+					}
+				}
+			}
+			copyFolder('./_cache', '.');
+			CoolUtil.deleteFolder('./_cache/');
+			FileSystem.deleteDirectory('./_cache/');
+			new Process('start /B YoshiEngine.exe', null);
+			System.exit(0);
+		} else {
+			try {
+				// in case to prevent crashes
+				if (FileSystem.exists("temp.exe")) FileSystem.deleteFile('temp.exe');
+			} catch(e) {
+
+			}
+			#if cpp
+			cpp.Lib.print("main");
+			Lib.current.addChild(new Main());
+			#else
+			trace("main");
+			Lib.current.addChild(new Main());
+			#end
+		}
 	}
 
 	public function new()

@@ -2,7 +2,7 @@
     "credits" : [
         {
             "name" : "YoshiCrafter29",
-            "role" : "Engine developer & Doge GF's n°1 fan, aka Muffichii or Doovleed (dont use that username please).",
+            "role" : "Engine developer & Doge GF's n°1 fan.",
             "icon" : "credits/yoshicrafter29",
             "urls" : [
                 {
@@ -31,6 +31,25 @@
                 {
                     "name" : "YouTube",
                     "url" : "https://www.youtube.com/channel/UC5vO3P1ZoZWrSy8upg3xBww"
+                }
+            ]
+        },
+        {
+            "name" : "Siivkoi",
+            "role" : "Artist - Drew the update screen background (and drew this icon)",
+            "icon" : "credits/siivkoi",
+            "urls" : [
+                {
+                    "name" : "Twitter",
+                    "url" : "https://twitter.com/SillySil220"
+                },
+                {
+                    "name" : "YouTube",
+                    "url" : "https://www.youtube.com/channel/UCV_ClJ6D0NuOsfhckxGWZzA"
+                },
+                {
+                    "name" : "Newgrounds",
+                    "url" : "https://siivkoi.newgrounds.com/"
                 }
             ]
         },

@@ -1,5 +1,6 @@
 package dev_toolbox.stage_editor;
 
+import flixel.util.FlxColor;
 import flixel.FlxSprite;
 import haxe.Json;
 import sys.io.File;
@@ -27,24 +28,11 @@ class StageCreator extends MusicBeatSubstate {
         var label:FlxUIText = new FlxUIText(10, 10, 480, "Stage JSON name");
         var stageName:FlxUIInputText = new FlxUIInputText(10, label.y + label.height, 480, "your-stage");
 
-        var warning = new FlxUIText(10, stageName.y + stageName.height + 10, 480, "/!\\ WARNING
-
-You'll need a modchart to load the stage in. To use your stage in a song, create a modchart, use \"loadStage('Your JSON stage (without the extension)')\", and call \"stage.onBeat()\" on every beat to update on beat animations.
-
-Example script:
-
-var stage:Stage = null;
-function create() {
-    stage = loadStage(\"stage\");
-}
-
-function beatHit(curBeat) {
-    stage.onBeat();
-}");
+        var warning = new FlxUIText(10, stageName.y + stageName.height + 10, 480, "A script will be automatically created that'll load your stage. You can add it to whatever song you want by adding the stage's script into the song configuration, to load your stage in.");
 
         var addButton = new FlxUIButton(250, warning.y + warning.height + 10, "Create", function() {
             var name = stageName.text.trim();
-            var path = '${Paths.modsPath}/${ToolboxHome.selectedMod}/stages/${name}.json';
+            var path = '${Paths.modsPath}/${ToolboxHome.selectedMod}/stages/${name}';
             if (name == "") {
                 showMessage('Error', 'You need to type a name.');
                 return;
@@ -54,12 +42,25 @@ function beatHit(curBeat) {
                 return;
             }
             
-            File.saveContent(path, Json.stringify(Templates.stageTemplate, "\t"));
+            File.saveContent('$path.json', Json.stringify(Templates.stageTemplate, "\t"));
+            File.saveContent('$path.hx', 'var stage:Stage = null;
+function create() {
+	stage = loadStage(\'{0}\');
+}
+function update(elapsed) {
+	stage.update(elapsed);
+}
+function beatHit(curBeat) {
+	stage.onBeat();
+}'.replace('{0}', name));
 
             close();
             FlxG.switchState(new StageEditor(name));
         });
         addButton.x -= addButton.width / 2;
+
+        
+
 
         tab.add(label);
         tab.add(stageName);
@@ -70,5 +71,12 @@ function beatHit(curBeat) {
         window.resize(500, addButton.y + addButton.height + 10);
         window.screenCenter();
         add(window);
+        var closeButton = new FlxUIButton(window.x + window.width - 20, window.y, "X", function() {
+            close();
+        });
+        closeButton.color = 0xFFFF4444;
+        closeButton.label.color = FlxColor.WHITE;
+        closeButton.resize(20, 20);
+        add(closeButton);
     }
 }

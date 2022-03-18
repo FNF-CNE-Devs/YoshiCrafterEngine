@@ -48,5 +48,7 @@ class MenuItem extends FlxSpriteGroup
 			week.color = 0xFF33ffff;
 		else
 			week.color = FlxColor.WHITE;
+		
+		antialiasing = true;
 	}
 }

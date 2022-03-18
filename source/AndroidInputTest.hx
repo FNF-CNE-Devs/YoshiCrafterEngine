@@ -8,14 +8,14 @@ class AndroidInputTest extends FlxState {
         super.create();
         androidSprite = new FlxClickableSprite(0, 0);
         var sprAtlas = Paths.getSparrowAtlas("ui_buttons", "preload");
-        trace(sprAtlas);
+        // trace(sprAtlas);
         androidSprite.frames = sprAtlas;
         androidSprite.animation.addByPrefix("select button", "select button");
         androidSprite.animation.play("select button");
         androidSprite.key = FlxKey.SPACE;
         androidSprite.screenCenter();
         androidSprite.antialiasing = true;
-        trace(androidSprite.pixels);
+        // trace(androidSprite.pixels);
         add(androidSprite);
     }
 

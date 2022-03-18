@@ -1,5 +1,7 @@
 package;
 
+import lime.app.Application;
+import EngineSettings.Settings;
 import flixel.util.FlxColor;
 import openfl.display.BitmapData;
 import lime.ui.FileDialogType;
@@ -19,6 +21,31 @@ class CoolUtil
 	* Array for difficulty names
 	*/
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
+
+	public static function loadSong(mod:String, song:String, ?difficulty:String):Bool {
+		if (difficulty == null) difficulty = "normal";
+
+
+		// 
+		// 
+		try {
+			PlayState._SONG = Song.loadModFromJson(Highscore.formatSong(song, difficulty), mod, song);
+		} catch(e) {
+			FlxG.state.openSubState(new MenuMessage('Error while loading the chart. Make sure the ${difficulty} chart for ${song} exists in the ${mod} mod.'));
+			return false;
+		}
+		PlayState._SONG.validScore = true;
+		PlayState.isStoryMode = false;
+		PlayState.songMod = mod;
+		PlayState.jsonSongName = song;
+		PlayState.storyDifficulty = difficulty;
+		PlayState.fromCharter = false;
+		return true;
+	}
+
+	public static function loadWeek(mod:String, week:String, ?difficulty:String) {
+		
+	}
 
 	public static function calculateAverageColorLight(icon:BitmapData) {
 		var r:Float = 0;
@@ -116,18 +143,46 @@ class CoolUtil
 
 
 	public static function addBG(f:FlxState) {
-		var bg = new FlxSprite(0,0).loadGraphic(Paths.image("menuBGYoshi", "preload"));
+		var p = Paths.image("menuBGYoshi", 'mods/${Settings.engineSettings.data.selectedMod}');
+		if (!Assets.exists(p)) p = Paths.image("menuBGYoshi", "preload");
+		var bg = new FlxSprite(0,0).loadGraphic(p);
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
 		bg.screenCenter();
+		bg.antialiasing = true;
 		f.add(bg);
 		return bg;
 	}
 
+
+	public static function addUpdateBG(f:FlxState) {
+		// siivkoi i love your art thanks again
+		var p = Paths.image("Yoshi_Engine_download_screen", "preload");
+		var bg = new FlxSprite(0,0).loadGraphic(p);
+		bg.screenCenter();
+		bg.scrollFactor.set(0, 0);
+		bg.antialiasing = true;
+		f.add(bg);
+		return bg;
+	}
+
+	public static function playMenuMusic(fade:Bool = false, force:Bool = false) {
+		if (force || FlxG.sound.music == null || !FlxG.sound.music.playing) {
+			var daFunkyMusicPath = Paths.music('freakyMenu');
+			if (Assets.exists(Paths.music('freakyMenu', 'mods/${Settings.engineSettings.data.selectedMod}')))
+				daFunkyMusicPath = Paths.music('freakyMenu', 'mods/${Settings.engineSettings.data.selectedMod}');
+			FlxG.sound.playMusic(daFunkyMusicPath, fade ? 0 : 1);
+			if (fade) FlxG.sound.music.fadeIn(4, 0, 0.7);
+		}
+	}
+
 	public static function addWhiteBG(f:FlxState) {
-		var bg = new FlxSprite(0,0).loadGraphic(Paths.image("menuDesat", "preload"));
+		var p = Paths.image("menuDesat", 'mods/${Settings.engineSettings.data.selectedMod}');
+		if (!Assets.exists(p)) p = Paths.image("menuDesat", "preload");
+		var bg = new FlxSprite(0,0).loadGraphic(p);
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
 		bg.screenCenter();
 		bg.scrollFactor.set();
+		bg.antialiasing = true;
 		f.add(bg);
 		return bg;
 	}
@@ -153,7 +208,11 @@ class CoolUtil
 				deleteFolder(delete + "/" + file);
 				FileSystem.deleteDirectory(delete + "/" + file);
 			} else {
-				FileSystem.deleteFile(delete + "/" + file);
+				try {
+					FileSystem.deleteFile(delete + "/" + file);
+				} catch(e) {
+					Application.current.window.alert("Could not delete " + delete + "/" + file + ", click OK to skip.");
+				}
 			}
 		}
 		#end
@@ -224,14 +283,20 @@ class CoolUtil
 	}
 
 	public static function playMenuSFX(id:Int) {
+		var soundId:String = 'scrollMenu';
 		switch(id) {
-			case 0:
-				FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 			case 1:
-				FlxG.sound.play(Paths.sound('confirmMenu'), 0.4);
+				soundId = 'confirmMenu';
 			case 2:
-				FlxG.sound.play(Paths.sound('cancelMenu'), 0.4);
+				soundId = 'cancelMenu';
+			case 3:
+				soundId = 'disabledMenu';
 		}
+		var mPath = Paths.sound(soundId, 'mods/${Settings.engineSettings.data.selectedMod}');
+		if (Assets.exists(mPath))
+			FlxG.sound.play(mPath);
+		else
+			FlxG.sound.play(Paths.sound(soundId), 1);
 	}
 	
 	public static function wrapFloat(value:Float, min:Float, max:Float) {

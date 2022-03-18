@@ -12,4 +12,14 @@ typedef ModConfig = {
     var BFskins:Array<CharacterSkin>;
     var GFskins:Array<CharacterSkin>;
     var keyNumbers:Array<Int>;
+    var intro:ConfIntro;
+}
+
+typedef ConfIntro = {
+    var bpm:Null<Int>;
+    var authors:Array<String>;
+    var assoc:Array<String>;
+    var newgrounds:String;
+    var present:String;
+    var gameName:Array<String>;
 }

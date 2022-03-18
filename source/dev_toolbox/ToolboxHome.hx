@@ -84,7 +84,15 @@ class ToolboxHome extends MusicBeatState {
                 GFskins: [],
                 skinnableBFs : [],
                 skinnableGFs : [],
-                locked: false
+                locked: false,
+                intro: {
+					bpm: 102,
+					authors: ['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er'],
+					present: 'present',
+					assoc: ['In association', 'with'],
+					newgrounds: 'newgrounds',
+					gameName: ['Friday Night Funkin\'', 'Yoshi', 'Engine']
+                }
             };
             ModSupport.modConfig[mod] = conf;
         }
@@ -97,6 +105,7 @@ class ToolboxHome extends MusicBeatState {
 			{name: "chars", label: 'Characters'},
 			{name: "weeks", label: 'Weeks'},
 			{name: "stages", label: 'Stages JSONs'},
+			{name: "songconf", label: 'Song Config'},
 		];
         UI_Tabs = new FlxUITabMenu(null, tabs, true);
         UI_Tabs.x = 0;
@@ -119,6 +128,7 @@ class ToolboxHome extends MusicBeatState {
         new WeeksTab(0, 22, this);
         new SongTab(0, 22, this);
         new StagesTab(0, 22, this);
+        new SongConfTab(0, 22, this);
 
         closeButton = new FlxUIButton(FlxG.width - 20, 0, "X", function() {
             FlxG.switchState(new ToolboxMain());

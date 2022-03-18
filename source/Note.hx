@@ -49,6 +49,7 @@ class Note extends FlxSprite
 	public var noteType:Int = 0;
 
 	public var colored:Bool = false;
+	public var prevSusNote:Note = null;
 
 	public var sustainHealth:Float = 0.012;
 	// #if secret
@@ -249,6 +250,14 @@ class Note extends FlxSprite
 		// createNote();
 		script.setVariable("note", this);
 		script.executeFunc("create");
+		animation.play("scroll");
+		if (isSustainNote) {
+			if (prevNote != null)
+				if (prevNote.animation.curAnim.name == "holdend")
+					prevNote.animation.play("holdpiece");
+			animation.play("holdend");
+		}
+
 		if (colored) {
 			if (Settings.engineSettings.data.rainbowNotes == true) {
 				var superCoolColor = new FlxColor(0xFFFF0000);

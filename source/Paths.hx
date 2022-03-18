@@ -12,7 +12,7 @@ import sys.io.File;
 import lime.system.System;
 import lime.utils.AssetLibrary;
 import openfl.display.BitmapData;
-import lime.utils.Assets;
+import openfl.utils.Assets;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
@@ -65,6 +65,11 @@ class Paths
 	
 	public static function getPath(file:String, type:AssetType, library:Null<String>)
 	{
+		file = file.replace("\\", "/");
+		while(file.contains("//")) {
+			file = file.replace("//", "/");
+		}
+		while(file.startsWith("/")) file = file.substr(1);
 		if (library == "~") library = "skins";
 		if (library != null)
 			return getLibraryPath(file, library);
@@ -222,6 +227,14 @@ class Paths
 		return getPath('images/$key.png', IMAGE, library);
 	}
 
+	inline static public function customizableImage(key:String, ?library:String)
+	{
+		var mPath = image(key, 'mods/${Settings.engineSettings.data.selectedMod}');
+		if (!OpenFlAssets.exists(mPath))
+			mPath = image(key, library);
+		return mPath;
+	}
+
 	// inline static public function stageImage(key:String)
 	// {
 	// 	var p = ModSupport.song_stage_path;
@@ -236,6 +249,15 @@ class Paths
 	inline static public function getSparrowAtlas(key:String, ?library:String)
 	{
 		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
+	}
+
+	inline static public function getCustomizableSparrowAtlas(key:String, ?library:String)
+	{
+		var lib = 'mods/${Settings.engineSettings.data.selectedMod}';
+		if (!OpenFlAssets.exists(image(key, lib)) || !OpenFlAssets.exists(file('images/$key.xml', lib))) {
+			lib = library;
+		}
+		return FlxAtlasFrames.fromSparrow(image(key, lib), file('images/$key.xml', lib));
 	}
 
 	public static var cacheText:Map<String, String> = new Map<String, String>();

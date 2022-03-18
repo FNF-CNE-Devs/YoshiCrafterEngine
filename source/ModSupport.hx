@@ -1,3 +1,5 @@
+import haxe.EnumTools;
+import mod_support_stuff.ModState;
 import hscript.Expr;
 import openfl.utils.AssetLibrary;
 import openfl.utils.AssetManifest;
@@ -139,103 +141,133 @@ class ModSupport {
             }
         }
     }
-    public static function reloadModsConfig() {
+    public static function reloadModsConfig(reloadAll:Bool = false, reloadSkins:Bool = true):Bool {
+        Assets.cache.clear('mods/');
+        Assets.cache.clear('shared');
+        Assets.cache.clear('preload');
+        openfl.utils.Assets.cache.clear('mods/');
+        openfl.utils.Assets.cache.clear('shared');
+        openfl.utils.Assets.cache.clear('preload');
         modConfig = [];
 
-        // skins shit
-        
-        var assets:AssetManifest = new AssetManifest();
-        assets.name = "skins";// for case sensitive shit & correct linux support
-        assets.libraryType = null;
-        assets.version = 2;
-        assets.libraryArgs = [];
-        // assets.rootPath = '${Paths.getSkinsPath()}';
-        assets.assets = [];
-        FileSystem.createDirectory('${Paths.getSkinsPath()}/bf/');
-        FileSystem.createDirectory('${Paths.getSkinsPath()}/gf/');
-        FileSystem.createDirectory('${Paths.getSkinsPath()}/notes/');
-        for (char in ["bf", "gf"]) {
-            for(skin in [for (e in FileSystem.readDirectory('${Paths.getSkinsPath()}$char/')) if (FileSystem.isDirectory('${Paths.getSkinsPath()}$char/$e')) e]) {
-                var path = '${Paths.getSkinsPath()}$char/$skin/';
-                trace(path);
-                for (f in FileSystem.readDirectory(path)) {
-                    var type = "TEXT";
-                    if (Path.extension(f).toLowerCase() == "png") {
-                        type = "IMAGE";
-                    }
-                    assets.assets.push({
-                        type: type,
-                        id: ('assets/skins/characters/$char/$skin/$f').toLowerCase(), // for case sensitive shit & correct linux support
-                        path: '$path$f',
-                        size: FileSystem.stat('$path$f').size
-                    });
-                }
-            }
-        }
-        try {
-            getAssetFiles(assets.assets, '${Paths.getSkinsPath()}notes/', '', 'skins', 'images/', true);
-        } catch(e) {
-            trace(e.details());
-        }
-        trace(assets.assets);
-        // getAssetFiles(assets.assets, '${Paths.modsPath}/$mod/', '', libName);
-
-        if (openfl.utils.Assets.hasLibrary("skins"))
-            openfl.utils.Assets.unloadLibrary("skins");
-        openfl.utils.Assets.registerLibrary("skins", AssetLibrary.fromManifest(assets));
-
-        for(mod in getMods()) {
-            trace(mod);
-            try {
-                var s = new FlxSave();
-                s.bind(mod.replace(" ", "_").replace("'", "_"));
-                s.data.mod = mod;
-                // s.flush();
-                modSaves[mod] = s;
-            } catch(e) {
-                trace(e.details());
-            }
-
-            // imma do assets lol
-            var libName = 'mods/$mod'.toLowerCase();
+        if (reloadSkins) {
+            // skins shit
+            
             var assets:AssetManifest = new AssetManifest();
-            assets.name = libName;// for case sensitive shit & correct linux support
+            assets.name = "skins";// for case sensitive shit & correct linux support
             assets.libraryType = null;
             assets.version = 2;
             assets.libraryArgs = [];
-            assets.rootPath = '${Paths.modsPath}/$mod/';
+            // assets.rootPath = '${Paths.getSkinsPath()}';
             assets.assets = [];
-            getAssetFiles(assets.assets, '${Paths.modsPath}/$mod/', '', libName);
-
-            if (openfl.utils.Assets.hasLibrary(libName))
-                openfl.utils.Assets.unloadLibrary(libName);
-            openfl.utils.Assets.registerLibrary(libName, AssetLibrary.fromManifest(assets));
-
-            
-
-            var json:ModConfig = null;
-            var path = Paths.getPath('config.json', TEXT, libName);
-            if (Assets.exists(path)) {
-                try {
-                    json = Json.parse(Assets.getText(path));
-                } catch(e) {
-                    for (e in ('Failed to parse mod config for $mod.').split('\n')) PlayState.log.push(e);
+            FileSystem.createDirectory('${Paths.getSkinsPath()}/bf/');
+            FileSystem.createDirectory('${Paths.getSkinsPath()}/gf/');
+            FileSystem.createDirectory('${Paths.getSkinsPath()}/notes/');
+            for (char in ["bf", "gf"]) {
+                for(skin in [for (e in FileSystem.readDirectory('${Paths.getSkinsPath()}$char/')) if (FileSystem.isDirectory('${Paths.getSkinsPath()}$char/$e')) e]) {
+                    var path = '${Paths.getSkinsPath()}$char/$skin/';
+                    for (f in FileSystem.readDirectory(path)) {
+                        var type = "TEXT";
+                        if (Path.extension(f).toLowerCase() == "png") {
+                            type = "IMAGE";
+                        }
+                        assets.assets.push({
+                            type: type,
+                            id: ('assets/skins/characters/$char/$skin/$f').toLowerCase(), // for case sensitive shit & correct linux support
+                            path: '$path$f',
+                            size: FileSystem.stat('$path$f').size
+                        });
+                    }
                 }
             }
-                
-            if (json == null) json = {
-                name: null,
-                description: null,
-                titleBarName: null,
-                skinnableGFs: null,
-                skinnableBFs: null,
-                BFskins: null,
-                GFskins: null,
-                keyNumbers: null,
-                locked: false
-            };
-            modConfig[mod] = json;
+            try {
+                getAssetFiles(assets.assets, '${Paths.getSkinsPath()}notes/', '', 'skins', 'images/', true);
+            } catch(e) {
+                trace(e.details());
+            }
+            // trace(assets.assets);
+            // getAssetFiles(assets.assets, '${Paths.modsPath}/$mod/', '', libName);
+
+            if (openfl.utils.Assets.hasLibrary("skins"))
+                openfl.utils.Assets.unloadLibrary("skins");
+            openfl.utils.Assets.registerLibrary("skins", AssetLibrary.fromManifest(assets));
         }
+        var mods = getMods();
+        var newMod = false;
+        for(mod in mods)
+            if (reloadAll || modConfig[mod] == null)
+                newMod = newMod || loadMod(mod);
+        Settings.engineSettings.data.lastInstalledMods = mods;
+        return newMod;
+    }
+
+    public static function loadMod(mod:String) {
+        try {
+            var s = new FlxSave();
+            s.bind(mod.replace(" ", "_").replace("'", "_"));
+            s.data.mod = mod;
+            // s.flush();
+            modSaves[mod] = s;
+        } catch(e) {
+            trace(e.details());
+        }
+
+        // imma do assets lol
+        var libName = 'mods/$mod'.toLowerCase();
+        var assets:AssetManifest = new AssetManifest();
+        assets.name = libName;// for case sensitive shit & correct linux support
+        assets.libraryType = null;
+        assets.version = 2;
+        assets.libraryArgs = [];
+        assets.rootPath = '${Paths.modsPath}/$mod/';
+        assets.assets = [];
+        getAssetFiles(assets.assets, '${Paths.modsPath}/$mod/', '', libName);
+
+        if (openfl.utils.Assets.hasLibrary(libName))
+            openfl.utils.Assets.unloadLibrary(libName);
+        openfl.utils.Assets.registerLibrary(libName, AssetLibrary.fromManifest(assets));
+
+        
+
+        var json:ModConfig = null;
+        var path = Paths.getPath('config.json', TEXT, libName);
+        if (Assets.exists(path)) {
+            try {
+                json = Json.parse(Assets.getText(path));
+            } catch(e) {
+                for (e in ('Failed to parse mod config for $mod.').split('\n')) PlayState.log.push(e);
+            }
+        }
+            
+        if (json == null) json = {
+            name: null,
+            description: null,
+            titleBarName: null,
+            skinnableGFs: null,
+            skinnableBFs: null,
+            BFskins: null,
+            GFskins: null,
+            keyNumbers: null,
+            locked: false,
+            intro: {
+                bpm: 102,
+                authors: ['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er'],
+                present: 'present',
+                assoc: ['In association', 'with'],
+                newgrounds: 'newgrounds',
+                gameName: ['Friday Night Funkin\'', 'Yoshi', 'Engine']
+            }
+        };
+        modConfig[mod] = json;
+
+        if (!Settings.engineSettings.data.lastInstalledMods.contains(mod)) {
+            trace("NEW MOD INSTALLED: " + mod);
+            if (Settings.engineSettings.data.autoSwitchToLastInstalledMod) {
+                Settings.engineSettings.data.selectedMod = mod;
+                return true;
+            }
+        }
+        return false;
     }
     #if windows
     public static function changeWindowIcon(iconPath:String) {
@@ -332,10 +364,22 @@ class ModSupport {
             var splitClassName = [for (e in className.split(".")) e.trim()];
             var realClassName = splitClassName.join(".");
             var cl = Type.resolveClass(realClassName);
-            if (cl == null) {
-                PlayState.trace('Class at $realClassName does not exist.');
+            var en = Type.resolveEnum(realClassName);
+            if (cl == null && en == null) {
+                PlayState.trace('Class / Enum at $realClassName does not exist.');
+            } else {
+                if (en != null) {
+                    // ENUM!!!!
+                    var enumThingy = {};
+                    for(c in en.getConstructors()) {
+                        Reflect.setField(enumThingy, c, en.createByName(c));
+                    }
+                    script.setVariable(splitClassName[splitClassName.length - 1], enumThingy);
+                } else {
+                    // CLASS!!!!
+                    script.setVariable(splitClassName[splitClassName.length - 1], cl);
+                }
             }
-            script.setVariable(splitClassName[splitClassName.length - 1], cl);
         });
         // script.setVariable("include", function(path:String) {
         //     var splittedPath = path.split(":");
@@ -412,6 +456,7 @@ class ModSupport {
 		script.setVariable("CustomShader", CustomShader_Helper);
 		script.setVariable("FlxControls", FlxControls);
 		script.setVariable("save", modSaves[mod]);
+		script.setVariable("ModState", ModState);
 		// script.setVariable("FlxKey", FlxKey);
 
 

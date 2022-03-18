@@ -23,6 +23,8 @@ typedef FlxSpriteArray = Array<FlxSprite>;
 
 class MusicBeatState extends FlxUIState
 {
+	private var reloadModsState:Bool = false;
+
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
 
@@ -32,22 +34,31 @@ class MusicBeatState extends FlxUIState
 
 	public static var defaultIcon:Image = null;
 
+	public override function onFocus() {
+		if (reloadModsState) {
+			super.onFocus();
+			if (Settings.engineSettings.data.alwaysCheckForMods) if (ModSupport.reloadModsConfig(false, false)) FlxG.resetState();	
+		}
+	}
+
 	public function new(?transIn:TransitionData, ?transOut:TransitionData) {
 		
-		if (Settings.engineSettings != null) {
-			if (Settings.engineSettings.data.developerMode) {
-				try {
-					Paths.clearCache();
-				} catch(e) {
+		if (Settings.engineSettings != null && Settings.engineSettings.data.developerMode) {
+			try {
+				Paths.clearCache();
+			} catch(e) {
 
-				}
-				ModSupport.reloadModsConfig();
 			}
+			ModSupport.reloadModsConfig(true);
 			Settings.engineSettings.flush();
+		} else {
+			ModSupport.reloadModsConfig(false);
 		}
-		if (FlxG.save.data != null) {
+		if (FlxG.save.data != null)
 			FlxG.save.flush();
-		}
+		if (Settings.engineSettings != null)
+			Settings.engineSettings.flush();
+
 		#if !android
 			@:privateAccess
 			FlxG.width = 1280;
@@ -65,6 +76,8 @@ class MusicBeatState extends FlxUIState
 			lime.app.Application.current.window.setIcon(defaultIcon);
 			PlayState.iconChanged = false;
 		}
+		
+    	FlxG.game.stage.quality = Settings.engineSettings.data.stageQuality;
 	}
 
 	inline function get_controls():Controls
@@ -80,8 +93,6 @@ class MusicBeatState extends FlxUIState
 			FlxG.drawFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
 			FlxG.updateFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
 		}
-		
-    	FlxG.game.stage.quality = HIGH;
 	}
 
 	override function update(elapsed:Float)
@@ -165,7 +176,7 @@ class MusicBeatState extends FlxUIState
 		
 	}
 
-    function showMessage(title:String, text:String) {
+    public function showMessage(title:String, text:String) {
         var m = ToolboxMessage.showMessage(title, text);
         m.cameras = cameras;
         openSubState(m);

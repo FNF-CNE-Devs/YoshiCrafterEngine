@@ -320,7 +320,7 @@ class StageEditor extends MusicBeatState {
                 FileSystem.exists('$stagePath/${fileName}.xml')) {
                 
                 
-                for (i in 0...0x7FFFFFFF) {
+                for (i in 0...100) { // now try iterating backwards, bitch (lmao)
                     if (!FileSystem.exists('$stagePath/${fileName}${i}.png') &&
                         !FileSystem.exists('$stagePath/${fileName}${i}.xml')) {
                             fileName = '${fileName}${i}';
@@ -330,6 +330,8 @@ class StageEditor extends MusicBeatState {
             }
             File.copy('$pathWithoutExt.png', '$stagePath/${fileName}.png');
             File.copy('$pathWithoutExt.xml', '$stagePath/${fileName}.xml');
+			
+			ModSupport.loadMod(ToolboxHome.selectedMod); // reload all assets
 
             stage.sprites.push({
                 type: "SparrowAtlas",
@@ -363,6 +365,7 @@ class StageEditor extends MusicBeatState {
                         doSparrow();
                     } else {
                         File.copy('$pathWithoutExt.png', '$stagePath/${fileName}.png');
+						ModSupport.loadMod(ToolboxHome.selectedMod);
                     }
                     stage.sprites.push({
                         type: "Bitmap",
