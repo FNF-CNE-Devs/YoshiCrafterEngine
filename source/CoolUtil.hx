@@ -22,6 +22,20 @@ class CoolUtil
 	*/
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 
+	
+	public static function getSizeLabel(num:Int):String{
+        var size:Float = num;
+        var data = 0;
+        var dataTexts = ["B", "KB", "MB", "GB", "TB", "PB"]; // IS THAT A QT MOD REFERENCE!!!??!!111!!11???
+        while(size > 1024 && data < dataTexts.length - 1) {
+          data++;
+          size = size / 1024;
+        }
+        
+        size = Math.round(size * 100) / 100;
+        return size + " " + dataTexts[data];
+    }
+
 	public static function loadSong(mod:String, song:String, ?difficulty:String):Bool {
 		if (difficulty == null) difficulty = "normal";
 

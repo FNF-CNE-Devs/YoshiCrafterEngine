@@ -43,19 +43,6 @@ class UpdateState extends MusicBeatState
 		this.fileList = fileList;
 		totalFiles = fileList.length;
 	}
-	
-	function getSpeedLabel(num:Int):String{
-        var size:Float = num;
-        var data = 0;
-        var dataTexts = ["B", "KB", "MB", "GB", "TB", "PB"];
-        while(size > 1024 && data < dataTexts.length - 1) {
-          data++;
-          size = size / 1024;
-        }
-        
-        size = Math.round(size * 100) / 100;
-        return size + dataTexts[data]+"/s";
-    }
 
 	var currentLoadedStream:URLLoader = null;
 	var currentFile:String;

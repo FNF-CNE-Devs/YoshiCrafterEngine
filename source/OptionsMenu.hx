@@ -1189,6 +1189,48 @@ class OptionsMenu extends MusicBeatState
 			checkboxChecked: function() {return Settings.engineSettings.data.autoSwitchToLastInstalledMod;},
 			value: function() {return "";}
 		});
+		misc.options.push({
+			text : "Show FPS",
+			description : "If enabled, will show the current FPS at the top left of the screen.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.fps_showFPS = !Settings.engineSettings.data.fps_showFPS;
+					o.checkboxChecked = Settings.engineSettings.data.fps_showFPS;
+					o.check(Settings.engineSettings.data.fps_showFPS);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.fps_showFPS;},
+			value: function() {return "";}
+		});
+		misc.options.push({
+			text : "Show Memory",
+			description : "If enabled, will show the current used memory at the top left of the screen.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.fps_showMemory = !Settings.engineSettings.data.fps_showMemory;
+					o.checkboxChecked = Settings.engineSettings.data.fps_showMemory;
+					o.check(Settings.engineSettings.data.fps_showMemory);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.fps_showMemory;},
+			value: function() {return "";}
+		});
+		misc.options.push({
+			text : "Show Memory Peak",
+			description : "If enabled, will show the maximum amount of memory the game used at the top left of the screen.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.fps_showMemoryPeak = !Settings.engineSettings.data.fps_showMemoryPeak;
+					o.checkboxChecked = Settings.engineSettings.data.fps_showMemoryPeak;
+					o.check(Settings.engineSettings.data.fps_showMemoryPeak);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.fps_showMemoryPeak;},
+			value: function() {return "";}
+		});
 		// misc.options.push({
 		// 	text : "Use new charter",
 		// 	updateOnSelected: function(elapsed:Float, o:FNFOption) {

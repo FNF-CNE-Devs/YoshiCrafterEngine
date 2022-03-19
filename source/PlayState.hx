@@ -2134,7 +2134,7 @@ class PlayState extends MusicBeatState
 			else {
 				// sync
 				Conductor.songPosition = Conductor.songPositionOld = FlxG.sound.music.time;
-				if (vocals.time != Conductor.songPosition) vocals.time = Conductor.songPosition;
+				if (Math.abs(vocals.time - Conductor.songPosition) > 50) vocals.time = Conductor.songPosition;
 			}
 				
 			

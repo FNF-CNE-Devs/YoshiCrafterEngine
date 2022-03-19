@@ -172,6 +172,9 @@ import flixel.FlxG;
 	@:keep public static var autoSwitchToLastInstalledMod:Bool = true;
 	@:keep public static var stageQuality:StageQuality = HIGH;
 	@:keep public static var alwaysCheckForMods:Bool = true;
+	@:keep public static var fps_showFPS:Bool = true;
+	@:keep public static var fps_showMemory:Bool = true;
+	@:keep public static var fps_showMemoryPeak:Bool = true;
 	@:keep public static var lastInstalledMods:Array<String> = ["Friday Night Funkin'", "YoshiEngine"];
 	
 	// @:keep public static var moveCameraInStageEditor:Bool = true;
