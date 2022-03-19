@@ -1,3 +1,4 @@
+import charter.CharterNote;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import Section.SwagSection;
@@ -34,22 +35,22 @@ class CharterSection {
         }
         notes = [];
         for(n in songSection.sectionNotes) {
-            // ((Std.int(Note.swagWidth / 2) * 16) * id)
-            var note = new Note(n[0], Std.int(n[1] + (songSection.mustHitSection ? y._song.keyNumber : 0)));
+            // ((Std.int(CharterNote.swagWidth / 2) * 16) * id)
+            var note = new CharterNote(n[0], Std.int(n[1] + (songSection.mustHitSection ? y._song.keyNumber : 0)));
             note.scale.x *= 0.5;
             note.scale.y *= 0.5;
             note.updateHitbox();
-            note.y = (n[0] / (Conductor.crochet / 4)) * Note.swagWidth;
+            note.y = (n[0] / (Conductor.crochet / 4)) * CharterNote.swagWidth;
             if (songSection.mustHitSection) {
-                note.x = grid.x + ((n[1] + y._song.keyNumber) % (y._song.keyNumber * 2)) * (Note.swagWidth / 2);
+                note.x = grid.x + ((n[1] + y._song.keyNumber) % (y._song.keyNumber * 2)) * (CharterNote.swagWidth / 2);
             } else {
-                note.x = grid.x + (n[1] % (y._song.keyNumber * 2)) * (Note.swagWidth / 2);
+                note.x = grid.x + (n[1] % (y._song.keyNumber * 2)) * (CharterNote.swagWidth / 2);
             }
             notes.push(note);
             y.add(note);
         }
     }
-    public var notes:Array<Note> = [];
+    public var notes:Array<CharterNote> = [];
     public var grid:FlxSprite;
 }
 class YoshiEngineCharter extends MusicBeatState {
@@ -64,11 +65,12 @@ class YoshiEngineCharter extends MusicBeatState {
         speed: 1,
         validScore: false,
         keyNumber: 4,
-        noteTypes: ["Friday Night Funkin':Default Note"]
+        noteTypes: ["Friday Night Funkin':Default Note"],
+        events: []
     };
 	var swagWidth(get, null):Float;
 	function get_swagWidth():Float {
-		return Note._swagWidth * widthRatio;
+		return CharterNote._swagWidth * widthRatio;
 	}
 	var widthRatio(get, null):Float;
 	function get_widthRatio():Float {
@@ -98,9 +100,9 @@ class YoshiEngineCharter extends MusicBeatState {
             _song = PlayState._SONG;
 
         // Load music and vocals
-        FlxG.sound.playMusic(Paths.inst(_song.song));
+        FlxG.sound.playMusic(Paths.modInst(_song.song, PlayState.songMod, PlayState.storyDifficulty));
         if (_song.needsVoices) {
-            vocals = new FlxSound().loadEmbedded(Paths.voices(_song.song));
+            vocals = new FlxSound().loadEmbedded(Paths.modVoices(_song.song, PlayState.songMod, PlayState.storyDifficulty));
             vocals.play();
         }
         FlxG.sound.music.pause();
@@ -127,8 +129,8 @@ class YoshiEngineCharter extends MusicBeatState {
                 };
             }
             var cs = new CharterSection(this);
-            var g = FlxGridOverlay.create(Std.int(Note.swagWidth / 2), Std.int(Note.swagWidth / 2), Std.int(Note.swagWidth / 2) * _song.keyNumber * 2, Std.int(Note.swagWidth / 2) * 32, true, 0x44FFFFFF, 0x44000000);
-            g.y = (Std.int(Note.swagWidth / 2) * 16) * i;
+            var g = FlxGridOverlay.create(Std.int(CharterNote.swagWidth / 2), Std.int(CharterNote.swagWidth / 2), Std.int(CharterNote.swagWidth / 2) * _song.keyNumber * 2, Std.int(CharterNote.swagWidth / 2) * 32, true, 0x44FFFFFF, 0x44000000);
+            g.y = (Std.int(CharterNote.swagWidth / 2) * 16) * i;
             g.screenCenter(X);
             g.pixels.lock();
             for (i in 0...g.pixels.width) {
@@ -161,7 +163,7 @@ class YoshiEngineCharter extends MusicBeatState {
         separator.scrollFactor.set();
         add(separator);
 
-        strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(Note.swagWidth / 2) * _song.keyNumber * 2, 2, 0xFFDEC6FF);
+        strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(CharterNote.swagWidth / 2) * _song.keyNumber * 2, 2, 0xFFDEC6FF);
         strumLine.screenCenter(X);
         strumLine.scrollFactor.set();
         add(strumLine);
@@ -202,7 +204,7 @@ class YoshiEngineCharter extends MusicBeatState {
             FlxG.sound.music.time -= FlxG.mouse.wheel * (Conductor.crochet / 4);
         }
         Conductor.songPosition = FlxG.sound.music.time % FlxG.sound.music.length;
-        FlxG.camera.scroll.y = Math.max(0, Conductor.songPosition / (Conductor.crochet / 4) * Note.swagWidth) - strumLine.y;
+        FlxG.camera.scroll.y = Math.max(0, Conductor.songPosition / (Conductor.crochet / 4) * CharterNote.swagWidth) - strumLine.y;
         legend.text = "Beat : " + Math.floor(Conductor.songPosition / Conductor.crochet) + "\r\nStep : " + Math.floor(Conductor.songPosition / (Conductor.crochet / 4)) + "\r\nSong position (ms) : " + Math.floor(Conductor.songPosition);
 
         

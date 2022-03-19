@@ -1,5 +1,6 @@
 package;
 
+import openfl.text.TextFormat;
 import lime.ui.Window;
 import sys.io.Process;
 import lime.system.System;
@@ -32,8 +33,9 @@ class Main extends Sprite
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
 	// YOSHI ENGINE STUFF
-	public static var engineVer:Array<Int> = [1,7,0];
+	public static var engineVer:Array<Int> = [1,7,1];
 	public static var buildVer:String = "";
+	public static var fps:GameStats;
 
 	public static var supportedFileTypes = [
 		#if ENABLE_LUA "lua", #end
@@ -190,7 +192,10 @@ class Main extends Sprite
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
 		#if !mobile
-		addChild(new FPS(10, 3, 0xFFFFFF));
+		fps = new GameStats(10, 3, 0xFFFFFF);
+		// fps.setTextFormat(new TextFormat(Assets.getFont(Paths.font("vcr.ttf")).fontName, 12, 0xFFFFFFFF, false, false, false, null, null, null, null, null, null, null));
+
+		addChild(fps);
 		#end
 	}
 }

@@ -78,9 +78,9 @@ class Song
 	{
 		var rawJson = "";
 		if (folder == null)
-			rawJson = File.getContent(Paths.modsPath + '/$mod/data/$jsonInput/$jsonInput.json');
+			rawJson = Assets.getText(Paths.json('$jsonInput/$jsonInput.json', 'mods/$mod'));
 		else
-			rawJson = File.getContent(Paths.modsPath + '/$mod/data/$folder/$jsonInput.json');
+			rawJson = Assets.getText(Paths.json('$folder/$jsonInput.json', 'mods/$mod'));
 
 		while (!rawJson.endsWith("}"))
 		{

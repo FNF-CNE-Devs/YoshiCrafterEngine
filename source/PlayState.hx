@@ -1325,25 +1325,19 @@ class PlayState extends MusicBeatState
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
-			for (i => d in dads) {
-				if (d != null) {
-					// d.playAnim('idle');
-					d.dance();
-				} else {
-					#if debug
-						trace("Dad at index " + Std.string(i) + " is null.");
-					#end
-				}
-			}
-			gf.dance();
-			for (i => bf in boyfriends) {
-				if (bf != null) {
-					// bf.playAnim('idle');
-					bf.dance();
-				} else {
-					#if debug
-						trace("Boyfriend at index " + Std.string(i) + " is null.");
-					#end
+			// for (i => d in dads) {
+			// 	if (d != null) {
+			// 		// d.playAnim('idle');
+			// 		d.dance();
+			// 	} else {
+			// 		#if debug
+			// 			trace("Dad at index " + Std.string(i) + " is null.");
+			// 		#end
+			// 	}
+			// }
+			for (bf in members) {
+				if (Std.isOfType(bf, Character)) {
+					cast(bf, Character).dance();
 				}
 			}
 
@@ -2140,7 +2134,7 @@ class PlayState extends MusicBeatState
 			else {
 				// sync
 				Conductor.songPosition = Conductor.songPositionOld = FlxG.sound.music.time;
-				if (vocals.time != Conductor.songPosition) vocals.time = Conductor.songPosition;
+				if (Math.abs(vocals.time - Conductor.songPosition) > 50) vocals.time = Conductor.songPosition;
 			}
 				
 			
@@ -3348,17 +3342,22 @@ class PlayState extends MusicBeatState
 		// 	}
 		// });
 
-		for (bf in boyfriends) {
-				if (bf.holdTimer > Conductor.stepCrochet * 4 * 0.001 && (pressedArray.indexOf(true) == -1 || bf != boyfriend))
+		
+
+		
+		for (bf in members) {
+			if (Std.isOfType(bf, Boyfriend)) {
+				var bf2 = cast(bf, Boyfriend);
+				if (bf2.holdTimer > Conductor.stepCrochet * 4 * 0.001 && (pressedArray.indexOf(true) == -1 || bf != boyfriend))
 				{
-					if (bf.animation.curAnim.name.startsWith('sing') && !bf.animation.curAnim.name.endsWith('miss'))
+					if (bf2.animation.curAnim.name.startsWith('sing') && !bf2.animation.curAnim.name.endsWith('miss'))
 					{
 						// bf.playAnim('idle');
-						bf.dance();
+						bf2.dance();
 					}
 				}
+			}
 		}
-		
 		
 		playerStrums.forEach(function(spr:FlxSprite)
 		{
@@ -3656,8 +3655,11 @@ class PlayState extends MusicBeatState
 
 			// Dad doesnt interupt his own notes
 			
-			for (i => d in dads) {
-				d.dance();
+			
+			for (d in members) {
+				if (Std.isOfType(d, Character) && !Std.isOfType(d, Boyfriend) && d != gf) {
+					cast(d, Character).dance();
+				}
 			}
 			// if (SONG.notes[Math.floor(curStep / 16)].mustHitSection)
 			// 	dad.dance();
@@ -3682,13 +3684,16 @@ class PlayState extends MusicBeatState
 			gf.dance();
 		}
 
-		for (bf in boyfriends) {
-			if (bf == null) continue;
-			if (bf.animation.curAnim == null) continue;
-			if (!bf.animation.curAnim.name.startsWith("sing"))
-			{
-				// bf.playAnim('idle');
-				bf.dance();
+		for (bf2 in members) {
+			if (Std.isOfType(bf2, Boyfriend)) {
+				var bf = cast(bf2, Boyfriend);
+				if (bf == null) continue;
+				if (bf.animation.curAnim == null) continue;
+				if (!bf.animation.curAnim.name.startsWith("sing"))
+				{
+					// bf.playAnim('idle');
+					bf.dance();
+				}
 			}
 		}
 

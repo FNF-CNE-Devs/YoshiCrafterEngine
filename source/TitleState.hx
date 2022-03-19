@@ -275,7 +275,7 @@ class TitleState extends MusicBeatState
 		add(bg);
 		
 		var path = '${Paths.modsPath}/${Settings.engineSettings.data.selectedMod}/data';
-		if (FileSystem.exists(path) && FileSystem.isDirectory(path)) {
+		// if (FileSystem.exists(path) && FileSystem.isDirectory(path)) {
 			script = Script.create('$path/titlescreen');
 			var mod = Settings.engineSettings.data.selectedMod;
 			if (script == null) {
@@ -293,7 +293,7 @@ class TitleState extends MusicBeatState
 				script.executeFunc("create");
 				add(titleSpriteGrp);
 			}
-		}
+		// }
 
 		// logoBl = new FlxSprite(-50, -35);
 		// logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
@@ -437,6 +437,13 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		#if secretCharter
+			if (FlxG.keys.justPressed.F2) {
+				CoolUtil.loadSong("Friday Night Funkin'", "MILF", "Hard");
+				charter.ChartingState_New._song = PlayState._SONG;
+				FlxG.switchState(new YoshiEngineCharter());
+			}
+		#end
 		/*
 		if (FlxG.keys.justPressed.F2) {
 			FlxG.switchState(new UpdateState("http://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/", ['README.md', 'changelog.txt', 'YoshiEngine.exe']));

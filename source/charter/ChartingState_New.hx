@@ -888,12 +888,12 @@ class ChartingState_New extends MusicBeatState
 		
 		
 
-		if (FlxG.sound.music.playing) {
-			var sec = Math.floor(Conductor.songPosition / (Conductor.crochet * 4));
-			if (sec != curSection) {
-				changeSection(sec, false);
-			}
-		}
+		// if (FlxG.sound.music.playing) {
+		// 	var sec = Math.floor(Conductor.songPosition / (Conductor.crochet * 4));
+		// 	if (sec != curSection) {
+		// 		changeSection(sec, false);
+		// 	}
+		// }
 		var r = noteTypeRadioGroup.getRadios();
 		for(i in 0...r.length) {
 			if (i > 0) {
@@ -1067,9 +1067,9 @@ class ChartingState_New extends MusicBeatState
 					}
 					else
 					{
-						vocals.time = FlxG.sound.music.time;
 						vocals.play();
 						FlxG.sound.music.play();
+						vocals.time = FlxG.sound.music.time;
 					}
 				}
 				if (FlxControls.justPressed.E)
@@ -1166,9 +1166,9 @@ class ChartingState_New extends MusicBeatState
 					if (FlxControls.pressed.SHIFT)
 						shiftThing = 4;
 					if (FlxControls.justPressed.RIGHT)
-						changeSection(curSection + shiftThing);
+						vocals.time = FlxG.sound.music.time = Conductor.songPosition += Conductor.stepCrochet * 16;
 					if (FlxControls.justPressed.LEFT)
-						changeSection(curSection - shiftThing);
+						vocals.time = FlxG.sound.music.time = Conductor.songPosition -= Conductor.stepCrochet * 16;
 			}
 
 			
@@ -1180,10 +1180,12 @@ class ChartingState_New extends MusicBeatState
 
 		if (FlxG.sound.music.time < 0) FlxG.sound.music.time = 0;
 		
-		var sec = Math.floor(FlxG.sound.music.time / (Conductor.crochet * 4));
+		// var sec = Math.floor(curStep / 16); // literally
+		recalculateSteps();
+		var sec = Math.floor(curStep / 16);
 		if (curSection != sec)
 		{
-			curSection = (sec - 1);
+			curSection = sec;
 			if (_song.notes[curSection] == null) _song.notes[curSection] = {
 				typeOfSection: 0,
 				altAnim: false,
@@ -1198,12 +1200,12 @@ class ChartingState_New extends MusicBeatState
 			// trace((_song.notes[curSection].lengthInSteps) * (curSection + 1));
 			trace('DUMBSHIT');
 
-			if (_song.notes[curSection + 1] == null)
+			if (_song.notes[curSection] == null)
 			{
 				addSection();
 			}
 
-			changeSection(curSection + 1, false);
+			changeSection(curSection, false);
 		}
 
 		FlxG.watch.addQuick('daBeat', curBeat);
