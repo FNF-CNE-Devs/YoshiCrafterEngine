@@ -1180,7 +1180,9 @@ class ChartingState_New extends MusicBeatState
 
 		if (FlxG.sound.music.time < 0) FlxG.sound.music.time = 0;
 		
-		var sec = Math.floor(curBeat / 4); // literally
+		// var sec = Math.floor(curStep / 16); // literally
+		recalculateSteps();
+		var sec = Math.floor(curStep / 16);
 		if (curSection != sec)
 		{
 			curSection = sec;

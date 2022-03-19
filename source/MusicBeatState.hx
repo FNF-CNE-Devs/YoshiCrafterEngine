@@ -147,6 +147,12 @@ class MusicBeatState extends FlxUIState
 
 	private function updateCurStep():Void
 	{
+		var lastChange = getLastChange();
+
+		curStep = Std.int(lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet));
+	}
+
+	private function getLastChange() {
 		var lastChange:BPMChangeEvent = {
 			stepTime: 0,
 			songTime: 0,
@@ -157,10 +163,8 @@ class MusicBeatState extends FlxUIState
 			if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime)
 				lastChange = Conductor.bpmChangeMap[i];
 		}
-
-		curStep = Std.int(lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet));
+		return lastChange;
 	}
-
 	public function stepHit():Void
 	{
 		if (curStep % 4 == 0)
