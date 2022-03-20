@@ -33,6 +33,7 @@ class CharterNote extends FlxSprite
 	public var noteScore:Float = 1;
 
 	public var noteType:Int = 0;
+	public var newCharter:Bool = false;
 	// #if secret
 	// 	var c:FlxColor = new FlxColor(0xFFFF0000);
 	// 	c.hue = (strumTime / 100) % 359;
@@ -61,6 +62,8 @@ class CharterNote extends FlxSprite
 	public static var noteTypes:Array<hscript.Expr> = [];
 	// public var script:hscript.Interp;
 	public var script(get, null):Script;
+	public var sustainSprite:FlxSprite;
+
 	public function get_script():Script {
 		return PlayState.current.noteScripts[noteType % PlayState.current.noteScripts.length];
 	}
@@ -118,7 +121,8 @@ class CharterNote extends FlxSprite
 	}
 	public var noteOffset:FlxPoint = new FlxPoint(0,0);
 	public var enableRating:Bool = true;
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?mustHit = true)
+	public var state:YoshiCharter = null;
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?mustHit = true, ?sustainLength:Float = 0)
 	{
 		super();
 
@@ -133,14 +137,14 @@ class CharterNote extends FlxSprite
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 
-		
+		newCharter = Std.isOfType(FlxG.state, YoshiCharter);
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
 		this.strumTime = strumTime;
 
 		this.noteData = noteData;
 
-		this.noteType = Math.floor(noteData / ChartingState_New._song.keyNumber);
+		this.noteType = Math.floor(noteData / ChartingState_New._song.keyNumber / 2);
 
 		scale.x *= swagWidth / _swagWidth;
 		if (!isSustainNote) {
@@ -235,13 +239,43 @@ class CharterNote extends FlxSprite
 			}
 			offset.y = height / 2;
 		}
+
+		this.sustainLength = sustainLength;
+		if (newCharter) {
+			state = cast(FlxG.state, YoshiCharter);
+			sustainSprite = new FlxSprite(0, 0).makeGraphic(10, YoshiCharter.GRID_SIZE, 0xFFFFFFFF);
+			state.add(sustainSprite);
+
+			updateSustain();
+		}
 	}
 
+	public function updateSustain() {
+		if (newCharter) {
+			sustainSprite.visible = sustainLength > Conductor.stepCrochet;
+			sustainSprite.setGraphicSize(10, Std.int(Math.max(1, sustainLength / Conductor.stepCrochet * YoshiCharter.GRID_SIZE)) - YoshiCharter.GRID_SIZE);
+			sustainSprite.updateHitbox();
+		}
+	}
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
+		if (sustainSprite != null) {
+			sustainSprite.x = x + (width / 2) - (sustainSprite.width / 2);
+			// accurate
+			sustainSprite.y = y + (YoshiCharter.GRID_SIZE / 2);
+			sustainSprite.alpha = alpha;
+		}
 		// legacy support
-		if (!Std.isOfType(FlxG.state, YoshiCharter)) alpha = (strumTime <= Conductor.songPosition) ? 0.3 : 1;
+		if (!newCharter) alpha = (strumTime <= Conductor.songPosition) ? 0.3 : 1;
+	}
+
+	public override function destroy() {
+		if (sustainSprite != null) {
+			sustainSprite.destroy();
+			state.remove(sustainSprite);
+		}
+		super.destroy();
 	}
 }

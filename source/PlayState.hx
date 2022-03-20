@@ -2353,6 +2353,7 @@ class PlayState extends MusicBeatState
 					{
 						daNote.script.setVariable("note", daNote);
 						daNote.script.executeFunc("onMiss", [daNote.noteData % PlayState.SONG.keyNumber]);
+						scripts.executeFunc("onMiss", [daNote]);
 						// ModSupport.executeFunc(daNote.script, "onMiss", [Note.noteNumberScheme[daNote.noteData % PlayState.SONG.keyNumber]]);
 						// noteMiss((daNote.noteData % _SONG.keyNumber) % SONG.keyNumber);
 						daNote.kill();

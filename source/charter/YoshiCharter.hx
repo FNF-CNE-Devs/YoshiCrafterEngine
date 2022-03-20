@@ -1,5 +1,9 @@
 package charter;
 
+import dev_toolbox.toolbox_tabs.SongTab;
+import lime.utils.Assets;
+import MusicBeatState.FlxSpriteTypedGroup;
+import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 import EngineSettings.Settings;
 import flixel.text.FlxText;
@@ -49,6 +53,18 @@ class YoshiCharter extends MusicBeatState {
 
     var pageSwitchLerpRemaining:Float = 0;
 
+    var noteColors:Array<FlxColor> = [
+		FlxColor.fromRGB(255,111,111),
+		FlxColor.fromRGB(125,255,111),
+		FlxColor.fromRGB(111,201,255),
+		FlxColor.fromRGB(255,255,111),
+		FlxColor.fromRGB(219,111,255),
+		FlxColor.fromRGB(111,248,255),
+		FlxColor.fromRGB(111,111,255),
+	];
+
+    var UI_Menu:FlxUITabMenu;
+    
     public function new() {
         super();
         if (PlayState._SONG == null) {
@@ -93,6 +109,8 @@ class YoshiCharter extends MusicBeatState {
     }
 
     public override function create() {
+		Assets.loadLibrary("shared");
+        
         var bg = CoolUtil.addBG(this);
         bg.scrollFactor.set(0, 0);
 
@@ -162,18 +180,55 @@ class YoshiCharter extends MusicBeatState {
         hitsoundsEnabledCheckbox.scrollFactor.set(0, 0);
         hitsoundsEnabledCheckbox.checked = hitsoundsEnabled;
         add(hitsoundsEnabledCheckbox);
+
+
+        UI_Menu = new FlxUITabMenu(null, [
+            {
+                name: 'song',
+                label: "Song"
+            },
+            {
+                name: 'note',
+                label: "Note"
+            }
+        ], true);
+        UI_Menu.x = FlxG.width - 300;
+        UI_Menu.y = 0;
+        UI_Menu.resize(300, FlxG.height);
+        UI_Menu.scrollFactor.set(0, 0);
+        add(UI_Menu);
+
+        addSongTab();
+    }
+
+    public function addSongTab() {
+        var songTab = new FlxUI(null, UI_Menu);
+        songTab.name = "song";
+
+        var titleLabel:FlxUIText = new FlxUIText(10, 10, 280, "== Song Settings ==");
+
+        var bpmThing:FlxUINumericStepper = new FlxUINumericStepper(290, titleLabel.y + 10, 1, 120, 1, 999, 0);
+        bpmThing.x -= bpmThing.width;
+        bpmThing.name = "bpm";
+        var bpmLabel:FlxUIText = new FlxUIText(10, bpmThing.y + (bpmThing.height / 2), 200, "BPM (Beats per minute)");
+        bpmLabel.y -= bpmLabel.height / 2;
+
+        songTab.add(titleLabel);
+        songTab.add(bpmThing);
+        songTab.add(bpmLabel);
+        UI_Menu.addGroup(songTab);
     }
 
     public function generateNotes() {
         for (s in _song.notes) {
             for(n in s.sectionNotes) {
-                addNote(n[0], n[1], s.mustHitSection);
+                addNote(n[0], n[1], s.mustHitSection, n[2]);
             }
         }
     }
 
-    public function addNote(strumTime:Float, noteData:Int, mustHitSection:Bool = false) {
-        var note = new CharterNote(strumTime, noteData, null, false, mustHitSection);
+    public function addNote(strumTime:Float, noteData:Int, mustHitSection:Bool = false, sustainLength:Float = 0) {
+        var note = new CharterNote(strumTime, noteData, null, false, mustHitSection, sustainLength);
         note.y = strumTime / Conductor.stepCrochet * GRID_SIZE;
         var xPos = noteData;
         if (mustHitSection) xPos += _song.keyNumber;
@@ -183,6 +238,24 @@ class YoshiCharter extends MusicBeatState {
         notes.push(note);
         note.setGraphicSize(GRID_SIZE, GRID_SIZE);
         note.updateHitbox();
+        // if (note.noteType > 0)
+        //     note.color = noteColors[(note.noteType - 1) % noteColors.length];
+        updateNoteColor(note);
+    }
+
+    public function updateNoteColors() {
+        for(n in notes)
+            updateNoteColor(n);
+    }
+
+    public function updateNoteColor(n:CharterNote) {
+        if (n.noteType <= 0) {
+            n.color = 0xFFFFFFFF;
+            return;
+        }
+        var color = FlxColor.fromRGB(255, 100, 100);
+        color.hue = (((n.noteType - 1) / (_song.noteTypes.length - 1)) * 360) % 360;
+        n.color = color;
     }
 
     public function removeNote(note:CharterNote) {
@@ -277,8 +350,13 @@ class YoshiCharter extends MusicBeatState {
         if (FlxG.keys.justPressed.LEFT) pageSwitchLerpRemaining -= Conductor.crochet * 4;
         if (FlxG.keys.justPressed.RIGHT) pageSwitchLerpRemaining += Conductor.crochet * 4;
         pageSwitchLerpRemaining -= FlxG.mouse.wheel * Conductor.stepCrochet * 2;
-        if (FlxG.keys.pressed.UP) moveCursor(-8 * elapsed);
-        if (FlxG.keys.pressed.DOWN) moveCursor(8 * elapsed);
+        if (FlxG.keys.pressed.SHIFT) {
+            if (FlxG.keys.pressed.UP) moveCursor(-20 * elapsed);
+            if (FlxG.keys.pressed.DOWN) moveCursor(20 * elapsed);
+        } else {
+            if (FlxG.keys.pressed.UP) moveCursor(-8 * elapsed);
+            if (FlxG.keys.pressed.DOWN) moveCursor(8 * elapsed);
+        }
 
         if (FlxG.keys.justPressed.ENTER) {
             switchToPlayState();
@@ -322,12 +400,12 @@ class YoshiCharter extends MusicBeatState {
         }
         
         for (n in notes) {
-            if (n.strumTime < Conductor.songPosition) {
+            if (n.strumTime <= Conductor.songPosition) {
                 if (n.alpha == 1) {
                     var str = strums[Math.floor(n.x / GRID_SIZE) % (_song.keyNumber * 2)];
-                    if (str != null) str.lastHit = Conductor.stepCrochet / 500;
+                    if (str != null && playing) str.lastHit = 0.1 + (Math.max(0, (n.sustainLength - Conductor.stepCrochet) / 1000));
                     n.alpha = 1 / 3;
-                    if (hitsoundsEnabled) {
+                    if (hitsoundsEnabled && playing) {
                         hitsound.stop();
                         hitsound.volume = FlxG.sound.music.volume;
                         hitsound.play();
@@ -371,6 +449,27 @@ class YoshiCharter extends MusicBeatState {
     public override function onFocus() {
         if (playing) {
             vocals.play();
+        }
+    }
+
+    public function updateNotesY() {
+        for(note in notes) {
+            note.y = note.strumTime / Conductor.stepCrochet * GRID_SIZE;
+            note.updateSustain();
+        }
+    }
+
+	public override function getEvent(id:String, sender:Dynamic, data:Dynamic, ?params:Array<Dynamic>)
+    {
+        if (id == FlxUINumericStepper.CHANGE_EVENT) {
+            var sender:FlxUINumericStepper = cast(sender, FlxUINumericStepper);
+            switch(sender.name) {
+                case "bpm":
+                    var bpm:Int = Std.int(sender.value);
+                    _song.bpm = bpm;
+                    Conductor.changeBPM(bpm);
+                    updateNotesY();
+            }
         }
     }
 }
