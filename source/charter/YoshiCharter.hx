@@ -206,6 +206,7 @@ class YoshiCharter extends MusicBeatState {
         songTab.name = "song";
 
         var titleLabel:FlxUIText = new FlxUIText(10, 10, 280, "== Song Settings ==");
+        titleLabel.alignment = CENTER;
 
         var bpmThing:FlxUINumericStepper = new FlxUINumericStepper(290, titleLabel.y + 10, 1, 120, 1, 999, 0);
         bpmThing.x -= bpmThing.width;
