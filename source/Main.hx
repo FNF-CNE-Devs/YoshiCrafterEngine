@@ -33,7 +33,7 @@ class Main extends Sprite
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
 	// YOSHI ENGINE STUFF
-	public static var engineVer:Array<Int> = [1,7,2];
+	public static var engineVer:Array<Int> = [1,7,3];
 	public static var buildVer:String = "";
 	public static var fps:GameStats;
 
