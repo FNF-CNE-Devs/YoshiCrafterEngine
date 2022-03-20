@@ -180,9 +180,13 @@ class YoshiCharter extends MusicBeatState {
         if (playing) {
             pageSwitchLerpRemaining = 0;
         } else {
-            var val = CoolUtil.wrapFloat(pageSwitchLerpRemaining * 0.40 * 60 * elapsed, -pageSwitchLerpRemaining, pageSwitchLerpRemaining);
+            var val = CoolUtil.wrapFloat(pageSwitchLerpRemaining * 0.40 * 60 * elapsed, pageSwitchLerpRemaining < 0 ? pageSwitchLerpRemaining : 0, pageSwitchLerpRemaining > 0 ? pageSwitchLerpRemaining : 0);
             vocals.time = FlxG.sound.music.time = (Conductor.songPosition += val);
             pageSwitchLerpRemaining -= val;
+            if (Conductor.songPosition < 0) {
+                pageSwitchLerpRemaining = 0;
+                Conductor.songPosition = 0;
+            }
         }
         FlxG.camera.targetOffset.y = FlxMath.lerp(FlxG.camera.targetOffset.y, topView ? ((FlxG.height * 0.25) + GRID_SIZE) : 0, 0.45 * 60 * elapsed);
         if (FlxG.mouse.justPressed) {
