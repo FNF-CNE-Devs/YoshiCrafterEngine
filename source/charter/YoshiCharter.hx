@@ -210,6 +210,7 @@ class YoshiCharter extends MusicBeatState {
         var bpmThing:FlxUINumericStepper = new FlxUINumericStepper(290, titleLabel.y + 10, 1, 120, 1, 999, 0);
         bpmThing.x -= bpmThing.width;
         bpmThing.name = "bpm";
+        bpmThing.value = _song.bpm;
         var bpmLabel:FlxUIText = new FlxUIText(10, bpmThing.y + (bpmThing.height / 2), 200, "BPM (Beats per minute)");
         bpmLabel.y -= bpmLabel.height / 2;
 
