@@ -1,3 +1,5 @@
+package charter;
+
 import charter.CharterNote;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
@@ -212,10 +214,10 @@ class YoshiEngineCharter extends MusicBeatState {
         if (FlxControls.justReleased.SPACE) {
             if (vocals != null) vocals.time = FlxG.sound.music.time;
             if (FlxG.sound.music.playing) {
-                FlxG.sound.music.pause();   
+                FlxG.sound.music.pause();
                 if (vocals != null) vocals.pause();   
             } else {
-                FlxG.sound.music.resume();   
+                FlxG.sound.music.resume();
                 if (vocals != null) vocals.resume();   
             }
         }

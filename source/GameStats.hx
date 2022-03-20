@@ -59,7 +59,7 @@ class GameStats extends TextField
 		var currentCount = times.length;
 		currentFPS = Math.round((currentCount + cacheCount) / 2);
 
-		if (visible = (Settings.engineSettings.data.fps_showFPS || Settings.engineSettings.data.fps_showMemory || Settings.engineSettings.data.fps_showMemoryPeak))
+		if (Settings.engineSettings != null && (visible = (Settings.engineSettings.data.fps_showFPS || Settings.engineSettings.data.fps_showMemory || Settings.engineSettings.data.fps_showMemoryPeak)))
 		{
 			text = "";
 			if (Settings.engineSettings.data.fps_showFPS)

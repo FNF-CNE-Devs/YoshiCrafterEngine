@@ -240,6 +240,8 @@ class CharterNote extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		alpha = (strumTime <= Conductor.songPosition) ? 0.3 : 1;
+
+		// legacy support
+		if (!Std.isOfType(FlxG.state, YoshiCharter)) alpha = (strumTime <= Conductor.songPosition) ? 0.3 : 1;
 	}
 }

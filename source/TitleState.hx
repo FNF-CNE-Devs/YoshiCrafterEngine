@@ -441,7 +441,7 @@ class TitleState extends MusicBeatState
 			if (FlxG.keys.justPressed.F2) {
 				CoolUtil.loadSong("Friday Night Funkin'", "MILF", "Hard");
 				charter.ChartingState_New._song = PlayState._SONG;
-				FlxG.switchState(new YoshiEngineCharter());
+				FlxG.switchState(new charter.YoshiCharter());
 			}
 		#end
 		/*

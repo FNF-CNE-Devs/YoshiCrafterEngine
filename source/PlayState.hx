@@ -527,6 +527,17 @@ class PlayState extends MusicBeatState
 		}
 		super.destroy();
 	}
+
+	public static function checkSong() {
+		if (_SONG.keyNumber == null)
+			_SONG.keyNumber = 4;
+		
+		if (_SONG.noteTypes == null)
+			_SONG.noteTypes = ["Friday Night Funkin':Default Note"];
+
+		if (_SONG.events == null)
+			_SONG.events = [];
+	}
 	var actualModConfig:ModConfig;
 	override public function create()
 	{
@@ -610,14 +621,7 @@ class PlayState extends MusicBeatState
 		if (_SONG == null)
 			_SONG = Song.loadModFromJson('tutorial', 'Friday Night Funkin\'');
 
-		if (_SONG.keyNumber == null)
-			_SONG.keyNumber = 4;
-		
-		if (_SONG.noteTypes == null)
-			_SONG.noteTypes = ["Friday Night Funkin':Default Note"];
-
-		if (_SONG.events == null)
-			_SONG.events = [];
+		checkSong();
 
 		SONG = Reflect.copy(_SONG);
 

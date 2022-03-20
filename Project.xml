@@ -201,6 +201,7 @@
 	<!-- <haxedef name="HXCPP_PROFILER" if="profiler"/> -->
 
 	<haxedef name="ENABLE_LUA" /> <!-- LUA -->
+	<!-- <haxedef name="secretCharter" /> -->
 
 	<!-- _________________________________ Custom _______________________________ -->
 
