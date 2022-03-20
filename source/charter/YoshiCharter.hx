@@ -21,6 +21,8 @@ class YoshiCharter extends MusicBeatState {
     var gridLightUp:FlxSprite;
 	public static var GRID_SIZE:Int = 40;
 
+    var hitsound:FlxSound;
+
     var section(get, null):SwagSection;
 
     function get_section() {
@@ -39,7 +41,11 @@ class YoshiCharter extends MusicBeatState {
     var statusText:FlxText;
 
     var topView:Bool = Settings.engineSettings.data.charter_topView;
+    var showStrums:Bool = Settings.engineSettings.data.charter_showStrums;
+    var hitsoundsEnabled:Bool = Settings.engineSettings.data.charter_hitsoundsEnabled;
     var topViewCheckbox:FlxUICheckBox = null;
+    var showStrumsCheckbox:FlxUICheckBox = null;
+    var hitsoundsEnabledCheckbox:FlxUICheckBox = null;
 
     var pageSwitchLerpRemaining:Float = 0;
 
@@ -52,7 +58,38 @@ class YoshiCharter extends MusicBeatState {
         }
         PlayState.checkSong();
         _song = PlayState._SONG;
+        ChartingState_New._song = _song;
         Conductor.changeBPM(_song.bpm);
+    }
+
+    public function compile() { // out of ideas for a func name
+        for (s in _song.notes) {
+            s.sectionNotes = []; // resets
+        }
+        for(s in notes) {
+            if (s.noteData >= 0) {
+                // normal note
+                var noteType = Math.floor(s.noteData / (_song.keyNumber * 2));
+                var strum = s.noteData;
+                var section = _song.notes[Math.floor((Math.ceil(s.strumTime / 10) * 10) / (Conductor.crochet * 4))];
+                if (section == null) {
+                    _song.notes[Math.floor((Math.ceil(s.strumTime / 10) * 10) / (Conductor.crochet * 4))] = (section = {
+                        mustHitSection: true,
+                        typeOfSection: 1,
+                        sectionNotes: [],
+                        lengthInSteps: 16,
+                        bpm: 0,
+                        changeBPM: false,
+                        altAnim: false
+                    });
+                }
+                // if (!section.mustHitSection) strum += _song.keyNumber;
+                var noteData = (noteType * _song.keyNumber * 2) + (strum % (_song.keyNumber * 2));
+                section.sectionNotes.push([s.strumTime, noteData, s.sustainLength]);
+            } else {
+                // event note, TODO
+            }
+        }
     }
 
     public override function create() {
@@ -68,7 +105,7 @@ class YoshiCharter extends MusicBeatState {
 
         followThing = new FlxSprite(0, 0).makeGraphic(GRID_SIZE * 8, 5, 0xFFFFFFFF);
         FlxG.camera.follow(followThing);
-        FlxG.camera.targetOffset.y += topView ? ((FlxG.height * 0.25) + GRID_SIZE) : 0;
+        FlxG.camera.targetOffset.y += topView ? ((FlxG.height * 0.25) + GRID_SIZE) : GRID_SIZE;
         FlxG.camera.targetOffset.x += 150;
         insert(members.indexOf(strums[0]), followThing);
 
@@ -87,6 +124,10 @@ class YoshiCharter extends MusicBeatState {
 
         create_ui();
 
+        hitsound = new FlxSound().loadEmbedded(Paths.sound('hitsound', 'shared')); // it's the osu hitsound in case you're wondering
+        //hitsound.persist = true;
+        hitsound.autoDestroy = false;
+
         super.create();
         Conductor.songPosition = 0;
         Conductor.songPositionOld = 0;
@@ -103,7 +144,24 @@ class YoshiCharter extends MusicBeatState {
         });
         topViewCheckbox.y = FlxG.height - topViewCheckbox.height - 10;
         topViewCheckbox.scrollFactor.set(0, 0);
+        topViewCheckbox.checked = !topView;
         add(topViewCheckbox);
+
+        showStrumsCheckbox = new FlxUICheckBox(10, 0, null, null, "Show strums", 250, null, function() {
+            for(s in strums) s.visible = Settings.engineSettings.data.charter_showStrums = showStrumsCheckbox.checked;
+        });
+        showStrumsCheckbox.y = FlxG.height - topViewCheckbox.height - 20 - showStrumsCheckbox.height;
+        showStrumsCheckbox.scrollFactor.set(0, 0);
+        showStrumsCheckbox.checked = showStrums;
+        add(showStrumsCheckbox);
+
+        hitsoundsEnabledCheckbox = new FlxUICheckBox(10, 0, null, null, "Enable hitsounds", 250, null, function() {
+            hitsoundsEnabled = Settings.engineSettings.data.charter_showStrums = hitsoundsEnabledCheckbox.checked;
+        });
+        hitsoundsEnabledCheckbox.y = FlxG.height - topViewCheckbox.height - 30 - showStrumsCheckbox.height - hitsoundsEnabledCheckbox.height;
+        hitsoundsEnabledCheckbox.scrollFactor.set(0, 0);
+        hitsoundsEnabledCheckbox.checked = hitsoundsEnabled;
+        add(hitsoundsEnabledCheckbox);
     }
 
     public function generateNotes() {
@@ -168,6 +226,16 @@ class YoshiCharter extends MusicBeatState {
         }
     }
 
+    public function switchToPlayState() {
+        compile();
+        
+        PlayState._SONG = _song;
+        PlayState._SONG.validScore = false;
+        PlayState.fromCharter = true;
+        FlxG.sound.music.stop();
+        vocals.stop();
+        FlxG.switchState(new PlayState());
+    }
     public function moveCursor(steps:Float) {
         if (playing) {
             playing = false;
@@ -188,8 +256,9 @@ class YoshiCharter extends MusicBeatState {
                 Conductor.songPosition = 0;
             }
         }
-        FlxG.camera.targetOffset.y = FlxMath.lerp(FlxG.camera.targetOffset.y, topView ? ((FlxG.height * 0.25) + GRID_SIZE) : 0, 0.45 * 60 * elapsed);
+        FlxG.camera.targetOffset.y = FlxMath.lerp(FlxG.camera.targetOffset.y, topView ? ((FlxG.height * 0.25) + GRID_SIZE) : GRID_SIZE, 0.45 * 60 * elapsed);
         if (FlxG.mouse.justPressed) {
+            
             var overlaps = false;
             for(n in notes) {
                 if (FlxG.mouse.overlaps(n)) {
@@ -197,7 +266,7 @@ class YoshiCharter extends MusicBeatState {
                     removeNote(n);
                 }
             }
-            if (!overlaps) {
+            if (!overlaps && FlxG.mouse.overlaps(grid)) {
                 var strumT = FlxG.mouse.y / GRID_SIZE;
                 if (!FlxG.keys.pressed.SHIFT) {
                     strumT = Math.floor(strumT);
@@ -207,6 +276,13 @@ class YoshiCharter extends MusicBeatState {
         }
         if (FlxG.keys.justPressed.LEFT) pageSwitchLerpRemaining -= Conductor.crochet * 4;
         if (FlxG.keys.justPressed.RIGHT) pageSwitchLerpRemaining += Conductor.crochet * 4;
+        pageSwitchLerpRemaining -= FlxG.mouse.wheel * Conductor.stepCrochet * 2;
+        if (FlxG.keys.pressed.UP) moveCursor(-8 * elapsed);
+        if (FlxG.keys.pressed.DOWN) moveCursor(8 * elapsed);
+
+        if (FlxG.keys.justPressed.ENTER) {
+            switchToPlayState();
+        }
 
         if (section != null) {
             var s = (Conductor.songPosition / Conductor.crochet) % 1;
@@ -248,8 +324,14 @@ class YoshiCharter extends MusicBeatState {
         for (n in notes) {
             if (n.strumTime < Conductor.songPosition) {
                 if (n.alpha == 1) {
-                    strums[Math.floor(n.x / GRID_SIZE) % (_song.keyNumber * 2)].lastHit = Conductor.stepCrochet / 500;
+                    var str = strums[Math.floor(n.x / GRID_SIZE) % (_song.keyNumber * 2)];
+                    if (str != null) str.lastHit = Conductor.stepCrochet / 500;
                     n.alpha = 1 / 3;
+                    if (hitsoundsEnabled) {
+                        hitsound.stop();
+                        hitsound.volume = FlxG.sound.music.volume;
+                        hitsound.play();
+                    }
                 }
             } else {
                 n.alpha = 1;

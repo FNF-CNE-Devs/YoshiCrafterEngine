@@ -1,6 +1,7 @@
 package;
 
 
+import charter.YoshiCharter;
 import charter.ChartingState_New;
 import flixel.graphics.FlxGraphic;
 import Script.ScriptPack;
@@ -2062,7 +2063,10 @@ class PlayState extends MusicBeatState
 		{
 			if (FlxG.sound.music != null) FlxG.sound.music.pause();
 			
-			FlxG.switchState(new ChartingState_New());
+			if (Settings.engineSettings.data.yoshiEngineCharter)
+				FlxG.switchState(new YoshiCharter());
+			else
+				FlxG.switchState(new ChartingState_New());
 
 			#if desktop
 			DiscordClient.changePresence("Chart Editor", null, null, true);

@@ -1231,19 +1231,20 @@ class OptionsMenu extends MusicBeatState
 			checkboxChecked: function() {return Settings.engineSettings.data.fps_showMemoryPeak;},
 			value: function() {return "";}
 		});
-		// misc.options.push({
-		// 	text : "Use new charter",
-		// 	updateOnSelected: function(elapsed:Float, o:FNFOption) {
-		// 		if (controls.ACCEPT) {
-		// 			Settings.engineSettings.data.yoshiEngineCharter = !Settings.engineSettings.data.yoshiEngineCharter;
-		// 			o.checkboxChecked = Settings.engineSettings.data.yoshiEngineCharter;
-		// 			o.check(Settings.engineSettings.data.yoshiEngineCharter);
-		// 		}
-		// 	},
-		// 	checkbox: true,
-		// 	checkboxChecked: function() {return Settings.engineSettings.data.yoshiEngineCharter,
-		// 	value: ""
-		// });
+		misc.options.push({
+			text : "Use legacy charter",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.yoshiEngineCharter = !Settings.engineSettings.data.yoshiEngineCharter;
+					o.checkboxChecked = !Settings.engineSettings.data.yoshiEngineCharter;
+					o.check(!Settings.engineSettings.data.yoshiEngineCharter);
+				}
+			},
+			description: "If checked, will use the legacy charter that was present until 1.8.0. Unchecked by default",
+			checkbox: true,
+			checkboxChecked: function() {return !Settings.engineSettings.data.yoshiEngineCharter;},
+			value: function() {return "";}
+		});
 		misc.options.push({
 			text : "[]",
 			description : "",

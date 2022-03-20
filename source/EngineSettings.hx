@@ -175,6 +175,9 @@ import flixel.FlxG;
 	@:keep public static var fps_showFPS:Bool = true;
 	@:keep public static var fps_showMemory:Bool = true;
 	@:keep public static var fps_showMemoryPeak:Bool = true;
+	@:keep public static var charter_showStrums:Bool = true;
+	@:keep public static var charter_hitsoundsEnabled:Bool = false;
+	@:keep public static var charter_topView:Bool = false;
 	@:keep public static var lastInstalledMods:Array<String> = ["Friday Night Funkin'", "YoshiEngine"];
 	
 	// @:keep public static var moveCameraInStageEditor:Bool = true;
