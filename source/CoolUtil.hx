@@ -321,10 +321,10 @@ class CoolUtil
 		return value;
 	}
 	
-	public static function addZeros(v:String, length:Int) {
+	public static function addZeros(v:String, length:Int, end:Bool = false) {
 		var r = v;
 		while(r.length < length) {
-			r = '0$r';
+			r = end ? r + '0': '0$r';
 		}
 		return r;
 	}

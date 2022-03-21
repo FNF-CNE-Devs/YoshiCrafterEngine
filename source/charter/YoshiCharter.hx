@@ -50,6 +50,7 @@ class YoshiCharter extends MusicBeatState {
     var topViewCheckbox:FlxUICheckBox = null;
     var showStrumsCheckbox:FlxUICheckBox = null;
     var hitsoundsEnabledCheckbox:FlxUICheckBox = null;
+    var noteInCreation:CharterNote = null;
 
     var pageSwitchLerpRemaining:Float = 0;
 
@@ -116,6 +117,10 @@ class YoshiCharter extends MusicBeatState {
 
         FlxG.sound.playMusic(Paths.modInst(_song.song, PlayState.songMod, PlayState.storyDifficulty));
         FlxG.sound.music.pause();
+        FlxG.sound.music.looped = false;
+        FlxG.sound.music.onComplete = function() {
+            playing = false;
+        }
         vocals = new FlxSound().loadEmbedded(Paths.modVoices(_song.song, PlayState.songMod, PlayState.storyDifficulty));
 
         updateGrid();
@@ -243,6 +248,7 @@ class YoshiCharter extends MusicBeatState {
         // if (note.noteType > 0)
         //     note.color = noteColors[(note.noteType - 1) % noteColors.length];
         updateNoteColor(note);
+        return note;
     }
 
     public function updateNoteColors() {
@@ -258,6 +264,9 @@ class YoshiCharter extends MusicBeatState {
         var color = FlxColor.fromRGB(255, 100, 100);
         color.hue = (((n.noteType - 1) / (_song.noteTypes.length - 1)) * 360) % 360;
         n.color = color;
+        if (n.sustainSprite != null) {
+            n.sustainSprite.color = color;
+        }
     }
 
     public function removeNote(note:CharterNote) {
@@ -346,11 +355,25 @@ class YoshiCharter extends MusicBeatState {
                 if (!FlxG.keys.pressed.SHIFT) {
                     strumT = Math.floor(strumT);
                 }
-                addNote(strumT * Conductor.stepCrochet, Math.floor(FlxG.mouse.x / GRID_SIZE));
+                noteInCreation = addNote(strumT * Conductor.stepCrochet, Math.floor(FlxG.mouse.x / GRID_SIZE));
             }
         }
-        if (FlxG.keys.justPressed.LEFT) pageSwitchLerpRemaining -= Conductor.crochet * 4;
-        if (FlxG.keys.justPressed.RIGHT) pageSwitchLerpRemaining += Conductor.crochet * 4;
+        if (noteInCreation != null) {
+            if (FlxG.mouse.justReleased) {
+                noteInCreation = null;
+            } else {
+                var currentTime = FlxG.mouse.y / GRID_SIZE * Conductor.stepCrochet;
+                var strumTime = noteInCreation.strumTime;
+                var str = Math.max(0, Math.floor((currentTime - strumTime) / Conductor.stepCrochet) * Conductor.stepCrochet);
+                if (str > 0) str += Conductor.stepCrochet;
+                if (noteInCreation.sustainLength != str) {
+                    noteInCreation.sustainLength = str;
+                    noteInCreation.updateSustain();
+                }
+            }
+        }
+        if (FlxG.keys.justPressed.LEFT) pageSwitchLerpRemaining -= Conductor.crochet * 4 * (FlxG.keys.pressed.SHIFT ? 4 : 1);
+        if (FlxG.keys.justPressed.RIGHT) pageSwitchLerpRemaining += Conductor.crochet * 4 * (FlxG.keys.pressed.SHIFT ? 4 : 1);
         pageSwitchLerpRemaining -= FlxG.mouse.wheel * Conductor.stepCrochet * 2;
         if (FlxG.keys.pressed.SHIFT) {
             if (FlxG.keys.pressed.UP) moveCursor(-20 * elapsed);
@@ -392,7 +415,7 @@ class YoshiCharter extends MusicBeatState {
         if (Conductor.songPositionOld != FlxG.sound.music.time) {
             Conductor.songPosition = Conductor.songPositionOld = FlxG.sound.music.time;
         } else {
-            if (FlxG.sound.music.playing) Conductor.songPosition += elapsed * 1000;
+            if (FlxG.sound.music.playing) Conductor.songPosition += elapsed * 1000 * FlxG.sound.music.pitch;
         }
         // grid.y = -((Conductor.songPosition % (Conductor.crochet * 4)) / (Conductor.crochet * 4) * (GRID_SIZE * 16));
         grid.y = Math.max(0, Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) * GRID_SIZE * 16) + ((Conductor.songPosition < Conductor.crochet * 4) ? 0 : -GRID_SIZE * 16);
@@ -405,7 +428,7 @@ class YoshiCharter extends MusicBeatState {
             if (n.strumTime <= Conductor.songPosition) {
                 if (n.alpha == 1) {
                     var str = strums[Math.floor(n.x / GRID_SIZE) % (_song.keyNumber * 2)];
-                    if (str != null && playing) str.lastHit = 0.1 + (Math.max(0, (n.sustainLength - Conductor.stepCrochet) / 1000));
+                    if (str != null && playing) str.lastHit = 0.1 + (Math.max(0, (n.sustainLength - Conductor.stepCrochet) / 1000) / FlxG.sound.music.pitch);
                     n.alpha = 1 / 3;
                     if (hitsoundsEnabled && playing) {
                         hitsound.stop();
@@ -426,6 +449,7 @@ class YoshiCharter extends MusicBeatState {
                 FlxG.sound.music.play();
                 vocals.play();
                 vocals.time = FlxG.sound.music.time;
+                vocals.pitch = FlxG.sound.music.pitch = FlxG.sound.music.pitch; // so that it applies again
             } else {
                 FlxG.sound.music.pause();
                 vocals.pause();
@@ -433,12 +457,25 @@ class YoshiCharter extends MusicBeatState {
         }
         vocals.volume = FlxG.sound.music.volume;
 
+        if (FlxG.keys.justPressed.R) FlxG.sound.music.pitch -= 0.25;
+        if (FlxG.keys.justPressed.T) FlxG.sound.music.pitch += 0.25;
+        if (vocals.pitch != FlxG.sound.music.pitch) vocals.pitch = FlxG.sound.music.pitch;
+
         var m = Math.floor(Conductor.songPosition / 1000 / 60);
         var s = CoolUtil.addZeros(Std.string(Math.floor(Conductor.songPosition / 1000) % 60), 2);
 
         var mt = Math.floor(FlxG.sound.music.length / 1000 / 60);
         var st = CoolUtil.addZeros(Std.string(Math.floor(FlxG.sound.music.length / 1000) % 60), 2);
-        statusText.text = '${m}:${s} - ${mt}:${st}\nSection: ${Math.floor(curBeat / 4)}\nBeat: ${curBeat}\nStep: ${curStep}';
+        var pitchThing = '${Math.floor(FlxG.sound.music.pitch)}';
+        var decimals = Std.string(FlxG.sound.music.pitch % 1);
+        var dotPos = -1;
+        if ((dotPos = decimals.indexOf(".")) > -1) {
+            pitchThing += '.${CoolUtil.addZeros(Std.string(decimals.substr(dotPos + 1)), 2, true)}x';
+        } else {
+            pitchThing += ".00x";
+        }
+
+        statusText.text = '${m}:${s} - ${mt}:${st}\nPlayback Speed: ${pitchThing} (R|T)\nSection: ${Math.floor(curBeat / 4)}\nBeat: ${curBeat}\nStep: ${curStep}';
     }
 
     public override function onFocusLost() {
