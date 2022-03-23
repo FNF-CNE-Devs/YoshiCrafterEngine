@@ -1,7 +1,7 @@
 package;
 
 
-import charter.YoshiCharter;
+import charter.CrafterCharter;
 import charter.ChartingState_New;
 import flixel.graphics.FlxGraphic;
 import Script.ScriptPack;
@@ -1044,7 +1044,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.visible = false;
 
 		if (engineSettings.watermark) {
-			watermark = new FlxText(0, 0, guiSize.x, '${ModSupport.getModName(songMod)}\n${CoolUtil.prettySong(SONG.song)}\nYoshi Engine v${Main.engineVer.join(".")}');
+			watermark = new FlxText(0, 0, guiSize.x, '${ModSupport.getModName(songMod)}\n${CoolUtil.prettySong(SONG.song)}\nCrafter Engine v${Main.engineVer.join(".")}');
 			watermark.setFormat(Paths.font("vcr.ttf"), Std.int(16), FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			watermark.antialiasing = true;
 			watermark.cameras = [camHUD];
@@ -2063,8 +2063,8 @@ class PlayState extends MusicBeatState
 		{
 			if (FlxG.sound.music != null) FlxG.sound.music.pause();
 			
-			if (Settings.engineSettings.data.yoshiEngineCharter)
-				FlxG.switchState(new YoshiCharter());
+			if (Settings.engineSettings.data.crafterEngineCharter)
+				FlxG.switchState(new CrafterCharter());
 			else
 				FlxG.switchState(new ChartingState_New());
 

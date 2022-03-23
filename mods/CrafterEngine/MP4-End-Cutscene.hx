@@ -1,5 +1,5 @@
 // TO USE, ADD :
-// end_cutscene = "YoshiEngine:MP4-End-Cutscene";
+// end_cutscene = "CrafterEngine:MP4-End-Cutscene";
 // In your song_conf.hx file for the song you want and
 // go to your mod folder, create a "videos" folder and
 // add a video with this title "(your song) end cutscene.mp4"

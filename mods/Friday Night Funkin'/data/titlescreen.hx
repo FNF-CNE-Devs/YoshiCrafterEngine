@@ -1,4 +1,4 @@
-var yoshiEngineLogo:FlxSprite = null;
+var crafterEngineLogo:FlxSprite = null;
 var gfDancing:FlxSprite = null;
 
 function create() {
@@ -9,14 +9,14 @@ function create() {
     gfDancing.antialiasing = true;
     add(gfDancing);
 
-    yoshiEngineLogo = new FlxSprite(-50, -35);
-    yoshiEngineLogo.frames = Paths.getSparrowAtlas('titlescreen/logoBumpin');
-    yoshiEngineLogo.antialiasing = true;
-    yoshiEngineLogo.animation.addByPrefix('bump', 'logo bumpin', 24);
-    yoshiEngineLogo.animation.play('bump');
-    yoshiEngineLogo.updateHitbox();
-    yoshiEngineLogo.scale.x = yoshiEngineLogo.scale.y = 0.95;
-    add(yoshiEngineLogo);
+    crafterEngineLogo = new FlxSprite(-50, -35);
+    crafterEngineLogo.frames = Paths.getSparrowAtlas('titlescreen/logoBumpin');
+    crafterEngineLogo.antialiasing = true;
+    crafterEngineLogo.animation.addByPrefix('bump', 'logo bumpin', 24);
+    crafterEngineLogo.animation.play('bump');
+    crafterEngineLogo.updateHitbox();
+    crafterEngineLogo.scale.x = crafterEngineLogo.scale.y = 0.95;
+    add(crafterEngineLogo);
 }
 
 var danced = false;

@@ -20,7 +20,7 @@ class ToolboxMain extends MusicBeatState {
     var modIcon:FlxSprite = null;
     var selectButton:FlxUIButton = null;
 
-    var nonEditableMods:Array<String> = ["Friday Night Funkin'", "YoshiEngine"];
+    var nonEditableMods:Array<String> = ["Friday Night Funkin'", "CrafterEngine"];
 
     var selectedMod:String = "";
 

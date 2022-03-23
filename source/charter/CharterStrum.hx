@@ -8,9 +8,9 @@ class CharterStrum extends FlxSprite {
         super(x, y);
         frames = Paths.getSparrowAtlas("NOTE_assets_charter", "shared");
         
-        var scheme = Note.noteNumberSchemes[YoshiCharter._song.keyNumber];
+        var scheme = Note.noteNumberSchemes[CrafterCharter._song.keyNumber];
         if (scheme == null) scheme = Note.noteNumberSchemes[4];
-        switch(scheme[data % YoshiCharter._song.keyNumber]) {
+        switch(scheme[data % CrafterCharter._song.keyNumber]) {
             case Left:
                 animation.addByPrefix('static', 'arrowLEFT');
                 animation.addByPrefix('pressed', 'left press', 24, false);
@@ -29,7 +29,7 @@ class CharterStrum extends FlxSprite {
                 animation.addByPrefix('confirm', 'right confirm', 24, false);
         }
         animation.play('static');
-        setGraphicSize(YoshiCharter.GRID_SIZE, YoshiCharter.GRID_SIZE);
+        setGraphicSize(CrafterCharter.GRID_SIZE, CrafterCharter.GRID_SIZE);
         updateHitbox();
         antialiasing = true;
     }

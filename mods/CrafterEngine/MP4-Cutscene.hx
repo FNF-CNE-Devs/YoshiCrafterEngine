@@ -1,5 +1,5 @@
 // TO USE, ADD :
-// cutscene = "YoshiEngine:MP4-Cutscene";
+// cutscene = "CrafterEngine:MP4-Cutscene";
 // In your song_conf.hx file for the song you want and
 // go to your mod folder, create a "videos" folder and
 // add a video with this title "(your song) cutscene.mp4"

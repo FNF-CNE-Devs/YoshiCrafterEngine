@@ -159,7 +159,7 @@ import flixel.FlxG;
 	@:keep public static var rainbowNotes:Bool = false; //Unused
 	@:keep public static var memoryOptimization:Bool = true;
 	@:keep public static var blammedEffect:Bool = true;
-	@:keep public static var yoshiEngineCharter:Bool = true;
+	@:keep public static var crafterEngineCharter:Bool = true;
 	@:keep public static var developerMode:Bool = false;
 	@:keep public static var hideOriginalGame:Bool = false;
 	@:keep public static var showAccuracyMode:Bool = false;
@@ -178,7 +178,7 @@ import flixel.FlxG;
 	@:keep public static var charter_showStrums:Bool = true;
 	@:keep public static var charter_hitsoundsEnabled:Bool = false;
 	@:keep public static var charter_topView:Bool = false;
-	@:keep public static var lastInstalledMods:Array<String> = ["Friday Night Funkin'", "YoshiEngine"];
+	@:keep public static var lastInstalledMods:Array<String> = ["Friday Night Funkin'", "CrafterEngine"];
 	
 	// @:keep public static var moveCameraInStageEditor:Bool = true;
 
@@ -261,7 +261,7 @@ class Settings {
 
 
 	// public static function save(bind:Bool = true) {
-	// 	if (bind) FlxG.save.bind("Settings", "YoshiCrafter29/Yoshi Engine");
+	// 	if (bind) FlxG.save.bind("Settings", "CrafterCrafter29/Crafter Engine");
 
 	// 	for(k in Type.getClassFields(Settings)) {
 	// 		if (k != "save_bind_name" && k != "save_bind_path") {
@@ -301,7 +301,7 @@ class Settings {
 	public static var hscriptCache:FlxSave = null;
 
     // public static function load(bind:Bool = true) {
-	// 	if (bind) FlxG.save.bind("Settings", "YoshiCrafter29/Yoshi Engine");
+	// 	if (bind) FlxG.save.bind("Settings", "CrafterCrafter29/Crafter Engine");
 
 	// 	for(k in Type.getClassFields(Settings)) {
 	// 		if (k != "save_bind_name" && k != "save_bind_path") {

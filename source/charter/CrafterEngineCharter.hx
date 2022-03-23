@@ -14,7 +14,7 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 
 class CharterSection {
-    private var y:YoshiEngineCharter;
+    private var y:CrafterEngineCharter;
     private var id(get, default):Int;
     private var _id:Int = -1;
     private function get_id():Int {
@@ -22,7 +22,7 @@ class CharterSection {
             _id = y.charterSections.indexOf(this);
         return _id;
     }
-    public function new(self:YoshiEngineCharter) {
+    public function new(self:CrafterEngineCharter) {
         y = self;
     }
     public var songSection(get, null):SwagSection;
@@ -55,7 +55,7 @@ class CharterSection {
     public var notes:Array<CharterNote> = [];
     public var grid:FlxSprite;
 }
-class YoshiEngineCharter extends MusicBeatState {
+class CrafterEngineCharter extends MusicBeatState {
     
     public var _song:SwagSong = {
         song: 'Test',

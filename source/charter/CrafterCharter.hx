@@ -1,7 +1,9 @@
 package charter;
 
+import lime.media.AudioBuffer;
+import mod_support_stuff.ContextMenu;
 import dev_toolbox.toolbox_tabs.SongTab;
-import lime.utils.Assets;
+import openfl.utils.Assets;
 import MusicBeatState.FlxSpriteTypedGroup;
 import flixel.util.FlxColor;
 import flixel.math.FlxMath;
@@ -15,7 +17,7 @@ import Song.SwagSong;
 import flixel.*;
 import flixel.addons.ui.*;
 
-class YoshiCharter extends MusicBeatState {
+class CrafterCharter extends MusicBeatState {
     public var notes:Array<CharterNote> = [];
     public static var _song:SwagSong;
 
@@ -52,6 +54,9 @@ class YoshiCharter extends MusicBeatState {
     var hitsoundsEnabledCheckbox:FlxUICheckBox = null;
     var noteInCreation:CharterNote = null;
 
+    var instBuffer:AudioBuffer;
+    var voicesBuffer:AudioBuffer;
+
     var pageSwitchLerpRemaining:Float = 0;
 
     var noteColors:Array<FlxColor> = [
@@ -64,8 +69,11 @@ class YoshiCharter extends MusicBeatState {
 		FlxColor.fromRGB(111,111,255),
 	];
 
+    var copiedSection:Int = -1;
+
     var UI_Menu:FlxUITabMenu;
     
+    var waveform:WaveformSprite;
     public function new() {
         super();
         if (PlayState._SONG == null) {
@@ -110,18 +118,28 @@ class YoshiCharter extends MusicBeatState {
     }
 
     public override function create() {
+        Conductor.songPosition = 0;
+        Conductor.songPositionOld = 0;
+        
 		Assets.loadLibrary("shared");
         
         var bg = CoolUtil.addBG(this);
         bg.scrollFactor.set(0, 0);
 
-        FlxG.sound.playMusic(Paths.modInst(_song.song, PlayState.songMod, PlayState.storyDifficulty));
+        var instPath = Paths.modInst(_song.song, PlayState.songMod, PlayState.storyDifficulty);
+        FlxG.sound.playMusic(instPath);
+        @:privateAccess
+        instBuffer = AudioBuffer.fromFile(Assets.getPath(instPath));
         FlxG.sound.music.pause();
         FlxG.sound.music.looped = false;
         FlxG.sound.music.onComplete = function() {
             playing = false;
         }
-        vocals = new FlxSound().loadEmbedded(Paths.modVoices(_song.song, PlayState.songMod, PlayState.storyDifficulty));
+
+        var voicesPath = Paths.modVoices(_song.song, PlayState.songMod, PlayState.storyDifficulty);
+        vocals = new FlxSound().loadEmbedded(voicesPath);
+        @:privateAccess
+        voicesBuffer = AudioBuffer.fromFile(Assets.getPath(voicesPath));
 
         updateGrid();
         generateNotes();
@@ -152,8 +170,6 @@ class YoshiCharter extends MusicBeatState {
         hitsound.autoDestroy = false;
 
         super.create();
-        Conductor.songPosition = 0;
-        Conductor.songPositionOld = 0;
     }
 
     public function create_ui() {
@@ -292,6 +308,13 @@ class YoshiCharter extends MusicBeatState {
         gridLightUp.scrollFactor.set(1, 0);
         add(gridLightUp);
 
+        waveform = new WaveformSprite((grid.width - GRID_SIZE) / 2, 0, instBuffer, GRID_SIZE * 4, GRID_SIZE * 32);
+        waveform.scrollFactor.set(1, 1);
+        waveform.color = 0xFF6A79FF;
+        waveform.origin.set(0, 0);
+        add(waveform);
+        waveform.generateFlixel(-Conductor.crochet * 4, Conductor.crochet * 4);
+
         // add strums
         for (e in strums) {
             remove(e);
@@ -329,6 +352,8 @@ class YoshiCharter extends MusicBeatState {
         FlxG.sound.music.time = vocals.time = (Conductor.songPosition += steps * Conductor.stepCrochet);
     }
     public override function update(elapsed:Float) {
+
+        super.update(elapsed);
         if (playing) {
             pageSwitchLerpRemaining = 0;
         } else {
@@ -340,6 +365,7 @@ class YoshiCharter extends MusicBeatState {
                 Conductor.songPosition = 0;
             }
         }
+        waveform.generateFlixel(Conductor.songPosition - (Conductor.crochet * 4), Conductor.songPosition + (Conductor.crochet * 4)); // NOT OPTIMIZED, JUST FOR TESTING;
         FlxG.camera.targetOffset.y = FlxMath.lerp(FlxG.camera.targetOffset.y, topView ? ((FlxG.height * 0.25) + GRID_SIZE) : GRID_SIZE, 0.45 * 60 * elapsed);
         if (FlxG.mouse.justPressed) {
             
@@ -356,6 +382,51 @@ class YoshiCharter extends MusicBeatState {
                     strumT = Math.floor(strumT);
                 }
                 noteInCreation = addNote(strumT * Conductor.stepCrochet, Math.floor(FlxG.mouse.x / GRID_SIZE));
+            }
+        }
+
+        if (FlxG.mouse.justPressedRight) {
+            if (FlxG.mouse.overlaps(grid)) {
+                var section = Math.floor(FlxG.mouse.y / GRID_SIZE * Conductor.stepCrochet / (Conductor.crochet * 4));
+                openSubState(new ContextMenu(FlxG.mouse.screenX, FlxG.mouse.screenY, [{
+                    label: 'Copy Section',
+                    callback: function() {copiedSection = section;trace(copiedSection);}
+                },
+                {
+                    label: 'Paste',
+                    enabled: copiedSection > -1,
+                    callback: function() {
+                        if (section != copiedSection) {
+                            for(n in notes) {
+                                if (n.strumTime > (Conductor.crochet * 4 * copiedSection) && n.strumTime < (Conductor.crochet * 4 * (copiedSection + 1))) {
+                                    addNote(n.strumTime - (Conductor.crochet * 4 * copiedSection) + (Conductor.crochet * 4 * section), n.noteData, false, n.sustainLength);
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    label: 'Paste & Override',
+                    enabled: copiedSection > -1,
+                    callback: function() {
+                        if (section != copiedSection) {
+                            for(n in notes) {
+                                if (n.strumTime > (Conductor.crochet * 4 * section) && n.strumTime < (Conductor.crochet * 4 * (section + 1))) {
+                                    removeNote(n);
+                                }
+                            }
+                            for(n in notes) {
+                                if (n.strumTime > (Conductor.crochet * 4 * copiedSection) && n.strumTime < (Conductor.crochet * 4 * (copiedSection + 1))) {
+                                    addNote(n.strumTime - (Conductor.crochet * 4 * copiedSection) + (Conductor.crochet * 4 * section), n.noteData, false, n.sustainLength);
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    label: 'Reset section',
+                    callback: function() {trace("pog3");}
+                }]));
             }
         }
         if (noteInCreation != null) {
@@ -420,28 +491,30 @@ class YoshiCharter extends MusicBeatState {
         // grid.y = -((Conductor.songPosition % (Conductor.crochet * 4)) / (Conductor.crochet * 4) * (GRID_SIZE * 16));
         grid.y = Math.max(0, Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) * GRID_SIZE * 16) + ((Conductor.songPosition < Conductor.crochet * 4) ? 0 : -GRID_SIZE * 16);
         followThing.y = Conductor.songPosition / (Conductor.crochet * 4) * (GRID_SIZE * 16);
+        waveform.y = followThing.y - (GRID_SIZE * 16);
         for(s in strums) {
             s.y = followThing.y;
         }
         
         for (n in notes) {
-            if (n.strumTime <= Conductor.songPosition) {
-                if (n.alpha == 1) {
-                    var str = strums[Math.floor(n.x / GRID_SIZE) % (_song.keyNumber * 2)];
-                    if (str != null && playing) str.lastHit = 0.1 + (Math.max(0, (n.sustainLength - Conductor.stepCrochet) / 1000) / FlxG.sound.music.pitch);
-                    n.alpha = 1 / 3;
-                    if (hitsoundsEnabled && playing) {
-                        hitsound.stop();
-                        hitsound.volume = FlxG.sound.music.volume;
-                        hitsound.play();
+            if (n.active = n.visible = (Math.abs(n.strumTime - Conductor.songPosition) < (FlxG.height * 2) / GRID_SIZE * Conductor.stepCrochet)) {
+                if (n.strumTime <= Conductor.songPosition) {
+                    if (n.alpha == 1) {
+                        var str = strums[Math.floor(n.x / GRID_SIZE) % (_song.keyNumber * 2)];
+                        if (str != null && playing) str.lastHit = 0.1 + (Math.max(0, (n.sustainLength - Conductor.stepCrochet) / 1000) / FlxG.sound.music.pitch);
+                        n.alpha = 1 / 3;
+                        if (hitsoundsEnabled && playing) {
+                            hitsound.stop();
+                            hitsound.volume = FlxG.sound.music.volume;
+                            hitsound.play();
+                        }
                     }
+                } else {
+                    n.alpha = 1;
                 }
-            } else {
-                n.alpha = 1;
             }
+            
         }
-
-        super.update(elapsed);
 
         if (FlxG.keys.justPressed.SPACE) {
             playing = !playing;

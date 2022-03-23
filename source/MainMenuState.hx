@@ -41,7 +41,7 @@ class MainMenuState extends MusicBeatState
 
 	public var menuItems:FlxTypedGroup<FlxSprite>;
 
-	// imagine yoshi engine on switch lmfao
+	// imagine crafter engine on switch lmfao
 	#if !switch
 	// var optionShit:Array<String> = ['story mode', 'freeplay', 'mods', 'donate', 'credits', 'options'];
 	#else
@@ -208,10 +208,10 @@ class MainMenuState extends MusicBeatState
 		FlxG.camera.follow(camFollow, null, 0.06);
 
 		var fnfVer = Application.current.meta.get('version');
-		var yoshiEngineVer = Main.engineVer.join(".");
+		var crafterEngineVer = Main.engineVer.join(".");
 		var buildVer = Main.buildVer;
 		if (buildVer.trim() != "") buildVer = " " + buildVer.trim();
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, 'Yoshi Engine v$yoshiEngineVer$buildVer - FNF v$fnfVer - Selected Mod: ${ModSupport.getModName(Settings.engineSettings.data.selectedMod)} (Press TAB to switch)', 12);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, 'Crafter Engine v$crafterEngineVer$buildVer - FNF v$fnfVer - Selected Mod: ${ModSupport.getModName(Settings.engineSettings.data.selectedMod)} (Press TAB to switch)', 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);

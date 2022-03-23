@@ -255,7 +255,7 @@ class ModSupport {
                 present: 'present',
                 assoc: ['In association', 'with'],
                 newgrounds: 'newgrounds',
-                gameName: ['Friday Night Funkin\'', 'Yoshi', 'Engine']
+                gameName: ['Friday Night Funkin\'', 'Crafter', 'Engine']
             }
         };
         modConfig[mod] = json;
