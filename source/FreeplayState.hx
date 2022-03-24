@@ -188,10 +188,10 @@ class FreeplayState extends MusicBeatState
 			freeplayScript = new HScript();
 			validated = false;
 		}
-		ModSupport.setScriptDefaultVars(freeplayScript, '${Settings.engineSettings.data.selectedMod}', {});
 		freeplayScript.setVariable("state", this);
 		freeplayScript.setVariable("songs", _songs);
 		freeplayScript.setVariable("addSong", addSong);
+		ModSupport.setScriptDefaultVars(freeplayScript, '${Settings.engineSettings.data.selectedMod}', {});
 		if (validated) {
 			showAllSongs = false;
 			freeplayScript.loadFile('${Paths.getModsPath()}/${Settings.engineSettings.data.selectedMod}/ui/FreeplayState');

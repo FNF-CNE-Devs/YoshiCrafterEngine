@@ -465,6 +465,7 @@ class Paths
 			charName = splittedCharacterID[1];
 			charMod = splittedCharacterID[0];
 		}
+		if(charMod.toLowerCase() == "yoshiengine") charMod = "CrafterEngine";
 		var folder = Paths.modsPath + '/$charMod/characters/$charName';
 		if (charMod == "~") {
 			// You have unlocked secret skin menu !

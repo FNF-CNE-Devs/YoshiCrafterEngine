@@ -285,10 +285,10 @@ class TitleState extends MusicBeatState
 			}
 			if (script != null) {
 				titleSpriteGrp = new FlxSpriteGroup(0, 0);
-				ModSupport.setScriptDefaultVars(script, mod, {});
 				script.setVariable("create", function() {});
 				script.setVariable("beatHit", function() {});
 				script.setVariable("add", titleSpriteGrp.add);
+				ModSupport.setScriptDefaultVars(script, mod, {});
 				script.loadFile('$path/titlescreen');
 				script.executeFunc("create");
 				add(titleSpriteGrp);

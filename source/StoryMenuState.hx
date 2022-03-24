@@ -362,6 +362,7 @@ class StoryMenuState extends MusicBeatState
 						var bitmapMod = week.mod;
 						var bitmapPath = "";
 						var bitmapSplit:Array<String> = diff.sprite.split(":");
+						if (bitmapSplit[0].toLowerCase() == "yoshiengine") bitmapSplit[0] = "CrafterEngine";
 						if (bitmapSplit.length < 2) {
 							bitmapPath = diff.sprite;
 						} else {

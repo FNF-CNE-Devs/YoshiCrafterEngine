@@ -312,6 +312,7 @@ class CrafterCharter extends MusicBeatState {
         waveform.scrollFactor.set(1, 1);
         waveform.color = 0xFF6A79FF;
         waveform.origin.set(0, 0);
+        waveform.alpha = 0.85;
         add(waveform);
         waveform.generateFlixel(-Conductor.crochet * 4, Conductor.crochet * 4);
 

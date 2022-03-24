@@ -128,6 +128,7 @@ class SongConf {
             PlayState.log.push('Script not found for $value.');
             return {mod : "Friday Night Funkin'", path : "Friday Night Funkin'/modcharts/unknown"};
         }
+		if(splitValue[0].toLowerCase() == "yoshiengine") splitValue[0] = "CrafterEngine";
         if (splitValue.length == 1) {
             var scriptPath = splitValue[0];
             if (FileSystem.exists('${Paths.modsPath}/$currentMod/$scriptPath')) {

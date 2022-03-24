@@ -78,6 +78,7 @@ class Stage {
 	}
 	public function new(path:String, mod:String) {
 		var splitPath = path.split(":");
+		if (splitPath[0].toLowerCase() == "yoshiengine") splitPath[0] = "CrafterEngine";
 		if (splitPath.length < 2) {
 			if (FileSystem.exists('${Paths.modsPath}/${mod}/stages/${Path.withoutExtension(splitPath[0])}.json')) {
 				splitPath.insert(0, mod);

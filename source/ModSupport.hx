@@ -1,3 +1,4 @@
+import Script.HScript;
 import haxe.EnumTools;
 import mod_support_stuff.ModState;
 import hscript.Expr;
@@ -358,6 +359,14 @@ class ModSupport {
         return name;
     }
     public static function setScriptDefaultVars(script:Script, mod:String, settings:Dynamic) {
+        var superVar = {};
+        if (Std.isOfType(script, HScript)) {
+            var hscript:HScript = cast script;
+            for(k=>v in hscript.hscript.variables) {
+                Reflect.setField(superVar, k, v);
+            }
+        }
+		script.setVariable("super", superVar);
 		script.setVariable("mod", mod);
 		script.setVariable("PlayState", PlayState.current);
         script.setVariable("import", function(className:String) {

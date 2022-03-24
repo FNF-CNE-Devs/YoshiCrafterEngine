@@ -112,7 +112,6 @@ class MainMenuState extends MusicBeatState
 			valid = false;
 			mainMenuScript = new HScript();
 		}
-		ModSupport.setScriptDefaultVars(mainMenuScript, Settings.engineSettings.data.selectedMod, {});
 		mainMenuScript.setVariable("create", function() {});
 		mainMenuScript.setVariable("update", function(elapsed:Float) {});
 		mainMenuScript.setVariable("beatHit", function(curBeat:Int) {});
@@ -120,6 +119,7 @@ class MainMenuState extends MusicBeatState
 		mainMenuScript.setVariable("onSelect", function(obj:MenuOption) {});
 		mainMenuScript.setVariable("onSelectEnd", function(obj:MenuOption) {});
 		mainMenuScript.setVariable("state", this);
+		ModSupport.setScriptDefaultVars(mainMenuScript, Settings.engineSettings.data.selectedMod, {});
 		if (valid) mainMenuScript.loadFile('${Paths.modsPath}/${Settings.engineSettings.data.selectedMod}/ui/MainMenuState');
 		mainMenuScript.executeFunc("create");
 		#if desktop

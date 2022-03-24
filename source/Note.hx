@@ -253,8 +253,9 @@ class Note extends FlxSprite
 		animation.play("scroll");
 		if (isSustainNote) {
 			if (prevNote != null)
-				if (prevNote.animation.curAnim.name == "holdend")
-					prevNote.animation.play("holdpiece");
+				if (prevNote.animation.curAnim != null)
+					if (prevNote.animation.curAnim.name == "holdend")
+						prevNote.animation.play("holdpiece");
 			animation.play("holdend");
 		}
 

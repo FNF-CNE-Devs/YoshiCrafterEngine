@@ -108,6 +108,7 @@ class Rating {
 		if (splittedPath.length < 2) return path;
 		var mod = splittedPath[0];
 		var path = splittedPath[1];
+		if(mod.toLowerCase() == "yoshiengine") mod = "CrafterEngine";
 		var mPath = Paths.modsPath;
 		var bData = Paths.image(path, 'mods/$mod');
 		if (bData != null) {
@@ -643,9 +644,6 @@ class PlayState extends MusicBeatState
 		if (cutscene == null) cutscene = new HScript();
 		if (end_cutscene == null) end_cutscene = new HScript();
 
-		ModSupport.setScriptDefaultVars(cutscene, ModSupport.song_cutscene == null ? songMod : ModSupport.song_cutscene.mod, {});
-		ModSupport.setScriptDefaultVars(end_cutscene, ModSupport.song_end_cutscene == null ? songMod : ModSupport.song_end_cutscene.mod, {});
-
 		scripts.setVariable("update", function(elapsed:Float) {});
 		scripts.setVariable("create", function() {});
 		scripts.setVariable("newPost", function() {});
@@ -732,6 +730,9 @@ class PlayState extends MusicBeatState
 		}
 		cutscene.setVariable("startCountdown", startCountdown);
 		end_cutscene.setVariable("end", endSong2);
+
+		ModSupport.setScriptDefaultVars(cutscene, ModSupport.song_cutscene == null ? songMod : ModSupport.song_cutscene.mod, {});
+		ModSupport.setScriptDefaultVars(end_cutscene, ModSupport.song_end_cutscene == null ? songMod : ModSupport.song_end_cutscene.mod, {});
 
 
 		scripts.loadFiles();
@@ -1099,7 +1100,8 @@ class PlayState extends MusicBeatState
 			timerBar.antialiasing = true;
 			// timerBar.barWidth = Std.int(FlxG.sound.music.length / 1000);
 			timerBar.scrollFactor.set();
-			timerBar.createFilledBar(0xFF000000, 0xFFFFFFFF);
+			timerBar.createGradientBar([0x88222222], [0xFF7163F1, 0xFFD15CF8], 1, 90, true, 0xFF000000);
+			// timerBar.createFilledBar(0xFF000000, 0xFFFFFFFF);
 			timerBar.visible = false;
 			add(timerBar);
 
@@ -3370,6 +3372,7 @@ class PlayState extends MusicBeatState
 		
 		playerStrums.forEach(function(spr:FlxSprite)
 		{
+			if (spr == null) return;
 			if (justPressedArray[spr.ID % SONG.keyNumber] && spr.animation.curAnim.name != 'confirm')
 				spr.animation.play('pressed');
 			if (justReleasedArray[spr.ID % SONG.keyNumber])

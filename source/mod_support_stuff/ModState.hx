@@ -22,7 +22,6 @@ class ModState extends MusicBeatState {
 
         script = Script.create(path);
         if (script != null) script = new HScript();
-        ModSupport.setScriptDefaultVars(script, _mod, {});
 
         
         script.setVariable("new", function(args) {});
@@ -34,6 +33,7 @@ class ModState extends MusicBeatState {
         script.setVariable("remove", function(obj:FlxBasic) {remove(obj);});
         script.setVariable("insert", function(i:Int, obj:FlxBasic) {insert(i, obj);});
 
+        ModSupport.setScriptDefaultVars(script, _mod, {});
         script.loadFile(path);
 
         script.executeFunc("new", args);
