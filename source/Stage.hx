@@ -1,5 +1,6 @@
 package;
 
+import haxe.Unserializer;
 import lime.utils.Assets;
 import dev_toolbox.stage_editor.FlxStageSprite;
 import flixel.math.FlxPoint;
@@ -78,12 +79,25 @@ class Stage {
 	}
 	public function new(path:String, mod:String) {
 		var splitPath = path.split(":");
-		if (splitPath[0].toLowerCase() == "yoshiengine") splitPath[0] = "CrafterEngine";
+		if (splitPath[0].toLowerCase() == "yoshiengine") splitPath[0] = "YoshiCrafterEngine";
+		var jsonMode = false;
 		if (splitPath.length < 2) {
-			if (FileSystem.exists('${Paths.modsPath}/${mod}/stages/${Path.withoutExtension(splitPath[0])}.json')) {
+			if (Assets.exists(Paths.stage(Path.withoutExtension(splitPath[0]), 'mods/$mod'))) {
+				jsonMode = true;
 				splitPath.insert(0, mod);
-			} else if (FileSystem.exists('${Paths.modsPath}/Friday Night Funkin\'/stages/${Path.withoutExtension(splitPath[0])}.json')) {
+			// psych users be hungry tonight
+			} else if (Assets.exists(Paths.stage(Path.withoutExtension(splitPath[0]), 'mods/$mod', 'stage'))) {
+				splitPath.insert(0, mod);
+			} else if (Assets.exists(Paths.stage(Path.withoutExtension(splitPath[0]), 'mods/Friday Night Funkin\''))) {
+				jsonMode = true;
 				splitPath.insert(0, "Friday Night Funkin'");
+			// psych users be hungry tonight
+			} else if (Assets.exists(Paths.stage(Path.withoutExtension(splitPath[0]), 'mods/Friday Night Funkin\'', 'stage'))) {
+				splitPath.insert(0, "Friday Night Funkin'");
+			}
+		} else {
+			if (Assets.exists(Paths.stage(Path.withoutExtension(splitPath[1]), 'mods/${splitPath[0]}', 'json'))) {
+				jsonMode = true;
 			}
 		}
 		if (splitPath.length < 2) {
@@ -91,10 +105,14 @@ class Stage {
 			return;
 		}
 		var json:StageJSON = null;
-		try {
-			json = Json.parse(Assets.getText(Paths.stage(Path.withoutExtension(splitPath[1]), 'mods/$mod')));
-		} catch(e) {
-			PlayState.trace('Failed to parse JSON data at $path in $mod : $e');
+		if (jsonMode) {
+			try {
+				json = Json.parse(Assets.getText(Paths.stage(Path.withoutExtension(splitPath[1]), 'mods/$mod')));
+			} catch(e) {
+				PlayState.trace('Failed to parse JSON data at $path in $mod : $e');
+			}
+		} else {
+			json = Unserializer.run(Assets.getText(Paths.stage(Path.withoutExtension(splitPath[1]), 'mods/$mod', 'stage')));
 		}
 		PlayState.current.devStage = splitPath.join(":");
 		var PlayState = PlayState.current;

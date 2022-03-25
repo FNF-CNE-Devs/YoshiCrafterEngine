@@ -253,7 +253,7 @@ class TitleState extends MusicBeatState
 			if (introConf.present == null) introConf.present = 'present';
 			if (introConf.assoc == null) introConf.assoc = ['In association', 'with'];
 			if (introConf.newgrounds == null) introConf.newgrounds = 'newgrounds';
-			if (introConf.gameName == null) introConf.gameName = ['Friday Night Funkin\'', 'Crafter', 'Engine'];
+			if (introConf.gameName == null) introConf.gameName = ['Friday Night Funkin\'', 'YoshiCrafter', 'Engine'];
 		} else {
 			introConf = {
 				bpm: 102,
@@ -261,7 +261,7 @@ class TitleState extends MusicBeatState
 				present: 'present',
 				assoc: ['In association', 'with'],
 				newgrounds: 'newgrounds',
-				gameName: ['Friday Night Funkin\'', 'Crafter', 'Engine']
+				gameName: ['Friday Night Funkin\'', 'YoshiCrafter', 'Engine']
 			};
 		}
 
@@ -441,12 +441,12 @@ class TitleState extends MusicBeatState
 			if (FlxG.keys.justPressed.F2) {
 				CoolUtil.loadSong("Friday Night Funkin'", "MILF", "Hard");
 				charter.ChartingState_New._song = PlayState._SONG;
-				FlxG.switchState(new charter.CrafterCharter());
+				FlxG.switchState(new charter.YoshiCrafterCharter());
 			}
 		#end
 		/*
 		if (FlxG.keys.justPressed.F2) {
-			FlxG.switchState(new UpdateState("http://raw.githubusercontent.com/CrafterCrafter29/YC29Engine-Latest/main/", ['README.md', 'changelog.txt', 'CrafterEngine.exe']));
+			FlxG.switchState(new UpdateState("http://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/", ['README.md', 'changelog.txt', 'YoshiCrafterEngine.exe']));
 		}
 		*/
 		if (FlxG.keys.justPressed.TAB && skippedIntro) {
@@ -516,8 +516,8 @@ class TitleState extends MusicBeatState
 				// Check if version is outdated
 				Thread.create(function() {
 					try {
-						//var data = Http.requestUrl("https://raw.githubusercontent.com/CrafterCrafter29/CrafterEngine/main/update.json");
-						var data = Http.requestUrl("https://raw.githubusercontent.com/CrafterCrafter29/YC29Engine-Latest/main/_changes/list.txt");
+						//var data = Http.requestUrl("https://raw.githubusercontent.com/YoshiCrafter29/YoshiCrafterEngine/main/update.json");
+						var data = Http.requestUrl("https://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/_changes/list.txt");
 						updateIcon.visible = false;
 						updateAlphabet.visible = false;
 						updateRibbon.visible = false;
@@ -554,7 +554,7 @@ class TitleState extends MusicBeatState
 		for(i in currentVerPos+1...versions.length) {
 			var data:String = "";
 			try {
-				data = Http.requestUrl('https://raw.githubusercontent.com/CrafterCrafter29/YC29Engine-Latest/main/_changes/${versions[i]}.txt');
+				data = Http.requestUrl('https://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/_changes/${versions[i]}.txt');
 			} catch(e) {
 				trace(versions[i] + " data is incorrect");
 			}
@@ -566,10 +566,10 @@ class TitleState extends MusicBeatState
 			}
 		}
 
-		var changeLog:String = Http.requestUrl('https://raw.githubusercontent.com/CrafterCrafter29/YC29Engine-Latest/main/_changes/changelog.txt');
+		var changeLog:String = Http.requestUrl('https://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/_changes/changelog.txt');
 		/*
 		// var version:String = "v" + Application.current.meta.get('version');
-		var jsonData:CrafterEngineVersion = Json.parse(data.trim());
+		var jsonData:YoshiCrafterEngineVersion = Json.parse(data.trim());
 		var outDated = false;
 		var amount = jsonData.version.length;
 		if (Main.engineVer.length > amount) amount = Main.engineVer.length;

@@ -157,8 +157,8 @@ class CoolUtil
 
 
 	public static function addBG(f:FlxState) {
-		var p = Paths.image("menuBGCrafter", 'mods/${Settings.engineSettings.data.selectedMod}');
-		if (!Assets.exists(p)) p = Paths.image("menuBGCrafter", "preload");
+		var p = Paths.image("menuBGYoshiCrafter", 'mods/${Settings.engineSettings.data.selectedMod}');
+		if (!Assets.exists(p)) p = Paths.image("menuBGYoshiCrafter", "preload");
 		var bg = new FlxSprite(0,0).loadGraphic(p);
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
 		bg.screenCenter();
@@ -170,7 +170,7 @@ class CoolUtil
 
 	public static function addUpdateBG(f:FlxState) {
 		// siivkoi i love your art thanks again
-		var p = Paths.image("Crafter_Engine_download_screen", "preload");
+		var p = Paths.image("YoshiCrafter_Engine_download_screen", "preload");
 		var bg = new FlxSprite(0,0).loadGraphic(p);
 		bg.screenCenter();
 		bg.scrollFactor.set(0, 0);

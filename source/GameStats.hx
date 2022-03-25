@@ -77,8 +77,8 @@ class GameStats extends TextField
 					text += "Memory: " + CoolUtil.getSizeLabel(System.totalMemory) + "\n";
 				if (Settings.engineSettings.data.fps_showMemoryPeak)
 					text += "Mem Peak: " + CoolUtil.getSizeLabel(peak) + "\n";
-				if (Settings.engineSettings.data.fps_showCrafterEngineVer)
-					text += 'Crafter Engine v${Main.engineVer.join(".")}';
+				if (Settings.engineSettings.data.fps_showYoshiCrafterEngineVer)
+					text += 'YoshiCrafter Engine v${Main.engineVer.join(".")}';
 			}
 		}
 

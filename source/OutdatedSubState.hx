@@ -24,7 +24,7 @@ class OutdatedSubState extends MusicBeatState
 	{
 		super.create();
 		var bg:FlxSprite = new FlxSprite();
-		bg.loadGraphic(Paths.image('menuBGCrafter', 'preload'));
+		bg.loadGraphic(Paths.image('menuBGYoshiCrafter', 'preload'));
 		bg.scale.set(1.2, 1.2);
 		bg.screenCenter();
 		add(bg);
@@ -56,7 +56,7 @@ class OutdatedSubState extends MusicBeatState
 		var latestVer = ver;
 
 		var txt:FlxText = new FlxText(0, 10, FlxG.width,
-			"HEY ! Your Crafter Engine is outdated !\n"
+			"HEY ! Your YoshiCrafter Engine is outdated !\n"
 			+ 'v$localVer < v$latestVer\n'
 			,32);
 		txt.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -75,12 +75,12 @@ class OutdatedSubState extends MusicBeatState
 			#if windows
 				FlxG.switchState(new UpdateState(files));
 			#else
-				FlxG.openURL('https://www.github.com/CrafterCrafter29/CrafterEngine/releases/latest');
+				FlxG.openURL('https://www.github.com/YoshiCrafter29/YoshiCrafterEngine/releases/latest');
 			#end
 		}
 		if (FlxG.keys.justPressed.SPACE)
 		{
-			FlxG.openURL('https://www.github.com/CrafterCrafter29/CrafterEngine/releases/latest');
+			FlxG.openURL('https://www.github.com/YoshiCrafter29/YoshiCrafterEngine/releases/latest');
 		}
 		if (controls.BACK)
 		{

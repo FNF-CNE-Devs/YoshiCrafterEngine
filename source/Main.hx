@@ -71,7 +71,7 @@ class Main extends Sprite
 			copyFolder('./_cache', '.');
 			CoolUtil.deleteFolder('./_cache/');
 			FileSystem.deleteDirectory('./_cache/');
-			new Process('start /B CrafterEngine.exe', null);
+			new Process('start /B YoshiCrafterEngine.exe', null);
 			System.exit(0);
 		} else {
 			try {
@@ -104,8 +104,8 @@ class Main extends Sprite
 				m = '${err.text}';
 			}
 			m += '\r\n ${CallStack.toString(CallStack.exceptionStack())}';
-			trace('An error occured !\r\nCrafter Engine ver. ${engineVer.join(".")} $buildVer\r\n\r\n${m}\r\n\r\nThe engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !');
- 			Application.current.window.alert('An error occured !\r\nCrafter Engine ver. ${engineVer.join(".")} $buildVer\r\n\r\n${m}\r\n\r\nThe engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !', e.error);
+			trace('An error occured !\r\nYoshiCrafter Engine ver. ${engineVer.join(".")} $buildVer\r\n\r\n${m}\r\n\r\nThe engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !');
+ 			Application.current.window.alert('An error occured !\r\nYoshiCrafter Engine ver. ${engineVer.join(".")} $buildVer\r\n\r\n${m}\r\n\r\nThe engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !', e.error);
 			e.stopPropagation();
 			e.stopImmediatePropagation();
 		});

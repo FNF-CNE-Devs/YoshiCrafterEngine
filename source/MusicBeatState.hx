@@ -71,7 +71,7 @@ class MusicBeatState extends FlxUIState
 
 		//if (defaultIcon == null) defaultIcon = Assets.getBitmapData(Paths.file('icon.png', IMAGE, 'mods/));
 		if (defaultIcon == null) defaultIcon = lime.utils.Assets.getImage(Paths.image("icon", "preload"));
-		lime.app.Application.current.window.title = "Friday Night Funkin' - Crafter Engine";
+		lime.app.Application.current.window.title = "Friday Night Funkin' - YoshiCrafter Engine";
 		if (PlayState.iconChanged) {
 			lime.app.Application.current.window.setIcon(defaultIcon);
 			PlayState.iconChanged = false;

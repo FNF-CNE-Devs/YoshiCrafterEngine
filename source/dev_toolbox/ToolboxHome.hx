@@ -34,7 +34,7 @@ using StringTools;
 
 class ToolboxHome extends MusicBeatState {
 
-    public var nonEditableMods:Array<String> = ["Friday Night Funkin'", "CrafterEngine"];
+    public var nonEditableMods:Array<String> = ["Friday Night Funkin'", "YoshiCrafterEngine"];
 
     public static var selectedMod:String = "Friday Night Funkin'";
     public var oldTab:String = "";
@@ -91,7 +91,7 @@ class ToolboxHome extends MusicBeatState {
 					present: 'present',
 					assoc: ['In association', 'with'],
 					newgrounds: 'newgrounds',
-					gameName: ['Friday Night Funkin\'', 'Crafter', 'Engine']
+					gameName: ['Friday Night Funkin\'', 'YoshiCrafter', 'Engine']
                 }
             };
             ModSupport.modConfig[mod] = conf;

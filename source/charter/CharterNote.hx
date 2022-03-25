@@ -121,7 +121,7 @@ class CharterNote extends FlxSprite
 	}
 	public var noteOffset:FlxPoint = new FlxPoint(0,0);
 	public var enableRating:Bool = true;
-	public var state:CrafterCharter = null;
+	public var state:YoshiCrafterCharter = null;
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?mustHit = true, ?sustainLength:Float = 0)
 	{
 		super();
@@ -137,7 +137,7 @@ class CharterNote extends FlxSprite
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 
-		newCharter = Std.isOfType(FlxG.state, CrafterCharter);
+		newCharter = Std.isOfType(FlxG.state, YoshiCrafterCharter);
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
 		this.strumTime = strumTime;
@@ -242,8 +242,8 @@ class CharterNote extends FlxSprite
 
 		this.sustainLength = sustainLength;
 		if (newCharter) {
-			state = cast(FlxG.state, CrafterCharter);
-			sustainSprite = new FlxSprite(0, 0).makeGraphic(10, CrafterCharter.GRID_SIZE, 0xFFFFFFFF);
+			state = cast(FlxG.state, YoshiCrafterCharter);
+			sustainSprite = new FlxSprite(0, 0).makeGraphic(10, YoshiCrafterCharter.GRID_SIZE, 0xFFFFFFFF);
 			state.add(sustainSprite);
 
 			updateSustain();
@@ -253,7 +253,7 @@ class CharterNote extends FlxSprite
 	public function updateSustain() {
 		if (newCharter) {
 			sustainSprite.visible = sustainLength > Conductor.stepCrochet;
-			sustainSprite.setGraphicSize(10, Std.int(Math.max(1, sustainLength / Conductor.stepCrochet * CrafterCharter.GRID_SIZE)) - CrafterCharter.GRID_SIZE);
+			sustainSprite.setGraphicSize(10, Std.int(Math.max(1, sustainLength / Conductor.stepCrochet * YoshiCrafterCharter.GRID_SIZE)) - YoshiCrafterCharter.GRID_SIZE);
 			sustainSprite.updateHitbox();
 		}
 	}
@@ -264,7 +264,7 @@ class CharterNote extends FlxSprite
 		if (sustainSprite != null) {
 			sustainSprite.x = x + (width / 2) - (sustainSprite.width / 2);
 			// accurate
-			sustainSprite.y = y + (CrafterCharter.GRID_SIZE / 2);
+			sustainSprite.y = y + (YoshiCrafterCharter.GRID_SIZE / 2);
 			sustainSprite.alpha = alpha;
 		}
 		// legacy support

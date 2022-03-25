@@ -79,7 +79,7 @@ function getColors(altAnim) {
     public override function create() {
         super.create();
 
-        var bg = new FlxSprite(0,0).loadGraphic(Paths.image("menuBGCrafter", "preload"));
+        var bg = new FlxSprite(0,0).loadGraphic(Paths.image("menuBGYoshiCrafter", "preload"));
 		bg.scale.x = bg.scale.y = 1.25;
 		bg.antialiasing = true;
 		bg.screenCenter();

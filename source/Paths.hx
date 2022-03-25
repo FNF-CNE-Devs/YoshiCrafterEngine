@@ -48,14 +48,14 @@ class Paths
 		#if sourceCode
 			return './../../../../mods';
 		#elseif android
-			return '${System.userDirectory}/Crafter Engine/mods';
+			return '${System.userDirectory}/YoshiCrafter Engine/mods';
 		#else
 			return './mods';
 		#end
 	}
 	public static function get_savesPath() {
 		#if android
-			return FileSystem.absolutePath('${System.userDirectory}/Crafter Engine/saves/');
+			return FileSystem.absolutePath('${System.userDirectory}/YoshiCrafter Engine/saves/');
 		#else
 			return FileSystem.absolutePath('./saves/');
 		#end
@@ -144,9 +144,9 @@ class Paths
 		return getPath('data/$key.json', TEXT, library);
 	}
 
-	inline static public function stage(key:String, ?library:String)
+	inline static public function stage(key:String, ?library:String, ?ext:String = "json")
 	{
-		return getPath('stages/$key.json', TEXT, library);
+		return getPath('stages/$key.$ext', TEXT, library);
 	}
 
 	static public function sound(key:String, ?library:String)
@@ -213,13 +213,13 @@ class Paths
 	
 	inline static public function getSkinsPath() {
 		#if android
-			return '${System.userDirectory}/Crafter Engine/skins/';
+			return '${System.userDirectory}/YoshiCrafter Engine/skins/';
 		#else
 			return "./skins/";
 		#end
 	}
 	inline static public function getOldSkinsPath() {
-		return System.applicationStorageDirectory + "../../CrafterCrafter29/Crafter Engine/skins/";
+		return System.applicationStorageDirectory + "../../YoshiCrafter29/YoshiCrafter Engine/skins/";
 	}
 
 	inline static public function image(key:String, ?library:String)
@@ -465,7 +465,7 @@ class Paths
 			charName = splittedCharacterID[1];
 			charMod = splittedCharacterID[0];
 		}
-		if(charMod.toLowerCase() == "yoshiengine") charMod = "CrafterEngine";
+		if(charMod.toLowerCase() == "yoshiengine") charMod = "YoshiCrafterEngine";
 		var folder = Paths.modsPath + '/$charMod/characters/$charName';
 		if (charMod == "~") {
 			// You have unlocked secret skin menu !

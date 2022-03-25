@@ -1,5 +1,7 @@
 package dev_toolbox.stage_editor;
 
+import haxe.Serializer;
+import haxe.Unserializer;
 import openfl.display.Application;
 import openfl.display.Window;
 import sys.FileSystem;
@@ -524,7 +526,12 @@ class StageEditor extends MusicBeatState {
             }
         ], true);
 
-        stage = Json.parse(File.getContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/stages/${stageFile}.json'));
+        var jsonMode = false;
+        if (FileSystem.exists('${Paths.modsPath}/${ToolboxHome.selectedMod}/stages/${stageFile}.json')) {
+            stage = Json.parse(File.getContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/stages/${stageFile}.json'));
+        } else {
+            stage = Unserializer.run(File.getContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/stages/${stageFile}.stage'));
+        }
         camGame.zoom = stage.defaultCamZoom == null ? 1 : stage.defaultCamZoom;
 
         if (stage.bfOffset == null || stage.bfOffset.length == 0) stage.bfOffset = [0, 0];
@@ -638,7 +645,9 @@ class StageEditor extends MusicBeatState {
     public var unsaved = false;
     public function save() {
         updateJsonData();
-        File.saveContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/stages/${stageFile}.json', Json.stringify(stage, "\t"));
+        var path = '${Paths.modsPath}/${ToolboxHome.selectedMod}/stages/${stageFile}';
+        if (FileSystem.exists('$path.json')) FileSystem.deleteFile('$path.json');
+        File.saveContent('$path.stage', Serializer.run(stage));
         unsaved = false;
     }
     public function updateStageElements() {

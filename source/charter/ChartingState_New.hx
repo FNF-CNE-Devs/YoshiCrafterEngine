@@ -137,7 +137,7 @@ class ChartingState_New extends MusicBeatState
 
 	override function create()
 	{
-		var bg = new FlxSprite().loadGraphic(Paths.image("menuBGCrafter", "preload"));
+		var bg = new FlxSprite().loadGraphic(Paths.image("menuBGYoshiCrafter", "preload"));
 		bg.scale.x = bg.scale.y = 1.25;
 		bg.antialiasing = true;
 		bg.screenCenter();

@@ -1,7 +1,7 @@
 package;
 
 
-import charter.CrafterCharter;
+import charter.YoshiCrafterCharter;
 import charter.ChartingState_New;
 import flixel.graphics.FlxGraphic;
 import Script.ScriptPack;
@@ -108,7 +108,7 @@ class Rating {
 		if (splittedPath.length < 2) return path;
 		var mod = splittedPath[0];
 		var path = splittedPath[1];
-		if(mod.toLowerCase() == "yoshiengine") mod = "CrafterEngine";
+		if(mod.toLowerCase() == "yoshiengine") mod = "YoshiCrafterEngine";
 		var mPath = Paths.modsPath;
 		var bData = Paths.image(path, 'mods/$mod');
 		if (bData != null) {
@@ -134,13 +134,14 @@ class PlayState extends MusicBeatState
 
 	static public var curStage:String = '';
 	static public var SONG:SwagSong;
+	@:dox(hide)
 	static public var _SONG:SwagSong; // DO NOT TOUCH !!!
 	public var song(get, set):SwagSong;
-	public function set_song(s:SwagSong):SwagSong {
+	private function set_song(s:SwagSong):SwagSong {
 		PlayState.SONG = s;
 		return s;
 	}
-	public function get_song():SwagSong {
+	private function get_song():SwagSong {
 		return PlayState.SONG;
 	}
 	static public var isStoryMode:Bool = false;
@@ -148,8 +149,8 @@ class PlayState extends MusicBeatState
 	static public var storyPlaylist:Array<String> = [];
 	static public var storyDifficulty:String = "Normal";
 	static public var difficulty(get, set):String;
-	static public function get_difficulty() {return storyDifficulty;}
-	static public function set_difficulty(s:String) {return storyDifficulty = s;}
+	static private function get_difficulty() {return storyDifficulty;}
+	static private function set_difficulty(s:String) {return storyDifficulty = s;}
 	public static var actualModWeek:FNFWeek;
 	public static var log:Array<String> = [];
 	public static function trace(thing:String) {
@@ -175,7 +176,7 @@ class PlayState extends MusicBeatState
 
 	public var songPercentPos(get, null):Float;
 
-	public function get_songPercentPos():Float {
+	private function get_songPercentPos():Float {
 		if (FlxG.sound.music != null) {
 			return Conductor.songPosition / FlxG.sound.music.length;
 		} else {
@@ -314,8 +315,8 @@ class PlayState extends MusicBeatState
 	public var songScore:Int = 0;
 	public var scoreTxt:FlxText;
 	public var scoreText(get, set):FlxText;
-	public function get_scoreText() {return scoreTxt;}
-	public function set_scoreText(t:FlxText) {return scoreTxt = t;}
+	private function get_scoreText() {return scoreTxt;}
+	private function set_scoreText(t:FlxText) {return scoreTxt = t;}
 	public var scoreTxtTween:FlxTween;
 	public var watermark:FlxText;
 	public var scoreWarning:FlxText;
@@ -355,10 +356,10 @@ class PlayState extends MusicBeatState
 	}
 
 	public var isWidescreen(get, set):Bool;
-	public function get_isWidescreen():Bool {
+	private function get_isWidescreen():Bool {
 		return Std.isOfType(FlxG.scaleMode, WideScreenScale);
 	}
-	public function set_isWidescreen(enable:Bool):Bool {
+	private function set_isWidescreen(enable:Bool):Bool {
 		if (enable) {
 			FlxG.scaleMode = new WideScreenScale();
 			camHUD.x = (FlxG.width / 2) - 640;
@@ -433,11 +434,11 @@ class PlayState extends MusicBeatState
 	public var blockPlayerInput:Bool = false;
 
 	public var guiOffset(get, null):FlxPoint;
-	public function get_guiOffset():FlxPoint {
+	private function get_guiOffset():FlxPoint {
 		return new FlxPoint((1280 - (1280 / engineSettings.noteScale)), (720 - (720 / engineSettings.noteScale)));
 	}
 	public var guiSize(get, null):FlxPoint;
-	public function get_guiSize():FlxPoint {
+	private function get_guiSize():FlxPoint {
 		return new FlxPoint(1280 / engineSettings.noteScale, 720 / engineSettings.noteScale);
 	}
 
@@ -1045,7 +1046,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.visible = false;
 
 		if (engineSettings.watermark) {
-			watermark = new FlxText(0, 0, guiSize.x, '${ModSupport.getModName(songMod)}\n${CoolUtil.prettySong(SONG.song)}\nCrafter Engine v${Main.engineVer.join(".")}');
+			watermark = new FlxText(0, 0, guiSize.x, '${ModSupport.getModName(songMod)}\n${CoolUtil.prettySong(SONG.song)}\nYoshiCrafter Engine v${Main.engineVer.join(".")}');
 			watermark.setFormat(Paths.font("vcr.ttf"), Std.int(16), FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			watermark.antialiasing = true;
 			watermark.cameras = [camHUD];
@@ -2065,8 +2066,8 @@ class PlayState extends MusicBeatState
 		{
 			if (FlxG.sound.music != null) FlxG.sound.music.pause();
 			
-			if (Settings.engineSettings.data.crafterEngineCharter)
-				FlxG.switchState(new CrafterCharter());
+			if (Settings.engineSettings.data.yoshiCrafterEngineCharter)
+				FlxG.switchState(new YoshiCrafterCharter());
 			else
 				FlxG.switchState(new ChartingState_New());
 

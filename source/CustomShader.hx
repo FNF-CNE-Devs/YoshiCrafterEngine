@@ -37,7 +37,7 @@ class CustomShader extends FlxFixedShader {
             } else if (splittedFragPath.length == 0) {
                 splittedFragPath = ["Friday Night Funkin'", "blammed"];
             }
-            if(splittedFragPath[0].toLowerCase() == "yoshiengine") splittedFragPath[0] = "CrafterEngine";
+            if(splittedFragPath[0].toLowerCase() == "yoshiengine") splittedFragPath[0] = "YoshiCrafterEngine";
             var fragMod = splittedFragPath[0];
             var fragName = splittedFragPath[1];
             fragPath = '$mPath/$fragMod/shaders/$fragName';
@@ -52,7 +52,7 @@ class CustomShader extends FlxFixedShader {
             } else if (splittedVertPath.length == 0) {
                 splittedVertPath = ["Friday Night Funkin'", "blammed"];
             }
-            if(splittedVertPath[0].toLowerCase() == "yoshiengine") splittedVertPath[0] = "CrafterEngine";
+            if(splittedVertPath[0].toLowerCase() == "yoshiengine") splittedVertPath[0] = "YoshiCrafterEngine";
             var vertMod = splittedVertPath[0];
             var vertName = splittedVertPath[1];
             vertPath = '$mPath/$vertMod/shaders/$vertName';

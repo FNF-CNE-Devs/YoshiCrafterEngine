@@ -24,7 +24,7 @@ import sys.io.FileOutput;
 using StringTools;
 /**
  * ...
- * @author CrafterCrafter29
+ * @author YoshiCrafter29
  */
 class UpdateState extends MusicBeatState
 {
@@ -36,7 +36,7 @@ class UpdateState extends MusicBeatState
 	public var totalFiles:Int = 0;
 
 	var error:Bool = false;
-	public function new(baseURL:String = "http://raw.githubusercontent.com/CrafterCrafter29/YC29Engine-Latest/main/", fileList:Array<String>) 
+	public function new(baseURL:String = "http://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/", fileList:Array<String>) 
 	{
 		super();
 		this.baseURL = baseURL;
@@ -93,7 +93,7 @@ class UpdateState extends MusicBeatState
 				// apply update
 
 				// copy file to prevent overriding issues
-				File.copy('CrafterEngine.exe', 'temp.exe');
+				File.copy('YoshiCrafterEngine.exe', 'temp.exe');
 
 				// launch that file
 				new Process('start /B temp.exe update', null);
