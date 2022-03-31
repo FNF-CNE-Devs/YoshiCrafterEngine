@@ -1,5 +1,6 @@
 package dev_toolbox.stage_editor;
 
+import flixel.tweens.FlxEase;
 import haxe.Serializer;
 import haxe.Unserializer;
 import openfl.display.Application;
@@ -18,7 +19,7 @@ import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import sys.io.File;
 import haxe.Json;
-import Stage.StageJSON;
+import stage.*;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -32,6 +33,7 @@ using StringTools;
 
 class StageEditor extends MusicBeatState {
     public static var fromFreeplay = false;
+    public static var easeFuncs:Map<String, Float->Float>;
     public var ui:FlxSpriteGroup;
     // var spawnedElements:Array<SpawnedElements>;
     public var camHUD:FlxCamera;
@@ -60,7 +62,7 @@ class StageEditor extends MusicBeatState {
         objName.text = selectedObj != null ? selectedObj.name : "(No selected sprite)";
         if (selectedObj == null) {
              // global shit
-            for (e in [posLabel, sprPosX, sprPosY, scaleLabel, scaleNum, antialiasingCheckbox, scrFacX, scrFacY, scrollFactorLabel]) {
+            for (e in [posLabel, sprPosX, sprPosY, scaleLabel, scaleNum, antialiasingCheckbox, scrFacX, scrFacY, scrollFactorLabel, shaderLabel, shaderNameInput]) {
                 e.visible = false;
             }
             // sparrow shit
@@ -78,7 +80,7 @@ class StageEditor extends MusicBeatState {
             //     antialiasingCheckbox.checked = selectedObj.antialiasing;
             // }
         } else {
-            for (e in [posLabel, sprPosX, sprPosY, scaleLabel, scaleNum, antialiasingCheckbox, scrFacX, scrFacY, scrollFactorLabel]) {
+            for (e in [posLabel, sprPosX, sprPosY, scaleLabel, scaleNum, antialiasingCheckbox, scrFacX, scrFacY, scrollFactorLabel, shaderLabel, shaderNameInput]) {
                 e.visible = true;
             }
             sprPosX.value = selectedObj.x;
@@ -87,6 +89,7 @@ class StageEditor extends MusicBeatState {
             scrFacY.value = selectedObj.scrollFactor.y;
             scaleNum.value = (selectedObj.scale.x + selectedObj.scale.y) / 2;
             antialiasingCheckbox.checked = selectedObj.antialiasing;
+            shaderNameInput.text = selectedObj.shaderName;
 
             if (selectedObj.type.toLowerCase() == "sparrowatlas" && selectedObj.anim != null) {
                 for (e in [sparrowAnimationTitle, animationNameTitle, animationNameTextBox, animationFPSNumeric, fpsLabel, animationLabel, animationTypeLabel, applySparrowButton]) {
@@ -153,6 +156,8 @@ class StageEditor extends MusicBeatState {
     public var animationLabel:FlxUIDropDownMenu;
     public var animationFPSNumeric:FlxUINumericStepper;
     public var fpsLabel:FlxUIText;
+    public var shaderLabel:FlxUIText;
+    public var shaderNameInput:FlxUIInputText;
     public var animationTypeLabel:FlxUIText;
     public var applySparrowButton:FlxUIButton;
 
@@ -425,7 +430,13 @@ class StageEditor extends MusicBeatState {
             if (selectedObj != null) selectedObj.antialiasing = antialiasingCheckbox.checked;
         });
 
-        sparrowAnimationTitle = new FlxUIText(10, antialiasingCheckbox.y + antialiasingCheckbox.height + 10, 280, "Sparrow Animation Settings");
+        shaderLabel = new FlxUIText(10, antialiasingCheckbox.y + antialiasingCheckbox.height + 10, 280, "Custom Shader name (without the .frag and .vert ext)");
+        shaderNameInput = new FlxUIInputText(10, shaderLabel.y + shaderLabel.height, 280, '');
+
+        /*
+         *  /!\ SPARROW SHIT
+         */
+        sparrowAnimationTitle = new FlxUIText(10, shaderNameInput.y + shaderNameInput.height + 10, 280, "Sparrow Animation Settings");
         sparrowAnimationTitle.alignment = CENTER;
         animationNameTitle = new FlxUIText(10, sparrowAnimationTitle.y + sparrowAnimationTitle.height + 10, 280, "Animation Name");
 
@@ -469,6 +480,8 @@ class StageEditor extends MusicBeatState {
         selectedObjTab.add(scaleLabel);
         selectedObjTab.add(scaleNum);
         selectedObjTab.add(antialiasingCheckbox);
+        selectedObjTab.add(shaderLabel);
+        selectedObjTab.add(shaderNameInput);
         selectedObjTab.add(sparrowAnimationTitle);
         selectedObjTab.add(animationNameTitle);
         selectedObjTab.add(animationNameTextBox);
@@ -482,9 +495,18 @@ class StageEditor extends MusicBeatState {
         selectedObj = null;
     }
     public override function create() {
+        easeFuncs = [];
+        for(s in Type.getClassFields(FlxEase)) {
+            var value = Reflect.getProperty(FlxEase, s);
+            // if (Std.isOfType(value, Float->Float)) {
+                easeFuncs[s] = value;
+            // }
+        }
+        
+        Conductor.songPosition = Conductor.songPositionOld = -1;
         if (FlxG.sound.music == null) {
             FlxG.sound.playMusic(Paths.music("characterEditor", "preload"));
-            // FlxG.sound.music.volume = 0;
+            Conductor.changeBPM(125);
         }
         #if desktop
             Discord.DiscordClient.changePresence("In the Stage Editor...", null, "Stage Editor Icon");
@@ -745,7 +767,9 @@ class StageEditor extends MusicBeatState {
                     pos: [sprite.x, sprite.y],
                     name: sprite.name,
                     antialiasing: sprite.antialiasing,
-                    animation: sprite.anim
+                    animation: sprite.anim,
+                    shader: sprite.shaderName,
+                    beatTween: sprite.onBeatOffset
                 });
             }
         }
@@ -758,6 +782,11 @@ class StageEditor extends MusicBeatState {
     }
 
     public override function update(elapsed:Float) {
+        if (FlxG.sound.music.time != Conductor.songPositionOld) {
+            Conductor.songPosition = Conductor.songPositionOld = FlxG.sound.music.time;
+        } else {
+            Conductor.songPosition += elapsed * 1000;
+        }
         if (tabs.selected_tab_id != oldTab) {
             // if (oldTab == )
             oldTab = tabs.selected_tab_id;
@@ -786,6 +815,13 @@ class StageEditor extends MusicBeatState {
         }
 
         if (selectedObj != null) {
+            if (selectedObj.shaderName != shaderNameInput.text) {
+                selectedObj.shaderName = shaderNameInput.text;
+
+                var splitThing = selectedObj.shaderName.split(":");
+                if (splitThing.length < 2) splitThing.insert(0, ToolboxHome.selectedMod);
+                selectedObj.shader = new CustomShader(splitThing.join(":"), null, null);
+            } 
             if (FlxG.keys.pressed.SHIFT) {
                 if (FlxG.keys.justPressed.W)
                     selectedObj.y -= 10;
@@ -833,6 +869,20 @@ class StageEditor extends MusicBeatState {
                 }
             }
             if (!f) camGame.scroll.x = camGame.scroll.y = 0;
+        }
+
+        for(s in members) {
+            if (Std.isOfType(s, FlxStageSprite)) {
+                var sprite = cast(s, FlxStageSprite);
+                if (Conductor.crochet == 0 || sprite.onBeatOffset == null) {
+                    sprite.offset.set(0, 0);
+                } else {
+                    var easeFunc = easeFuncs[sprite.onBeatOffset.ease];
+                    if (easeFunc == null) easeFunc = function(v) {return v;};
+                    var easeVar = easeFunc((Conductor.songPosition / Conductor.crochet) % 1);
+                    sprite.offset.set(sprite.onBeatOffset.x * easeVar, sprite.onBeatOffset.y * easeVar);
+                }
+            }
         }
         try {
             super.update(elapsed);
@@ -1013,6 +1063,22 @@ class StageEditor extends MusicBeatState {
                 // Updates the thing
                 updateStageElements();
                 break;
+            }
+        }
+    }
+
+    public override function beatHit() {
+        super.beatHit();
+        for(s in members) {
+            if (Std.isOfType(s, FlxStageSprite)) {
+                var sprite = cast(s, FlxStageSprite);
+                if (sprite.animType != null) {
+                    if (sprite.animType.startsWith('OnBeat')) {
+                        if (sprite.animation.curAnim != null) {
+                            sprite.animation.play(sprite.animation.curAnim.name, sprite.animType == 'OnBeatForce');
+                        }
+                    }
+                }
             }
         }
     }

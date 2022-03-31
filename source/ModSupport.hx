@@ -46,6 +46,7 @@ import flixel.math.FlxMath;
 import flixel.tweens.FlxTween;
 import flixel.input.keyboard.FlxKey;
 import mod_support_stuff.*;
+import stage.Stage;
 
 using StringTools;
 
