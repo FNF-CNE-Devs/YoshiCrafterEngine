@@ -134,6 +134,9 @@ class ChartingState_New extends MusicBeatState
 
 	];
 	public static var zoom:Float = 1;
+	
+	var zooms:Array<Float> = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 4];
+	var zoomShit = 3;
 
 	override function create()
 	{
@@ -144,7 +147,8 @@ class ChartingState_New extends MusicBeatState
 		bg.scrollFactor.set();
 		add(bg);
 
-		
+		var zoomTxt:FlxText = new FlxText(16, 16, 0, "Beat Snap: 1/" + zooms[zoomShit]);\
+		add(zoomTxt);
 
 		curSection = lastSection;
 		if (FlxG.sound.music == null)
@@ -956,13 +960,14 @@ class ChartingState_New extends MusicBeatState
 				}
 			}
 		} else {
-			var zoomShit = FlxG.mouse.wheel;
 			if (FlxControls.justPressed.PAGEUP) zoomShit++;
 			if (FlxControls.justPressed.PAGEDOWN) zoomShit--;
+			
+			
 	
 			if (FlxControls.pressed.CONTROL && zoomShit != 0) {
-				zoom += zoomShit;
-				if (zoom < 1) zoom = 1;
+				zoom = zooms[zoomShit];
+				if (zoomShit < 1) zoomShit = 1;
 				updateGrid(true);
 			}
 			if (FlxG.mouse.x > gridBG.x
