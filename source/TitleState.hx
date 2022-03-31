@@ -74,8 +74,14 @@ class TitleState extends MusicBeatState
 	override public function create():Void
 	{
 		reloadModsState = true;
-		trace(FlxControls.pressed);
-
+		//trace(FlxControls.pressed);
+		
+		Application.current.onExit.add (function (exitCode) {
+			Settings.engineSettings.data.volume = FlxG.sound.volume;
+			Settings.engineSettings.flush();
+		});
+		FlxG.sound.volume = Settings.engineSettings.data.volume;
+		
 		if (!skipOldSkinCheck) {
 			if (FileSystem.exists(Paths.getOldSkinsPath())) {
 				FlxG.switchState(new OutdatedSkinsScreen(new TransitionData(TransitionType.NONE), new TransitionData(TransitionType.NONE)));

@@ -1,4 +1,5 @@
 
+import flixel.util.FlxColor;
 import openfl.display.StageQuality;
 import flixel.text.FlxText;
 import flixel.util.FlxSave;
@@ -175,10 +176,16 @@ import flixel.FlxG;
 	@:keep public static var fps_showFPS:Bool = true;
 	@:keep public static var fps_showMemory:Bool = true;
 	@:keep public static var fps_showMemoryPeak:Bool = true;
+	@:keep public static var volume:Float = 1;
+	@:keep public static var lastInstalledMods:Array<String> = ["Friday Night Funkin'", "YoshiCrafterEngine"];
+	
 	@:keep public static var charter_showStrums:Bool = true;
 	@:keep public static var charter_hitsoundsEnabled:Bool = false;
 	@:keep public static var charter_topView:Bool = false;
-	@:keep public static var lastInstalledMods:Array<String> = ["Friday Night Funkin'", "YoshiCrafterEngine"];
+	@:keep public static var charter_showInstWaveform:Bool = false;
+	@:keep public static var charter_showVoicesWaveform:Bool = false;
+	@:keep public static var charter_instWaveformColor:FlxColor = 0xFF1573FF;
+	@:keep public static var charter_voicesWaveformColor:FlxColor = 0xFF93FF4A;
 	
 	// @:keep public static var moveCameraInStageEditor:Bool = true;
 

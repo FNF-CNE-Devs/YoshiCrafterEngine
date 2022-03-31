@@ -42,7 +42,7 @@ class WaveformSprite extends FlxSprite {
             if ((data = thing) > peak) peak = data;
         }
         trace(buffer.bitsPerSample);
-        makeGraphic(w, h, 0x00000000); // transparent
+        makeGraphic(w, h, 0x00000000, true); // transparent
     }
 
     public function generate(startPos:Int, endPos:Int) {

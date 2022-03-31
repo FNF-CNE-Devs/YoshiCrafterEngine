@@ -32,8 +32,12 @@ class YoshiCrafterCharter extends MusicBeatState {
     var section(get, null):SwagSection;
 
     function get_section() {
-        return _song.notes[Math.floor(Conductor.songPosition / (Conductor.crochet * 4))];
+        return getSectionFor(Conductor.songPosition);
     };
+	
+	function getSectionFor(t:Float) {
+		return _song.notes[Math.floor(t / (Conductor.crochet * 4))];
+	}
 
     var followThing:FlxSprite;
 
@@ -56,6 +60,8 @@ class YoshiCrafterCharter extends MusicBeatState {
     var hitsoundsEnabledCheckbox:FlxUICheckBox = null;
     var hitsoundsBFCheckbox:FlxUICheckBox = null;
     var hitsoundsDadCheckbox:FlxUICheckBox = null;
+    var showInstWaveformCheckbox:FlxUICheckBox = null;
+    var showVoicesWaveformCheckbox:FlxUICheckBox = null;
     var noteInCreation:CharterNote = null;
 
     var instBuffer:AudioBuffer;
@@ -78,6 +84,7 @@ class YoshiCrafterCharter extends MusicBeatState {
     var UI_Menu:FlxUITabMenu;
     
     var instWaveform:WaveformSprite;
+    var voicesWaveform:WaveformSprite;
     public function new() {
         super();
         if (PlayState._SONG == null) {
@@ -182,54 +189,15 @@ class YoshiCrafterCharter extends MusicBeatState {
 		statusText.setBorderStyle(FlxTextBorderStyle.OUTLINE, 0xFF000000, 1, 1);
         add(statusText);
 
-        topViewCheckbox = new FlxUICheckBox(10, 0, null, null, "Vertically center charter", 250, null, function() {
-            topView = Settings.engineSettings.data.charter_topView = !topViewCheckbox.checked;
-        });
-        topViewCheckbox.y = FlxG.height - topViewCheckbox.height - 10;
-        topViewCheckbox.scrollFactor.set(0, 0);
-        topViewCheckbox.checked = !topView;
-        add(topViewCheckbox);
-
-        showStrumsCheckbox = new FlxUICheckBox(10, 0, null, null, "Show strums", 250, null, function() {
-            for(s in strums) s.visible = Settings.engineSettings.data.charter_showStrums = showStrumsCheckbox.checked;
-        });
-        showStrumsCheckbox.y = FlxG.height - topViewCheckbox.height - 20 - showStrumsCheckbox.height;
-        showStrumsCheckbox.scrollFactor.set(0, 0);
-        showStrumsCheckbox.checked = showStrums;
-        add(showStrumsCheckbox);
-
-        hitsoundsEnabledCheckbox = new FlxUICheckBox(10, 0, null, null, "Enable hitsounds", 250, null, function() {
-            hitsoundsBFEnabled = hitsoundsDadEnabled = Settings.engineSettings.data.charter_hitsoundsEnabledBF = Settings.engineSettings.data.charter_hitsoundsEnabledGF = hitsoundsEnabledCheckbox.checked;
-            hitsoundsBFCheckbox.checked = hitsoundsDadCheckbox.checked = hitsoundsEnabledCheckbox.checked;
-        });
-        hitsoundsEnabledCheckbox.y = FlxG.height - topViewCheckbox.height - 40 - showStrumsCheckbox.height - (hitsoundsEnabledCheckbox.height * 2);
-        hitsoundsEnabledCheckbox.scrollFactor.set(0, 0);
-        hitsoundsEnabledCheckbox.checked = hitsoundsBFEnabled && hitsoundsDadEnabled;
-        add(hitsoundsEnabledCheckbox);
-
-        hitsoundsBFCheckbox = new FlxUICheckBox(10 + (hitsoundsEnabledCheckbox.width / 2), 0, null, null, "Player", 50, null, function() {
-            hitsoundsBFEnabled = hitsoundsBFCheckbox.checked;
-            hitsoundsEnabledCheckbox.checked = hitsoundsBFEnabled && hitsoundsDadEnabled;
-        });
-        hitsoundsBFCheckbox.y = FlxG.height - topViewCheckbox.height - 30 - showStrumsCheckbox.height;
-        hitsoundsBFCheckbox.scrollFactor.set(0, 0);
-        hitsoundsBFCheckbox.checked = hitsoundsBFEnabled;
-        add(hitsoundsBFCheckbox);
-
-        hitsoundsDadCheckbox = new FlxUICheckBox(10, 0, null, null, "Opponent", 50, null, function() {
-            hitsoundsDadEnabled = hitsoundsDadCheckbox.checked;
-            hitsoundsEnabledCheckbox.checked = hitsoundsBFEnabled && hitsoundsDadEnabled;
-        });
-        hitsoundsDadCheckbox.y = FlxG.height - topViewCheckbox.height - 30 - showStrumsCheckbox.height;
-        hitsoundsDadCheckbox.scrollFactor.set(0, 0);
-        hitsoundsDadCheckbox.checked = hitsoundsDadEnabled;
-        add(hitsoundsDadCheckbox);
-
 
         UI_Menu = new FlxUITabMenu(null, [
             {
                 name: 'song',
                 label: "Song"
+            },
+            {
+                name: 'settings',
+                label: "Settings"
             },
             {
                 name: 'note',
@@ -243,7 +211,102 @@ class YoshiCrafterCharter extends MusicBeatState {
         add(UI_Menu);
 
         addSongTab();
+		addCharterSettingsTab();
     }
+	
+	public function addCharterSettingsTab() {
+		var settingsTab = new FlxUI(null, UI_Menu);
+		settingsTab.name = "settings";
+		
+		
+
+		var y:Float = 10;
+        topViewCheckbox = new FlxUICheckBox(10, y, null, null, "Vertically center charter", 250, null, function() {
+            topView = Settings.engineSettings.data.charter_topView = !topViewCheckbox.checked;
+        });
+        topViewCheckbox.scrollFactor.set(0, 0);
+        topViewCheckbox.checked = !topView;
+		y += topViewCheckbox.height + 10;
+        settingsTab.add(topViewCheckbox);
+
+        showStrumsCheckbox = new FlxUICheckBox(10, y, null, null, "Show strums", 250, null, function() {
+            for(s in strums) s.visible = showStrums = Settings.engineSettings.data.charter_showStrums = showStrumsCheckbox.checked;
+        });
+        showStrumsCheckbox.scrollFactor.set(0, 0);
+        showStrumsCheckbox.checked = showStrums;
+		y += showStrumsCheckbox.height + 10;
+        settingsTab.add(showStrumsCheckbox);
+
+        hitsoundsEnabledCheckbox = new FlxUICheckBox(10, y, null, null, "Enable hitsounds", 250, null, function() {
+            hitsoundsBFEnabled = hitsoundsDadEnabled = Settings.engineSettings.data.charter_hitsoundsEnabledBF = Settings.engineSettings.data.charter_hitsoundsEnabledGF = hitsoundsEnabledCheckbox.checked;
+            hitsoundsBFCheckbox.checked = hitsoundsDadCheckbox.checked = hitsoundsEnabledCheckbox.checked;
+        });
+        hitsoundsEnabledCheckbox.scrollFactor.set(0, 0);
+        hitsoundsEnabledCheckbox.checked = hitsoundsBFEnabled && hitsoundsDadEnabled;
+		y += hitsoundsEnabledCheckbox.height;
+        settingsTab.add(hitsoundsEnabledCheckbox);
+
+        hitsoundsBFCheckbox = new FlxUICheckBox(10 + (hitsoundsEnabledCheckbox.width / 2), y, null, null, "For the Player", 105, null, function() {
+            hitsoundsBFEnabled = hitsoundsBFCheckbox.checked;
+            hitsoundsEnabledCheckbox.checked = hitsoundsBFEnabled && hitsoundsDadEnabled;
+        });
+        hitsoundsBFCheckbox.scrollFactor.set(0, 0);
+        hitsoundsBFCheckbox.checked = hitsoundsBFEnabled;
+        settingsTab.add(hitsoundsBFCheckbox);
+
+        hitsoundsDadCheckbox = new FlxUICheckBox(10, y, null, null, "For the Opponent", 105, null, function() {
+            hitsoundsDadEnabled = hitsoundsDadCheckbox.checked;
+            hitsoundsEnabledCheckbox.checked = hitsoundsBFEnabled && hitsoundsDadEnabled;
+        });
+        hitsoundsDadCheckbox.scrollFactor.set(0, 0);
+        hitsoundsDadCheckbox.checked = hitsoundsDadEnabled;
+        settingsTab.add(hitsoundsDadCheckbox);
+		y += hitsoundsDadCheckbox.height + 10;
+
+        showInstWaveformCheckbox = new FlxUICheckBox(10, y, null, null, "Show Instrumental Waveform", 250, null, function() {
+			Settings.engineSettings.data.charter_showInstWaveform = showInstWaveformCheckbox.checked;
+            instWaveform.visible = Settings.engineSettings.data.charter_showInstWaveform;
+        });
+        showInstWaveformCheckbox.scrollFactor.set(0, 0);
+        showInstWaveformCheckbox.checked = Settings.engineSettings.data.charter_showInstWaveform;
+        settingsTab.add(showInstWaveformCheckbox);
+		y += showInstWaveformCheckbox.height + 10;
+
+        showVoicesWaveformCheckbox = new FlxUICheckBox(10, y, null, null, "Show Voices Waveform", 250, null, function() {
+			Settings.engineSettings.data.charter_showVoicesWaveform = showVoicesWaveformCheckbox.checked;
+            voicesWaveform.visible = Settings.engineSettings.data.charter_showVoicesWaveform;
+        });
+        showVoicesWaveformCheckbox.scrollFactor.set(0, 0);
+        showVoicesWaveformCheckbox.checked = Settings.engineSettings.data.charter_showVoicesWaveform;
+        settingsTab.add(showVoicesWaveformCheckbox);
+		y += showVoicesWaveformCheckbox.height + 10;
+		
+		var chooseInstWaveColorButton:FlxUIButton = new FlxUIButton(10, y, "Choose Inst Waveform color", function() {
+			persistentUpdate = false;
+			persistentDraw = true;
+			openSubState(new dev_toolbox.ColorPicker(instWaveform.color, function(newColor) {
+				instWaveform.color = Settings.engineSettings.data.charter_instWaveformColor = newColor;
+			}));
+		});
+		chooseInstWaveColorButton.resize(145, chooseInstWaveColorButton.height);
+        chooseInstWaveColorButton.scrollFactor.set(0, 0);
+        settingsTab.add(chooseInstWaveColorButton);
+		
+		var chooseVoicesWaveColorButton:FlxUIButton = new FlxUIButton(155, y, "Choose Voices Waveform color", function() {
+			persistentUpdate = false;
+			persistentDraw = true;
+			openSubState(new dev_toolbox.ColorPicker(voicesWaveform.color, function(newColor) {
+				voicesWaveform.color = Settings.engineSettings.data.charter_voicesWaveformColor = newColor;
+			}));
+		});
+		chooseVoicesWaveColorButton.resize(145, chooseVoicesWaveColorButton.height);
+        chooseVoicesWaveColorButton.scrollFactor.set(0, 0);
+        settingsTab.add(chooseVoicesWaveColorButton);
+		
+		y += chooseVoicesWaveColorButton.height;
+		
+		UI_Menu.addGroup(settingsTab);
+	}
 
     public function addSongTab() {
         var songTab = new FlxUI(null, UI_Menu);
@@ -333,12 +396,23 @@ class YoshiCrafterCharter extends MusicBeatState {
 
         instWaveform = new WaveformSprite((grid.width - GRID_SIZE) / 2, 0, instBuffer, GRID_SIZE * 4, GRID_SIZE * 32);
         instWaveform.scrollFactor.set(1, 1);
-        instWaveform.color = 0xFF1573FF;
+        instWaveform.color = Settings.engineSettings.data.charter_instWaveformColor;
         instWaveform.origin.set(0, 0);
         instWaveform.alpha = 0.85;
         instWaveform.x -= instWaveform.width / 2;
         add(instWaveform);
-        instWaveform.generateFlixel(-Conductor.crochet * 4, Conductor.crochet * 4);
+        instWaveform.generateFlixel( -Conductor.crochet * 4, Conductor.crochet * 4);
+		instWaveform.visible = Settings.engineSettings.data.charter_showInstWaveform;
+
+        voicesWaveform = new WaveformSprite((grid.width - GRID_SIZE) / 2, 0, voicesBuffer, GRID_SIZE * 4, GRID_SIZE * 32);
+        voicesWaveform.scrollFactor.set(1, 1);
+        voicesWaveform.color = Settings.engineSettings.data.charter_voicesWaveformColor;
+        voicesWaveform.origin.set(0, 0);
+        voicesWaveform.alpha = 0.85;
+        voicesWaveform.x -= voicesWaveform.width / 2;
+        add(voicesWaveform);
+        voicesWaveform.generateFlixel(-Conductor.crochet * 4, Conductor.crochet * 4);
+		voicesWaveform.visible = Settings.engineSettings.data.charter_showVoicesWaveform;
 
         // add strums
         for (e in strums) {
@@ -390,7 +464,10 @@ class YoshiCrafterCharter extends MusicBeatState {
                 Conductor.songPosition = 0;
             }
         }
-        instWaveform.generateFlixel(Conductor.songPosition - (Conductor.crochet * 4), Conductor.songPosition + (Conductor.crochet * 4)); // NOT OPTIMIZED, JUST FOR TESTING;
+		
+        if (instWaveform.visible) instWaveform.generateFlixel(Conductor.songPosition - (Conductor.crochet * 4), Conductor.songPosition + (Conductor.crochet * 4)); // NOT OPTIMIZED, JUST FOR TESTING;
+        if (voicesWaveform.visible) voicesWaveform.generateFlixel(Conductor.songPosition - (Conductor.crochet * 4), Conductor.songPosition + (Conductor.crochet * 4)); // NOT OPTIMIZED, JUST FOR TESTING;
+		
         FlxG.camera.targetOffset.y = FlxMath.lerp(FlxG.camera.targetOffset.y, topView ? ((FlxG.height * 0.25) + GRID_SIZE) : GRID_SIZE, 0.45 * 60 * elapsed);
         if (FlxG.mouse.justPressed) {
             
@@ -406,7 +483,13 @@ class YoshiCrafterCharter extends MusicBeatState {
                 if (!FlxG.keys.pressed.SHIFT) {
                     strumT = Math.floor(strumT);
                 }
-                noteInCreation = addNote(strumT * Conductor.stepCrochet, Math.floor(FlxG.mouse.x / GRID_SIZE));
+				var section = getSectionFor(strumT * Conductor.stepCrochet);
+				var mustHit = section != null ? section.mustHitSection : true;
+				var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
+				if (mustHit) {
+					noteData = (Math.floor(noteData / (_song.keyNumber * 2)) * _song.keyNumber * 2) + ((noteData + _song.keyNumber) % (_song.keyNumber * 2));
+				}
+                noteInCreation = addNote(strumT * Conductor.stepCrochet, noteData, mustHit);
             }
         }
 
@@ -516,7 +599,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         // grid.y = -((Conductor.songPosition % (Conductor.crochet * 4)) / (Conductor.crochet * 4) * (GRID_SIZE * 16));
         grid.y = Math.max(0, Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) * GRID_SIZE * 16) + ((Conductor.songPosition < Conductor.crochet * 4) ? 0 : -GRID_SIZE * 16);
         followThing.y = Conductor.songPosition / (Conductor.crochet * 4) * (GRID_SIZE * 16);
-        instWaveform.y = followThing.y - (GRID_SIZE * 16);
+        instWaveform.y = voicesWaveform.y = followThing.y - (GRID_SIZE * 16);
         for(s in strums) {
             s.y = followThing.y;
         }

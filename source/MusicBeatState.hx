@@ -34,6 +34,7 @@ class MusicBeatState extends FlxUIState
 
 	public static var defaultIcon:Image = null;
 
+	public var lastElapsed:Float = 0;
 	public override function onFocus() {
 		if (reloadModsState) {
 			super.onFocus();
@@ -97,6 +98,7 @@ class MusicBeatState extends FlxUIState
 
 	override function update(elapsed:Float)
 	{
+		lastElapsed = elapsed;
 		//everyStep();
 		var oldStep:Int = curStep;
 

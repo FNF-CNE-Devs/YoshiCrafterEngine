@@ -14,6 +14,7 @@ class HealthIcon extends FlxSprite
 	public var sprTracker:FlxSprite;
 	public var isPlayer:Bool;
 	public var frameIndexes(default, set):Array<Array<Int>> = [[20, 0], [0, 1]];
+	public var curCharacter:String = "";
 	private function set_frameIndexes(f:Array<Array<Int>>):Array<Array<Int>> {
 		frameIndexes = f;
 		animation.curAnim.reset();
@@ -88,5 +89,6 @@ class HealthIcon extends FlxSprite
 			// winning icon pog
 			frameIndexes = [[80, 2], [20, 0], [0, 1]];
 		}
+		this.curCharacter = character.join(":");
 	}
 }

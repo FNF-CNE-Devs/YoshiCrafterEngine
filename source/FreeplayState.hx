@@ -91,7 +91,7 @@ class FreeplayState extends MusicBeatState
 		
 		songs = [];
 		var fnfSongs = [];
-		for(mod in FileSystem.readDirectory('$mPath/')) {
+		for(mod=>modConf in ModSupport.modConfig) {
 			var path = Paths.json('freeplaySonglist', 'mods/$mod');
 			if (Assets.exists(path)) {
 				var jsonContent:FreeplaySongList = null;
