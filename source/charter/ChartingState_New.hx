@@ -147,7 +147,7 @@ class ChartingState_New extends MusicBeatState
 		bg.scrollFactor.set();
 		add(bg);
 
-		var zoomTxt:FlxText = new FlxText(16, 16, 0, "Beat Snap: 1/" + zooms[zoomShit]);\
+		var zoomTxt:FlxText = new FlxText(16, 16, 0, "Beat Snap: 1/" + (zooms[zoomShit] * 4));
 		add(zoomTxt);
 
 		curSection = lastSection;
