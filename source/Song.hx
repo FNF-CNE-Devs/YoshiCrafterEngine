@@ -23,6 +23,7 @@ typedef SwagSong =
 	var validScore:Bool;
 	var keyNumber:Null<Int>;
 	var noteTypes:Array<String>;
+	@:optional var scripts:Array<String>;
 }
 
 class Song

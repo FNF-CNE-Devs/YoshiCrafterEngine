@@ -475,7 +475,7 @@ class ModSupport {
         var songName = PlayState._SONG.song.toLowerCase();
         var songCodePath = Paths.modsPath + '/$currentMod/song_conf';
 
-        var songConf = SongConf.parse(PlayState.songMod, PlayState.SONG.song);
+        var songConf = SongConf.parse(PlayState.songMod, PlayState.SONG.song, PlayState.SONG);
 
         scripts = songConf.scripts;
         song_cutscene = songConf.cutscene;

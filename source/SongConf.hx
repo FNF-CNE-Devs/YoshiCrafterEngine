@@ -3,6 +3,7 @@ import mod_support_stuff.*;
 import haxe.Json;
 
 import sys.FileSystem;
+import Song.SwagSong;
 
 using StringTools;
 
@@ -25,7 +26,7 @@ typedef SongConfResult = {
     var end_cutscene:ModScript;
 }
 class SongConf {
-    public static function parse(mod:String, song:String):SongConfResult {
+    public static function parse(mod:String, song:String, ?chart:SwagSong):SongConfResult {
         // TODO : gotta finish stage editor first
         // Anyways, doin this shit
 
@@ -58,7 +59,7 @@ class SongConf {
                                     // GOOD MATCH
                                     if (d.scripts != null) for(s in d.scripts) scripts.push(getModScriptFromValue(mod, s));
                                     if (d.cutscene != null) cutscene = getModScriptFromValue(mod, d.cutscene);
-                                    if (d.end_cutscene != null) cutscene = getModScriptFromValue(mod, d.end_cutscene);
+                                    if (d.end_cutscene != null) end_cutscene = getModScriptFromValue(mod, d.end_cutscene);
 
                                     break;
                                 }
@@ -94,6 +95,12 @@ class SongConf {
                 if (_end_cutscene != null && _end_cutscene.trim() != "") end_cutscene = getModScriptFromValue(mod, _end_cutscene);
                 if (modchart != null && modchart.trim() != "") scripts.push(getModScriptFromValue(mod, '$mod:modcharts/$modchart'));
                 if (stage != null && stage.trim() != "") scripts.push(getModScriptFromValue(mod, '$mod:stages/$stage'));
+            }
+        }
+
+        if (chart != null) {
+            if (chart.scripts != null) {
+                for(s in chart.scripts) scripts.push(getModScriptFromValue(mod, s));
             }
         }
 
