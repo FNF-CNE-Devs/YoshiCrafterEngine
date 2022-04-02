@@ -186,6 +186,10 @@ import flixel.FlxG;
 	@:keep public static var charter_showVoicesWaveform:Bool = false;
 	@:keep public static var charter_instWaveformColor:FlxColor = 0xFF1573FF;
 	@:keep public static var charter_voicesWaveformColor:FlxColor = 0xFF93FF4A;
+	@:keep public static var charter_instVolume:Float = 0.8;
+	@:keep public static var charter_voicesVolume:Float = 1;
+	@:keep public static var charter_opponentHitsoundVolume:Float = 1 / 3;
+	@:keep public static var charter_playerHitsoundVolume:Float = 1 / 3;
 	
 	// @:keep public static var moveCameraInStageEditor:Bool = true;
 

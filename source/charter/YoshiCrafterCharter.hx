@@ -17,6 +17,12 @@ import Song.SwagSong;
 import flixel.*;
 import flixel.addons.ui.*;
 
+/*
+ *
+ * Why do i feel like this is going to be ported into Psych in no time
+ *
+ */
+
 class YoshiCrafterCharter extends MusicBeatState {
     public var notes:Array<CharterNote> = [];
     public static var _song:SwagSong;
@@ -301,9 +307,36 @@ class YoshiCrafterCharter extends MusicBeatState {
 		});
 		chooseVoicesWaveColorButton.resize(145, chooseVoicesWaveColorButton.height);
         chooseVoicesWaveColorButton.scrollFactor.set(0, 0);
+        y += chooseVoicesWaveColorButton.height;
         settingsTab.add(chooseVoicesWaveColorButton);
-		
-		y += chooseVoicesWaveColorButton.height;
+
+        // var instVolume = new FlxUISlider(FlxG.sound.music, "volume", 10, 10, y, 0, 1, 280, 20, 5);
+		// y += instVolume.height;
+        // settingsTab.add(instVolume);
+
+        var instVolumeLabel = new FlxUIText(10, y, 135, "Inst Volume");
+        var instVolume = new FlxUISliderNew(10, y + instVolumeLabel.height, 135, 7, Settings.engineSettings.data, "charter_instVolume", 0, 1, "0%", "100%");
+
+        var voicesVolumeLabel = new FlxUIText(155, y, 135, "Vocals Volume");
+        var voicesVolume = new FlxUISliderNew(155, y + voicesVolumeLabel.height, 135, 7, Settings.engineSettings.data, "charter_voicesVolume", 0, 1, "0%", "100%");
+
+        y += voicesVolumeLabel.height + voicesVolume.height;
+        y = Std.int(y) + 10;
+
+        var opponentHitsoundVolumeLabel = new FlxUIText(10, y, 135, "Opponent Hit Volume");
+        var opponentHitsoundVolume = new FlxUISliderNew(10, y + opponentHitsoundVolumeLabel.height, 135, 7, Settings.engineSettings.data, "charter_opponentHitsoundVolume", 0, 1, "0%", "100%");
+
+        var playerHitsoundVolumeLabel = new FlxUIText(155, y, 135, "Player Hit Volume");
+        var playerHitsoundVolume = new FlxUISliderNew(155, y + voicesVolumeLabel.height, 135, 7, Settings.engineSettings.data, "charter_playerHitsoundVolume", 0, 1, "0%", "100%");
+
+        settingsTab.add(instVolumeLabel);
+        settingsTab.add(instVolume);
+        settingsTab.add(voicesVolumeLabel);
+        settingsTab.add(voicesVolume);
+        settingsTab.add(opponentHitsoundVolumeLabel);
+        settingsTab.add(opponentHitsoundVolume);
+        settingsTab.add(playerHitsoundVolumeLabel);
+        settingsTab.add(playerHitsoundVolume);
 		
 		UI_Menu.addGroup(settingsTab);
 	}
@@ -615,7 +648,7 @@ class YoshiCrafterCharter extends MusicBeatState {
                         var mustHit = Math.floor(n.x / GRID_SIZE) >= _song.keyNumber;
                         if (((mustHit && hitsoundsBFEnabled) || (!mustHit && hitsoundsDadEnabled)) && playing) {
                             hitsound.stop();
-                            hitsound.volume = FlxG.sound.music.volume;
+                            hitsound.volume = mustHit ? Settings.engineSettings.data.charter_playerHitsoundVolume : Settings.engineSettings.data.charter_opponentHitsoundVolume;
                             hitsound.play();
                         }
                     }
@@ -638,7 +671,8 @@ class YoshiCrafterCharter extends MusicBeatState {
                 vocals.pause();
             }
         }
-        vocals.volume = FlxG.sound.music.volume;
+        FlxG.sound.music.volume = Settings.engineSettings.data.charter_instVolume;
+        vocals.volume = Settings.engineSettings.data.charter_voicesVolume;
 
         if (FlxG.keys.justPressed.R) FlxG.sound.music.pitch -= 0.25;
         if (FlxG.keys.justPressed.T) FlxG.sound.music.pitch += 0.25;

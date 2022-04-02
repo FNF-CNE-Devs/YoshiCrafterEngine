@@ -62,7 +62,7 @@ class StageEditor extends MusicBeatState {
         objName.text = selectedObj != null ? selectedObj.name : "(No selected sprite)";
         if (selectedObj == null) {
              // global shit
-            for (e in [posLabel, sprPosX, sprPosY, scaleLabel, scaleNum, antialiasingCheckbox, scrFacX, scrFacY, scrollFactorLabel, shaderLabel, shaderNameInput]) {
+            for (e in [posLabel, sprPosX, sprPosY, scaleLabel, scaleNum, antialiasingCheckbox, scrFacX, scrFacY, scrollFactorLabel, shaderLabel, shaderNameInput, bumpOffsetLabel, bumpOffsetXLabel, bumpOffsetYLabel, bumpOffsetY, bumpOffsetX]) {
                 e.visible = false;
             }
             // sparrow shit
@@ -80,16 +80,34 @@ class StageEditor extends MusicBeatState {
             //     antialiasingCheckbox.checked = selectedObj.antialiasing;
             // }
         } else {
-            for (e in [posLabel, sprPosX, sprPosY, scaleLabel, scaleNum, antialiasingCheckbox, scrFacX, scrFacY, scrollFactorLabel, shaderLabel, shaderNameInput]) {
+            for (e in [posLabel, sprPosX, sprPosY, scaleLabel, scaleNum, antialiasingCheckbox, scrFacX, scrFacY, scrollFactorLabel, shaderLabel, shaderNameInput, bumpOffsetLabel, bumpOffsetXLabel, bumpOffsetYLabel, bumpOffsetY, bumpOffsetX]) {
                 e.visible = true;
             }
             sprPosX.value = selectedObj.x;
             sprPosY.value = selectedObj.y;
             scrFacX.value = selectedObj.scrollFactor.x;
             scrFacY.value = selectedObj.scrollFactor.y;
+            if (selectedObj.onBeatOffset == null)
+                selectedObj.onBeatOffset = {
+                    x: 0,
+                    y: 0,
+                    ease: "linear"
+                };
+            bumpOffsetX.value = selectedObj.onBeatOffset.x;
+            bumpOffsetY.value = selectedObj.onBeatOffset.y;
+            
+            var id = "";
+            if (selectedObj.onBeatOffset.ease.endsWith("InOut")) id = "InOut";
+            else if (selectedObj.onBeatOffset.ease.endsWith("In")) id = "In";
+            else if (selectedObj.onBeatOffset.ease.endsWith("Out")) id = "Out";
+
+            bumpOffsetEase.selectedId = selectedObj.onBeatOffset.ease.substr(0, selectedObj.onBeatOffset.ease.length - id.length);
+            bumpOffsetEaseType.selectedId = id;
+            bumpOffsetEaseType.visible = id != "";
+            
             scaleNum.value = (selectedObj.scale.x + selectedObj.scale.y) / 2;
             antialiasingCheckbox.checked = selectedObj.antialiasing;
-            shaderNameInput.text = selectedObj.shaderName;
+            shaderNameInput.text = selectedObj.shaderName == null ? "" : selectedObj.shaderName;
 
             if (selectedObj.type.toLowerCase() == "sparrowatlas" && selectedObj.anim != null) {
                 for (e in [sparrowAnimationTitle, animationNameTitle, animationNameTextBox, animationFPSNumeric, fpsLabel, animationLabel, animationTypeLabel, applySparrowButton]) {
@@ -106,7 +124,7 @@ class StageEditor extends MusicBeatState {
             }
 
             if (homies.contains(selectedObj.type)) {
-                for (e in [scaleLabel, scaleNum, antialiasingCheckbox]) {
+                for (e in [scaleLabel, scaleNum, antialiasingCheckbox, bumpOffsetLabel, bumpOffsetXLabel, bumpOffsetYLabel, bumpOffsetY, bumpOffsetX]) {
                     e.visible = false;
                 }
             }
@@ -160,6 +178,14 @@ class StageEditor extends MusicBeatState {
     public var shaderNameInput:FlxUIInputText;
     public var animationTypeLabel:FlxUIText;
     public var applySparrowButton:FlxUIButton;
+    public var bumpOffsetLabel:FlxUIText;
+    public var bumpOffsetX:FlxUINumericStepper;
+    public var bumpOffsetXLabel:FlxUIText;
+    public var bumpOffsetY:FlxUINumericStepper;
+    public var bumpOffsetYLabel:FlxUIText;
+    public var bumpOffsetEaseLabel:FlxUIText;
+    public var bumpOffsetEase:FlxUIDropDownMenu;
+    public var bumpOffsetEaseType:FlxUIDropDownMenu;
 
     public var oldTab = "";
     public var selectOnly(default, set):FlxStageSprite = null;
@@ -396,6 +422,24 @@ class StageEditor extends MusicBeatState {
 
         lime.app.Application.current.window.focus();
     }
+    
+    function updateEase() {
+        var v = bumpOffsetEase.selectedId + bumpOffsetEaseType.selectedId;
+        var invalid = easeFuncs[v] == null;
+        var val = v;
+        if (invalid)
+            val = bumpOffsetEase.selectedId;
+        if (selectedObj != null) {
+            if (selectedObj.onBeatOffset == null) selectedObj.onBeatOffset = {
+                x: 0,
+                y: 0,
+                ease: "linear"
+            };
+            selectedObj.onBeatOffset.ease = val;
+        }
+        return invalid;
+    }
+
     function addSelectedObjectTab() {
         selectedObjTab = new FlxUI(null, tabs);
         // selectedObjTab
@@ -433,10 +477,55 @@ class StageEditor extends MusicBeatState {
         shaderLabel = new FlxUIText(10, antialiasingCheckbox.y + antialiasingCheckbox.height + 10, 280, "Custom Shader name (without the .frag and .vert ext)");
         shaderNameInput = new FlxUIInputText(10, shaderLabel.y + shaderLabel.height, 280, '');
 
+        bumpOffsetLabel = new FlxUIText(10, shaderNameInput.y + shaderNameInput.height + 10, 280, "On Beat tween");
+        bumpOffsetX = new FlxUINumericStepper(10, bumpOffsetLabel.y + bumpOffsetLabel.height, 10, 0, -9999, 9999);
+        bumpOffsetXLabel = new FlxUIText(10, bumpOffsetX.y + (bumpOffsetX.height / 2), 0, "X: ");
+        bumpOffsetXLabel.y -= bumpOffsetXLabel.height / 2;
+        bumpOffsetX.x += bumpOffsetXLabel.width;
+        bumpOffsetYLabel = new FlxUIText(bumpOffsetX.x + bumpOffsetX.width + 10, bumpOffsetXLabel.y, 0, "Y: ");
+        bumpOffsetY = new FlxUINumericStepper(bumpOffsetYLabel.x + bumpOffsetYLabel.width, bumpOffsetX.y, 10, 0, -9999, 9999);
+        bumpOffsetEaseLabel = new FlxUIText(bumpOffsetY.x + bumpOffsetY.width + 10, bumpOffsetYLabel.y, 0, "Ease: ");
+        var eases:Array<StrNameLabel> = [];
+        for(k=>e in easeFuncs) {
+            var invalid = false;
+            var inOutShit = 0;
+            if (k.endsWith('InOut')) inOutShit = 5;
+            else if (k.endsWith('In')) inOutShit = 2;
+            else if (k.endsWith('Out')) inOutShit = 3;
+            var finalString = k.substr(0, k.length - inOutShit);
+            for(e in eases) if (e.name == finalString) {invalid = true; break;}
+            if (invalid) continue;
+
+            var resultString:Array<String> = [];
+            var currentString = "";
+            for(i in 0...finalString.length) {
+                var char = finalString.charAt(i);
+                if (char.toUpperCase() == char) { // if uppercase
+                    resultString.push(currentString);
+                    currentString = char;
+                } else {
+                    currentString += char;
+                    if (currentString.length < 2) currentString = currentString.toUpperCase();
+                }
+            }
+            if (currentString.trim() != "") {
+                resultString.push(currentString);
+            }
+            eases.push(new StrNameLabel(k.substr(0, k.length - inOutShit), resultString.join(" ")));
+        }
+        bumpOffsetEase = new FlxUIDropDownMenu(10, bumpOffsetY.y + bumpOffsetY.height + 10, eases, function(s) {
+            bumpOffsetEaseType.visible = !updateEase();
+        });
+        // }, new FlxUIDropDownMenu.FlxUIDropDownHeader(120, new FlxUI9SliceSprite(0, 0, FlxUIAssets.IMG_BOX, new flash.geom.Rectangle(0, 0, 120, 16), [1, 1, 14, 14])));
+        bumpOffsetEase.dropDirection = Down;
+        bumpOffsetEaseType = new FlxUIDropDownMenu(bumpOffsetEase.x + bumpOffsetEase.width + 10, bumpOffsetEase.y, [new StrNameLabel('In', 'In'), new StrNameLabel('Out', 'Out'), new StrNameLabel('InOut', 'In & Out')], function(s) {
+            updateEase();
+        });
+
         /*
          *  /!\ SPARROW SHIT
          */
-        sparrowAnimationTitle = new FlxUIText(10, shaderNameInput.y + shaderNameInput.height + 10, 280, "Sparrow Animation Settings");
+        sparrowAnimationTitle = new FlxUIText(10, bumpOffsetEaseType.y + 30, 280, "Sparrow Animation Settings");
         sparrowAnimationTitle.alignment = CENTER;
         animationNameTitle = new FlxUIText(10, sparrowAnimationTitle.y + sparrowAnimationTitle.height + 10, 280, "Animation Name");
 
@@ -452,7 +541,7 @@ class StageEditor extends MusicBeatState {
             // animationLabel.label
         });
 
-        animationTypeLabel = new FlxUIText(10, animationLabel.y + (10), 0, "Animation Type: ");
+        animationTypeLabel = new FlxUIText(10, animationLabel.y + (10), 0, "Type: ");
         animationTypeLabel.y -= animationTypeLabel.height / 2;
         animationLabel.x += animationTypeLabel.width;
 
@@ -465,6 +554,7 @@ class StageEditor extends MusicBeatState {
             selectedObj.animation.addByPrefix(selectedObj.anim.name, selectedObj.anim.name, selectedObj.anim.fps, selectedObj.anim.type.toLowerCase() == "loop");
             selectedObj.animation.play(selectedObj.anim.name);
         });
+        applySparrowButton.x -= applySparrowButton.width / 2;
 
 
 
@@ -482,6 +572,12 @@ class StageEditor extends MusicBeatState {
         selectedObjTab.add(antialiasingCheckbox);
         selectedObjTab.add(shaderLabel);
         selectedObjTab.add(shaderNameInput);
+        selectedObjTab.add(bumpOffsetLabel);
+        selectedObjTab.add(bumpOffsetX);
+        selectedObjTab.add(bumpOffsetXLabel);
+        selectedObjTab.add(bumpOffsetY);
+        selectedObjTab.add(bumpOffsetYLabel);
+        // selectedObjTab.add(bumpOffsetEaseLabel);
         selectedObjTab.add(sparrowAnimationTitle);
         selectedObjTab.add(animationNameTitle);
         selectedObjTab.add(animationNameTextBox);
@@ -490,16 +586,21 @@ class StageEditor extends MusicBeatState {
         selectedObjTab.add(animationLabel);
         selectedObjTab.add(animationTypeLabel);
         selectedObjTab.add(applySparrowButton);
+        selectedObjTab.add(bumpOffsetEase);
+        selectedObjTab.add(bumpOffsetEaseType);
         tabs.addGroup(selectedObjTab);
 
         selectedObj = null;
     }
     public override function create() {
         easeFuncs = [];
+        var forbiddenValues = ["PI2", "EL", "B1", "B2", "B3", "B4", "B5", "B6", "ELASTIC_AMPLITUDE", "ELASTIC_PERIOD"];
         for(s in Type.getClassFields(FlxEase)) {
-            var value = Reflect.getProperty(FlxEase, s);
-            // if (Std.isOfType(value, Float->Float)) {
+            if (!forbiddenValues.contains(s)) {
+                var value = Reflect.getProperty(FlxEase, s);
                 easeFuncs[s] = value;
+            }
+            // if (Std.isOfType(value, Float->Float)) {
             // }
         }
         
@@ -710,18 +811,21 @@ class StageEditor extends MusicBeatState {
                         if (s.scrollFactor == null) s.scrollFactor = [1, 1];
                         while (s.scrollFactor.length < 2) s.scrollFactor.push(1);
                         bf.scrollFactor.set(s.scrollFactor[0], s.scrollFactor[1]);
+                        Stage.doTheCharShader(bf, s, ToolboxHome.selectedMod);
                         add(bf);
                         spr = bf;
                     case "GF":
                         if (s.scrollFactor == null) s.scrollFactor = [1, 1];
                         while (s.scrollFactor.length < 2) s.scrollFactor.push(1);
                         gf.scrollFactor.set(s.scrollFactor[0], s.scrollFactor[1]);
+                        Stage.doTheCharShader(gf, s, ToolboxHome.selectedMod);
                         add(gf);
                         spr = gf;
                     case "Dad":
                         if (s.scrollFactor == null) s.scrollFactor = [1, 1];
                         while (s.scrollFactor.length < 2) s.scrollFactor.push(1);
                         dad.scrollFactor.set(s.scrollFactor[0], s.scrollFactor[1]);
+                        Stage.doTheCharShader(dad, s, ToolboxHome.selectedMod);
                         add(dad);
                         spr = dad;
                 }
@@ -815,6 +919,9 @@ class StageEditor extends MusicBeatState {
         }
 
         if (selectedObj != null) {
+            if (selectedObj.onBeatOffset == null) selectedObj.onBeatOffset = {x:0,y:0,ease:'linear'};
+            selectedObj.onBeatOffset.x = bumpOffsetX.value;
+            selectedObj.onBeatOffset.y = bumpOffsetY.value;
             if (selectedObj.shaderName != shaderNameInput.text) {
                 selectedObj.shaderName = shaderNameInput.text;
 
@@ -1023,7 +1130,13 @@ class StageEditor extends MusicBeatState {
         selectedObj = sprite;
     }
     function overlaps(sprite:FlxStageSprite, mousePos:FlxPoint):Bool {
-        return mousePos.x >= sprite.x && mousePos.x < sprite.width + sprite.x && mousePos.y >= sprite.y && mousePos.y < sprite.height + sprite.y;
+        var pos = {
+            x: sprite.x - sprite.offset.x,
+            y: sprite.y - sprite.offset.y,
+            x2: sprite.x - sprite.offset.x + sprite.width,
+            y2: sprite.y - sprite.offset.y + sprite.height
+        };
+        return mousePos.x >= pos.x && mousePos.x < pos.x2 && mousePos.y >= pos.y && mousePos.y < pos.y2;
         // if (FlxG.mouse.overlaps(sprite, camGame)) {
         //     // if (sprite.type == "Bitmap") {
         //     //     var mPos = FlxG.mouse.getPosition();

@@ -183,18 +183,20 @@ class Stage {
 		char.scrollFactor.set(scrollFactor[0], scrollFactor[1]);
 		char.updateHitbox();
 
-		
-		if (s.shader != null) {
-			var split = s.shader.split(":");
-			if (split.length < 2) split.insert(0, mod);
-			char.shader = new CustomShader(split.join(":"), split.join(":"), []);
-		}
-
 		// if (s.scale == null) s.scale = 1;
 
 		// char.scale.set(s.scale, s.scale);
 		// char.x += (char.charGlobalOffset.x * (s.scale - 1));
 		// char.y += (char.charGlobalOffset.y * (s.scale - 1));
+		doTheCharShader(char, s, mod);
+	}
+	public static function doTheCharShader(char:FlxSprite, s:StageSprite, mod:String) {
+		if (s.shader != null) {
+			var split = s.shader.split(":");
+			if (split.length < 2) split.insert(0, mod);
+			char.shader = new CustomShader(split.join(":"), split.join(":"), []);
+			if (Std.isOfType(char, FlxStageSprite)) cast(char, FlxStageSprite).shaderName = s.shader;
+		}
 	}
 	public static function doTheRest(sprite:FlxStageSprite, s:StageSprite, mod:String) {
 		if (s.scale != null) {

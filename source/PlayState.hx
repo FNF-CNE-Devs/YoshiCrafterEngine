@@ -3301,15 +3301,15 @@ class PlayState extends MusicBeatState
 			justPressedArray = [for (i in 0...SONG.keyNumber) false];
 			notes.forEachAlive(function(daNote:Note)
 				{
-					if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && daNote.hitOnBotplay)
+					if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && daNote.hitOnBotplay && daNote.strumTime < Conductor.songPosition)
 					{
-						if (daNote.strumTime < Conductor.songPosition) {
+						if (daNote.isSustainNote) {
+							botplayNoteHitMoment[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber] = Math.max(Conductor.songPosition + Conductor.stepCrochet, botplayNoteHitMoment[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber]);
+							pressedArray[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber] = true; // (Math.abs(daNote.strumTime - Conductor.songPosition) < elapsed * 1000) || 
+						} else {
 							botplayNoteHitMoment[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber] = Math.max(Conductor.songPosition, botplayNoteHitMoment[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber]);
 							// botplayHitNotes.push(daNote);
 							justPressedArray[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber] = true; // (Math.abs(daNote.strumTime - Conductor.songPosition) < elapsed * 1000) || 
-						} else if (daNote.isSustainNote) {
-							botplayNoteHitMoment[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber] = Math.max(Conductor.songPosition + Conductor.stepCrochet, botplayNoteHitMoment[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber]);
-							pressedArray[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber] = true; // (Math.abs(daNote.strumTime - Conductor.songPosition) < elapsed * 1000) || 
 						}
 						
 					}
