@@ -125,7 +125,9 @@ class YoshiCrafterCharter extends MusicBeatState {
                         altAnim: false
                     });
                 }
-                // if (!section.mustHitSection) strum += _song.keyNumber;
+                var mustHitSection = section.mustHitSection;
+                if (s.mustPress) mustHitSection = !mustHitSection;
+                if (!mustHitSection) strum += _song.keyNumber;
                 var noteData = (noteType * _song.keyNumber * 2) + (strum % (_song.keyNumber * 2));
                 section.sectionNotes.push([s.strumTime, noteData, s.sustainLength]);
             } else {
@@ -656,7 +658,7 @@ class YoshiCrafterCharter extends MusicBeatState {
                     n.alpha = 1;
                 }
             }
-            
+            if (n.sustainSprite != null) n.sustainSprite.active = n.sustainSprite.visible = n.active;
         }
 
         if (FlxG.keys.justPressed.SPACE) {
