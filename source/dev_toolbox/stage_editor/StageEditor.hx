@@ -769,8 +769,11 @@ class StageEditor extends MusicBeatState {
     public function save() {
         updateJsonData();
         var path = '${Paths.modsPath}/${ToolboxHome.selectedMod}/stages/${stageFile}';
+        /*
         if (FileSystem.exists('$path.json')) FileSystem.deleteFile('$path.json');
         File.saveContent('$path.stage', Serializer.run(stage));
+        */
+        File.saveContent('$path.json', Json.stringify(stage));
         unsaved = false;
     }
     public function updateStageElements() {
