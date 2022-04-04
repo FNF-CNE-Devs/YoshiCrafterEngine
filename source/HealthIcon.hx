@@ -22,7 +22,7 @@ class HealthIcon extends FlxSprite
 	public var frameIndexes(default, set):Array<Array<Int>> = [[20, 0], [0, 1]];
 	public var frameIndexesAnimated:Array<Array<Dynamic>> = [[20, "losing"], [0, "normal"]];
 	public var isSparrow:Bool = false;
-	public var health:Float = 0.5;
+	// public var health:Float = 0.5;
 	public var curCharacter:String = "";
 	public var isPlayer:Bool = false;
 	private function set_frameIndexes(f:Array<Array<Int>>):Array<Array<Int>> {
