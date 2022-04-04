@@ -17,6 +17,8 @@ class FlxUISliderNew extends FlxUIGroup {
     public var maxLabel:FlxUIText;
 
     private var __isBeingMoved:Bool = false;
+
+    public var step:Float = 0;
     public override function new(x:Float, y:Float, width:Int, height:Int, object:Dynamic, variable:String, min:Float, max:Float, ?minLabel:String, ?maxLabel:String) {
         super(x, y);
         this.object = object;
@@ -54,7 +56,13 @@ class FlxUISliderNew extends FlxUIGroup {
         if (FlxG.mouse.justReleased) __isBeingMoved = false;
         if (__isBeingMoved) {
             var cursorX = FlxG.mouse.screenX - bar.x;
-            if (object != null && variable != null) Reflect.setProperty(object, variable, CoolUtil.wrapFloat(min + (max / bar.width * cursorX), 0, 1));
+            if (object != null && variable != null) {
+                if (step != 0) {
+                    Reflect.setProperty(object, variable, CoolUtil.wrapFloat(min + (Math.round(max / bar.width * cursorX / step) * step), 0, 1));
+                } else {
+                    Reflect.setProperty(object, variable, CoolUtil.wrapFloat(min + (max / bar.width * cursorX), 0, 1));
+                }
+            }
         }
     }
 }

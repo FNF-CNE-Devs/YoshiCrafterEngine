@@ -112,7 +112,8 @@ class YoshiCrafterCharter extends MusicBeatState {
             if (s.noteData >= 0) {
                 // normal note
                 var noteType = Math.floor(s.noteData / (_song.keyNumber * 2));
-                var strum = s.noteData;
+                // var strum = s.noteData;
+                var strum = s.x / GRID_SIZE; // horrible calculations but at least it works
                 var section = _song.notes[Math.floor((Math.ceil(s.strumTime / 10) * 10) / (Conductor.crochet * 4))];
                 if (section == null) {
                     _song.notes[Math.floor((Math.ceil(s.strumTime / 10) * 10) / (Conductor.crochet * 4))] = (section = {
@@ -126,7 +127,6 @@ class YoshiCrafterCharter extends MusicBeatState {
                     });
                 }
                 var mustHitSection = section.mustHitSection;
-                if (s.mustPress) mustHitSection = !mustHitSection;
                 if (!mustHitSection) strum += _song.keyNumber;
                 var noteData = (noteType * _song.keyNumber * 2) + (strum % (_song.keyNumber * 2));
                 section.sectionNotes.push([s.strumTime, noteData, s.sustainLength]);
@@ -222,6 +222,9 @@ class YoshiCrafterCharter extends MusicBeatState {
 		addCharterSettingsTab();
     }
 	
+    var voicesWaveformSection:Int = -10;
+    var instWaveformSection:Int = -10;
+
 	public function addCharterSettingsTab() {
 		var settingsTab = new FlxUI(null, UI_Menu);
 		settingsTab.name = "settings";
@@ -274,6 +277,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         showInstWaveformCheckbox = new FlxUICheckBox(10, y, null, null, "Show Instrumental Waveform", 250, null, function() {
 			Settings.engineSettings.data.charter_showInstWaveform = showInstWaveformCheckbox.checked;
             instWaveform.visible = Settings.engineSettings.data.charter_showInstWaveform;
+            if (instWaveform.visible) instWaveform.generateFlixel((Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) - 1) * (Conductor.crochet * 4), (Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) + 1) * (Conductor.crochet * 4));
         });
         showInstWaveformCheckbox.scrollFactor.set(0, 0);
         showInstWaveformCheckbox.checked = Settings.engineSettings.data.charter_showInstWaveform;
@@ -283,6 +287,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         showVoicesWaveformCheckbox = new FlxUICheckBox(10, y, null, null, "Show Voices Waveform", 250, null, function() {
 			Settings.engineSettings.data.charter_showVoicesWaveform = showVoicesWaveformCheckbox.checked;
             voicesWaveform.visible = Settings.engineSettings.data.charter_showVoicesWaveform;
+            if (voicesWaveform.visible) voicesWaveform.generateFlixel((Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) - 1) * (Conductor.crochet * 4), (Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) + 1) * (Conductor.crochet * 4));
         });
         showVoicesWaveformCheckbox.scrollFactor.set(0, 0);
         showVoicesWaveformCheckbox.checked = Settings.engineSettings.data.charter_showVoicesWaveform;
@@ -429,8 +434,8 @@ class YoshiCrafterCharter extends MusicBeatState {
         gridLightUp.scrollFactor.set(1, 0);
         add(gridLightUp);
 
-        instWaveform = new WaveformSprite((grid.width - GRID_SIZE) / 2, 0, instBuffer, GRID_SIZE * 4, GRID_SIZE * 32);
-        instWaveform.scrollFactor.set(1, 1);
+        instWaveform = new WaveformSprite((grid.width - GRID_SIZE) / 2, 0, instBuffer, GRID_SIZE * 4, GRID_SIZE * 48);
+        // instWaveform.scrollFactor.set(1, 1);
         instWaveform.color = Settings.engineSettings.data.charter_instWaveformColor;
         instWaveform.origin.set(0, 0);
         instWaveform.alpha = 0.85;
@@ -439,8 +444,8 @@ class YoshiCrafterCharter extends MusicBeatState {
         instWaveform.generateFlixel( -Conductor.crochet * 4, Conductor.crochet * 4);
 		instWaveform.visible = Settings.engineSettings.data.charter_showInstWaveform;
 
-        voicesWaveform = new WaveformSprite((grid.width - GRID_SIZE) / 2, 0, voicesBuffer, GRID_SIZE * 4, GRID_SIZE * 32);
-        voicesWaveform.scrollFactor.set(1, 1);
+        voicesWaveform = new WaveformSprite((grid.width - GRID_SIZE) / 2, 0, voicesBuffer, GRID_SIZE * 4, GRID_SIZE * 48);
+        // voicesWaveform.scrollFactor.set(1, 1);
         voicesWaveform.color = Settings.engineSettings.data.charter_voicesWaveformColor;
         voicesWaveform.origin.set(0, 0);
         voicesWaveform.alpha = 0.85;
@@ -500,8 +505,22 @@ class YoshiCrafterCharter extends MusicBeatState {
             }
         }
 		
-        if (instWaveform.visible) instWaveform.generateFlixel(Conductor.songPosition - (Conductor.crochet * 4), Conductor.songPosition + (Conductor.crochet * 4)); // NOT OPTIMIZED, JUST FOR TESTING;
-        if (voicesWaveform.visible) voicesWaveform.generateFlixel(Conductor.songPosition - (Conductor.crochet * 4), Conductor.songPosition + (Conductor.crochet * 4)); // NOT OPTIMIZED, JUST FOR TESTING;
+        grid.y = Math.max(0, Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) * GRID_SIZE * 16) + ((Conductor.songPosition < Conductor.crochet * 4) ? 0 : -GRID_SIZE * 16);
+        voicesWaveform.y = instWaveform.y = (Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) * GRID_SIZE * 16) + (-GRID_SIZE * 16);
+        if (instWaveform.visible) {
+            var curSection = Math.floor(Conductor.songPosition / (Conductor.crochet * 4));
+            if (curSection != instWaveformSection) {
+                instWaveformSection = curSection;
+                instWaveform.generateFlixel((Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) - 1) * (Conductor.crochet * 4), (Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) + 2) * (Conductor.crochet * 4));
+            }
+        }
+        if (voicesWaveform.visible) {
+            var curSection = Math.floor(Conductor.songPosition / (Conductor.crochet * 4));
+            if (curSection != voicesWaveformSection) {
+                voicesWaveformSection = curSection;
+                voicesWaveform.generateFlixel((Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) - 1) * (Conductor.crochet * 4), (Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) + 2) * (Conductor.crochet * 4));
+            }
+        }
 		
         FlxG.camera.targetOffset.y = FlxMath.lerp(FlxG.camera.targetOffset.y, topView ? ((FlxG.height * 0.25) + GRID_SIZE) : GRID_SIZE, 0.45 * 60 * elapsed);
         if (FlxG.mouse.justPressed) {
@@ -632,9 +651,8 @@ class YoshiCrafterCharter extends MusicBeatState {
             if (FlxG.sound.music.playing) Conductor.songPosition += elapsed * 1000 * FlxG.sound.music.pitch;
         }
         // grid.y = -((Conductor.songPosition % (Conductor.crochet * 4)) / (Conductor.crochet * 4) * (GRID_SIZE * 16));
-        grid.y = Math.max(0, Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) * GRID_SIZE * 16) + ((Conductor.songPosition < Conductor.crochet * 4) ? 0 : -GRID_SIZE * 16);
         followThing.y = Conductor.songPosition / (Conductor.crochet * 4) * (GRID_SIZE * 16);
-        instWaveform.y = voicesWaveform.y = followThing.y - (GRID_SIZE * 16);
+        // instWaveform.y = voicesWaveform.y = followThing.y - (GRID_SIZE * 16);
         for(s in strums) {
             s.y = followThing.y;
         }
@@ -723,6 +741,7 @@ class YoshiCrafterCharter extends MusicBeatState {
             var sender:FlxUINumericStepper = cast(sender, FlxUINumericStepper);
             switch(sender.name) {
                 case "bpm":
+                    instWaveformSection = voicesWaveformSection = -10;
                     var bpm:Int = Std.int(sender.value);
                     _song.bpm = bpm;
                     Conductor.changeBPM(bpm);

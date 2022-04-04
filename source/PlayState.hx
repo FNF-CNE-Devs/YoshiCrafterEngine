@@ -3330,10 +3330,10 @@ class PlayState extends MusicBeatState
 
 			var ignoreList:Array<Int> = [];
 
-			var notesToHit:Array<Note> = [];
+			var notesToHit:Array<Note> = [for (i in 0...SONG.keyNumber) null];
 
+			var additionalNotesToHit:Array<Note> = [];
 			var sus:Array<Bool> = [for (i in 0...SONG.keyNumber) false];
-			for (i in 0...SONG.keyNumber) notesToHit.push(null);
 			notes.forEachAlive(function(daNote:Note)
 			{
 				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate)
@@ -3349,7 +3349,7 @@ class PlayState extends MusicBeatState
 								if (notesToHit[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber].strumTime > daNote.strumTime)
 									can = true;
 								if (notesToHit[(daNote.noteData % _SONG.keyNumber) % SONG.keyNumber].strumTime == daNote.strumTime) {
-									goodNoteHit(daNote);
+									additionalNotesToHit.push(daNote);
 								}
 							} else {
 								can = true;
@@ -3371,6 +3371,7 @@ class PlayState extends MusicBeatState
 					goodNoteHit(note);
 				}
 			}
+			for(n in additionalNotesToHit) goodNoteHit(n);
 		}
 
 		if ((pressedArray.indexOf(true) != -1) && generatedMusic)

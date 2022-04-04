@@ -30,6 +30,7 @@ import llua.Convert;
 
 class Script {
     public var fileName:String = "";
+    public var mod:String = null;
     public function new() {
 
     }
@@ -122,6 +123,7 @@ class ScriptPack {
     }
 
     public function executeFunc(funcName:String, ?args:Array<Any>, ?defaultReturnVal:Any) {
+        
         var a = args;
         if (a == null) a = [];
         for (script in scripts) {
@@ -176,6 +178,7 @@ class HScript extends Script {
     }
 
     public override function executeFunc(funcName:String, ?args:Array<Any>):Dynamic {
+        Paths.currentLibrary = 'mods/${mod}';
         if (hscript == null) {
             this.trace("hscript is null");
             return null;
@@ -189,7 +192,7 @@ class HScript extends Script {
                 } catch(e) {
                     this.trace('$e');
                 }
-                Paths.copyBitmap = false;
+                Paths.currentLibrary = null;
                 return result;
             } else {
                 var result = null;
@@ -198,7 +201,7 @@ class HScript extends Script {
                 } catch(e) {
                     this.trace('$e');
                 }
-                Paths.copyBitmap = false;
+                Paths.currentLibrary = null;
                 return result;
             }
 			// f();
@@ -563,7 +566,6 @@ class LuaScript extends Script {
                 } catch(e) {
                     this.trace('$e');
                 }
-                Paths.copyBitmap = false;
                 if (resultName == null) {
                     return result;
                 } else {
