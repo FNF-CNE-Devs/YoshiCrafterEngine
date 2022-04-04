@@ -127,7 +127,7 @@ class YoshiCrafterCharter extends MusicBeatState {
                     });
                 }
                 var mustHitSection = section.mustHitSection;
-                if (!mustHitSection) strum += _song.keyNumber;
+                if (mustHitSection) strum += _song.keyNumber;
                 var noteData = (noteType * _song.keyNumber * 2) + (strum % (_song.keyNumber * 2));
                 section.sectionNotes.push([s.strumTime, noteData, s.sustainLength]);
             } else {
