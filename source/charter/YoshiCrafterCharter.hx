@@ -224,6 +224,7 @@ class YoshiCrafterCharter extends MusicBeatState {
 	
     var voicesWaveformSection:Int = -10;
     var instWaveformSection:Int = -10;
+    var playbackSpeedLabel:FlxText;
 
 	public function addCharterSettingsTab() {
 		var settingsTab = new FlxUI(null, UI_Menu);
@@ -335,6 +336,12 @@ class YoshiCrafterCharter extends MusicBeatState {
 
         var playerHitsoundVolumeLabel = new FlxUIText(155, y, 135, "Player Hit Volume");
         var playerHitsoundVolume = new FlxUISliderNew(155, y + voicesVolumeLabel.height, 135, 7, Settings.engineSettings.data, "charter_playerHitsoundVolume", 0, 1, "0%", "100%");
+        y += playerHitsoundVolumeLabel.height + playerHitsoundVolume.height + 10;
+        y = Std.int(y);
+        
+        playbackSpeedLabel = new FlxUIText(10, y, 280, 'Playback Speed (1.00x)');
+        var playbackSpeedSlider = new FlxUISliderNew(10, y + playbackSpeedLabel.height, 280, 7, FlxG.sound.music, "pitch", 0.25, 5, "0.25x", "5.00x");
+        playbackSpeedSlider.step = 0.25;
 
         settingsTab.add(instVolumeLabel);
         settingsTab.add(instVolume);
@@ -344,6 +351,8 @@ class YoshiCrafterCharter extends MusicBeatState {
         settingsTab.add(opponentHitsoundVolume);
         settingsTab.add(playerHitsoundVolumeLabel);
         settingsTab.add(playerHitsoundVolume);
+        settingsTab.add(playbackSpeedLabel);
+        settingsTab.add(playbackSpeedSlider);
 		
 		UI_Menu.addGroup(settingsTab);
 	}
@@ -362,9 +371,18 @@ class YoshiCrafterCharter extends MusicBeatState {
         var bpmLabel:FlxUIText = new FlxUIText(10, bpmThing.y + (bpmThing.height / 2), 200, "BPM (Beats per minute)");
         bpmLabel.y -= bpmLabel.height / 2;
 
+        var scrollSpeedThing:FlxUINumericStepper = new FlxUINumericStepper(290, bpmThing.y + bpmThing.height + 10, 0.1, 2, 0.1, 10, 1);
+        scrollSpeedThing.x -= scrollSpeedThing.width;
+        scrollSpeedThing.name = "scrollSpeed";
+        scrollSpeedThing.value = _song.speed;
+        var scrollSpeedLabel:FlxUIText = new FlxUIText(10, scrollSpeedThing.y + (scrollSpeedThing.height / 2), 200, "Scroll Speed");
+        scrollSpeedLabel.y -= scrollSpeedLabel.height / 2;
+
         songTab.add(titleLabel);
         songTab.add(bpmThing);
         songTab.add(bpmLabel);
+        songTab.add(scrollSpeedThing);
+        songTab.add(scrollSpeedLabel);
         UI_Menu.addGroup(songTab);
     }
 
@@ -493,6 +511,7 @@ class YoshiCrafterCharter extends MusicBeatState {
     public override function update(elapsed:Float) {
 
         super.update(elapsed);
+        playbackSpeedLabel.text = 'Playback Speed (${Std.string(FlxG.sound.music.pitch)}x)';
         if (playing) {
             pageSwitchLerpRemaining = 0;
         } else {
@@ -549,6 +568,7 @@ class YoshiCrafterCharter extends MusicBeatState {
 
         if (FlxG.mouse.justPressedRight) {
             if (FlxG.mouse.overlaps(grid)) {
+                /*
                 var section = Math.floor(FlxG.mouse.y / GRID_SIZE * Conductor.stepCrochet / (Conductor.crochet * 4));
                 openSubState(new ContextMenu(FlxG.mouse.screenX, FlxG.mouse.screenY, [{
                     label: 'Copy Section',
@@ -589,6 +609,7 @@ class YoshiCrafterCharter extends MusicBeatState {
                     label: 'Reset section',
                     callback: function() {trace("pog3");}
                 }]));
+                */
             }
         }
         if (noteInCreation != null) {
@@ -659,7 +680,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         
         for (n in notes) {
             // if (n.active = n.visible = (Math.abs(n.strumTime - Conductor.songPosition) < (FlxG.height * 2) / GRID_SIZE * Conductor.stepCrochet))
-            if (n.active = n.visible = (n.y - FlxG.camera.scroll.y + GRID_SIZE >= 0 && n.y - FlxG.camera.scroll.y <= FlxG.height)) {
+            if (n.active = n.visible = (n.y - FlxG.camera.scroll.y + GRID_SIZE + (n.sustainLength / Conductor.stepCrochet * GRID_SIZE) >= 0 && n.y - FlxG.camera.scroll.y <= FlxG.height)) {
                 if (n.strumTime <= Conductor.songPosition) {
                     if (n.alpha == 1) {
                         var str = strums[Math.floor(n.x / GRID_SIZE) % (_song.keyNumber * 2)];
@@ -676,7 +697,7 @@ class YoshiCrafterCharter extends MusicBeatState {
                     n.alpha = 1;
                 }
             }
-            if (n.sustainSprite != null) n.sustainSprite.active = n.sustainSprite.visible = n.active;
+            if (n.sustainSprite != null) n.sustainSprite.active = n.sustainSprite.visible = n.active && n.sustainLength >= Conductor.stepCrochet / 2;
         }
 
         if (FlxG.keys.justPressed.SPACE) {
@@ -746,6 +767,8 @@ class YoshiCrafterCharter extends MusicBeatState {
                     _song.bpm = bpm;
                     Conductor.changeBPM(bpm);
                     updateNotesY();
+                case "scrollSpeed":
+                    _song.speed = sender.value;
             }
         }
     }

@@ -18,10 +18,9 @@ class HealthIcon extends FlxSprite
 	 * Used for FreeplayState! If you use it elsewhere, prob gonna annoying
 	 */
 	public var sprTracker:FlxSprite;
-	public var isAnimated:Bool;
+	public var isAnimated:Bool = false;
 	public var frameIndexes(default, set):Array<Array<Int>> = [[20, 0], [0, 1]];
-	public var frameIndexesAnimated:Array<Array<Dynamic>> = [[20, "losing"], [0, "normal"]];
-	public var isSparrow:Bool = false;
+	public var frameIndexesAnimated:Array<Array<Dynamic>> = [[80, "winning"], [20, "normal"], [0, "losing"]];
 	// public var health:Float = 0.5;
 	public var curCharacter:String = "";
 	public var isPlayer:Bool = false;
@@ -80,12 +79,10 @@ class HealthIcon extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
-		super.update(elapsed);
-
 		if (sprTracker != null)
 			setPosition(sprTracker.x + sprTracker.width + 10, sprTracker.y - 30);
 			
-		if (isSparrow) {
+		if (isAnimated) {
 			var name:String = "normal";
 			for (frameIndex in frameIndexesAnimated) {
 				if (frameIndex.length == 2) {
@@ -101,15 +98,19 @@ class HealthIcon extends FlxSprite
 				animation.play(name);
 			}
 		} else {
-			for (frameIndex in frameIndexes) {
-				if (frameIndex.length == 2) {
-					if (health * 100 >= frameIndex[0]) {
-						animation.curAnim.curFrame = frameIndex[1];
-						break;
+			if (animation.curAnim != null) {
+				for (frameIndex in frameIndexes) {
+					if (frameIndex.length == 2) {
+						if (health * 100 >= frameIndex[0]) {
+							animation.curAnim.curFrame = frameIndex[1];
+							break;
+						}
 					}
 				}
 			}
 		}
+		super.update(elapsed);
+
 	}
 
 	public function changeCharacter(char:String, mod:String) {
@@ -133,11 +134,11 @@ class HealthIcon extends FlxSprite
 						animation.addByPrefix(name, name, 24, true, isPlayer);
 						addedAnims.push(name);
 					}
-					animation.play('normal');
 				}
+				animation.play('normal');
 			} else {
 				loadGraphic(tex, true, 150, 150);
-				animation.add('char', [for (i in 0...frames.frames.length) i], 0, false, isPlayer);
+				animation.add('char', [for (i in 0...frames.frames.length) i], 0, true, isPlayer);
 				animation.play('char');	
 				
 				if (frames.frames.length > 2) {
@@ -147,10 +148,9 @@ class HealthIcon extends FlxSprite
 			}
 		} else {
 			loadGraphic(Paths.image('icons/face', 'shared'), true, 150, 150);
-			animation.add('char', [for (i in 0...frames.frames.length) i], 0, false, isPlayer);
+			animation.add('char', [for (i in 0...frames.frames.length) i], 0, true, isPlayer);
 			animation.play('char');
 		}
-		loadGraphic(tex, true, 150, 150);
 
 		
 		this.curCharacter = character.join(":");

@@ -2143,7 +2143,13 @@ class PlayState extends MusicBeatState
 						}
 						
 					}
-					(icon.isPlayer ? playerOffset++ : opponentOffset++);
+					if (icon.isPlayer) {
+						icon.health = (healthBar.percent / 100);
+						playerOffset++;
+					} else {
+						icon.health = 1 - (healthBar.percent / 100);
+						opponentOffset++;
+					}
 				}
 			}
 			
@@ -2152,7 +2158,7 @@ class PlayState extends MusicBeatState
 		if (health > maxHealth)
 			health = maxHealth;
 
-		
+		/*
 		for (frameIndex in iconP2.frameIndexes) {
 			if (frameIndex.length == 2) {
 				if ((100 - healthBar.percent) >= frameIndex[0]) {
@@ -2161,6 +2167,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
+		*/
 
 		/* if (FlxControls.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
