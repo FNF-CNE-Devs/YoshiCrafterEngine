@@ -2110,38 +2110,49 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
 		if (scripts.executeFuncMultiple("onHealthUpdate", [elapsed], [true, null]) != false) {
-			var iconlerp = 1.15 - (FlxEase.cubeOut(((Conductor.songPosition + (Conductor.crochet * 5)) / Conductor.crochet) % 1) * 0.15);
-			iconP1.scale.set(iconlerp, iconlerp);
-			iconP2.scale.set(iconlerp, iconlerp);
-	
-			// iconP1.updateHitbox();
-			// iconP2.updateHitbox();
-	
-			var iconOffset:Int = 26;
-	
-			iconP1.offset.x = -75;
-			iconP2.offset.x = -75;
-			// iconP1.offset.y = -iconOffset;
-			if (maxHealth == 0) {
-				iconP1.x = Std.int(PlayState.current.guiSize.x / 2) - iconOffset + iconP1.offset.x;
-				iconP2.x = Std.int(PlayState.current.guiSize.x / 2) - (iconP2.width - iconOffset) + iconP2.offset.x;
-			} else {
-				iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) + iconP1.offset.x + (iconP1.width * (iconP1.scale.x - 1) / 4);
-				iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset) + iconP2.offset.x - (iconP2.width * (iconP2.scale.x - 1) / 2);
+			var playerOffset:Int = 0;
+			var opponentOffset:Int = 0;
+			for (s in members) {
+				if (Std.isOfType(s, HealthIcon)) {
+					var icon:HealthIcon = cast(s, HealthIcon);
+					var iconlerp = 1.15 - (FlxEase.cubeOut(((Conductor.songPosition + (Conductor.crochet * 5)) / Conductor.crochet) % 1) * 0.15);
+					icon.scale.set(iconlerp, iconlerp);
+					icon.scale.set(iconlerp, iconlerp);
+			
+					// iconP1.updateHitbox();
+					// iconP2.updateHitbox();
+			
+					var iconOffset:Int = 26;
+			
+					icon.offset.x = -75;
+					icon.offset.x = -75;
+					// iconP1.offset.y = -iconOffset;
+					if (maxHealth == 0) {
+						if (icon.isPlayer) {
+							icon.x = Std.int(PlayState.current.guiSize.x / 2) - iconOffset + icon.offset.x + (playerOffset * 100);
+						}
+						else {
+							icon.x = Std.int(PlayState.current.guiSize.x / 2) - (icon.width - iconOffset) + icon.offset.x - (opponentOffset * 100);
+						}
+					} else {
+						
+						if (icon.isPlayer) {
+							icon.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) + icon.offset.x + (icon.width * (icon.scale.x - 1) / 4) + (playerOffset * 100);
+						} else {
+							icon.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (icon.width - iconOffset) + icon.offset.x - (icon.width * (icon.scale.x - 1) / 2) + (opponentOffset * 100);
+						}
+						
+					}
+					(icon.isPlayer ? playerOffset++ : opponentOffset++);
+				}
 			}
+			
 		}
 
 		if (health > maxHealth)
 			health = maxHealth;
 
-		for (frameIndex in iconP1.frameIndexes) {
-			if (frameIndex.length == 2) {
-				if (healthBar.percent >= frameIndex[0]) {
-					iconP1.animation.curAnim.curFrame = frameIndex[1];
-					break;
-				}
-			}
-		}
+		
 		for (frameIndex in iconP2.frameIndexes) {
 			if (frameIndex.length == 2) {
 				if ((100 - healthBar.percent) >= frameIndex[0]) {

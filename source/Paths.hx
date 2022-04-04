@@ -507,6 +507,12 @@ class Paths
 		return getPath('characters/$key/icon.png', IMAGE, library);
 	}
 
+	inline static public function getCharacterIconXml(key:String, library:String)
+	{
+		if (library == "mods/~" || library.endsWith("~")) library = "skins";
+		return getPath('characters/$key/icon.xml', IMAGE, library);
+	}
+
 	// inline static public function getCharacterPacker(key:String)
 	// {
 	// 	return FlxAtlasFrames.fromSpriteSheetPacker(getPath('$key.png', IMAGE, "characters"), file('$key.txt', "characters"));
