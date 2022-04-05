@@ -69,6 +69,7 @@ class MainMenuState extends MusicBeatState
 	{
 		reloadModsState = true;
 		
+		
 		optionShit.add('story mode', function() {
 			FlxG.switchState(new StoryMenuState());
 		}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'story mode basic', 'story mode white');
@@ -129,8 +130,11 @@ class MainMenuState extends MusicBeatState
 
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
+		
 
 		CoolUtil.playMenuMusic();
+
+		persistentUpdate = persistentDraw = true;
 
 		// if (FlxG.sound.music != null)
 		// {
@@ -142,7 +146,7 @@ class MainMenuState extends MusicBeatState
 		// 	FlxG.sound.playMusic(daFunkyMusicPath);
 		// }
 
-		persistentUpdate = persistentDraw = true;
+		// persistentUpdate = persistentDraw = true;
 
 		fallBackBG = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xFFFFFFFF);
 		fallBackBG.color = 0xFFFDE871;
@@ -236,9 +240,11 @@ class MainMenuState extends MusicBeatState
 		add(backButton);
 		#end
 
+		FlxTransitionableState.skipNextTransIn = true;
 		super.create();
 		mainMenuScript.executeFunc("postCreate");
 		mainMenuScript.executeFunc("createPost");
+		
 	}
 
 	var selectedSomethin:Bool = false;
@@ -250,7 +256,6 @@ class MainMenuState extends MusicBeatState
 	{
 		
 		mainMenuScript.executeFunc("update", [elapsed]);
-		super.update(elapsed);
 		if (subState != null) return;
 
 		if (Settings.engineSettings.data.developerMode) {
@@ -325,6 +330,7 @@ class MainMenuState extends MusicBeatState
 		});
 		mainMenuScript.executeFunc("postUpdate", [elapsed]);
 		mainMenuScript.executeFunc("updatePost", [elapsed]);
+		super.update(elapsed);
 	}
 
 	function select() {
@@ -333,6 +339,9 @@ class MainMenuState extends MusicBeatState
 		if (option.direct == true)
 		{
 			mainMenuScript.executeFunc("onSelectEnd", [option]);
+			
+			FlxTransitionableState.skipNextTransIn = false;
+			FlxTransitionableState.skipNextTransOut = false;
 			if (option.onSelect != null) option.onSelect();
 		}
 		else
