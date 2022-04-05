@@ -371,18 +371,36 @@ class YoshiCrafterCharter extends MusicBeatState {
         var bpmLabel:FlxUIText = new FlxUIText(10, bpmThing.y + (bpmThing.height / 2), 200, "BPM (Beats per minute)");
         bpmLabel.y -= bpmLabel.height / 2;
 
-        var scrollSpeedThing:FlxUINumericStepper = new FlxUINumericStepper(290, bpmThing.y + bpmThing.height + 10, 0.1, 2, 0.1, 10, 1);
+        var scrollSpeedThing:FlxUINumericStepper = new FlxUINumericStepper(290, bpmThing.y + bpmThing.height + 2, 0.1, 2, 0.1, 10, 1);
         scrollSpeedThing.x -= scrollSpeedThing.width;
         scrollSpeedThing.name = "scrollSpeed";
         scrollSpeedThing.value = _song.speed;
         var scrollSpeedLabel:FlxUIText = new FlxUIText(10, scrollSpeedThing.y + (scrollSpeedThing.height / 2), 200, "Scroll Speed");
         scrollSpeedLabel.y -= scrollSpeedLabel.height / 2;
 
+        var player1Label:FlxUIText = new FlxUIText(10, scrollSpeedThing.y + scrollSpeedThing.height + 10, 135, _song.player1.split(":").join("\n"));
+        player1Label.alignment = CENTER;
+        var changePlayer1Button:FlxUIButton = new FlxUIButton(player1Label.x, player1Label.y + player1Label.height + 5, "Change Player", function() {
+            openSubState(new ChooseCharacterScreen());
+        });
+        changePlayer1Button.resize(135, 20);
+
+        var player2Label:FlxUIText = new FlxUIText(145, scrollSpeedThing.y + scrollSpeedThing.height + 10, 135, _song.player2.split(":").join("\n"));
+        player2Label.alignment = CENTER;
+        var changePlayer2Button:FlxUIButton = new FlxUIButton(player2Label.x, player2Label.y + player2Label.height + 5, "Change Opponent", function() {
+            openSubState(new ChooseCharacterScreen());
+        });
+        changePlayer2Button.resize(135, 20);
+
         songTab.add(titleLabel);
         songTab.add(bpmThing);
         songTab.add(bpmLabel);
         songTab.add(scrollSpeedThing);
         songTab.add(scrollSpeedLabel);
+        songTab.add(player1Label);
+        songTab.add(changePlayer1Button);
+        songTab.add(player2Label);
+        songTab.add(changePlayer2Button);
         UI_Menu.addGroup(songTab);
     }
 
