@@ -378,17 +378,29 @@ class YoshiCrafterCharter extends MusicBeatState {
         var scrollSpeedLabel:FlxUIText = new FlxUIText(10, scrollSpeedThing.y + (scrollSpeedThing.height / 2), 200, "Scroll Speed");
         scrollSpeedLabel.y -= scrollSpeedLabel.height / 2;
 
-        var player1Label:FlxUIText = new FlxUIText(10, scrollSpeedThing.y + scrollSpeedThing.height + 10, 135, _song.player1.split(":").join("\n"));
+        var p1 = _song.player1.split(":");
+        if (p1.length < 2) p1.insert(0, '');
+        var player1Label:FlxUIText = new FlxUIText(155, scrollSpeedThing.y + scrollSpeedThing.height + 10, 135, p1.join("\n"));
         player1Label.alignment = CENTER;
         var changePlayer1Button:FlxUIButton = new FlxUIButton(player1Label.x, player1Label.y + player1Label.height + 5, "Change Player", function() {
-            openSubState(new ChooseCharacterScreen());
+            openSubState(new ChooseCharacterScreen(function(mod, char) {
+                _song.player1 = '$mod:$char';
+                iconP1.changeCharacter(char, mod);
+                player1Label.text = '$mod\n$char';
+            }));
         });
         changePlayer1Button.resize(135, 20);
 
-        var player2Label:FlxUIText = new FlxUIText(145, scrollSpeedThing.y + scrollSpeedThing.height + 10, 135, _song.player2.split(":").join("\n"));
+        var p2 = _song.player2.split(":");
+        if (p2.length < 2) p2.insert(0, '');
+        var player2Label:FlxUIText = new FlxUIText(10, scrollSpeedThing.y + scrollSpeedThing.height + 10, 135, p2.join("\n"));
         player2Label.alignment = CENTER;
         var changePlayer2Button:FlxUIButton = new FlxUIButton(player2Label.x, player2Label.y + player2Label.height + 5, "Change Opponent", function() {
-            openSubState(new ChooseCharacterScreen());
+            openSubState(new ChooseCharacterScreen(function(mod, char) {
+                _song.player2 = '$mod:$char';
+                iconP2.changeCharacter(char, mod);
+                player2Label.text = '$mod\n$char';
+            }));
         });
         changePlayer2Button.resize(135, 20);
 

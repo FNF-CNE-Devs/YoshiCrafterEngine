@@ -1,6 +1,7 @@
 package;
 
 // import sys.io.File;
+import dev_toolbox.stage_editor.FlxStageSprite;
 import mod_support_stuff.FlxColor_Helper;
 import Script.HScript;
 import openfl.utils.Assets;
@@ -20,8 +21,9 @@ import flixel.util.FlxColor;
 using StringTools;
 /**
 * Main Character class for Characters as BF, GF, Daddy Dearest, Mommy Mearest, etc...
+* Also this is based off FlxStageSprite BUT since it doesn't override anything it won't interfere with anything so we good
 */
-class Character extends FlxSprite
+class Character extends FlxStageSprite
 {
 	/**
 	 * Animation Offsets.
@@ -487,7 +489,6 @@ class Character extends FlxSprite
 			// will obviously not play the animation and "pause it", to prevent null exception. it will keep the current frame and not set the offset.
 			animation.play(AnimName, Force, Reversed, Frame);
 			if (animation.getByName(AnimName) == null) {
-				trace(AnimName + " doesn't exist on character " + curCharacter);
 				if (!unknownAnimsAlerted.contains(AnimName)) {
 					PlayState.log.push('Character.playAnim: $AnimName doesn\'t exist on character $curCharacter');
 					unknownAnimsAlerted.push(AnimName);

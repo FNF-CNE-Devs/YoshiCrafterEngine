@@ -35,6 +35,10 @@ class Alphabet extends FlxSpriteGroup
 	 * Whenever the Alphabet should reposition itself like an option menu. If set to true, will position itself like in `FreeplayState`, raccording to `targetY`.
 	**/
 	public var isMenuItem:Bool = false;
+	/**
+	 * If false, the Alphabet will go to the target Y without any lerp and set this to true.
+	**/
+	public var wentToTargetY:Bool = false;
 
 	/**
 	 * Alphabet's text. Does not have any effect when changed.
@@ -285,9 +289,21 @@ class Alphabet extends FlxSpriteGroup
 			if (Std.isOfType(FlxG.state, PlayState))
 				if (isMenuItem)
 					h = PlayState.current.guiSize.y;
+			var w:Float = FlxG.width;
+			if (Std.isOfType(FlxG.state, PlayState))
+				if (isMenuItem)
+					w = PlayState.current.guiSize.x;
 
-			y = FlxMath.lerp(y, (scaledY * 120) + (h * 0.48), 0.16 * 60 * elapsed);
-			x = FlxMath.lerp(x, (targetY * 20) + 90, 0.16 * 60 * elapsed);
+			if (wentToTargetY) {
+				y = FlxMath.lerp(y, (scaledY * 120) + (h * 0.48), 0.16 * 60 * elapsed);
+				x = FlxMath.lerp(x, (targetY * 20) + 90, 0.16 * 60 * elapsed);
+			} else {
+				x = (targetY * 20) + 90 - w;
+				// y = (targetY * 20) + 90;
+				y = (scaledY * 120) + (h * 0.48);
+				wentToTargetY = true;
+			}
+			
 		}
 
 		super.update(elapsed);

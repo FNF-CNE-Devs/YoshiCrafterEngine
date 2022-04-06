@@ -1,5 +1,7 @@
 package;
 
+import flixel.addons.transition.Transition;
+import flixel.FlxSubState;
 import dev_toolbox.ToolboxMessage;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
@@ -187,4 +189,14 @@ class MusicBeatState extends FlxUIState
         m.cameras = cameras;
         openSubState(m);
     }
+
+	public override function openSubState(state:FlxSubState) {
+		if (subState != null) {
+			if (Std.isOfType(subState, Transition))  {
+				closeSubState();
+			}
+		}
+		persistentUpdate = false;
+		super.openSubState(state);
+	}
 }

@@ -1,5 +1,6 @@
 package dev_toolbox.stage_editor;
 
+import charter.ChooseCharacterScreen;
 import flixel.tweens.FlxEase;
 import haxe.Serializer;
 import haxe.Unserializer;
@@ -41,13 +42,13 @@ class StageEditor extends MusicBeatState {
     public var dummyHUDCamera:FlxCamera;
     public var stage:StageJSON;
     public var stageFile:String;
-    public var bfDefPos:FlxPoint = new FlxPoint(770, 100 + 350);
-    public var gfDefPos:FlxPoint = new FlxPoint(400, 130 - 9);
+    public var bfDefPos:FlxPoint = new FlxPoint(770, 100);
+    public var gfDefPos:FlxPoint = new FlxPoint(400, 130);
     public var dadDefPos:FlxPoint = new FlxPoint(100, 100);
 
-    public var bf:FlxStageSprite; // Not a Character since loading it would take too much time
-    public var gf:FlxStageSprite; // Not a Character since loading it would take too much time
-    public var dad:FlxStageSprite; // Not a Character since loading it would take too much time
+    public var bf:Character;
+    public var gf:Character;
+    public var dad:Character;
 
     public var selectedObj(default, set):FlxStageSprite;
 
@@ -317,12 +318,73 @@ class StageEditor extends MusicBeatState {
         layerDownButton.x += moveLayerLabel.width;
         layerUpButton.x += moveLayerLabel.width;
 
+        var changeBFButton = new FlxUIButton((90 * 2) + 10, layerUpButton.y - 10, "Change BF", function() {
+            openSubState(new ChooseCharacterScreen(function(mod, name) {
+                var bfLayer = members.indexOf(bf);
+                var newChar = new Boyfriend(bf.x - bf.charGlobalOffset.x, bf.y - bf.charGlobalOffset.y, '$mod:$name');
+                
+                newChar.name = "Boyfriend";
+                newChar.type = "BF";
+                newChar.scrollFactor.set(bf.scrollFactor.x, bf.scrollFactor.y);
+
+                if (selectedObj == bf) selectedObj = newChar;
+                if (selectOnly == bf) selectOnly = newChar;
+                remove(bf);
+                bf.destroy();
+                bf = newChar;
+                insert(bfLayer, newChar);
+                updateStageElements();
+            }));
+        });
+        changeBFButton.y -= changeBFButton.height;
+
+        var changeGFButton = new FlxUIButton((90 * 1) + 10, changeBFButton.y, "Change GF", function() {
+            openSubState(new ChooseCharacterScreen(function(mod, name) {
+                var gfLayer = members.indexOf(gf);
+                var newChar = new Character(gf.x - gf.charGlobalOffset.x, gf.y - gf.charGlobalOffset.y, '$mod:$name');
+                
+                newChar.name = "Girlfriend";
+                newChar.type = "GF";
+                newChar.scrollFactor.set(gf.scrollFactor.x, gf.scrollFactor.y);
+
+                if (selectedObj == gf) selectedObj = newChar;
+                if (selectOnly == gf) selectOnly = newChar;
+                remove(gf);
+                gf.destroy();
+                gf = newChar;
+                insert(gfLayer, newChar);
+                updateStageElements();
+            }));
+        });
+
+        var changeDadButton = new FlxUIButton(10, changeBFButton.y, "Change Dad", function() {
+            openSubState(new ChooseCharacterScreen(function(mod, name) {
+                var dadLayer = members.indexOf(dad);
+                var newChar = new Character(dad.x - dad.charGlobalOffset.x, dad.y - dad.charGlobalOffset.y, '$mod:$name');
+                
+                newChar.name = "Dad";
+                newChar.type = "Dad";
+                newChar.scrollFactor.set(dad.scrollFactor.x, dad.scrollFactor.y);
+
+                if (selectedObj == dad) selectedObj = newChar;
+                if (selectOnly == dad) selectOnly = newChar;
+                remove(dad);
+                dad.destroy();
+                dad = newChar;
+                insert(dadLayer, newChar);
+                updateStageElements();
+            }));
+        });
+
 
         stageTab.add(deleteSpriteButton);
         stageTab.add(addSpriteButton);
         stageTab.add(layerUpButton);
         stageTab.add(layerDownButton);
         stageTab.add(moveLayerLabel);
+        stageTab.add(changeDadButton);
+        stageTab.add(changeGFButton);
+        stageTab.add(changeBFButton);
         tabs.addGroup(stageTab);
     }
 
@@ -666,18 +728,19 @@ class StageEditor extends MusicBeatState {
         if (stage.dadOffset == null || stage.dadOffset.length == 0) stage.dadOffset = [0, 0];
         if (stage.dadOffset.length < 2) stage.dadOffset = [stage.dadOffset[0], 0];
 
-        bf = new FlxStageSprite(bfDefPos.x + stage.bfOffset[0], bfDefPos.y + stage.bfOffset[1]);
+        bf = new Boyfriend(bfDefPos.x + stage.bfOffset[0], bfDefPos.y + stage.bfOffset[1], "Friday Night Funkin':bf");
         bf.name = "Boyfriend";
         bf.type = "BF";
 
-        gf = new FlxStageSprite(gfDefPos.x + stage.gfOffset[0], gfDefPos.y + stage.gfOffset[1]);
+        gf = new Character(gfDefPos.x + stage.gfOffset[0], gfDefPos.y + stage.gfOffset[1], "Friday Night Funkin':gf");
         gf.name = "Girlfriend";
         gf.type = "GF";
 
-        dad = new FlxStageSprite(dadDefPos.x + stage.dadOffset[0], dadDefPos.y + stage.dadOffset[1]);
+        dad = new Character(dadDefPos.x + stage.dadOffset[0], dadDefPos.y + stage.dadOffset[1], "Friday Night Funkin':dad");
         dad.name = "Dad";
         dad.type = "Dad";
 
+        /*
         for(e in [bf, gf, dad]) {
             e.frames = Paths.getSparrowAtlas("stageEditorChars", "shared");
             switch(e.type) {
@@ -692,6 +755,7 @@ class StageEditor extends MusicBeatState {
             e.antialiasing = true;
             e.updateHitbox();
         }
+        */
 
         addStageTab();
         addSelectedObjectTab();
@@ -880,9 +944,9 @@ class StageEditor extends MusicBeatState {
                 });
             }
         }
-        stage.bfOffset = [bf.x - bfDefPos.x, bf.y - bfDefPos.y];
-        stage.gfOffset = [gf.x - gfDefPos.x, gf.y - gfDefPos.y];
-        stage.dadOffset = [dad.x - dadDefPos.x, dad.y - dadDefPos.y];
+        stage.bfOffset = [bf.x - bfDefPos.x - bf.charGlobalOffset.x, bf.y - bfDefPos.y - bf.charGlobalOffset.y];
+        stage.gfOffset = [gf.x - gfDefPos.x - gf.charGlobalOffset.x, gf.y - gfDefPos.y - gf.charGlobalOffset.y];
+        stage.dadOffset = [dad.x - dadDefPos.x - dad.charGlobalOffset.x, dad.y - dadDefPos.y - dad.charGlobalOffset.y];
         
         // stage.defaultCamZoom = 
         unsaved = true;
@@ -984,13 +1048,15 @@ class StageEditor extends MusicBeatState {
         for(s in members) {
             if (Std.isOfType(s, FlxStageSprite)) {
                 var sprite = cast(s, FlxStageSprite);
-                if (Conductor.crochet == 0 || sprite.onBeatOffset == null) {
-                    sprite.offset.set(0, 0);
-                } else {
-                    var easeFunc = easeFuncs[sprite.onBeatOffset.ease];
-                    if (easeFunc == null) easeFunc = function(v) {return v;};
-                    var easeVar = easeFunc((Conductor.songPosition / Conductor.crochet) % 1);
-                    sprite.offset.set(sprite.onBeatOffset.x * easeVar, sprite.onBeatOffset.y * easeVar);
+                if (!homies.contains(sprite.type)) {
+                    if (Conductor.crochet == 0 || sprite.onBeatOffset == null) {
+                        sprite.offset.set(0, 0);
+                    } else {
+                        var easeFunc = easeFuncs[sprite.onBeatOffset.ease];
+                        if (easeFunc == null) easeFunc = function(v) {return v;};
+                        var easeVar = easeFunc((Conductor.songPosition / Conductor.crochet) % 1);
+                        sprite.offset.set(sprite.onBeatOffset.x * easeVar, sprite.onBeatOffset.y * easeVar);
+                    }
                 }
             }
         }
@@ -1064,7 +1130,7 @@ class StageEditor extends MusicBeatState {
                 }
             } else {
                 
-                if (selectedObj != null) {
+                if (selectedObj != null && selectedObj.exists) {
                     sprPosX.value = selectedObj.x;
                     sprPosY.value = selectedObj.y;
                     scrFacX.value = selectedObj.scrollFactor.x;
@@ -1197,5 +1263,9 @@ class StageEditor extends MusicBeatState {
                 }
             }
         }
+        
+        bf.dance();
+        dad.dance();
+        gf.dance();
     }
 }

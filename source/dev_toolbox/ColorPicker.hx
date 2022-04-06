@@ -212,10 +212,10 @@ class ColorPicker extends MusicBeatSubstate {
             var screenPos = FlxG.mouse.getScreenPosition(FlxG.camera);
         if (FlxG.mouse.pressed) {
             if (
-                screenPos.x > colorPickerSprite.x &&
-                screenPos.y > colorPickerSprite.y &&
-                screenPos.x < colorPickerSprite.x + colorPickerSprite.width &&
-                screenPos.y < colorPickerSprite.y + colorPickerSprite.height) {
+                screenPos.x > colorPickerSprite.x + 1 &&
+                screenPos.y > colorPickerSprite.y + 1 &&
+                screenPos.x < colorPickerSprite.x + colorPickerSprite.width - 1 &&
+                screenPos.y < colorPickerSprite.y + colorPickerSprite.height - 1) {
                     var x = Std.int(screenPos.x - colorPickerSprite.x);
                     var y = Std.int(screenPos.y - colorPickerSprite.y);
                     var c = colorPickerSprite.pixels.getPixel32(x, y);
@@ -229,10 +229,10 @@ class ColorPicker extends MusicBeatSubstate {
                     updateColor(null, false);
             }
             if (
-                screenPos.x > colorSliderSprite.x &&
-                screenPos.y > colorSliderSprite.y &&
-                screenPos.x < colorSliderSprite.x + colorSliderSprite.width &&
-                screenPos.y < colorSliderSprite.y + colorSliderSprite.height) {
+                screenPos.x > colorSliderSprite.x + 1 &&
+                screenPos.y > colorSliderSprite.y + 1 &&
+                screenPos.x < colorSliderSprite.x + colorSliderSprite.width - 1 &&
+                screenPos.y < colorSliderSprite.y + colorSliderSprite.height - 1) {
                     var x = Std.int(screenPos.x - colorSliderSprite.x);
                     var y = Std.int(screenPos.y - colorSliderSprite.y);
                     updatePicker(colorSliderSprite.pixels.getPixel32(x,y));

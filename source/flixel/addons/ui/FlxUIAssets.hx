@@ -25,6 +25,7 @@ class FlxUIAssets
 	public static var IMG_TAB_BACK:String = Paths.image("ui/tab_back", "shared");
 	public static var IMG_BOX:String = Paths.image("ui/box", "shared");
 	public static var IMG_DROPDOWN:String = Paths.image("ui/dropdown_mark", "shared");
+	public static var IMG_DROPDOWN_RIGHT:String = Paths.image("ui/dropdown_mark_right", "shared");
 	public static var IMG_PLUS:String = Paths.image("ui/plus_mark", "shared");
 	public static var IMG_MINUS:String = Paths.image("ui/minus_mark", "shared");
 	public static var IMG_HILIGHT:String = Paths.image("ui/hilight", "shared");

@@ -231,6 +231,6 @@
 	<haxedef name="MOBILE_UI" if="android"/>
 	
 	<haxeflag name="-dce" value="no" />
-	<haxeflag name="-xml" value="crafterengine/doc.xml" />
+	<haxeflag name="-xml" value="yoshicrafterengine/doc.xml" />
 
 </project>

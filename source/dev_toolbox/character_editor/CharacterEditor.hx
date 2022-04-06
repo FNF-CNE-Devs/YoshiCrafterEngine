@@ -594,6 +594,7 @@ class CharacterEditor extends MusicBeatState {
                     shader.r.value = [col.redFloat];
                     shader.g.value = [col.greenFloat];
                     shader.b.value = [col.blueFloat];
+                    usePlayerColors.checked = false;
                 }));
             };
             note.hoverColor = 0xFFFFFFFF;

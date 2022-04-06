@@ -167,6 +167,8 @@ class PlayState extends MusicBeatState
 	public var vocals:FlxSound;
 	public var inst:FlxSound;
 
+	public var vocalsOffsetInfraction:Float = 0;
+
 	public var section(get, null):SwagSection;
 	private function get_section() {
 		return PlayState.SONG.notes[Std.int(curStep / 16)];
@@ -2188,12 +2190,19 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			if (FlxG.sound.music.time == Conductor.songPositionOld)
+			if (FlxG.sound.music.time == Conductor.songPositionOld) {
 				Conductor.songPosition += FlxG.elapsed * 1000;
-			else {
+				vocalsOffsetInfraction = 0;
+			} else {
 				// sync
 				Conductor.songPosition = Conductor.songPositionOld = FlxG.sound.music.time;
-				if (Math.abs(vocals.time - Conductor.songPosition) > 50) vocals.time = Conductor.songPosition;
+				if (vocals.time != Conductor.songPosition) {
+					vocalsOffsetInfraction += elapsed;
+					if (vocalsOffsetInfraction > 0.03) { // 30ms of delay
+						vocals.time = Conductor.songPosition;
+						vocalsOffsetInfraction = 0;
+					}
+				}
 			}
 				
 			
