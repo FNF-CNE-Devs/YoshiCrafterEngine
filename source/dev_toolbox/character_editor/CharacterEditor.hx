@@ -100,23 +100,25 @@ class CharacterEditor extends MusicBeatState {
             if (a == null) continue;
             if (a.name == "") continue;
             var animName = character.frames.getByIndex(a.frames[0]).name;
-            var realAnimName = animName;
-            for (i in 0...4) {
-                var animFrames:Array<FlxFrame> = new Array<FlxFrame>();
-                @:privateAccess
-                character.animation.findByPrefix(animFrames, realAnimName); // adds valid frames to animFrames
-
-                if (animFrames.length > 0)
-                {
-                    var frameIndices:Array<Int> = new Array<Int>();
+            var realAnimName = a.prefix;
+            if (realAnimName == null) {
+                for (i in 0...4) {
+                    var animFrames:Array<FlxFrame> = new Array<FlxFrame>();
                     @:privateAccess
-                    character.animation.byPrefixHelper(frameIndices, animFrames, realAnimName); // finds frames and appends them to the blank array
+                    character.animation.findByPrefix(animFrames, realAnimName); // adds valid frames to animFrames
 
-                    if (frameIndices.length == a.frames.length) {
-                        break;
+                    if (animFrames.length > 0)
+                    {
+                        var frameIndices:Array<Int> = new Array<Int>();
+                        @:privateAccess
+                        character.animation.byPrefixHelper(frameIndices, animFrames, realAnimName); // finds frames and appends them to the blank array
+
+                        if (frameIndices.length == a.frames.length) {
+                            break;
+                        }
                     }
+                    realAnimName = realAnimName.substr(0, realAnimName.length - 1);
                 }
-                realAnimName = realAnimName.substr(0, realAnimName.length - 1);
             }
             var offset = character.animOffsets[anim];
             if (offset == null) offset = [0, 0];
