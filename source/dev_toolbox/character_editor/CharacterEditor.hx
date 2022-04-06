@@ -161,7 +161,10 @@ class CharacterEditor extends MusicBeatState {
                     FlxColor.fromRGBFloat(shader.r.value[0], shader.g.value[0], shader.b.value[0]).toWebString();
                 }]
         }
-        File.saveContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$c/Character.json', Json.stringify(json, "\t"));
+        
+        var folder = '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$c';
+        if (ToolboxHome.selectedMod = "~") folder = '${Paths.getSkinsPath()}/$c';
+        File.saveContent('$folder/Character.json', Json.stringify(json, "\t"));
         // if (isBFskin.checked) {
         //     if (ModSupport.modConfig[ToolboxHome.selectedMod].BFskins == null) ModSupport.modConfig[ToolboxHome.selectedMod].BFskins = [];
         //     var exists = false;
