@@ -1,5 +1,9 @@
 package charter;
 
+import openfl.net.FileReference;
+import haxe.Json;
+import openfl.events.Event;
+import openfl.events.IOErrorEvent;
 import lime.media.AudioBuffer;
 import mod_support_stuff.ContextMenu;
 import dev_toolbox.toolbox_tabs.SongTab;
@@ -17,13 +21,13 @@ import Song.SwagSong;
 import flixel.*;
 import flixel.addons.ui.*;
 
-/*
- *
- * Why do i feel like this is going to be ported into Psych in no time
- *
- */
+using StringTools;
 
+/*
+ * Why do i feel like this is going to be ported into Psych in no time
+ */
 class YoshiCrafterCharter extends MusicBeatState {
+    public var _file:FileReference;
     public var notes:Array<CharterNote> = [];
     public static var _song:SwagSong;
 
@@ -91,6 +95,10 @@ class YoshiCrafterCharter extends MusicBeatState {
     
     var instWaveform:WaveformSprite;
     var voicesWaveform:WaveformSprite;
+
+    var noteTypesObjs:Array<FlxSprite> = [];
+    var noteTypesX:Float = 0;
+    var noteTypesY:Float = 0;
     public function new() {
         super();
         if (PlayState._SONG == null) {
@@ -210,6 +218,10 @@ class YoshiCrafterCharter extends MusicBeatState {
             {
                 name: 'note',
                 label: "Note"
+            },
+            {
+                name: 'section',
+                label: "Section"
             }
         ], true);
         UI_Menu.x = FlxG.width - 300;
@@ -218,14 +230,33 @@ class YoshiCrafterCharter extends MusicBeatState {
         UI_Menu.scrollFactor.set(0, 0);
         add(UI_Menu);
 
+        addNoteTab();
         addSongTab();
 		addCharterSettingsTab();
+        addSectionTab();
     }
 	
     var voicesWaveformSection:Int = -10;
     var instWaveformSection:Int = -10;
     var playbackSpeedLabel:FlxText;
 
+    var sectionTabSection:Int = -1;
+    var mustHitSection:FlxUICheckBox = null;
+
+    public function addSectionTab() {
+        var sectionTab = new FlxUI(null, UI_Menu);
+        sectionTab.name = "section";
+
+        var label = new FlxUIText(10, 10, 280, "== Section Settings ==");
+        label.alignment = CENTER;
+        mustHitSection = new FlxUICheckBox(10, label.y + label.height + 10, null, null, "Must Hit Section", 280, null, function() {
+            section.mustHitSection = mustHitSection.checked;
+        });
+
+        sectionTab.add(label);
+        sectionTab.add(mustHitSection);
+        UI_Menu.addGroup(sectionTab);
+    }
 	public function addCharterSettingsTab() {
 		var settingsTab = new FlxUI(null, UI_Menu);
 		settingsTab.name = "settings";
@@ -357,6 +388,72 @@ class YoshiCrafterCharter extends MusicBeatState {
 		UI_Menu.addGroup(settingsTab);
 	}
 
+    var noteTab:FlxUI;
+    var currentNoteType:Int = 0;
+    public function addNoteTab() {
+        noteTab = new FlxUI(null, UI_Menu);
+        noteTab.name = "note";
+
+        var typesLabel = new FlxUIText(10, 10, 280, "== Note Types ==");
+        var addNoteTypeButton = new FlxUIButton(10, typesLabel.y + typesLabel.height + 10, "Add Note Type", function() {
+            openSubState(new NoteTypeSelector(function(mod:String, type:String) {
+                _song.noteTypes.push('$mod:$type');
+                updateNoteTypes();
+                updateNoteColors();
+            }));
+        });
+        noteTypesX = typesLabel.x;
+        noteTypesY = typesLabel.y + typesLabel.height + 10;
+
+
+        updateNoteTypes();
+        noteTab.add(addNoteTypeButton);
+        noteTab.add(typesLabel);
+        UI_Menu.addGroup(noteTab);
+    }
+
+    public function updateNoteTypes() {
+        for(e in noteTypesObjs) {
+            noteTab.remove(e);
+            remove(e);
+            e.destroy();
+        }
+        noteTypesObjs = [];
+        if (currentNoteType >= _song.noteTypes.length) currentNoteType = 0;
+        for(k=>e in _song.noteTypes) {
+            var b = new FlxUIButton(10, (k * 20) + 65, currentNoteType == k ? '> $e <' : e, function() {
+                currentNoteType = k;
+                updateNoteTypes();
+            });
+            b.resize(260, 20);
+            var deleteButton = new FlxUIButton(270, (k * 20) + 65, "", function() {
+                _song.noteTypes.remove(e);
+                if (_song.noteTypes.length <= 0)  _song.noteTypes.push("Friday Night Funkin':Default Note");
+                updateNoteTypes();
+            });
+            deleteButton.resize(20, 20);
+            deleteButton.color = 0xFFFF4444;
+
+            var deleteButtonIcon = new FlxSprite(270 + 2, (k * 20) + 67).loadGraphic(Paths.image("uiIcons", "preload"), true, 16, 16);
+            deleteButtonIcon.animation.add("bin", [2], 1, true);
+            deleteButtonIcon.animation.play("bin");
+
+            if (k > 0) {
+                var color:FlxColor = 0xFFFF8888;
+                color.hue = (k - 1) / (_song.noteTypes.length - 1);
+                deleteButton.label.color = color;
+                deleteButton.label.borderStyle = OUTLINE;
+                deleteButton.label.borderColor = 0xFF000000;
+            }
+            noteTypesObjs.push(b);
+            noteTab.add(b);
+            noteTypesObjs.push(deleteButton);
+            noteTab.add(deleteButton);
+            noteTypesObjs.push(deleteButtonIcon);
+            noteTab.add(deleteButtonIcon);
+        }
+    }
+
     public function addSongTab() {
         var songTab = new FlxUI(null, UI_Menu);
         songTab.name = "song";
@@ -384,10 +481,15 @@ class YoshiCrafterCharter extends MusicBeatState {
         keyNumberThing.x -= keyNumberThing.width;
         var keyNumberLabel:FlxUIText = new FlxUIText(10, keyNumberThing.y + (keyNumberThing.height / 2), 200, "Key Number (needs refresh)");
         keyNumberLabel.y -= keyNumberLabel.height / 2;
+        var hasVocalsTrack:FlxUICheckBox = null;
+        hasVocalsTrack = new FlxUICheckBox(10, keyNumberThing.y + keyNumberThing.height + 10, null, null, "Need Voices", 280, null, function() {
+            _song.needsVoices = hasVocalsTrack.checked;
+        });
+        hasVocalsTrack.checked = _song.needsVoices;
 
         var p1 = _song.player1.split(":");
         if (p1.length < 2) p1.insert(0, '');
-        var player1Label:FlxUIText = new FlxUIText(155, keyNumberThing.y + keyNumberThing.height + 10, 135, p1.join("\n"));
+        var player1Label:FlxUIText = new FlxUIText(155, hasVocalsTrack.y + hasVocalsTrack.height + 10, 135, p1.join("\n"));
         player1Label.alignment = CENTER;
         var changePlayer1Button:FlxUIButton = new FlxUIButton(player1Label.x, player1Label.y + player1Label.height + 5, "Change Player", function() {
             openSubState(new ChooseCharacterScreen(function(mod, char) {
@@ -410,7 +512,51 @@ class YoshiCrafterCharter extends MusicBeatState {
             }));
         });
         changePlayer2Button.resize(135, 20);
+        
+        var refreshButton = new FlxUIButton(10, changePlayer2Button.y + changePlayer2Button.height + 10, "Refresh", function() {
+            compile();
+            PlayState._SONG = _song;
+            FlxG.resetState();
+        });
+        
+        var saveButton = new FlxUIButton(refreshButton.x + refreshButton.width + 10, changePlayer2Button.y + changePlayer2Button.height + 10, "Save", function() {
+            _song.validScore = true;
+            var references = false;
+            var json = {
+                "song": _song
+            };
+            var oldArray = _song.noteTypes;
+            if (!references) {
+                var player1split = json.song.player1.split(":");
+                if (player1split[0] == PlayState.songMod || player1split[0] == "Friday Night Funkin'")
+                    json.song.player1 = player1split[1];
 
+                var player2split = json.song.player2.split(":");
+                if (player2split[0] == PlayState.songMod || player2split[0] == "Friday Night Funkin'")
+                    json.song.player2 = player2split[1];
+
+                oldArray = [];
+                for (k=>v in json.song.noteTypes) {
+                    oldArray[k] = v;
+                    var typeSplit = v.split(":");
+                    if ((typeSplit[0] == PlayState.songMod || typeSplit[0] == "Friday Night Funkin'") && typeSplit.length > 1)
+                        json.song.noteTypes[k] = typeSplit[1];
+                }
+            }
+
+            var data:String = Json.stringify(json);
+
+            if ((data != null) && (data.length > 0))
+            {
+                _file = new FileReference();
+                _file.addEventListener(Event.COMPLETE, onSaveComplete);
+                _file.addEventListener(Event.CANCEL, onSaveCancel);
+                _file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+                _file.save(data.trim(), _song.song.toLowerCase() + ".json");
+            }
+
+            _song.noteTypes = oldArray;
+        });
 
 
         songTab.add(titleLabel);
@@ -424,9 +570,43 @@ class YoshiCrafterCharter extends MusicBeatState {
         songTab.add(changePlayer1Button);
         songTab.add(player2Label);
         songTab.add(changePlayer2Button);
+        songTab.add(refreshButton);
+        songTab.add(saveButton);
         UI_Menu.addGroup(songTab);
     }
 
+    function onSaveComplete(_):Void
+        {
+            _file.removeEventListener(Event.COMPLETE, onSaveComplete);
+            _file.removeEventListener(Event.CANCEL, onSaveCancel);
+            _file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+            _file = null;
+            FlxG.log.notice("Successfully saved LEVEL DATA.");
+        }
+    
+        /**
+         * Called when the save file dialog is cancelled.
+         */
+        function onSaveCancel(_):Void
+        {
+            _file.removeEventListener(Event.COMPLETE, onSaveComplete);
+            _file.removeEventListener(Event.CANCEL, onSaveCancel);
+            _file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+            _file = null;
+        }
+    
+        /**
+         * Called if there is an error while saving the gameplay recording.
+         */
+        function onSaveError(_):Void
+        {
+            _file.removeEventListener(Event.COMPLETE, onSaveComplete);
+            _file.removeEventListener(Event.CANCEL, onSaveCancel);
+            _file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+            _file = null;
+            FlxG.log.error("Problem saving Level data");
+        }
+        
     public function generateNotes() {
         for (s in _song.notes) {
             for(n in s.sectionNotes) {
@@ -603,10 +783,15 @@ class YoshiCrafterCharter extends MusicBeatState {
 				if (mustHit) {
 					noteData = (Math.floor(noteData / (_song.keyNumber * 2)) * _song.keyNumber * 2) + ((noteData + _song.keyNumber) % (_song.keyNumber * 2));
 				}
-                noteInCreation = addNote(strumT * Conductor.stepCrochet, noteData, mustHit);
+                noteInCreation = addNote(strumT * Conductor.stepCrochet, noteData + (currentNoteType * _song.keyNumber * 2), mustHit);
             }
         }
 
+        var sec = Math.floor(Conductor.songPosition / Conductor.crochet);
+        if (sec != sectionTabSection) {
+            sectionTabSection = sec;
+            mustHitSection.checked = section.mustHitSection;
+        }
         if (FlxG.mouse.justPressedRight) {
             if (FlxG.mouse.overlaps(grid)) {
                 /*
