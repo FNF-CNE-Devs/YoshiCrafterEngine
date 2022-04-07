@@ -1,6 +1,5 @@
 import("LoadingState");
 
-var password = "SHREK";
 var char:Int = 0;
 
 function update(elapsed:Float) {
@@ -13,7 +12,10 @@ function update(elapsed:Float) {
     if (char == 4) pressed = controls.K;
     if (pressed) {
         char++;
-        trace(char);
+    } else {
+        if (controls.ANY) {
+            char = 0;
+        }
     }
     if (char >= 5) {
         CoolUtil.loadSong("Friday Night Funkin'", "MILF", "Sexy");

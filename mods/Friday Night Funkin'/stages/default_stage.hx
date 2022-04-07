@@ -15,7 +15,7 @@ function create() {
     stageFront.antialiasing = true;
     stageFront.scrollFactor.set(0.9, 0.9);
     stageFront.active = false;
-	stageFront.shader = new CustomShader(mod + ':test');
+	stageFront.shader = new CustomShader(mod + ':3D Floor');
     PlayState.add(stageFront);
 
     var stageCurtains = new FlxSprite(-500, -300).loadGraphic(Paths.image('default_stage/stagecurtains'));
