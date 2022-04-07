@@ -481,10 +481,12 @@ class FreeplayState extends MusicBeatState
 		super.update(elapsed);
 		
 
-		if (Settings.engineSettings.data.developerMode) {
-			if (FlxControls.justPressed.F6) openSubState(new LogSubState());
+		if (!(ModSupport.modConfig[Settings.engineSettings.selectedMod] != null && ModSupport.modConfig[Settings.engineSettings.selectedMod].lock)) {
+			if (Settings.engineSettings.data.developerMode) {
+				if (FlxControls.justPressed.F6) openSubState(new LogSubState());
+			}
+			if (FlxControls.justPressed.F5) FlxG.resetState();
 		}
-		if (FlxControls.justPressed.F5) FlxG.resetState();
 		if (FlxControls.justPressed.TAB) openSubState(new SwitchModSubstate());
 
 		shiftCooldown += elapsed;
