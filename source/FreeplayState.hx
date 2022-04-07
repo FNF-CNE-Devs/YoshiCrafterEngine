@@ -481,7 +481,7 @@ class FreeplayState extends MusicBeatState
 		super.update(elapsed);
 		
 
-		if (!(ModSupport.modConfig[Settings.engineSettings.selectedMod] != null && ModSupport.modConfig[Settings.engineSettings.selectedMod].lock)) {
+		if (!(ModSupport.modConfig[Settings.engineSettings.data.selectedMod] != null && ModSupport.modConfig[Settings.engineSettings.data.selectedMod].locked)) {
 			if (Settings.engineSettings.data.developerMode) {
 				if (FlxControls.justPressed.F6) openSubState(new LogSubState());
 			}
