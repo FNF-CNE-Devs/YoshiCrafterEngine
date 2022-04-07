@@ -179,7 +179,7 @@ class CharacterCreator extends MusicBeatSubstate {
                 flipX: false
             };
             var folder = '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName';
-            if (ToolboxHome.selectedMod = "~") folder = '${Paths.getSkinsPath()}/$c';
+            if (ToolboxHome.selectedMod == "~") folder = '${Paths.getSkinsPath()}/$charName';
             File.saveContent('$folder/Character.json', Json.stringify(json, "\t"));
             File.copy(char_spritesheet + (usesJson ? ".json" : ".xml"), '$folder/spritesheet.' + (usesJson ? "json" : "xml"));
             File.copy(char_spritesheet + ".png", '$folder/spritesheet.png');

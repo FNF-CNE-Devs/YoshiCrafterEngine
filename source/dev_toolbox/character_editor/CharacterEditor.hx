@@ -163,7 +163,7 @@ class CharacterEditor extends MusicBeatState {
         }
         
         var folder = '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$c';
-        if (ToolboxHome.selectedMod = "~") folder = '${Paths.getSkinsPath()}/$c';
+        if (ToolboxHome.selectedMod == "~") folder = '${Paths.getSkinsPath()}/$c';
         File.saveContent('$folder/Character.json', Json.stringify(json, "\t"));
         // if (isBFskin.checked) {
         //     if (ModSupport.modConfig[ToolboxHome.selectedMod].BFskins == null) ModSupport.modConfig[ToolboxHome.selectedMod].BFskins = [];
