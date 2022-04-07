@@ -378,9 +378,16 @@ class YoshiCrafterCharter extends MusicBeatState {
         var scrollSpeedLabel:FlxUIText = new FlxUIText(10, scrollSpeedThing.y + (scrollSpeedThing.height / 2), 200, "Scroll Speed");
         scrollSpeedLabel.y -= scrollSpeedLabel.height / 2;
 
+        var keyNumberThing:FlxUINumericStepper = new FlxUINumericStepper(290, scrollSpeedThing.y + scrollSpeedThing.height + 2, 1, 4, 1, 100, 0);
+        keyNumberThing.value = _song.keyNumber;
+        keyNumberThing.name = "keyNumber";
+        keyNumberThing.x -= keyNumberThing.width;
+        var keyNumberLabel:FlxUIText = new FlxUIText(10, keyNumberThing.y + (keyNumberThing.height / 2), 200, "Key Number (needs refresh)");
+        keyNumberLabel.y -= keyNumberLabel.height / 2;
+
         var p1 = _song.player1.split(":");
         if (p1.length < 2) p1.insert(0, '');
-        var player1Label:FlxUIText = new FlxUIText(155, scrollSpeedThing.y + scrollSpeedThing.height + 10, 135, p1.join("\n"));
+        var player1Label:FlxUIText = new FlxUIText(155, keyNumberThing.y + keyNumberThing.height + 10, 135, p1.join("\n"));
         player1Label.alignment = CENTER;
         var changePlayer1Button:FlxUIButton = new FlxUIButton(player1Label.x, player1Label.y + player1Label.height + 5, "Change Player", function() {
             openSubState(new ChooseCharacterScreen(function(mod, char) {
@@ -393,7 +400,7 @@ class YoshiCrafterCharter extends MusicBeatState {
 
         var p2 = _song.player2.split(":");
         if (p2.length < 2) p2.insert(0, '');
-        var player2Label:FlxUIText = new FlxUIText(10, scrollSpeedThing.y + scrollSpeedThing.height + 10, 135, p2.join("\n"));
+        var player2Label:FlxUIText = new FlxUIText(10, player1Label.y, 135, p2.join("\n"));
         player2Label.alignment = CENTER;
         var changePlayer2Button:FlxUIButton = new FlxUIButton(player2Label.x, player2Label.y + player2Label.height + 5, "Change Opponent", function() {
             openSubState(new ChooseCharacterScreen(function(mod, char) {
@@ -404,11 +411,15 @@ class YoshiCrafterCharter extends MusicBeatState {
         });
         changePlayer2Button.resize(135, 20);
 
+
+
         songTab.add(titleLabel);
         songTab.add(bpmThing);
         songTab.add(bpmLabel);
         songTab.add(scrollSpeedThing);
         songTab.add(scrollSpeedLabel);
+        songTab.add(keyNumberThing);
+        songTab.add(keyNumberLabel);
         songTab.add(player1Label);
         songTab.add(changePlayer1Button);
         songTab.add(player2Label);
@@ -799,6 +810,8 @@ class YoshiCrafterCharter extends MusicBeatState {
                     updateNotesY();
                 case "scrollSpeed":
                     _song.speed = sender.value;
+                case "keyNumber":
+                    _song.keyNumber = Std.int(sender.value);
             }
         }
     }

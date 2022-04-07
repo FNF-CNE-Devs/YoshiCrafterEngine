@@ -1467,7 +1467,6 @@ class PlayState extends MusicBeatState
 	public var timerText:FlxText = null;
 	public var timerNow:FlxText = null;
 	public var timerFinal:FlxText = null;
-	public var timerTotalLength:FlxText = null;
 
 	function startSong():Void
 	{

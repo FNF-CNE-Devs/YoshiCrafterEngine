@@ -68,18 +68,12 @@ class CharterNote extends FlxSprite
 		return PlayState.current.noteScripts[noteType % PlayState.current.noteScripts.length];
 	}
 
-	public static var noteNumberSchemes:Map<Int, Array<NoteDirection>> = [
-		1 => [Up],
-		4 => [Left, Down, Up, Right],
-		// 4 => [Down, Left, Right, Up], // lol
-		6 => [Left, Down, Right, Left, Up, Right],
-		9 => [Left, Down, Up, Right, Up, Left, Down, Up, Right]
-	];
+	
 
 	public static var noteNumberScheme(get, null):Array<NoteDirection>;
 	public static function get_noteNumberScheme():Array<NoteDirection> {
-		var noteNumberScheme:Array<NoteDirection> = noteNumberSchemes[ChartingState_New._song.keyNumber];
-		if (noteNumberScheme == null) noteNumberScheme = noteNumberSchemes[4];
+		var noteNumberScheme:Array<NoteDirection> = Note.noteNumberSchemes[ChartingState_New._song.keyNumber];
+		if (noteNumberScheme == null) noteNumberScheme = Note.noteNumberSchemes[4];
 		return noteNumberScheme;
 	}
 
@@ -126,8 +120,8 @@ class CharterNote extends FlxSprite
 	{
 		super();
 
-		var noteNumberScheme:Array<NoteDirection> = noteNumberSchemes[ChartingState_New._song.keyNumber];
-		if (noteNumberScheme == null) noteNumberScheme = noteNumberSchemes[4];
+		var noteNumberScheme:Array<NoteDirection> = Note.noteNumberSchemes[ChartingState_New._song.keyNumber];
+		if (noteNumberScheme == null) noteNumberScheme = Note.noteNumberSchemes[4];
 
 		
 
