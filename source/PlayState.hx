@@ -2036,6 +2036,17 @@ class PlayState extends MusicBeatState
 
 		
 		
+		if (!inCutscene && !blockPlayerInput) {
+			keyShit(elapsed);
+
+			for(e in currentSustains) {
+				if (e.time + Conductor.stepCrochet > Conductor.songPosition) {
+					health += e.healthVal / (Conductor.stepCrochet / 1000) * elapsed;
+				} else {
+					currentSustains.remove(e);
+				}
+			}
+		}
 
 		super.update(elapsed);
 
@@ -2629,17 +2640,17 @@ class PlayState extends MusicBeatState
 				});
 			}
 
-			if (!inCutscene && !blockPlayerInput) {
-				keyShit(elapsed);
+			// if (!inCutscene && !blockPlayerInput) {
+			// 	keyShit(elapsed);
 
-				for(e in currentSustains) {
-					if (e.time + Conductor.stepCrochet > Conductor.songPosition) {
-						health += e.healthVal / (Conductor.stepCrochet / 1000) * elapsed;
-					} else {
-						currentSustains.remove(e);
-					}
-				}
-			}
+			// 	for(e in currentSustains) {
+			// 		if (e.time + Conductor.stepCrochet > Conductor.songPosition) {
+			// 			health += e.healthVal / (Conductor.stepCrochet / 1000) * elapsed;
+			// 		} else {
+			// 			currentSustains.remove(e);
+			// 		}
+			// 	}
+			// }
 				
 
 			
