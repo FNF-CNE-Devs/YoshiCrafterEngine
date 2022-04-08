@@ -92,6 +92,7 @@ class YoshiCrafterCharter extends MusicBeatState {
     var copiedSection:Int = -1;
 
     var UI_Menu:FlxUITabMenu;
+    var UI_Section:FlxUITabMenu;
     
     var instWaveform:WaveformSprite;
     var voicesWaveform:WaveformSprite;
@@ -218,17 +219,25 @@ class YoshiCrafterCharter extends MusicBeatState {
             {
                 name: 'note',
                 label: "Note"
-            },
-            {
-                name: 'section',
-                label: "Section"
             }
         ], true);
         UI_Menu.x = FlxG.width - 300;
         UI_Menu.y = 0;
-        UI_Menu.resize(300, FlxG.height);
+        UI_Menu.resize(300, Std.int(FlxG.height * 0.75));
         UI_Menu.scrollFactor.set(0, 0);
         add(UI_Menu);
+
+        UI_Section = new FlxUITabMenu(null, [
+            {
+                name: "section",
+                label: 'Section #1 Settings'
+            }
+        ], true);
+        UI_Section.x = FlxG.width - 300;
+        UI_Section.y = FlxG.height * 0.75;
+        UI_Section.resize(300, Std.int(FlxG.height * 0.25));
+        UI_Section.scrollFactor.set(0, 0);
+        add(UI_Section);
 
         addNoteTab();
         addSongTab();
@@ -242,6 +251,8 @@ class YoshiCrafterCharter extends MusicBeatState {
 
     var sectionTabSection:Int = -1;
     var mustHitSection:FlxUICheckBox = null;
+    var duetSection:FlxUICheckBox = null;
+    var duetCameraSlide:FlxUISliderNew = null;
 
     public function addSectionTab() {
         var sectionTab = new FlxUI(null, UI_Menu);
@@ -252,10 +263,18 @@ class YoshiCrafterCharter extends MusicBeatState {
         mustHitSection = new FlxUICheckBox(10, label.y + label.height + 10, null, null, "Must Hit Section", 280, null, function() {
             section.mustHitSection = mustHitSection.checked;
         });
+        duetSection = new FlxUICheckBox(10, mustHitSection.y + mustHitSection.height + 5, null, null, "Duet Camera", 280, null, function() {
+            section.duetCamera = duetSection.checked;
+        });
+        var sliderLabel = new FlxUIText(10, duetSection.y + duetSection.height + 10, 280, "Duet Target");
+        duetCameraSlide = new FlxUISliderNew(10, Std.int(sliderLabel.y + sliderLabel.height), 280, 7, section, "duetCameraSlide", 0, 1, "Opponent", "Player");
 
         sectionTab.add(label);
         sectionTab.add(mustHitSection);
-        UI_Menu.addGroup(sectionTab);
+        sectionTab.add(duetSection);
+        sectionTab.add(sliderLabel);
+        sectionTab.add(duetCameraSlide);
+        UI_Section.addGroup(sectionTab);
     }
 	public function addCharterSettingsTab() {
 		var settingsTab = new FlxUI(null, UI_Menu);
@@ -787,10 +806,17 @@ class YoshiCrafterCharter extends MusicBeatState {
             }
         }
 
-        var sec = Math.floor(Conductor.songPosition / Conductor.crochet);
+        var sec = Math.floor(Conductor.songPosition / Conductor.crochet / 4);
         if (sec != sectionTabSection) {
+            @:privateAccess
+            cast(UI_Section._tabs[0], FlxUIButton).label.text = 'Section #$sec Settings';
             sectionTabSection = sec;
             mustHitSection.checked = section.mustHitSection;
+            duetSection.checked = section.duetCamera == true;
+            if (section.duetCameraSlide == null) section.duetCameraSlide = 0.5;
+            duetCameraSlide.bar.value = section.duetCameraSlide;
+            duetCameraSlide.object = section;
+            
         }
         if (FlxG.mouse.justPressedRight) {
             if (FlxG.mouse.overlaps(grid)) {

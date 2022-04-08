@@ -2265,22 +2265,25 @@ class PlayState extends MusicBeatState
 				// trace(PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
 			}
 
-			if (!PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
+			var sexion = PlayState.SONG.notes[Std.int(curStep / 16)];
+			if (sexion.duetCamera == true) {
+				if (sexion.duetCameraSlide == null) sexion.duetCameraSlide = 0.5;
+				var bfPos = [boyfriend.getMidpoint().x - 100 + boyfriend.camOffset.x, boyfriend.getMidpoint().y - 100 + boyfriend.camOffset.y];
+				var dadPos = [dad.getMidpoint().x + 150 + dad.camOffset.x, dad.getMidpoint().y - 100 + dad.camOffset.y];
+				camFollow.setPosition((bfPos[0] * sexion.duetCameraSlide) + (dadPos[0] * (1 - sexion.duetCameraSlide)), (bfPos[1] * sexion.duetCameraSlide) + (dadPos[1] * (1 - sexion.duetCameraSlide)));
+			} else if (sexion.mustHitSection == true)
 			{
-				
-				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
+				camFollow.setPosition(boyfriend.getMidpoint().x - 100 + boyfriend.camOffset.x, boyfriend.getMidpoint().y - 100 + boyfriend.camOffset.y);
 
-				// switch (dad.curCharacter)
-				// {
-				// 	case 'mom':
-				// 		camFollow.y = dad.getMidpoint().y;
-				// 	case 'senpai':
-				// 		camFollow.y = dad.getMidpoint().y - 430;
-				// 		camFollow.x = dad.getMidpoint().x - 100;
-				// 	case 'senpai-angry':
-				// 		camFollow.y = dad.getMidpoint().y - 430;
-				// 		camFollow.x = dad.getMidpoint().x - 100;
-				// }
+				if (camFollow.x != boyfriend.getMidpoint().x - 100) {
+					if (SONG.song.toLowerCase() == 'tutorial')
+					{
+						FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
+					}
+				}
+			}
+			else
+			{
 				camFollow.setPosition(dad.getMidpoint().x + 150 + dad.camOffset.x, dad.getMidpoint().y - 100 + dad.camOffset.y);
 				if (camFollow.x != dad.getMidpoint().x + 150) {
 					if (dad.curCharacter == 'mom')
@@ -2289,34 +2292,6 @@ class PlayState extends MusicBeatState
 					if (SONG.song.toLowerCase() == 'tutorial')
 					{
 						tweenCamIn();
-					}
-				}
-
-				
-			}
-			
-
-			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
-			{
-				// var camMovement:FlxPoint = new FlxPoint(0,0);
-
-				// if (boyfriend.animation.curAnim != null) {
-				// 	var n = boyfriend.animation.curAnim.name;
-				// 	if (n.startsWith("singLEFT")) camMovement.x = -1;
-				// 	if (n.startsWith("singRIGHT")) camMovement.x = 1;
-				// 	if (n.startsWith("singUP")) camMovement.y = -1;
-				// 	if (n.startsWith("singDOWN")) camMovement.y = 1;
-				// }
-
-				// var ang = Math.atan2(camMovement.x, camMovement.y);
-
-				// camFollow.setPosition(boyfriend.getMidpoint().x - 100 + boyfriend.camOffset.x + (Math.sin(ang) * 20), boyfriend.getMidpoint().y - 100 + boyfriend.camOffset.y + (Math.cos(ang) * 20));
-				camFollow.setPosition(boyfriend.getMidpoint().x - 100 + boyfriend.camOffset.x, boyfriend.getMidpoint().y - 100 + boyfriend.camOffset.y);
-
-				if (camFollow.x != boyfriend.getMidpoint().x - 100) {
-					if (SONG.song.toLowerCase() == 'tutorial')
-					{
-						FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
 					}
 				}
 			}
@@ -2742,7 +2717,10 @@ class PlayState extends MusicBeatState
 
 	public function endSong2() {
 		if (fromCharter) {
-			FlxG.switchState(new ChartingState_New());
+			if (Settings.engineSettings.data.yoshiCrafterEngineCharter)
+				FlxG.switchState(new YoshiCrafterCharter());
+			else
+				FlxG.switchState(new ChartingState_New());
 			return;
 		}
 		if (isStoryMode)
