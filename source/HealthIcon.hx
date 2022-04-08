@@ -24,6 +24,10 @@ class HealthIcon extends FlxSprite
 	// public var health:Float = 0.5;
 	public var curCharacter:String = "";
 	public var isPlayer:Bool = false;
+	/**
+		Whenever the icon should be automatically managed by PlayState.
+	**/
+	public var auto:Bool = true;
 	private function set_frameIndexes(f:Array<Array<Int>>):Array<Array<Int>> {
 		frameIndexes = f;
 		animation.curAnim.reset();

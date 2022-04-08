@@ -2127,6 +2127,7 @@ class PlayState extends MusicBeatState
 			for (s in members) {
 				if (Std.isOfType(s, HealthIcon)) {
 					var icon:HealthIcon = cast(s, HealthIcon);
+					if (!icon.visible || !icon.auto) continue;
 					var iconlerp = 1.15 - (FlxEase.cubeOut(((Conductor.songPosition + (Conductor.crochet * 5)) / Conductor.crochet) % 1) * 0.15);
 					icon.scale.set(iconlerp, iconlerp);
 					icon.scale.set(iconlerp, iconlerp);
@@ -2149,9 +2150,9 @@ class PlayState extends MusicBeatState
 					} else {
 						
 						if (icon.isPlayer) {
-							icon.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) + icon.offset.x + (icon.width * (icon.scale.x - 1) / 4) + (playerOffset * 100);
+							icon.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) + icon.offset.x + (icon.width * (icon.scale.x - 1) / 4) + (playerOffset * 85 * icon.scale.x);
 						} else {
-							icon.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (icon.width - iconOffset) + icon.offset.x - (icon.width * (icon.scale.x - 1) / 2) + (opponentOffset * 100);
+							icon.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (icon.width - iconOffset) + icon.offset.x - (icon.width * (icon.scale.x - 1) / 2) - (opponentOffset * 85 * icon.scale.x);
 						}
 						
 					}
@@ -2162,6 +2163,8 @@ class PlayState extends MusicBeatState
 						icon.health = 1 - (healthBar.percent / 100);
 						opponentOffset++;
 					}
+					icon.y = healthBar.y + (healthBar.height / 2) - (icon.height / 2);
+					icon.cameras = [camHUD];
 				}
 			}
 			
