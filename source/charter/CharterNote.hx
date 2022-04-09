@@ -247,7 +247,7 @@ class CharterNote extends FlxSprite
 	public function updateSustain() {
 		if (newCharter) {
 			sustainSprite.visible = sustainLength > Conductor.stepCrochet;
-			sustainSprite.setGraphicSize(10, Std.int(Math.max(1, sustainLength / Conductor.stepCrochet * YoshiCrafterCharter.GRID_SIZE)) - YoshiCrafterCharter.GRID_SIZE);
+			sustainSprite.setGraphicSize(10, Std.int(Math.max(1, sustainLength / Conductor.stepCrochet * YoshiCrafterCharter.GRID_SIZE) * state.zoom) - YoshiCrafterCharter.GRID_SIZE);
 			sustainSprite.updateHitbox();
 		}
 	}

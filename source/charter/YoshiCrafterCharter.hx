@@ -34,6 +34,7 @@ class YoshiCrafterCharter extends MusicBeatState {
     public var vocals:FlxSound;
 
     var grid:FlxSprite;
+    var gridOverlay:FlxSprite;
     var gridLightUp:FlxSprite;
 	public static var GRID_SIZE:Int = 40;
 
@@ -100,6 +101,7 @@ class YoshiCrafterCharter extends MusicBeatState {
     var noteTypesObjs:Array<FlxSprite> = [];
     var noteTypesX:Float = 0;
     var noteTypesY:Float = 0;
+    public var zoom:Float = 1;
     public function new() {
         super();
         if (PlayState._SONG == null) {
@@ -636,7 +638,7 @@ class YoshiCrafterCharter extends MusicBeatState {
 
     public function addNote(strumTime:Float, noteData:Int, mustHitSection:Bool = false, sustainLength:Float = 0) {
         var note = new CharterNote(strumTime, noteData, null, false, mustHitSection, sustainLength);
-        note.y = strumTime / Conductor.stepCrochet * GRID_SIZE;
+        note.y = strumTime / Conductor.stepCrochet * GRID_SIZE * zoom;
         var xPos = noteData;
         if (mustHitSection) xPos += _song.keyNumber;
         xPos %= (_song.keyNumber * 2);
@@ -678,14 +680,17 @@ class YoshiCrafterCharter extends MusicBeatState {
     public function updateGrid() {
         grid = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * (_song.keyNumber * 2 + 1), Math.ceil(FlxG.height / (GRID_SIZE * 16)) * 2 * (GRID_SIZE * 16), true, 0x88888888, 0x88444444);
         grid.x = -GRID_SIZE;
-        grid.pixels.lock();
-        grid.pixels.fillRect(new Rectangle(GRID_SIZE - 1, 0, 2, grid.pixels.height), 0x88FFFFFF);
-        grid.pixels.fillRect(new Rectangle(GRID_SIZE + (GRID_SIZE * _song.keyNumber) - 1, 0, 2, grid.pixels.height), 0x88FFFFFF);
-        for(i in 0...Math.floor(grid.pixels.height / (GRID_SIZE * 16))) {
-            grid.pixels.fillRect(new Rectangle(0, (GRID_SIZE * 16 * (i + 1)) - 2, grid.pixels.width, 4), 0xAAFFFFFF);
+
+        gridOverlay = new FlxSprite(-GRID_SIZE, 0).makeGraphic(GRID_SIZE * (_song.keyNumber * 2 + 1), Math.ceil(FlxG.height / (GRID_SIZE * 16)) * 2 * (GRID_SIZE * 16) * 4, 0);
+        gridOverlay.pixels.lock();
+        gridOverlay.pixels.fillRect(new Rectangle(GRID_SIZE - 1, 0, 2, gridOverlay.pixels.height), 0x88FFFFFF);
+        gridOverlay.pixels.fillRect(new Rectangle(GRID_SIZE + (GRID_SIZE * _song.keyNumber) - 1, 0, 2, gridOverlay.pixels.height), 0x88FFFFFF);
+        for(i in 0...Math.floor(gridOverlay.pixels.height / (GRID_SIZE * 16))) {
+            gridOverlay.pixels.fillRect(new Rectangle(0, (GRID_SIZE * 16 * (i + 1)) - 2, gridOverlay.pixels.width, 4), 0xAAFFFFFF);
         }
-        grid.pixels.unlock();
+        gridOverlay.pixels.unlock();
         add(grid);
+        add(gridOverlay);
 
         gridLightUp = new FlxSprite(0, 0).makeGraphic(GRID_SIZE * _song.keyNumber, FlxG.height, 0xFFFFFFFF);
         gridLightUp.alpha = 0.3;
@@ -764,22 +769,34 @@ class YoshiCrafterCharter extends MusicBeatState {
             }
         }
 		
-        grid.y = Math.max(0, Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) * GRID_SIZE * 16) + ((Conductor.songPosition < Conductor.crochet * 4) ? 0 : -GRID_SIZE * 16);
-        voicesWaveform.y = instWaveform.y = (Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) * GRID_SIZE * 16) + (-GRID_SIZE * 16);
-        if (instWaveform.visible) {
-            var curSection = Math.floor(Conductor.songPosition / (Conductor.crochet * 4));
-            if (curSection != instWaveformSection) {
-                instWaveformSection = curSection;
-                instWaveform.generateFlixel((Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) - 1) * (Conductor.crochet * 4), (Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) + 2) * (Conductor.crochet * 4));
+        // grid.y = Math.max(0, Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) * GRID_SIZE * 16 * zoom) + ((Conductor.songPosition < Conductor.crochet * 4) ? 0 : -GRID_SIZE * 16);
+        grid.y = Math.max(0, FlxG.camera.scroll.y - (FlxG.camera.scroll.y % (GRID_SIZE * 16)));
+        gridOverlay.y = Math.max(0, FlxG.camera.scroll.y - (FlxG.camera.scroll.y % (GRID_SIZE * 16 * zoom)));
+        gridOverlay.scale.y = zoom;
+        gridOverlay.updateHitbox();
+        voicesWaveform.y = instWaveform.y = ((Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) * GRID_SIZE * 16) + (-GRID_SIZE * 16)) * zoom;
+        for(waveform in [instWaveform, voicesWaveform]) {
+            waveform.scale.set(1, zoom);
+            waveform.updateHitbox();
+            waveform.antialiasing = zoom < 1;
+            if (waveform.visible) {
+                var curSection = Math.floor(Conductor.songPosition / (Conductor.crochet * 4));
+                if (curSection != (waveform == instWaveform ? instWaveformSection : voicesWaveformSection)) {
+                    if (waveform == instWaveform)
+                        instWaveformSection = curSection;
+                    else
+                        voicesWaveformSection = curSection;
+                    waveform.generateFlixel(Std.int((Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) - 1) * (Conductor.crochet * 4)), Std.int((Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) + 2) * (Conductor.crochet * 4)));
+                }
             }
         }
-        if (voicesWaveform.visible) {
-            var curSection = Math.floor(Conductor.songPosition / (Conductor.crochet * 4));
-            if (curSection != voicesWaveformSection) {
-                voicesWaveformSection = curSection;
-                voicesWaveform.generateFlixel((Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) - 1) * (Conductor.crochet * 4), (Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) + 2) * (Conductor.crochet * 4));
-            }
-        }
+        // if (voicesWaveform.visible) {
+        //     var curSection = Math.floor(Conductor.songPosition / (Conductor.crochet * 4));
+        //     if (curSection != voicesWaveformSection) {
+        //         voicesWaveformSection = curSection;
+        //         voicesWaveform.generateFlixel((Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) - 1) * (Conductor.crochet * 4), (Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) + 2) * (Conductor.crochet * 4));
+        //     }
+        // }
 		
         FlxG.camera.targetOffset.y = FlxMath.lerp(FlxG.camera.targetOffset.y, topView ? ((FlxG.height * 0.25) + GRID_SIZE) : GRID_SIZE, 0.45 * 60 * elapsed);
         if (FlxG.mouse.justPressed) {
@@ -802,7 +819,7 @@ class YoshiCrafterCharter extends MusicBeatState {
 				if (mustHit) {
 					noteData = (Math.floor(noteData / (_song.keyNumber * 2)) * _song.keyNumber * 2) + ((noteData + _song.keyNumber) % (_song.keyNumber * 2));
 				}
-                noteInCreation = addNote(strumT * Conductor.stepCrochet, noteData + (currentNoteType * _song.keyNumber * 2), mustHit);
+                noteInCreation = addNote(strumT * Conductor.stepCrochet / zoom, noteData + (currentNoteType * _song.keyNumber * 2), mustHit);
             }
         }
 
@@ -868,7 +885,7 @@ class YoshiCrafterCharter extends MusicBeatState {
             if (FlxG.mouse.justReleased) {
                 noteInCreation = null;
             } else {
-                var currentTime = FlxG.mouse.y / GRID_SIZE * Conductor.stepCrochet;
+                var currentTime = FlxG.mouse.y / zoom / GRID_SIZE * Conductor.stepCrochet;
                 var strumTime = noteInCreation.strumTime;
                 var str = Math.max(0, Math.floor((currentTime - strumTime) / Conductor.stepCrochet) * Conductor.stepCrochet);
                 if (str > 0) str += Conductor.stepCrochet;
@@ -880,7 +897,15 @@ class YoshiCrafterCharter extends MusicBeatState {
         }
         if (FlxG.keys.justPressed.LEFT) pageSwitchLerpRemaining -= Conductor.crochet * 4 * (FlxG.keys.pressed.SHIFT ? 4 : 1);
         if (FlxG.keys.justPressed.RIGHT) pageSwitchLerpRemaining += Conductor.crochet * 4 * (FlxG.keys.pressed.SHIFT ? 4 : 1);
-        pageSwitchLerpRemaining -= FlxG.mouse.wheel * Conductor.stepCrochet * 2;
+        if (FlxG.keys.pressed.CONTROL) {
+            if (FlxG.mouse.wheel != 0) {
+                zoom += (FlxG.mouse.wheel * 0.25);
+                zoom = FlxMath.bound(zoom, 0.25, 3);
+                updateNotesY();
+            }
+        } else {
+            pageSwitchLerpRemaining -= FlxG.mouse.wheel * Conductor.stepCrochet * 2;
+        }
         if (FlxG.keys.pressed.SHIFT) {
             if (FlxG.keys.pressed.UP) moveCursor(-20 * elapsed);
             if (FlxG.keys.pressed.DOWN) moveCursor(20 * elapsed);
@@ -924,7 +949,7 @@ class YoshiCrafterCharter extends MusicBeatState {
             if (FlxG.sound.music.playing) Conductor.songPosition += elapsed * 1000 * FlxG.sound.music.pitch;
         }
         // grid.y = -((Conductor.songPosition % (Conductor.crochet * 4)) / (Conductor.crochet * 4) * (GRID_SIZE * 16));
-        followThing.y = Conductor.songPosition / (Conductor.crochet * 4) * (GRID_SIZE * 16);
+        followThing.y = Conductor.songPosition / (Conductor.crochet * 4) * (GRID_SIZE * 16) * zoom;
         // instWaveform.y = voicesWaveform.y = followThing.y - (GRID_SIZE * 16);
         for(s in strums) {
             s.y = followThing.y;
@@ -985,7 +1010,7 @@ class YoshiCrafterCharter extends MusicBeatState {
             pitchThing += ".00x";
         }
 
-        statusText.text = '${m}:${s} - ${mt}:${st}\nPlayback Speed: ${pitchThing} (R|T)\nSection: ${Math.floor(curBeat / 4)}\nBeat: ${curBeat}\nStep: ${curStep}';
+        statusText.text = '${m}:${s} - ${mt}:${st}\nPlayback Speed: ${pitchThing} (R|T)\nSection: ${Math.floor(curBeat / 4)}\nBeat: ${curBeat}\nStep: ${curStep}\nZoom: ${zoom}';
     }
 
     public override function onFocusLost() {
@@ -1003,7 +1028,7 @@ class YoshiCrafterCharter extends MusicBeatState {
 
     public function updateNotesY() {
         for(note in notes) {
-            note.y = note.strumTime / Conductor.stepCrochet * GRID_SIZE;
+            note.y = note.strumTime / Conductor.stepCrochet * GRID_SIZE * zoom;
             note.updateSustain();
         }
     }
