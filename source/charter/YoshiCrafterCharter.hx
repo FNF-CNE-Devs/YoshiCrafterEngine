@@ -1,5 +1,6 @@
 package charter;
 
+import flixel.group.FlxSpriteGroup;
 import openfl.net.FileReference;
 import haxe.Json;
 import openfl.events.Event;
@@ -47,7 +48,17 @@ class YoshiCrafterCharter extends MusicBeatState {
     };
 	
 	function getSectionFor(t:Float) {
-		return _song.notes[Math.floor(t / (Conductor.crochet * 4))];
+        var sec = _song.notes[Math.floor(t / (Conductor.crochet * 4))];
+        if (sec == null) sec = _song.notes[Math.floor(t / (Conductor.crochet * 4))] = {
+            altAnim: false,
+            mustHitSection: true,
+            sectionNotes: [],
+            lengthInSteps: 16,
+            changeBPM: false,
+            bpm: _song.bpm,
+            typeOfSection: 0
+        };
+		return sec;
 	}
 
     var followThing:FlxSprite;
@@ -101,6 +112,8 @@ class YoshiCrafterCharter extends MusicBeatState {
     var noteTypesObjs:Array<FlxSprite> = [];
     var noteTypesX:Float = 0;
     var noteTypesY:Float = 0;
+
+    var copyPasteButtonsContainer = new FlxSpriteGroup(0, 0);
     public var zoom:Float = 1;
     public function new() {
         super();
@@ -208,6 +221,77 @@ class YoshiCrafterCharter extends MusicBeatState {
 		statusText.setBorderStyle(FlxTextBorderStyle.OUTLINE, 0xFF000000, 1, 1);
         add(statusText);
 
+        var deleteSectionButton = new FlxUIButton(-GRID_SIZE - 5, 0, "", function() {
+            var min = Math.floor(Conductor.songPosition / Conductor.crochet / 4) * Conductor.crochet * 4;
+            var max = Math.ceil(Conductor.songPosition / Conductor.crochet / 4) * Conductor.crochet * 4;
+            var notesToRemove:Array<CharterNote> = [];
+            for(n in notes) {
+                if (n.strumTime >= min && n.strumTime < max) {
+                    notesToRemove.push(n);
+                }
+            }
+            for(n in notesToRemove) removeNote(n);
+        });
+        var deleteSectionButtonIcon = new FlxSprite(deleteSectionButton.x + 2 - 20, deleteSectionButton.y + 2);
+        CoolUtil.loadUIStuff(deleteSectionButtonIcon, "delete");
+
+        var copySectionButton = new FlxUIButton(deleteSectionButton.x, deleteSectionButton.y + deleteSectionButton.height + 5, "", function() {
+            var sec = Math.floor(Conductor.songPosition / Conductor.crochet / 4);
+            copiedSection = sec;
+        });
+        var copySectionButtonIcon = new FlxSprite(copySectionButton.x + 2 - 20, copySectionButton.y + 2);
+        CoolUtil.loadUIStuff(copySectionButtonIcon, "copy");
+
+        var pasteSectionButton = new FlxUIButton(copySectionButton.x, copySectionButton.y + copySectionButton.height + 5, "", function() {
+            var sec = Math.floor(Conductor.songPosition / Conductor.crochet / 4);
+            if (copiedSection != sec && copiedSection >= 0) {
+                var newMin = Math.floor(Conductor.songPosition / Conductor.crochet / 4) * Conductor.crochet * 4;
+                var newMax = Math.ceil(Conductor.songPosition / Conductor.crochet / 4) * Conductor.crochet * 4;
+                var min = copiedSection * Conductor.crochet * 4;
+                var max = (copiedSection + 1) * Conductor.crochet * 4;
+                var notesToCopy:Array<CharterNote> = [];
+                for(n in notes) {
+                    if (n.strumTime >= min && n.strumTime < max) {
+                        notesToCopy.push(n);
+                    }
+                }
+
+                for(n in notesToCopy) {
+                    addNote(n.strumTime - min + newMin, Math.floor(n.x / GRID_SIZE) + (n.noteType * _song.keyNumber * 2), false, n.sustainLength);
+                }
+            }
+        });
+        var pasteSectionButtonIcon = new FlxSprite(pasteSectionButton.x + 2 - 20, pasteSectionButton.y + 2);
+        CoolUtil.loadUIStuff(pasteSectionButtonIcon, "paste");
+
+        var swapSectionButton = new FlxUIButton(pasteSectionButton.x, pasteSectionButton.y + pasteSectionButton.height + 5, "", function() {
+            var min = Math.floor(Conductor.songPosition / Conductor.crochet / 4) * Conductor.crochet * 4;
+            var max = Math.ceil(Conductor.songPosition / Conductor.crochet / 4) * Conductor.crochet * 4;
+            for(n in notes) {
+                if (n.strumTime >= min && n.strumTime < max) {
+                    n.x += _song.keyNumber * GRID_SIZE;
+                    n.x %= _song.keyNumber * GRID_SIZE * 2;
+                }
+            }
+        });
+        var swapSectionButtonIcon = new FlxSprite(swapSectionButton.x + 2 - 20, swapSectionButton.y + 2);
+        CoolUtil.loadUIStuff(swapSectionButtonIcon, "swap");
+
+        deleteSectionButton.color = 0xFFFF4444;
+        for(b in [deleteSectionButton, copySectionButton, pasteSectionButton, swapSectionButton]) {
+            b.resize(20, 20);
+            b.x -= b.width;
+        }
+        copyPasteButtonsContainer.add(deleteSectionButton);
+        copyPasteButtonsContainer.add(deleteSectionButtonIcon);
+        copyPasteButtonsContainer.add(copySectionButton);
+        copyPasteButtonsContainer.add(copySectionButtonIcon);
+        copyPasteButtonsContainer.add(pasteSectionButton);
+        copyPasteButtonsContainer.add(pasteSectionButtonIcon);
+        copyPasteButtonsContainer.add(swapSectionButton);
+        copyPasteButtonsContainer.add(swapSectionButtonIcon);
+
+        add(copyPasteButtonsContainer);
 
         UI_Menu = new FlxUITabMenu(null, [
             {
@@ -455,16 +539,15 @@ class YoshiCrafterCharter extends MusicBeatState {
             deleteButton.resize(20, 20);
             deleteButton.color = 0xFFFF4444;
 
-            var deleteButtonIcon = new FlxSprite(270 + 2, (k * 20) + 67).loadGraphic(Paths.image("uiIcons", "preload"), true, 16, 16);
-            deleteButtonIcon.animation.add("bin", [2], 1, true);
-            deleteButtonIcon.animation.play("bin");
+            var deleteButtonIcon = new FlxSprite(270 + 2, (k * 20) + 67);
+            CoolUtil.loadUIStuff(deleteButtonIcon, "delete");
 
             if (k > 0) {
                 var color:FlxColor = 0xFFFF8888;
                 color.hue = (k - 1) / (_song.noteTypes.length - 1);
-                deleteButton.label.color = color;
-                deleteButton.label.borderStyle = OUTLINE;
-                deleteButton.label.borderColor = 0xFF000000;
+                b.label.color = color;
+                b.label.borderStyle = OUTLINE;
+                b.label.borderColor = 0xFF000000;
             }
             noteTypesObjs.push(b);
             noteTab.add(b);
@@ -541,6 +624,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         });
         
         var saveButton = new FlxUIButton(refreshButton.x + refreshButton.width + 10, changePlayer2Button.y + changePlayer2Button.height + 10, "Save", function() {
+            compile();
             _song.validScore = true;
             var references = false;
             var json = {
@@ -757,6 +841,7 @@ class YoshiCrafterCharter extends MusicBeatState {
 
         super.update(elapsed);
         playbackSpeedLabel.text = 'Playback Speed (${Std.string(FlxG.sound.music.pitch)}x)';
+        copyPasteButtonsContainer.y = (GRID_SIZE * 16) * Math.floor(Conductor.songPosition / Conductor.crochet / 4);
         if (playing) {
             pageSwitchLerpRemaining = 0;
         } else {

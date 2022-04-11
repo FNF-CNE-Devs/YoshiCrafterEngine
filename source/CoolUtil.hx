@@ -36,6 +36,16 @@ class CoolUtil
         return size + " " + dataTexts[data];
     }
 
+	public static function loadUIStuff(sprite:FlxSprite, ?anim:String) {
+		sprite.loadGraphic(Paths.image("uiIcons", "preload"), true, 16, 16);
+		var anims = ["up", "refresh", "delete", "copy", "paste", "x", "swap"];
+		
+		for(k=>a in anims) {
+			sprite.animation.add(a, [k], 0, false);
+		}
+		if (anim != null) sprite.animation.play(anim);
+	}
+
 	public static function loadSong(mod:String, song:String, ?difficulty:String):Bool {
 		if (difficulty == null) difficulty = "normal";
 
