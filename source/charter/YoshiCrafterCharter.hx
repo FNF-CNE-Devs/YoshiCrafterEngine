@@ -30,6 +30,7 @@ using StringTools;
 class YoshiCrafterCharter extends MusicBeatState {
     public var _file:FileReference;
     public var notes:Array<CharterNote> = [];
+    public var events:Array<CharterEvent> = [];
     public static var _song:SwagSong;
 
     public var vocals:FlxSound;
@@ -132,6 +133,8 @@ class YoshiCrafterCharter extends MusicBeatState {
         for (s in _song.notes) {
             s.sectionNotes = []; // resets
         }
+        _song.events = [];
+
         for(s in notes) {
             if (s.noteData >= 0) {
                 // normal note
@@ -157,6 +160,14 @@ class YoshiCrafterCharter extends MusicBeatState {
             } else {
                 // event note, TODO
             }
+        }
+
+        for(e in events) {
+            _song.events.push({
+                time: e.time,
+                name: e.funcName,
+                parameters: e.funcParams
+            });
         }
     }
 
@@ -718,11 +729,15 @@ class YoshiCrafterCharter extends MusicBeatState {
                 addNote(n[0], n[1], s.mustHitSection, n[2]);
             }
         }
+        if (_song.events == null) _song.events = [];
+        for(e in _song.events) {
+            addEvent(e.time, e.name, e.parameters);
+        }
     }
 
     public function addNote(strumTime:Float, noteData:Int, mustHitSection:Bool = false, sustainLength:Float = 0) {
         var note = new CharterNote(strumTime, noteData, null, false, mustHitSection, sustainLength);
-        note.y = strumTime / Conductor.stepCrochet * GRID_SIZE * zoom;
+        updateNoteY(note, note.strumTime);
         var xPos = noteData;
         if (mustHitSection) xPos += _song.keyNumber;
         xPos %= (_song.keyNumber * 2);
@@ -735,6 +750,14 @@ class YoshiCrafterCharter extends MusicBeatState {
         //     note.color = noteColors[(note.noteType - 1) % noteColors.length];
         updateNoteColor(note);
         return note;
+    }
+
+    public function addEvent(time:Float, funcName:String, funcParams:Array<String>) {
+        var event = new CharterEvent(time, funcName, funcParams);
+        event.x = -GRID_SIZE;
+        events.push(event);
+        add(event);
+        updateNoteY(event, time);
     }
 
     public function updateNoteColors() {
@@ -759,6 +782,12 @@ class YoshiCrafterCharter extends MusicBeatState {
         notes.remove(note);
         remove(note);
         note.destroy();
+    }
+
+    public function removeEvent(event:CharterEvent) {
+        events.remove(event);
+        remove(event);
+        event.destroy();
     }
 
     public function updateGrid() {
@@ -788,7 +817,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         instWaveform.alpha = 0.85;
         instWaveform.x -= instWaveform.width / 2;
         add(instWaveform);
-        instWaveform.generateFlixel( -Conductor.crochet * 4, Conductor.crochet * 4);
+        instWaveform.generateFlixel(-Conductor.crochet * 4, Conductor.crochet * 4);
 		instWaveform.visible = Settings.engineSettings.data.charter_showInstWaveform;
 
         voicesWaveform = new WaveformSprite((grid.width - GRID_SIZE) / 2, 0, voicesBuffer, GRID_SIZE * 4, GRID_SIZE * 48);
@@ -841,7 +870,7 @@ class YoshiCrafterCharter extends MusicBeatState {
 
         super.update(elapsed);
         playbackSpeedLabel.text = 'Playback Speed (${Std.string(FlxG.sound.music.pitch)}x)';
-        copyPasteButtonsContainer.y = (GRID_SIZE * 16) * Math.floor(Conductor.songPosition / Conductor.crochet / 4);
+        copyPasteButtonsContainer.y = (GRID_SIZE * 16) * Math.floor(Conductor.songPosition / Conductor.crochet / 4) * zoom;
         if (playing) {
             pageSwitchLerpRemaining = 0;
         } else {
@@ -893,6 +922,17 @@ class YoshiCrafterCharter extends MusicBeatState {
                     removeNote(n);
                 }
             }
+            for(e in events) {
+                if (e.overlapsSprite()) {
+                    overlaps = true;
+                    openSubState(new AddEventDialogue(function(name:String, params:Array<String>) {
+                        e.funcName = name;
+                        e.funcParams = params;
+                        e.updateText();
+                    }, "Edit event", "Edit event", e.funcParams, e.funcName));
+                    break;
+                }
+            }
             if (!overlaps && FlxG.mouse.overlaps(grid)) {
                 var strumT = FlxG.mouse.y / GRID_SIZE;
                 if (!FlxG.keys.pressed.SHIFT) {
@@ -901,10 +941,17 @@ class YoshiCrafterCharter extends MusicBeatState {
 				var section = getSectionFor(strumT * Conductor.stepCrochet);
 				var mustHit = section != null ? section.mustHitSection : true;
 				var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
-				if (mustHit) {
-					noteData = (Math.floor(noteData / (_song.keyNumber * 2)) * _song.keyNumber * 2) + ((noteData + _song.keyNumber) % (_song.keyNumber * 2));
-				}
-                noteInCreation = addNote(strumT * Conductor.stepCrochet / zoom, noteData + (currentNoteType * _song.keyNumber * 2), mustHit);
+                if (noteData < 0) {
+                    persistentUpdate = false;
+                    openSubState(new AddEventDialogue(function(name:String, params:Array<String>) {
+                        addEvent(strumT * Conductor.stepCrochet / zoom, name, params);
+                    }));
+                } else {
+                    if (mustHit) {
+                        noteData = (Math.floor(noteData / (_song.keyNumber * 2)) * _song.keyNumber * 2) + ((noteData + _song.keyNumber) % (_song.keyNumber * 2));
+                    }
+                    noteInCreation = addNote(strumT * Conductor.stepCrochet / zoom, noteData + (currentNoteType * _song.keyNumber * 2), mustHit);
+                }
             }
         }
 
@@ -921,7 +968,15 @@ class YoshiCrafterCharter extends MusicBeatState {
             
         }
         if (FlxG.mouse.justPressedRight) {
-            if (FlxG.mouse.overlaps(grid)) {
+            var overlaps = false;
+            for(e in events) {
+                if (e.overlapsSprite()) {
+                    overlaps = true;
+                    removeEvent(e);
+                    break;
+                }
+            }
+            if (FlxG.mouse.overlaps(grid) && !overlaps) {
                 /*
                 var section = Math.floor(FlxG.mouse.y / GRID_SIZE * Conductor.stepCrochet / (Conductor.crochet * 4));
                 openSubState(new ContextMenu(FlxG.mouse.screenX, FlxG.mouse.screenY, [{
@@ -1113,9 +1168,14 @@ class YoshiCrafterCharter extends MusicBeatState {
 
     public function updateNotesY() {
         for(note in notes) {
-            note.y = note.strumTime / Conductor.stepCrochet * GRID_SIZE * zoom;
+            updateNoteY(note, note.strumTime);
             note.updateSustain();
         }
+
+    }
+
+    public function updateNoteY(sprite:FlxSprite, strumTime:Float) {
+        sprite.y = strumTime / Conductor.stepCrochet * GRID_SIZE * zoom;
     }
 
 	public override function getEvent(id:String, sender:Dynamic, data:Dynamic, ?params:Array<Dynamic>)

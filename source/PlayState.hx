@@ -2653,12 +2653,13 @@ class PlayState extends MusicBeatState
 
 		for(e in events) {
 			if (e.time < Conductor.songPosition) {
-				trace('doing event');
-				trace(e);
+				// trace('doing event');
+				// trace(e);
 				var params:Array<Any> = [];
 				for(p in e.parameters) params.push(p);
 				scripts.executeFunc(e.name, params);
 				scripts.executeFunc("onEvent", [e.name, params]); // for ppl that can't understand and wanna use spaces
+				events.remove(e);
 			}
 		}
 		

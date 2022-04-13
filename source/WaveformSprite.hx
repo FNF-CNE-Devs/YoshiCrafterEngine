@@ -11,6 +11,7 @@ class WaveformSprite extends FlxSprite {
     var buffer:AudioBuffer;
     var sound:Sound;
     var peak:Float = 0;
+    var valid:Bool = true;
     public function new(x:Float, y:Float, buffer:Dynamic, w:Int, h:Int) {
         super(x,y);
         this.buffer = null;
@@ -27,7 +28,7 @@ class WaveformSprite extends FlxSprite {
             @:privateAccess
             this.buffer = cast(buffer, AudioBuffer);
         } else {
-            throw 'Invalid type';
+            valid = false;
             return;
         }
         trace(buffer);
@@ -46,6 +47,7 @@ class WaveformSprite extends FlxSprite {
     }
 
     public function generate(startPos:Int, endPos:Int) {
+        if (!valid) return;
         startPos -= startPos % buffer.bitsPerSample;
         endPos -= endPos % buffer.bitsPerSample;
         pixels.lock();

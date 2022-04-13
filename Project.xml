@@ -122,9 +122,9 @@
 	
 	<assets path='mods' library="mods" embed='false' unless="mobile"/>
 	<assets path='skins' rename='skins' embed='false' unless="mobile"/>
-	<assets path='art/readme.txt' rename='do NOT readme.txt' />
-	<assets path='art/mod.url' rename='How to make a mod.url' />
-	<assets path='Launch.bat' />
+	<assets path='art/readme.txt' rename='do NOT readme.txt'/>
+	<assets path='art/mod.url' rename='How to make a mod.url' if="windows" />
+	<assets path='Launch.bat' if="windows"/>
 	<!-- <assets path="documentation" rename="docs"/> -->
 	<!-- <template path='mods' /> -->
 	
