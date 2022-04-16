@@ -75,6 +75,7 @@ class WaveformSprite extends FlxSprite {
     }
 
     public function generateFlixel(startPos:Float, endPos:Float) {
+        if (!valid) return;
         var rateFrequency = (1 / buffer.sampleRate);
         var multiplicator = 1 / rateFrequency; // 1 hz/s
         multiplicator *= buffer.bitsPerSample;

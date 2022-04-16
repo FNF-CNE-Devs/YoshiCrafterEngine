@@ -627,14 +627,27 @@ class YoshiCrafterCharter extends MusicBeatState {
             }));
         });
         changePlayer2Button.resize(135, 20);
+
+        var gf = _song.gfVersion.split(":");
+        if (gf.length < 2) gf.insert(0, '');
+        var gfLabel:FlxUIText = new FlxUIText(10, changePlayer1Button.y + changePlayer1Button.height + 10, 135, gf.join("\n"));
+        gfLabel.alignment = CENTER;
+        var changeGFButton:FlxUIButton = new FlxUIButton(gfLabel.x, gfLabel.y + gfLabel.height + 5, "Change Girlfriend", function() {
+            openSubState(new ChooseCharacterScreen(function(mod, char) {
+                _song.gfVersion = '$mod:$char';
+                // iconP2.changeCharacter(char, mod);
+                gfLabel.text = '$mod\n$char';
+            }));
+        });
+        changeGFButton.resize(135, 20);
         
-        var refreshButton = new FlxUIButton(10, changePlayer2Button.y + changePlayer2Button.height + 10, "Refresh", function() {
+        var refreshButton = new FlxUIButton(10, changeGFButton.y + changeGFButton.height + 10, "Refresh", function() {
             compile();
             PlayState._SONG = _song;
             FlxG.resetState();
         });
         
-        var saveButton = new FlxUIButton(refreshButton.x + refreshButton.width + 10, changePlayer2Button.y + changePlayer2Button.height + 10, "Save", function() {
+        var saveButton = new FlxUIButton(refreshButton.x + refreshButton.width + 10, refreshButton.y, "Save", function() {
             compile();
             _song.validScore = true;
             var references = false;
@@ -673,6 +686,12 @@ class YoshiCrafterCharter extends MusicBeatState {
 
             _song.noteTypes = oldArray;
         });
+        saveButton.color = 0xFF44FF44;
+        saveButton.label.color = 0xFF000000;
+
+        var editScriptsButton = new FlxUIButton(saveButton.x + saveButton.width + 10, saveButton.y, "Edit Scripts", function() {
+            openSubState(new ScriptPicker(_song.scripts));
+        });
 
 
         songTab.add(titleLabel);
@@ -686,8 +705,11 @@ class YoshiCrafterCharter extends MusicBeatState {
         songTab.add(changePlayer1Button);
         songTab.add(player2Label);
         songTab.add(changePlayer2Button);
+        songTab.add(gfLabel);
+        songTab.add(changeGFButton);
         songTab.add(refreshButton);
         songTab.add(saveButton);
+        songTab.add(editScriptsButton);
         UI_Menu.addGroup(songTab);
     }
 

@@ -548,6 +548,12 @@ class PlayState extends MusicBeatState
 
 		if (_SONG.events == null)
 			_SONG.events = [];
+
+		if (_SONG.gfVersion == null)
+			_SONG.gfVersion = "gf";
+
+		if (_SONG.scripts == null)
+			_SONG.scripts = [];
 	}
 	var actualModConfig:ModConfig;
 	override public function create()
@@ -660,7 +666,7 @@ class PlayState extends MusicBeatState
 		scripts.setVariable("beatHit", function(curBeat:Int) {});
 		scripts.setVariable("stepHit", function(curStep:Int) {});
 		scripts.setVariable("botplay", engineSettings.botplay);
-		scripts.setVariable("gfVersion", "gf");
+		scripts.setVariable("gfVersion", _SONG.gfVersion);
 
 		var defaultRatings:Array<Dynamic> = [
 			{
