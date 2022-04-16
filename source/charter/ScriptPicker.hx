@@ -1,5 +1,7 @@
 package charter;
 
+import haxe.io.Path;
+import dev_toolbox.file_explorer.FileExplorer;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.ui.*;
 import flixel.*;
@@ -42,8 +44,10 @@ class ScriptPicker extends MusicBeatSubstate {
 
         var addScriptButton = new FlxUIButton(10, FlxG.height - 150, "Add Script", function() {
             // todo
-            scripts.push("test");
-            refreshElements();
+            openSubState(new FileExplorer(PlayState.songMod, FileExplorerType.Script, "", function(path) {
+                scripts.push('${PlayState.songMod}:${Path.withoutExtension(path)}');
+                refreshElements();
+            }));
         });
         tab.add(addScriptButton);
         UI.addGroup(tab);
