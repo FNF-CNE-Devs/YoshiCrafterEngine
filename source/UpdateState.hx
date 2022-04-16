@@ -50,6 +50,10 @@ class UpdateState extends MusicBeatState
 	function doFile() {
 		var f = fileList.shift();
 		currentFile = f;
+		if (f == null) {
+			applyUpdate();
+			return;
+		};
 		var downloadStream = new URLLoader();
 		currentLoadedStream = downloadStream;
 		downloadStream.dataFormat = BINARY;
@@ -90,14 +94,7 @@ class UpdateState extends MusicBeatState
 			if (fileList.length > 0) {
 				doFile();
 			} else {
-				// apply update
-
-				// copy file to prevent overriding issues
-				File.copy('YoshiCrafterEngine.exe', 'temp.exe');
-
-				// launch that file
-				new Process('start /B temp.exe update', null);
-				System.exit(0);
+				applyUpdate();
 			}
 		});
 		downloadStream.addEventListener(ProgressEvent.PROGRESS, function(e) {
@@ -120,6 +117,17 @@ class UpdateState extends MusicBeatState
 		downloadStream.load(request);
 
 		
+	}
+
+	public function applyUpdate() {
+		// apply update
+
+		// copy file to prevent overriding issues
+		File.copy('YoshiCrafterEngine.exe', 'temp.exe');
+
+		// launch that file
+		new Process('start /B temp.exe update', null);
+		System.exit(0);
 	}
 	public override function create() {
 		super.create();

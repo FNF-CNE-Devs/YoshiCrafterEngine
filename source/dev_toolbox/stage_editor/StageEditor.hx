@@ -63,7 +63,7 @@ class StageEditor extends MusicBeatState {
         objName.text = selectedObj != null ? selectedObj.name : "(No selected sprite)";
         if (selectedObj == null) {
              // global shit
-            for (e in [posLabel, sprPosX, sprPosY, scaleLabel, scaleNum, antialiasingCheckbox, scrFacX, scrFacY, scrollFactorLabel, shaderLabel, shaderNameInput, bumpOffsetLabel, bumpOffsetXLabel, bumpOffsetYLabel, bumpOffsetY, bumpOffsetX]) {
+            for (e in [posLabel, sprPosX, sprPosY, scaleLabel, scaleNum, antialiasingCheckbox, scrFacX, scrFacY, scrollFactorLabel, shaderLabel, shaderNameInput, bumpOffsetLabel, bumpOffsetXLabel, bumpOffsetYLabel, bumpOffsetY, bumpOffsetX, bumpOffsetEase, bumpOffsetEaseType]) {
                 e.visible = false;
             }
             // sparrow shit
@@ -81,7 +81,7 @@ class StageEditor extends MusicBeatState {
             //     antialiasingCheckbox.checked = selectedObj.antialiasing;
             // }
         } else {
-            for (e in [posLabel, sprPosX, sprPosY, scaleLabel, scaleNum, antialiasingCheckbox, scrFacX, scrFacY, scrollFactorLabel, shaderLabel, shaderNameInput, bumpOffsetLabel, bumpOffsetXLabel, bumpOffsetYLabel, bumpOffsetY, bumpOffsetX]) {
+            for (e in [posLabel, sprPosX, sprPosY, scaleLabel, scaleNum, antialiasingCheckbox, scrFacX, scrFacY, scrollFactorLabel, shaderLabel, shaderNameInput, bumpOffsetLabel, bumpOffsetXLabel, bumpOffsetYLabel, bumpOffsetY, bumpOffsetX, bumpOffsetEase, bumpOffsetEaseType]) {
                 e.visible = true;
             }
             sprPosX.value = selectedObj.x;
@@ -125,7 +125,7 @@ class StageEditor extends MusicBeatState {
             }
 
             if (homies.contains(selectedObj.type)) {
-                for (e in [scaleLabel, scaleNum, antialiasingCheckbox, bumpOffsetLabel, bumpOffsetXLabel, bumpOffsetYLabel, bumpOffsetY, bumpOffsetX]) {
+                for (e in [scaleLabel, scaleNum, antialiasingCheckbox, bumpOffsetLabel, bumpOffsetXLabel, bumpOffsetYLabel, bumpOffsetY, bumpOffsetX, bumpOffsetEase, bumpOffsetEaseType]) {
                     e.visible = false;
                 }
             }
@@ -486,6 +486,7 @@ class StageEditor extends MusicBeatState {
     }
     
     function updateEase() {
+        if (selectedObj == null || homies.contains(selectedObj.name)) return true;
         var v = bumpOffsetEase.selectedId + bumpOffsetEaseType.selectedId;
         var invalid = easeFuncs[v] == null;
         var val = v;

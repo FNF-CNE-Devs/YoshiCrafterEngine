@@ -303,13 +303,13 @@ class Settings {
 		}
 		engineSettings.flush();
 		
-		hscriptCache = new FlxSave();
-		hscriptCache.bind("_hscriptCache");
+		// hscriptCache = new FlxSave();
+		// hscriptCache.bind("_hscriptCache");
 		
-		hscriptCache.flush();
+		// hscriptCache.flush();
     }
 	
-	public static var hscriptCache:FlxSave = null;
+	// public static var hscriptCache:FlxSave = null;
 
     // public static function load(bind:Bool = true) {
 	// 	if (bind) FlxG.save.bind("Settings", "YoshiCrafter29/YoshiCrafter Engine");

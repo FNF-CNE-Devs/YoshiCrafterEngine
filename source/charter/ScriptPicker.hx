@@ -6,6 +6,8 @@ import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.ui.*;
 import flixel.*;
 
+using StringTools;
+
 class ScriptPicker extends MusicBeatSubstate {
     public var scripts:Array<String> = [];
     public var elements:Array<FlxSprite> = [];
@@ -13,10 +15,16 @@ class ScriptPicker extends MusicBeatSubstate {
     public var UI:FlxUITabMenu;
     public var tab:FlxUI;
     public var buttonY:Float = 0;
-    public function new(?scripts:Array<String>, ?label:String = "Edit Scripts") {
+
+
+    public var helpTexts:Array<String> = [
+        "Click on the \"Add Script\" button at the bottom of this window to add a script, or remove added scripts by clicking the bin button next to the script names. Please note that this list and the one from the \"Edit Song Scripts\" have different values. While this one only applies on this specific chart, the other list applies on every difficulty of the song. Scripts will add up, which means if a script is on both lists, it's going to be run twice.",
+        "Click on the \"Add Script\" button at the bottom of this window to add a script, or remove added scripts by clicking the bin button next to the script names. Please note that this list and the one from the \"Edit Chart Scripts\" have different values. While this one applies on every difficulty of the song, the other list only applies on this specific chart. Scripts will add up, which means if a script is on both lists, it's going to be run twice."
+    ];
+    public function new(callback:Array<String>->Void, ?scripts:Array<String>, ?label:String = "Edit Scripts", ?helpText:Int = 0) {
         super();
         if (scripts == null) scripts = [];
-        this.scripts = scripts;
+        for(s in scripts) this.scripts.push(s);
 
         var bg:FlxSprite;
         (bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0x88000000)).scrollFactor.set();
@@ -36,7 +44,7 @@ class ScriptPicker extends MusicBeatSubstate {
         tab = new FlxUI(null, UI);
         tab.name = "scripts";
 
-        var label = new FlxUIText(10, 10, 380, "Click on the \"Add Script\" button at the bottom of this window to add a script, or remove added scripts by clicking the bin button next to the script names. Please note that this list and the one from the song configuration tab have different values (this one is chart only, song conf is for the entire song), and that scripts from both lists will add up. That means if a script is added on both lists, it'll be ran two times.");
+        var label = new FlxUIText(10, 10, 380, helpTexts[helpText]);
         buttonY = label.y + label.height + 10;
         tab.add(label);
 
@@ -45,11 +53,38 @@ class ScriptPicker extends MusicBeatSubstate {
         var addScriptButton = new FlxUIButton(10, FlxG.height - 150, "Add Script", function() {
             // todo
             openSubState(new FileExplorer(PlayState.songMod, FileExplorerType.Script, "", function(path) {
-                scripts.push('${PlayState.songMod}:${Path.withoutExtension(path)}');
+                this.scripts.push('${PlayState.songMod}:${Path.withoutExtension(path)}');
                 refreshElements();
             }));
         });
+
+        var clearScriptsButton = new FlxUIButton(addScriptButton.x + addScriptButton.width + 10, addScriptButton.y, "Clear Scripts", function() {
+            while(this.scripts.length > 0) this.scripts.pop();
+            refreshElements();
+        });
+
+        var addManualScript = new FlxUIButton(clearScriptsButton.x + clearScriptsButton.width + 10, addScriptButton.y, "Add Script Manually", function() {
+            openSubState(new EnterTextScreen(function(text) {
+                if (text.trim() != "") {
+                    this.scripts.push(text);
+                    refreshElements();
+                }
+            }, "", "Enter a script", "Add Script"));
+        });
+        addManualScript.resize(110, 20);
+        
+
+        var saveButton = new FlxUIButton(390 - clearScriptsButton.width, clearScriptsButton.y, "Save", function() {
+            close();
+            callback(this.scripts);
+        });
+        saveButton.color = 0xFF44FF44;
+        saveButton.label.setFormat(null, 8, 0xFFFFFFFF, CENTER, OUTLINE, 0xFF268F26);
+
         tab.add(addScriptButton);
+        tab.add(clearScriptsButton);
+        tab.add(addManualScript);
+        tab.add(saveButton);
         UI.addGroup(tab);
 
         var closeButton = new FlxUIButton(UI.x + UI.width - 20, UI.y, "X", function() {

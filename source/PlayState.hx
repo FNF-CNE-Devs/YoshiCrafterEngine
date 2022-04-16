@@ -645,6 +645,8 @@ class PlayState extends MusicBeatState
 		ModSupport.currentMod = songMod;
 		ModSupport.parseSongConfig();
 
+		
+
         scripts = new ScriptPack(ModSupport.scripts);
 		if (ModSupport.song_cutscene != null) {
 			cutscene = Script.create('${Paths.modsPath}/${ModSupport.song_cutscene.path}');
@@ -1730,6 +1732,7 @@ class PlayState extends MusicBeatState
 
 		for (section in noteData)
 		{
+			if (section == null) continue;
 			var coolSection:Int = Std.int(section.lengthInSteps / 4);
 
 			for (songNotes in section.sectionNotes)
