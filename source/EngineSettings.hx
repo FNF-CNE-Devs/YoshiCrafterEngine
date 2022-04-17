@@ -1,4 +1,5 @@
 
+import flixel.util.FlxColor;
 import openfl.display.StageQuality;
 import flixel.text.FlxText;
 import flixel.util.FlxSave;
@@ -159,7 +160,7 @@ import flixel.FlxG;
 	@:keep public static var rainbowNotes:Bool = false; //Unused
 	@:keep public static var memoryOptimization:Bool = true;
 	@:keep public static var blammedEffect:Bool = true;
-	@:keep public static var yoshiEngineCharter:Bool = true;
+	@:keep public static var yoshiCrafterEngineCharter:Bool = true;
 	@:keep public static var developerMode:Bool = false;
 	@:keep public static var hideOriginalGame:Bool = false;
 	@:keep public static var showAccuracyMode:Bool = false;
@@ -175,7 +176,20 @@ import flixel.FlxG;
 	@:keep public static var fps_showFPS:Bool = true;
 	@:keep public static var fps_showMemory:Bool = true;
 	@:keep public static var fps_showMemoryPeak:Bool = true;
-	@:keep public static var lastInstalledMods:Array<String> = ["Friday Night Funkin'", "YoshiEngine"];
+	@:keep public static var volume:Float = 1;
+	@:keep public static var lastInstalledMods:Array<String> = ["Friday Night Funkin'", "YoshiCrafterEngine"];
+	
+	@:keep public static var charter_showStrums:Bool = true;
+	@:keep public static var charter_hitsoundsEnabled:Bool = false;
+	@:keep public static var charter_topView:Bool = false;
+	@:keep public static var charter_showInstWaveform:Bool = false;
+	@:keep public static var charter_showVoicesWaveform:Bool = false;
+	@:keep public static var charter_instWaveformColor:FlxColor = 0xFF1573FF;
+	@:keep public static var charter_voicesWaveformColor:FlxColor = 0xFF93FF4A;
+	@:keep public static var charter_instVolume:Float = 0.8;
+	@:keep public static var charter_voicesVolume:Float = 1;
+	@:keep public static var charter_opponentHitsoundVolume:Float = 1 / 3;
+	@:keep public static var charter_playerHitsoundVolume:Float = 1 / 3;
 	
 	// @:keep public static var moveCameraInStageEditor:Bool = true;
 
@@ -258,7 +272,7 @@ class Settings {
 
 
 	// public static function save(bind:Bool = true) {
-	// 	if (bind) FlxG.save.bind("Settings", "YoshiCrafter29/Yoshi Engine");
+	// 	if (bind) FlxG.save.bind("Settings", "YoshiCrafter29/YoshiCrafter Engine");
 
 	// 	for(k in Type.getClassFields(Settings)) {
 	// 		if (k != "save_bind_name" && k != "save_bind_path") {
@@ -289,16 +303,16 @@ class Settings {
 		}
 		engineSettings.flush();
 		
-		hscriptCache = new FlxSave();
-		hscriptCache.bind("_hscriptCache");
+		// hscriptCache = new FlxSave();
+		// hscriptCache.bind("_hscriptCache");
 		
-		hscriptCache.flush();
+		// hscriptCache.flush();
     }
 	
-	public static var hscriptCache:FlxSave = null;
+	// public static var hscriptCache:FlxSave = null;
 
     // public static function load(bind:Bool = true) {
-	// 	if (bind) FlxG.save.bind("Settings", "YoshiCrafter29/Yoshi Engine");
+	// 	if (bind) FlxG.save.bind("Settings", "YoshiCrafter29/YoshiCrafter Engine");
 
 	// 	for(k in Type.getClassFields(Settings)) {
 	// 		if (k != "save_bind_name" && k != "save_bind_path") {

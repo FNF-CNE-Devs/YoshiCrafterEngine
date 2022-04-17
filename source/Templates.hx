@@ -1,5 +1,5 @@
 import SongConf.SongConfJson;
-import Stage.StageJSON;
+import stage.StageJSON;
 
 class Templates {
     public static var stageScriptTemplate = '// Stage element

@@ -33,6 +33,7 @@ class CharterNote extends FlxSprite
 	public var noteScore:Float = 1;
 
 	public var noteType:Int = 0;
+	public var newCharter:Bool = false;
 	// #if secret
 	// 	var c:FlxColor = new FlxColor(0xFFFF0000);
 	// 	c.hue = (strumTime / 100) % 359;
@@ -61,22 +62,18 @@ class CharterNote extends FlxSprite
 	public static var noteTypes:Array<hscript.Expr> = [];
 	// public var script:hscript.Interp;
 	public var script(get, null):Script;
+	public var sustainSprite:FlxSprite;
+
 	public function get_script():Script {
 		return PlayState.current.noteScripts[noteType % PlayState.current.noteScripts.length];
 	}
 
-	public static var noteNumberSchemes:Map<Int, Array<NoteDirection>> = [
-		1 => [Up],
-		4 => [Left, Down, Up, Right],
-		// 4 => [Down, Left, Right, Up], // lol
-		6 => [Left, Down, Right, Left, Up, Right],
-		9 => [Left, Down, Up, Right, Up, Left, Down, Up, Right]
-	];
+	
 
 	public static var noteNumberScheme(get, null):Array<NoteDirection>;
 	public static function get_noteNumberScheme():Array<NoteDirection> {
-		var noteNumberScheme:Array<NoteDirection> = noteNumberSchemes[ChartingState_New._song.keyNumber];
-		if (noteNumberScheme == null) noteNumberScheme = noteNumberSchemes[4];
+		var noteNumberScheme:Array<NoteDirection> = Note.noteNumberSchemes[ChartingState_New._song.keyNumber];
+		if (noteNumberScheme == null) noteNumberScheme = Note.noteNumberSchemes[4];
 		return noteNumberScheme;
 	}
 
@@ -118,12 +115,13 @@ class CharterNote extends FlxSprite
 	}
 	public var noteOffset:FlxPoint = new FlxPoint(0,0);
 	public var enableRating:Bool = true;
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?mustHit = true)
+	public var state:YoshiCrafterCharter = null;
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?mustHit = true, ?sustainLength:Float = 0)
 	{
 		super();
 
-		var noteNumberScheme:Array<NoteDirection> = noteNumberSchemes[ChartingState_New._song.keyNumber];
-		if (noteNumberScheme == null) noteNumberScheme = noteNumberSchemes[4];
+		var noteNumberScheme:Array<NoteDirection> = Note.noteNumberSchemes[ChartingState_New._song.keyNumber];
+		if (noteNumberScheme == null) noteNumberScheme = Note.noteNumberSchemes[4];
 
 		
 
@@ -133,14 +131,14 @@ class CharterNote extends FlxSprite
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 
-		
+		newCharter = Std.isOfType(FlxG.state, YoshiCrafterCharter);
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
 		this.strumTime = strumTime;
 
 		this.noteData = noteData;
 
-		this.noteType = Math.floor(noteData / ChartingState_New._song.keyNumber);
+		this.noteType = Math.floor(noteData / ChartingState_New._song.keyNumber / 2);
 
 		scale.x *= swagWidth / _swagWidth;
 		if (!isSustainNote) {
@@ -235,11 +233,43 @@ class CharterNote extends FlxSprite
 			}
 			offset.y = height / 2;
 		}
+
+		this.sustainLength = sustainLength;
+		if (newCharter) {
+			state = cast(FlxG.state, YoshiCrafterCharter);
+			sustainSprite = new FlxSprite(0, 0).makeGraphic(10, YoshiCrafterCharter.GRID_SIZE, 0xFFFFFFFF);
+			state.add(sustainSprite);
+
+			updateSustain();
+		}
 	}
 
+	public function updateSustain() {
+		if (newCharter) {
+			sustainSprite.visible = sustainLength > Conductor.stepCrochet;
+			sustainSprite.setGraphicSize(10, Std.int(Math.max(1, sustainLength / Conductor.stepCrochet * YoshiCrafterCharter.GRID_SIZE) * state.zoom) - YoshiCrafterCharter.GRID_SIZE);
+			sustainSprite.updateHitbox();
+		}
+	}
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		alpha = (strumTime <= Conductor.songPosition) ? 0.3 : 1;
+
+		if (sustainSprite != null) {
+			sustainSprite.x = x + (width / 2) - (sustainSprite.width / 2);
+			// accurate
+			sustainSprite.y = y + (YoshiCrafterCharter.GRID_SIZE / 2);
+			sustainSprite.alpha = alpha;
+		}
+		// legacy support
+		if (!newCharter) alpha = (strumTime <= Conductor.songPosition) ? 0.3 : 1;
+	}
+
+	public override function destroy() {
+		if (sustainSprite != null) {
+			sustainSprite.destroy();
+			state.remove(sustainSprite);
+		}
+		super.destroy();
 	}
 }

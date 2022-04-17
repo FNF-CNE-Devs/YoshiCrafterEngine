@@ -59,7 +59,7 @@ class GameStats extends TextField
 		var currentCount = times.length;
 		currentFPS = Math.round((currentCount + cacheCount) / 2);
 
-		if (visible = (Settings.engineSettings.data.fps_showFPS || Settings.engineSettings.data.fps_showMemory || Settings.engineSettings.data.fps_showMemoryPeak))
+		if (Settings.engineSettings != null && Settings.engineSettings.data != null && (visible = (Settings.engineSettings.data.fps_showFPS || Settings.engineSettings.data.fps_showMemory || Settings.engineSettings.data.fps_showMemoryPeak)))
 		{
 			text = "";
 			if (Settings.engineSettings.data.fps_showFPS)
@@ -77,8 +77,8 @@ class GameStats extends TextField
 					text += "Memory: " + CoolUtil.getSizeLabel(System.totalMemory) + "\n";
 				if (Settings.engineSettings.data.fps_showMemoryPeak)
 					text += "Mem Peak: " + CoolUtil.getSizeLabel(peak) + "\n";
-				if (Settings.engineSettings.data.fps_showYoshiEngineVer)
-					text += 'Yoshi Engine v${Main.engineVer.join(".")}';
+				if (Settings.engineSettings.data.fps_showYoshiCrafterEngineVer)
+					text += 'YoshiCrafter Engine v${Main.engineVer.join(".")}';
 			}
 		}
 

@@ -36,6 +36,16 @@ class CoolUtil
         return size + " " + dataTexts[data];
     }
 
+	public static function loadUIStuff(sprite:FlxSprite, ?anim:String) {
+		sprite.loadGraphic(Paths.image("uiIcons", "preload"), true, 16, 16);
+		var anims = ["up", "refresh", "delete", "copy", "paste", "x", "swap"];
+		
+		for(k=>a in anims) {
+			sprite.animation.add(a, [k], 0, false);
+		}
+		if (anim != null) sprite.animation.play(anim);
+	}
+
 	public static function loadSong(mod:String, song:String, ?difficulty:String):Bool {
 		if (difficulty == null) difficulty = "normal";
 
@@ -157,8 +167,8 @@ class CoolUtil
 
 
 	public static function addBG(f:FlxState) {
-		var p = Paths.image("menuBGYoshi", 'mods/${Settings.engineSettings.data.selectedMod}');
-		if (!Assets.exists(p)) p = Paths.image("menuBGYoshi", "preload");
+		var p = Paths.image("menuBGYoshiCrafter", 'mods/${Settings.engineSettings.data.selectedMod}');
+		if (!Assets.exists(p)) p = Paths.image("menuBGYoshiCrafter", "preload");
 		var bg = new FlxSprite(0,0).loadGraphic(p);
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
 		bg.screenCenter();
@@ -170,7 +180,7 @@ class CoolUtil
 
 	public static function addUpdateBG(f:FlxState) {
 		// siivkoi i love your art thanks again
-		var p = Paths.image("Yoshi_Engine_download_screen", "preload");
+		var p = Paths.image("YoshiCrafter_Engine_download_screen", "preload");
 		var bg = new FlxSprite(0,0).loadGraphic(p);
 		bg.screenCenter();
 		bg.scrollFactor.set(0, 0);
@@ -321,10 +331,10 @@ class CoolUtil
 		return value;
 	}
 	
-	public static function addZeros(v:String, length:Int) {
+	public static function addZeros(v:String, length:Int, end:Bool = false) {
 		var r = v;
 		while(r.length < length) {
-			r = '0$r';
+			r = end ? r + '0': '0$r';
 		}
 		return r;
 	}

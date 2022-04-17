@@ -1,6 +1,6 @@
 package dev_toolbox.stage_editor;
 
-import Stage.StageSprite;
+import stage.*;
 import sys.FileSystem;
 import flixel.util.FlxColor;
 import haxe.io.Path;

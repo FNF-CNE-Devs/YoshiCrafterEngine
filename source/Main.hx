@@ -18,8 +18,8 @@ import flixel.FlxGame;
 import flixel.FlxState;
 import openfl.Assets;
 import openfl.Lib;
-import openfl.display.FPS;
 import openfl.display.Sprite;
+import openfl.display.FPS;
 import openfl.events.Event;
 
 class Main extends Sprite
@@ -33,7 +33,7 @@ class Main extends Sprite
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
 	// YOSHI ENGINE STUFF
-	public static var engineVer:Array<Int> = [1,7,1];
+	public static var engineVer:Array<Int> = [1,8,0];
 	public static var buildVer:String = "";
 	public static var fps:GameStats;
 
@@ -71,12 +71,18 @@ class Main extends Sprite
 			copyFolder('./_cache', '.');
 			CoolUtil.deleteFolder('./_cache/');
 			FileSystem.deleteDirectory('./_cache/');
-			new Process('start /B YoshiEngine.exe', null);
+			new Process('start /B YoshiCrafterEngine.exe', null);
 			System.exit(0);
 		} else {
 			try {
 				// in case to prevent crashes
 				if (FileSystem.exists("temp.exe")) FileSystem.deleteFile('temp.exe');
+			} catch(e) {
+
+			}
+			try {
+				// in case to prevent crashes
+				if (FileSystem.exists("YoshiEngine.exe")) FileSystem.deleteFile('YoshiEngine.exe');
 			} catch(e) {
 
 			}
@@ -104,12 +110,11 @@ class Main extends Sprite
 				m = '${err.text}';
 			}
 			m += '\r\n ${CallStack.toString(CallStack.exceptionStack())}';
-			trace('An error occured !\r\nYoshi Engine ver. ${engineVer.join(".")} $buildVer\r\n\r\n${m}\r\n\r\nThe engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !');
- 			Application.current.window.alert('An error occured !\r\nYoshi Engine ver. ${engineVer.join(".")} $buildVer\r\n\r\n${m}\r\n\r\nThe engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !', e.error);
+			trace('An error occured !\r\nYoshiCrafter Engine ver. ${engineVer.join(".")} $buildVer\r\n\r\n${m}\r\n\r\nThe engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !');
+ 			Application.current.window.alert('An error occured !\r\nYoshiCrafter Engine ver. ${engineVer.join(".")} $buildVer\r\n\r\n${m}\r\n\r\nThe engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !', e.error);
 			e.stopPropagation();
 			e.stopImmediatePropagation();
 		});
-
 
 		if (stage != null)
 		{

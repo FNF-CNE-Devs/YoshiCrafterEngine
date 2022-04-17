@@ -27,7 +27,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import lime.utils.Assets;
+import openfl.utils.Assets;
 
 using StringTools;
 
@@ -91,7 +91,7 @@ class FreeplayState extends MusicBeatState
 		
 		songs = [];
 		var fnfSongs = [];
-		for(mod in FileSystem.readDirectory('$mPath/')) {
+		for(mod=>modConf in ModSupport.modConfig) {
 			var path = Paths.json('freeplaySonglist', 'mods/$mod');
 			if (Assets.exists(path)) {
 				var jsonContent:FreeplaySongList = null;
@@ -188,10 +188,10 @@ class FreeplayState extends MusicBeatState
 			freeplayScript = new HScript();
 			validated = false;
 		}
-		ModSupport.setScriptDefaultVars(freeplayScript, '${Settings.engineSettings.data.selectedMod}', {});
 		freeplayScript.setVariable("state", this);
 		freeplayScript.setVariable("songs", _songs);
 		freeplayScript.setVariable("addSong", addSong);
+		ModSupport.setScriptDefaultVars(freeplayScript, '${Settings.engineSettings.data.selectedMod}', {});
 		if (validated) {
 			showAllSongs = false;
 			freeplayScript.loadFile('${Paths.getModsPath()}/${Settings.engineSettings.data.selectedMod}/ui/FreeplayState');
@@ -481,10 +481,12 @@ class FreeplayState extends MusicBeatState
 		super.update(elapsed);
 		
 
-		if (Settings.engineSettings.data.developerMode) {
-			if (FlxControls.justPressed.F6) openSubState(new LogSubState());
+		if (!(ModSupport.modConfig[Settings.engineSettings.data.selectedMod] != null && ModSupport.modConfig[Settings.engineSettings.data.selectedMod].locked)) {
+			if (Settings.engineSettings.data.developerMode) {
+				if (FlxControls.justPressed.F6) openSubState(new LogSubState());
+			}
+			if (FlxControls.justPressed.F5) FlxG.resetState();
 		}
-		if (FlxControls.justPressed.F5) FlxG.resetState();
 		if (FlxControls.justPressed.TAB) openSubState(new SwitchModSubstate());
 
 		shiftCooldown += elapsed;

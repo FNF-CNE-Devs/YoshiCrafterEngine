@@ -11,22 +11,47 @@ import flixel.util.FlxColor;
 using StringTools;
 
 /**
- * Loosley based on FlxTypeText lolol
+ * *Loosley based on FlxTypeText lolol*
+ * Used to generate in game animated text, such as those seen in the Freeplay Menu, and in the Pause Menu.
  */
 class Alphabet extends FlxSpriteGroup
 {
+	/**
+	 * Delay between letters (in seconds). Only works if created with the `typed` parameter set to `true`.
+	 * Default value is `0.05`, or `1 / 0.05` = `20` letters per second.
+	 */
 	public var delay:Float = 0.05;
+	/**
+	 * Whenever the text being typed in is paused. Set to true to pause, set to false to resume.
+	 */
 	public var paused:Bool = false;
 
 	// for menu shit
+	/**
+	 * Menu selection position. In states such as `FreeplayState`, this value is always equal to `id - curSelected`, where `id` is the position of the setting in the menu.
+	 */
 	public var targetY:Float = 0;
+	/**
+	 * Whenever the Alphabet should reposition itself like an option menu. If set to true, will position itself like in `FreeplayState`, raccording to `targetY`.
+	**/
 	public var isMenuItem:Bool = false;
+	/**
+	 * If false, the Alphabet will go to the target Y without any lerp and set this to true.
+	**/
+	public var wentToTargetY:Bool = false;
 
+	/**
+	 * Alphabet's text. Does not have any effect when changed.
+	 */
 	public var text:String = "";
 
 	var _finalText:String = "";
 	var _curText:String = "";
 
+
+	/**
+	 * Maximum width that a alphabet can have. Defaults to `FlxG.width` (1280)
+	 */
 	public var widthOfWords:Float = FlxG.width;
 
 	var yMulti:Float = 1;
@@ -148,6 +173,9 @@ class Alphabet extends FlxSpriteGroup
 		splitWords = _finalText.split("");
 	}
 
+	/**
+	 * Unused, but may be useful for your own scripts.	
+	 */
 	public var personTalking:String = 'gf';
 
 	public function startTypedText():Void
@@ -261,9 +289,21 @@ class Alphabet extends FlxSpriteGroup
 			if (Std.isOfType(FlxG.state, PlayState))
 				if (isMenuItem)
 					h = PlayState.current.guiSize.y;
+			var w:Float = FlxG.width;
+			if (Std.isOfType(FlxG.state, PlayState))
+				if (isMenuItem)
+					w = PlayState.current.guiSize.x;
 
-			y = FlxMath.lerp(y, (scaledY * 120) + (h * 0.48), 0.16 * 60 * elapsed);
-			x = FlxMath.lerp(x, (targetY * 20) + 90, 0.16 * 60 * elapsed);
+			if (wentToTargetY) {
+				y = FlxMath.lerp(y, (scaledY * 120) + (h * 0.48), 0.16 * 60 * elapsed);
+				x = FlxMath.lerp(x, (targetY * 20) + 90, 0.16 * 60 * elapsed);
+			} else {
+				x = (targetY * 20) + 90 - w;
+				// y = (targetY * 20) + 90;
+				y = (scaledY * 120) + (h * 0.48);
+				wentToTargetY = true;
+			}
+			
 		}
 
 		super.update(elapsed);

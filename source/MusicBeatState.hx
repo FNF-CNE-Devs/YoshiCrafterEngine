@@ -1,5 +1,7 @@
 package;
 
+import flixel.addons.transition.Transition;
+import flixel.FlxSubState;
 import dev_toolbox.ToolboxMessage;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
@@ -34,6 +36,7 @@ class MusicBeatState extends FlxUIState
 
 	public static var defaultIcon:Image = null;
 
+	public var lastElapsed:Float = 0;
 	public override function onFocus() {
 		if (reloadModsState) {
 			super.onFocus();
@@ -71,7 +74,7 @@ class MusicBeatState extends FlxUIState
 
 		//if (defaultIcon == null) defaultIcon = Assets.getBitmapData(Paths.file('icon.png', IMAGE, 'mods/));
 		if (defaultIcon == null) defaultIcon = lime.utils.Assets.getImage(Paths.image("icon", "preload"));
-		lime.app.Application.current.window.title = "Friday Night Funkin' - Yoshi Engine";
+		lime.app.Application.current.window.title = "Friday Night Funkin' - YoshiCrafter Engine";
 		if (PlayState.iconChanged) {
 			lime.app.Application.current.window.setIcon(defaultIcon);
 			PlayState.iconChanged = false;
@@ -97,6 +100,7 @@ class MusicBeatState extends FlxUIState
 
 	override function update(elapsed:Float)
 	{
+		lastElapsed = elapsed;
 		//everyStep();
 		var oldStep:Int = curStep;
 
@@ -185,4 +189,14 @@ class MusicBeatState extends FlxUIState
         m.cameras = cameras;
         openSubState(m);
     }
+
+	public override function openSubState(state:FlxSubState) {
+		if (subState != null) {
+			if (Std.isOfType(subState, Transition))  {
+				closeSubState();
+			}
+		}
+		persistentUpdate = false;
+		super.openSubState(state);
+	}
 }

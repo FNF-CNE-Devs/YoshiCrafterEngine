@@ -10,15 +10,14 @@ import sys.io.File;
 
 class Paths_Mod {
     private var mod:String;
-    public var copyBitmap:Bool = false;
     public function new(mod:String, settings:Dynamic) {
         this.mod = mod;
         trace(settings);
-        if (settings.cloneBitmap != null) {
-            if (Std.isOfType(settings.cloneBitmap, Bool)) {
-                copyBitmap = settings.cloneBitmap;
-            }
-        }
+        // if (settings.cloneBitmap != null) {
+        //     if (Std.isOfType(settings.cloneBitmap, Bool)) {
+        //         copyBitmap = settings.cloneBitmap;
+        //     }
+        // }
     }
 
     public function getModsFolder() {

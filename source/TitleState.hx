@@ -74,8 +74,14 @@ class TitleState extends MusicBeatState
 	override public function create():Void
 	{
 		reloadModsState = true;
-		trace(FlxControls.pressed);
-
+		//trace(FlxControls.pressed);
+		
+		Application.current.onExit.add (function (exitCode) {
+			Settings.engineSettings.data.volume = FlxG.sound.volume;
+			Settings.engineSettings.flush();
+		});
+		FlxG.sound.volume = Settings.engineSettings.data.volume;
+		
 		if (!skipOldSkinCheck) {
 			if (FileSystem.exists(Paths.getOldSkinsPath())) {
 				FlxG.switchState(new OutdatedSkinsScreen(new TransitionData(TransitionType.NONE), new TransitionData(TransitionType.NONE)));
@@ -253,7 +259,7 @@ class TitleState extends MusicBeatState
 			if (introConf.present == null) introConf.present = 'present';
 			if (introConf.assoc == null) introConf.assoc = ['In association', 'with'];
 			if (introConf.newgrounds == null) introConf.newgrounds = 'newgrounds';
-			if (introConf.gameName == null) introConf.gameName = ['Friday Night Funkin\'', 'Yoshi', 'Engine'];
+			if (introConf.gameName == null) introConf.gameName = ['Friday Night Funkin\'', 'YoshiCrafter', 'Engine'];
 		} else {
 			introConf = {
 				bpm: 102,
@@ -261,7 +267,7 @@ class TitleState extends MusicBeatState
 				present: 'present',
 				assoc: ['In association', 'with'],
 				newgrounds: 'newgrounds',
-				gameName: ['Friday Night Funkin\'', 'Yoshi', 'Engine']
+				gameName: ['Friday Night Funkin\'', 'YoshiCrafter', 'Engine']
 			};
 		}
 
@@ -285,10 +291,10 @@ class TitleState extends MusicBeatState
 			}
 			if (script != null) {
 				titleSpriteGrp = new FlxSpriteGroup(0, 0);
-				ModSupport.setScriptDefaultVars(script, mod, {});
 				script.setVariable("create", function() {});
 				script.setVariable("beatHit", function() {});
 				script.setVariable("add", titleSpriteGrp.add);
+				ModSupport.setScriptDefaultVars(script, mod, {});
 				script.loadFile('$path/titlescreen');
 				script.executeFunc("create");
 				add(titleSpriteGrp);
@@ -441,12 +447,12 @@ class TitleState extends MusicBeatState
 			if (FlxG.keys.justPressed.F2) {
 				CoolUtil.loadSong("Friday Night Funkin'", "MILF", "Hard");
 				charter.ChartingState_New._song = PlayState._SONG;
-				FlxG.switchState(new YoshiEngineCharter());
+				FlxG.switchState(new charter.YoshiCrafterCharter());
 			}
 		#end
 		/*
 		if (FlxG.keys.justPressed.F2) {
-			FlxG.switchState(new UpdateState("http://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/", ['README.md', 'changelog.txt', 'YoshiEngine.exe']));
+			FlxG.switchState(new UpdateState("http://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/", ['README.md', 'changelog.txt', 'YoshiCrafterEngine.exe']));
 		}
 		*/
 		if (FlxG.keys.justPressed.TAB && skippedIntro) {
@@ -516,7 +522,7 @@ class TitleState extends MusicBeatState
 				// Check if version is outdated
 				Thread.create(function() {
 					try {
-						//var data = Http.requestUrl("https://raw.githubusercontent.com/YoshiCrafter29/YoshiEngine/main/update.json");
+						//var data = Http.requestUrl("https://raw.githubusercontent.com/YoshiCrafter29/YoshiCrafterEngine/main/update.json");
 						var data = Http.requestUrl("https://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/_changes/list.txt");
 						updateIcon.visible = false;
 						updateAlphabet.visible = false;
@@ -569,7 +575,7 @@ class TitleState extends MusicBeatState
 		var changeLog:String = Http.requestUrl('https://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/_changes/changelog.txt');
 		/*
 		// var version:String = "v" + Application.current.meta.get('version');
-		var jsonData:YoshiEngineVersion = Json.parse(data.trim());
+		var jsonData:YoshiCrafterEngineVersion = Json.parse(data.trim());
 		var outDated = false;
 		var amount = jsonData.version.length;
 		if (Main.engineVer.length > amount) amount = Main.engineVer.length;

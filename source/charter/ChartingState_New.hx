@@ -70,6 +70,8 @@ class ChartingState_New extends MusicBeatState
 	 */
 	var curSection:Int = 0;
 
+	var waveform:WaveformSprite;
+
 	public static var lastSection:Int = 0;
 
 	public static var combineNoteTypes(get, set):Bool;
@@ -135,7 +137,7 @@ class ChartingState_New extends MusicBeatState
 
 	override function create()
 	{
-		var bg = new FlxSprite().loadGraphic(Paths.image("menuBGYoshi", "preload"));
+		var bg = new FlxSprite().loadGraphic(Paths.image("menuBGYoshiCrafter", "preload"));
 		bg.scale.x = bg.scale.y = 1.25;
 		bg.antialiasing = true;
 		bg.screenCenter();

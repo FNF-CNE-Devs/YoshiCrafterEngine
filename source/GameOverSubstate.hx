@@ -55,6 +55,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		var sfx = firstDeathSFX.split(":");
 		if (firstDeathSFX.length == 0) sfx = ["Friday Night Funkin'", "fnf_loss_sfx"];
 		if (sfx.length == 1) sfx.insert(0, PlayState.songMod);
+		if(sfx[0].toLowerCase() == "yoshiengine") sfx[0] = "YoshiCrafterEngine";
 		var mod = sfx[0];
 		var file = sfx[1];
 		var mFolder = Paths.modsPath;

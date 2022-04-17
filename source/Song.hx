@@ -23,6 +23,8 @@ typedef SwagSong =
 	var validScore:Bool;
 	var keyNumber:Null<Int>;
 	var noteTypes:Array<String>;
+	@:optional var scripts:Array<String>;
+	@:optional var gfVersion:String;
 }
 
 class Song
@@ -78,9 +80,9 @@ class Song
 	{
 		var rawJson = "";
 		if (folder == null)
-			rawJson = Assets.getText(Paths.json('$jsonInput/$jsonInput.json', 'mods/$mod'));
+			rawJson = Assets.getText(Paths.json('$jsonInput/$jsonInput', 'mods/$mod'));
 		else
-			rawJson = Assets.getText(Paths.json('$folder/$jsonInput.json', 'mods/$mod'));
+			rawJson = Assets.getText(Paths.json('$folder/$jsonInput', 'mods/$mod'));
 
 		while (!rawJson.endsWith("}"))
 		{

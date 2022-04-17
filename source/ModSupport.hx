@@ -1,3 +1,4 @@
+import Script.HScript;
 import haxe.EnumTools;
 import mod_support_stuff.ModState;
 import hscript.Expr;
@@ -45,6 +46,7 @@ import flixel.math.FlxMath;
 import flixel.tweens.FlxTween;
 import flixel.input.keyboard.FlxKey;
 import mod_support_stuff.*;
+import stage.Stage;
 
 using StringTools;
 
@@ -255,7 +257,7 @@ class ModSupport {
                 present: 'present',
                 assoc: ['In association', 'with'],
                 newgrounds: 'newgrounds',
-                gameName: ['Friday Night Funkin\'', 'Yoshi', 'Engine']
+                gameName: ['Friday Night Funkin\'', 'YoshiCrafter', 'Engine']
             }
         };
         modConfig[mod] = json;
@@ -283,36 +285,36 @@ class ModSupport {
 			var fileData = FileSystem.stat(path);
 			var cachePath = Paths.getCachePath(path);
 			
-			if (Reflect.hasField(Settings.hscriptCache.data, cachePath)) {
-				var thing = Reflect.field(Settings.hscriptCache.data, cachePath);
-				if (Std.isOfType(thing, Dynamic)) {
-					var cache:CacheExpr = thing;
-					if (cache.time != null && cache.code != null) {
-						if (cache.time >= fileData.mtime.getTime()) {
-							ast = cache.code;
-							trace("Using cache.");
-							return ast;
-						} else {
-							trace("Cache is outdated!");
-						}
-					} else {
-						trace("Cache is invalid!");
-					}
-				} else {
-					trace("Cache is not of the right type!");
-				}
-			} else {
-				trace("Cache not found!");
-			}
+			// if (Reflect.hasField(Settings.hscriptCache.data, cachePath)) {
+			// 	var thing = Reflect.field(Settings.hscriptCache.data, cachePath);
+			// 	if (Std.isOfType(thing, Dynamic)) {
+			// 		var cache:CacheExpr = thing;
+			// 		if (cache.time != null && cache.code != null) {
+			// 			if (cache.time >= fileData.mtime.getTime()) {
+			// 				ast = cache.code;
+			// 				trace("Using cache.");
+			// 				return ast;
+			// 			} else {
+							// trace("Cache is outdated!");
+						// }
+					// } else {
+						// trace("Cache is invalid!");
+					// }
+				// } else {
+					// trace("Cache is not of the right type!");
+				// }
+			// } else {
+				// trace("Cache not found!");
+			// }
 			#if sys
 			ast = parser.parseString(sys.io.File.getContent(path));
 			#else
 			trace("no sys support");
 			#end
-			Reflect.setField(Settings.hscriptCache.data, cachePath, {
-				time: fileData.mtime.getTime(),
-				code: ast
-			});
+			// Reflect.setField(Settings.hscriptCache.data, cachePath, {
+			// 	time: fileData.mtime.getTime(),
+			// 	code: ast
+			// });
 		} catch(ex) {
 			trace(ex);
             var exThingy = Std.string(ex);
@@ -358,6 +360,14 @@ class ModSupport {
         return name;
     }
     public static function setScriptDefaultVars(script:Script, mod:String, settings:Dynamic) {
+        var superVar = {};
+        if (Std.isOfType(script, HScript)) {
+            var hscript:HScript = cast script;
+            for(k=>v in hscript.hscript.variables) {
+                Reflect.setField(superVar, k, v);
+            }
+        }
+		script.setVariable("super", superVar);
 		script.setVariable("mod", mod);
 		script.setVariable("PlayState", PlayState.current);
         script.setVariable("import", function(className:String) {
@@ -465,7 +475,7 @@ class ModSupport {
         var songName = PlayState._SONG.song.toLowerCase();
         var songCodePath = Paths.modsPath + '/$currentMod/song_conf';
 
-        var songConf = SongConf.parse(PlayState.songMod, PlayState.SONG.song);
+        var songConf = SongConf.parse(PlayState.songMod, PlayState.SONG.song, PlayState.SONG);
 
         scripts = songConf.scripts;
         song_cutscene = songConf.cutscene;

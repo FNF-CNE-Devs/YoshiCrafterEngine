@@ -58,7 +58,10 @@
         },
         {
             "name": "MILF",
-            "scripts": ["stages/limo", "modcharts/milf"]
+            "scripts": ["stages/limo", "modcharts/milf"],
+            "difficulties": [
+                {"name": "sexy", "scripts": ["characters/silf/modchart", "characters/silf/ui"]}
+            ]
         },
 
 

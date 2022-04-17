@@ -164,7 +164,9 @@ class FileExplorer extends MusicBeatSubstate {
         this.mod = mod;
         this.callback = callback;
 
-        add(new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000));
+        var bg:FlxSprite;
+        add(bg = new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000));
+        bg.scrollFactor.set();
 
         this.type = type;
         fileType = switch(type) {
@@ -214,6 +216,7 @@ class FileExplorer extends MusicBeatSubstate {
                 name: 'explorer'
             }
         ], true);
+        tabThingy.scrollFactor.set();
         tabThingy.resize(1280 * 0.75, 720 * 0.75);
 
         tab = new FlxUI(null, tabThingy);
@@ -237,15 +240,13 @@ class FileExplorer extends MusicBeatSubstate {
         refreshButton.y = upButton.y -= (upButton.height - pathText.height) / 2;
         
 
-        var upIcon = new FlxSprite().loadGraphic(Paths.image("uiIcons", "preload"), true, 16, 16);
-        upIcon.animation.add("icon", [0], 0, false);
-        upIcon.animation.play("icon");
+        var upIcon = new FlxSprite();
+        CoolUtil.loadUIStuff(upIcon, "up");
         upIcon.x = upButton.x + (upButton.width / 2) - (upIcon.width / 2);
         upIcon.y = upButton.y + (upButton.height / 2) - (upIcon.height / 2);
 
-        var refreshIcon = new FlxSprite().loadGraphic(Paths.image("uiIcons", "preload"), true, 16, 16);
-        refreshIcon.animation.add("icon", [1], 0, false);
-        refreshIcon.animation.play("icon");
+        var refreshIcon = new FlxSprite();
+        CoolUtil.loadUIStuff(refreshIcon, "refresh");
         refreshIcon.x = refreshButton.x + (refreshButton.width / 2) - (upIcon.width / 2);
         refreshIcon.y = refreshButton.y + (refreshButton.height / 2) - (upIcon.height / 2);
 

@@ -1,3 +1,5 @@
+var stageFront:FlxSprite = null;
+
 function create() {
     PlayState.defaultCamZoom = 0.9;
 
@@ -7,12 +9,13 @@ function create() {
     bg.active = false;
     PlayState.add(bg);
 
-    var stageFront = new FlxSprite(-650, 600).loadGraphic(Paths.image('default_stage/stagefront'));
+    stageFront = new FlxSprite(-650, 600).loadGraphic(Paths.image('default_stage/stagefront'));
     stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
     stageFront.updateHitbox();
     stageFront.antialiasing = true;
     stageFront.scrollFactor.set(0.9, 0.9);
     stageFront.active = false;
+	stageFront.shader = new CustomShader(mod + ':3D Floor');
     PlayState.add(stageFront);
 
     var stageCurtains = new FlxSprite(-500, -300).loadGraphic(Paths.image('default_stage/stagecurtains'));
@@ -25,10 +28,7 @@ function create() {
     PlayState.add(stageCurtains);
 }
 
-//   TEST CODE
-// var rot = 0;
-// function update(elapsed) {
-//     rot += 180 * elapsed;
-//     // trace(rot);
-//     PlayState.health = 1 + (Math.sin(rot / 180 * Math.pi) * 0.75);
-// }
+function update(elapsed:Float) {
+	stageFront.shader.shaderData.curveX.value = [(((FlxG.camera.scroll.x + (FlxG.width / 2)) - stageFront.getMidpoint().x) * stageFront.scrollFactor.x) / Math.PI / stageFront.width];
+    stageFront.shader.shaderData.curveY.value = [(((FlxG.camera.scroll.y + (FlxG.height / 2)) - stageFront.getMidpoint().y) * stageFront.scrollFactor.y) / Math.PI / stageFront.height];
+}

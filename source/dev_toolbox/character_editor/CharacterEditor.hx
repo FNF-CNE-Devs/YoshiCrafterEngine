@@ -100,23 +100,25 @@ class CharacterEditor extends MusicBeatState {
             if (a == null) continue;
             if (a.name == "") continue;
             var animName = character.frames.getByIndex(a.frames[0]).name;
-            var realAnimName = animName;
-            for (i in 0...4) {
-                var animFrames:Array<FlxFrame> = new Array<FlxFrame>();
-                @:privateAccess
-                character.animation.findByPrefix(animFrames, realAnimName); // adds valid frames to animFrames
-
-                if (animFrames.length > 0)
-                {
-                    var frameIndices:Array<Int> = new Array<Int>();
+            var realAnimName = a.prefix;
+            if (realAnimName == null) {
+                for (i in 0...4) {
+                    var animFrames:Array<FlxFrame> = new Array<FlxFrame>();
                     @:privateAccess
-                    character.animation.byPrefixHelper(frameIndices, animFrames, realAnimName); // finds frames and appends them to the blank array
+                    character.animation.findByPrefix(animFrames, realAnimName); // adds valid frames to animFrames
 
-                    if (frameIndices.length == a.frames.length) {
-                        break;
+                    if (animFrames.length > 0)
+                    {
+                        var frameIndices:Array<Int> = new Array<Int>();
+                        @:privateAccess
+                        character.animation.byPrefixHelper(frameIndices, animFrames, realAnimName); // finds frames and appends them to the blank array
+
+                        if (frameIndices.length == a.frames.length) {
+                            break;
+                        }
                     }
+                    realAnimName = realAnimName.substr(0, realAnimName.length - 1);
                 }
-                realAnimName = realAnimName.substr(0, realAnimName.length - 1);
             }
             var offset = character.animOffsets[anim];
             if (offset == null) offset = [0, 0];
@@ -159,7 +161,10 @@ class CharacterEditor extends MusicBeatState {
                     FlxColor.fromRGBFloat(shader.r.value[0], shader.g.value[0], shader.b.value[0]).toWebString();
                 }]
         }
-        File.saveContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$c/Character.json', Json.stringify(json, "\t"));
+        
+        var folder = '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$c';
+        if (ToolboxHome.selectedMod == "~") folder = '${Paths.getSkinsPath()}/$c';
+        File.saveContent('$folder/Character.json', Json.stringify(json, "\t"));
         // if (isBFskin.checked) {
         //     if (ModSupport.modConfig[ToolboxHome.selectedMod].BFskins == null) ModSupport.modConfig[ToolboxHome.selectedMod].BFskins = [];
         //     var exists = false;
@@ -594,6 +599,7 @@ class CharacterEditor extends MusicBeatState {
                     shader.r.value = [col.redFloat];
                     shader.g.value = [col.greenFloat];
                     shader.b.value = [col.blueFloat];
+                    usePlayerColors.checked = false;
                 }));
             };
             note.hoverColor = 0xFFFFFFFF;

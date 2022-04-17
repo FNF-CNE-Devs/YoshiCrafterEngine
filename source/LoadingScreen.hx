@@ -151,7 +151,7 @@ class LoadingScreen extends FlxState {
 		// ║ I bet you guys have enough of having to redo your ║
 		// ║ keybinds everytime you load a new mod. The line   ║
 		// ║ below assure synchronisation between EVERY mods   ║
-		// ║ that uses Yoshi Engine. For god's sake, DO NOT    ║
+		// ║ that uses YoshiCrafter Engine. For god's sake, DO NOT    ║
 		// ║ edit the function, or remove this line. People    ║
 		// ║ have enough of having to do their keybinds        ║
 		// ║ everytime they download a new mod. If you wanna   ║
@@ -194,7 +194,7 @@ class LoadingScreen extends FlxState {
         if (!FileSystem.exists(Paths.getSkinsPath())) {
             // trace("no skins folder, creating one");
             // FileSystem.createDirectory(Paths.getSkinsPath());
-            trace("copying yoshi engine skins");
+            trace("copying yoshiCrafter engine skins");
             loadingText.text = "Skins folder not detected. Please follow the instructions in the zip file.";
             loadingText.y = FlxG.height - (loadingText.height * 1.5);
             aborted = true;

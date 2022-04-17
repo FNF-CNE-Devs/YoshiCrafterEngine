@@ -3,11 +3,11 @@
 
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin' - Yoshi Engine" packageName="com.yoshicrafter29.yoshiengine" package="com.yoshicrafter29.yoshiengine" main="Main" version="0.2.7.1" company="YoshiCrafter29" />
-	<app file="YoshiEngine" if="windows" />
-	<app file="YoshiEngine_Linux" if="linux" />
-	<app file="YoshiEngine_Mac" if="mac" />
-	<app file="YoshiEngine_Android" if="android" />
+	<app title="Friday Night Funkin' - YoshiCrafter Engine" packageName="com.yoshicrafter29.yoshiengine" package="com.yoshicrafter29.yoshiengine" main="Main" version="0.2.7.1" company="YoshiCrafter29" />
+	<app file="YoshiCrafterEngine" if="windows" />
+	<app file="YoshiCrafterEngine_Linux" if="linux" />
+	<app file="YoshiCrafterEngine_Mac" if="mac" />
+	<app file="YoshiCrafterEngine_Android" if="android" />
 	<!-- <app file="Yoshi Engine (x64)" unless="32bit" /> -->
 	<haxedef name="X64_BITS" unless="32bit"/>
 
@@ -122,9 +122,9 @@
 	
 	<assets path='mods' library="mods" embed='false' unless="mobile"/>
 	<assets path='skins' rename='skins' embed='false' unless="mobile"/>
-	<assets path='art/readme.txt' rename='do NOT readme.txt' />
-	<assets path='art/mod.url' rename='How to make a mod.url' />
-	<assets path='Launch.bat' />
+	<assets path='art/readme.txt' rename='do NOT readme.txt'/>
+	<assets path='art/mod.url' rename='How to make a mod.url' if="windows" />
+	<assets path='Launch.bat' if="windows"/>
 	<!-- <assets path="documentation" rename="docs"/> -->
 	<!-- <template path='mods' /> -->
 	
@@ -157,7 +157,7 @@
 	<!-- <haxelib name="flixel-animate"/> -->
 	<haxelib name="discord_rpc" if="desktop"/>
 	<haxedef name="enable_updates"/> <!-- DISABLE IF DOING EXE MOD !-->
-	<!-- <haxelib name="zip"/> -->
+	<haxelib name="hxp"/>
 
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
@@ -201,6 +201,7 @@
 	<!-- <haxedef name="HXCPP_PROFILER" if="profiler"/> -->
 
 	<haxedef name="ENABLE_LUA" /> <!-- LUA -->
+	<!-- <haxedef name="secretCharter" /> -->
 
 	<!-- _________________________________ Custom _______________________________ -->
 
@@ -228,5 +229,8 @@
 	<android permission="android.permission.WRITE_EXTERNAL_STORAGE"/>
 	<android permission="android.permission.READ_EXTERNAL_STORAGE"/>
 	<haxedef name="MOBILE_UI" if="android"/>
+	
+	<haxeflag name="-dce" value="no" />
+	<haxeflag name="-xml" value="yoshicrafterengine/doc.xml" />
 
 </project>

@@ -37,7 +37,7 @@ class CreditsState extends MusicBeatState {
     var socialThingy:FlxText;
 
     public override function create() {
-        var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuBGYoshi'));
+        var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuBGYoshiCrafter'));
 		bg.scrollFactor.x = 0;
 		bg.scrollFactor.y = 0;
 		bg.setGraphicSize(Std.int(bg.width * 1.1 / 0.75));
@@ -72,7 +72,7 @@ class CreditsState extends MusicBeatState {
 
                 if (json != null) {
                     y++;
-                    var modTitle:Alphabet = new Alphabet(0, 125 * y, (mod == "\\") ? "Yoshi Engine" : ModSupport.getModName(mod), true, false);
+                    var modTitle:Alphabet = new Alphabet(0, 125 * y, (mod == "\\") ? "YoshiCrafter Engine" : ModSupport.getModName(mod), true, false);
                     modTitle.x = 640 - (modTitle.width / 2);
                     add(modTitle);
                     y++;

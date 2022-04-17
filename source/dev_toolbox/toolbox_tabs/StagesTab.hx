@@ -45,7 +45,8 @@ class StagesTab extends ToolboxTab {
     function updateRadioList() {
         stageList = [];
         for(f in FileSystem.readDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/stages/')) {
-            if (Path.extension(f).toLowerCase() == 'json') {
+            var exts = ['json', 'stage'];
+            if (exts.contains(Path.extension(f).toLowerCase())) {
                 // is a json stage
                 stageList.push(Path.withoutExtension(f));
             }

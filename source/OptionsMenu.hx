@@ -588,7 +588,7 @@ class OptionsMenu extends MusicBeatState
 		});
 		guiOptions.options.push({
 			text : "Show watermark",
-			description : "When checked, will show a watermark at the top right of the screen with the mod name, the mod song and the Yoshi Engine version.",
+			description : "When checked, will show a watermark at the top right of the screen with the mod name, the mod song and the YoshiCrafter Engine version.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.watermark = !Settings.engineSettings.data.watermark;
@@ -1231,19 +1231,20 @@ class OptionsMenu extends MusicBeatState
 			checkboxChecked: function() {return Settings.engineSettings.data.fps_showMemoryPeak;},
 			value: function() {return "";}
 		});
-		// misc.options.push({
-		// 	text : "Use new charter",
-		// 	updateOnSelected: function(elapsed:Float, o:FNFOption) {
-		// 		if (controls.ACCEPT) {
-		// 			Settings.engineSettings.data.yoshiEngineCharter = !Settings.engineSettings.data.yoshiEngineCharter;
-		// 			o.checkboxChecked = Settings.engineSettings.data.yoshiEngineCharter;
-		// 			o.check(Settings.engineSettings.data.yoshiEngineCharter);
-		// 		}
-		// 	},
-		// 	checkbox: true,
-		// 	checkboxChecked: function() {return Settings.engineSettings.data.yoshiEngineCharter,
-		// 	value: ""
-		// });
+		misc.options.push({
+			text : "Use legacy charter",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.yoshiCrafterEngineCharter = !Settings.engineSettings.data.yoshiCrafterEngineCharter;
+					o.checkboxChecked = !Settings.engineSettings.data.yoshiCrafterEngineCharter;
+					o.check(!Settings.engineSettings.data.yoshiCrafterEngineCharter);
+				}
+			},
+			description: "If checked, will use the legacy charter that was present until 1.8.0. Unchecked by default",
+			checkbox: true,
+			checkboxChecked: function() {return !Settings.engineSettings.data.yoshiCrafterEngineCharter;},
+			value: function() {return "";}
+		});
 		misc.options.push({
 			text : "[]",
 			description : "",
@@ -1402,7 +1403,7 @@ class OptionsMenu extends MusicBeatState
 		// FlxAtlasFrames.fromTexturePackerJson()
 		
 
-		// var yBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGYoshi'));
+		// var yBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGYoshiCrafter'));
 		// yBG.setGraphicSize(Std.int(yBG.width * 1.1));
 		// yBG.updateHitbox();
 		// yBG.screenCenter();

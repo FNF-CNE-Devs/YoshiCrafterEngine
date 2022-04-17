@@ -178,12 +178,14 @@ class CharacterCreator extends MusicBeatSubstate {
                 arrowColors: null,
                 flipX: false
             };
-            File.saveContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/Character.json', Json.stringify(json, "\t"));
-            File.copy(char_spritesheet + (usesJson ? ".json" : ".xml"), '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/spritesheet.' + (usesJson ? "json" : "xml"));
-            File.copy(char_spritesheet + ".png", '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/spritesheet.png');
+            var folder = '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName';
+            if (ToolboxHome.selectedMod == "~") folder = '${Paths.getSkinsPath()}/$charName';
+            File.saveContent('$folder/Character.json', Json.stringify(json, "\t"));
+            File.copy(char_spritesheet + (usesJson ? ".json" : ".xml"), '$folder/spritesheet.' + (usesJson ? "json" : "xml"));
+            File.copy(char_spritesheet + ".png", '$folder/spritesheet.png');
             var characterHX = 'function create() {\r\n\tcharacter.frames = Paths.getCharacter(character.curCharacter);\r\n\tcharacter.loadJSON(true);\r\n}';
-            File.saveContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/Character.hx', characterHX);
-            File.saveBytes('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName/icon.png', char_icon.encode(char_icon.rect, new PNGEncoderOptions(true)));
+            File.saveContent('$folder/Character.hx', characterHX);
+            File.saveBytes('$folder/icon.png', char_icon.encode(char_icon.rect, new PNGEncoderOptions(true)));
 
             openSubState(ToolboxMessage.showMessage("Success", "Character successfully created.", function() {
                 close();

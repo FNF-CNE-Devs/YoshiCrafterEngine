@@ -3,6 +3,7 @@ import mod_support_stuff.*;
 import haxe.Json;
 
 import sys.FileSystem;
+import Song.SwagSong;
 
 using StringTools;
 
@@ -25,7 +26,7 @@ typedef SongConfResult = {
     var end_cutscene:ModScript;
 }
 class SongConf {
-    public static function parse(mod:String, song:String):SongConfResult {
+    public static function parse(mod:String, song:String, ?chart:SwagSong):SongConfResult {
         // TODO : gotta finish stage editor first
         // Anyways, doin this shit
 
@@ -58,7 +59,7 @@ class SongConf {
                                     // GOOD MATCH
                                     if (d.scripts != null) for(s in d.scripts) scripts.push(getModScriptFromValue(mod, s));
                                     if (d.cutscene != null) cutscene = getModScriptFromValue(mod, d.cutscene);
-                                    if (d.end_cutscene != null) cutscene = getModScriptFromValue(mod, d.end_cutscene);
+                                    if (d.end_cutscene != null) end_cutscene = getModScriptFromValue(mod, d.end_cutscene);
 
                                     break;
                                 }
@@ -97,6 +98,12 @@ class SongConf {
             }
         }
 
+        if (chart != null) {
+            if (chart.scripts != null) {
+                for(s in chart.scripts) scripts.push(getModScriptFromValue(mod, s));
+            }
+        }
+
         if (scripts.length == 0) {
             scripts = [
                 {
@@ -128,6 +135,7 @@ class SongConf {
             PlayState.log.push('Script not found for $value.');
             return {mod : "Friday Night Funkin'", path : "Friday Night Funkin'/modcharts/unknown"};
         }
+		if(splitValue[0].toLowerCase() == "yoshiengine") splitValue[0] = "YoshiCrafterEngine";
         if (splitValue.length == 1) {
             var scriptPath = splitValue[0];
             if (FileSystem.exists('${Paths.modsPath}/$currentMod/$scriptPath')) {
