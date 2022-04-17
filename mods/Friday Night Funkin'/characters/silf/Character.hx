@@ -1,6 +1,6 @@
 function create() {
     // GOTTA FIX OFFSET PROBLEMS
-    var tex = Paths.getCharacter("Yoshi's Mess:silf");
+    var tex = Paths.getCharacter(character.curCharacter);
     character.frames = tex;
     character.animation.addByPrefix('idle', "Mom Idle", 24, false);
     character.animation.addByPrefix('singUP', "Mom Up Pose", 24, false);

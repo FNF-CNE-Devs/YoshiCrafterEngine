@@ -47,6 +47,16 @@ class UpdateState extends MusicBeatState
 	var currentLoadedStream:URLLoader = null;
 	var currentFile:String;
 
+	function alright() {
+		downloadedFiles++;
+		percentLabel.text = '${Math.floor(downloadedFiles / totalFiles * 100)}%';
+		if (fileList.length > 0) {
+			doFile();
+		} else {
+			applyUpdate();
+		}
+	}
+
 	function doFile() {
 		var f = fileList.shift();
 		currentFile = f;
@@ -54,6 +64,10 @@ class UpdateState extends MusicBeatState
 			applyUpdate();
 			return;
 		};
+		if (FileSystem.exists('./_cache/$f') && FileSystem.stat('./_cache/$f').size > 0) { // prevents redownloading of the entire thing after it failed
+			alright();
+			return;
+		}
 		var downloadStream = new URLLoader();
 		currentLoadedStream = downloadStream;
 		downloadStream.dataFormat = BINARY;
@@ -61,43 +75,53 @@ class UpdateState extends MusicBeatState
 		//dumbass
 		var request = new URLRequest('$baseURL/$f'.replace(" ", "%20"));
 
-		var array = [];
-		var dir = [for (k => e in (array = f.replace("\\", "/").split("/"))) if (k < array.length - 1) e].join("/");
-		FileSystem.createDirectory('./_cache/$dir');
 		
-		if (FileSystem.exists('./_cache/$f') && FileSystem.stat('./_cache/$f').size > 0) { // prevents redownloading of the entire thing after it failed
-			downloadedFiles++;
-			doFile();
-			return;
-		}
-		var fileOutput:FileOutput = File.write('./_cache/$f', true);
+		
+		
 		var good = true;
-		currentFileLabel.text = 'Downloading File: $f (${totalFiles - fileList.length}/${totalFiles})';
+
+		var label1 = '(${totalFiles - fileList.length}/${totalFiles})';
+		var label2 = '( - / - )';
+		var maxLength:Int = Std.int(Math.max(label1.length, label2.length));
+		while(label1.length < maxLength) label1 = " " + label1;
+		while(label2.length < maxLength) label2 += " ";
+		currentFileLabel.text = 'Downloading File: $f\n$label1 | $label2';
 		
 		// downloadStream.addEventListener(Event.OPEN, function(e) {trace("Opened");good = true;});
 		downloadStream.addEventListener(IOErrorEvent.IO_ERROR, function(e) {
-			openSubState(new MenuMessage('Failed to download $f. Make sure you have a working internet connection, and try again.', function() {
-				FlxG.switchState(new MainMenuState());
-			}));
-			persistentUpdate = false;
+			if (e.text.contains("404")) {
+				
+				trace('File not found: $f');
+				alright();
+			} else {
+				openSubState(new MenuMessage('Failed to download $f. Make sure you have a working internet connection, and try again.\n\nError ID: ${e.errorID}\n${e.text}', function() {
+					FlxG.switchState(new MainMenuState());
+				}));
+				persistentUpdate = false;
+			}
 		});
 		downloadStream.addEventListener(Event.COMPLETE, function(e) {
+			var array = [];
+			var dir = [for (k => e in (array = f.replace("\\", "/").split("/"))) if (k < array.length - 1) e].join("/");
+			FileSystem.createDirectory('./_cache/$dir');
+			var fileOutput:FileOutput = File.write('./_cache/$f', true);
+
 			var data:ByteArray = new ByteArray();
 			downloadStream.data.readBytes(data, 0, downloadStream.data.length - downloadStream.data.position);
-			trace(data.length);
 			fileOutput.writeBytes(data, 0, data.length);
 			fileOutput.flush();
 
 			fileOutput.close();
-			downloadedFiles++;
-			percentLabel.text = '${Math.floor(downloadedFiles / totalFiles * 100)}%';
-			if (fileList.length > 0) {
-				doFile();
-			} else {
-				applyUpdate();
-			}
+			alright();
 		});
 		downloadStream.addEventListener(ProgressEvent.PROGRESS, function(e) {
+			var label1 = '(${totalFiles - fileList.length}/${totalFiles})';
+			var label2 = '(${CoolUtil.getSizeLabel(Std.int(e.bytesLoaded))} / ${CoolUtil.getSizeLabel(Std.int(e.bytesTotal))})';
+			var maxLength:Int = Std.int(Math.max(label1.length, label2.length));
+			while(label1.length < maxLength) label1 = " " + label1;
+			while(label2.length < maxLength) label2 += " ";
+			currentFileLabel.text = 'Downloading File: $f\n$label1 | $label2';
+			/*
 			// if (good) {
 				if (downloadStream.data == null) {
 					// trace("data is null");
@@ -111,6 +135,7 @@ class UpdateState extends MusicBeatState
 			// } else {
 			// 	trace("Isn't good yet");
 			// }
+			*/
 		});
 
 
@@ -148,7 +173,7 @@ class UpdateState extends MusicBeatState
 		
 		currentFileLabel = new FlxText(0, downloadBar.y - 10, FlxG.width, "");
 		currentFileLabel.setFormat(Paths.font("vcr.ttf"), 22, FlxColor.WHITE, CENTER, OUTLINE, 0xFF000000);
-		currentFileLabel.y -= percentLabel.height;
+		currentFileLabel.y -= percentLabel.height * 2;
 		add(currentFileLabel);
 	
 		doFile();
