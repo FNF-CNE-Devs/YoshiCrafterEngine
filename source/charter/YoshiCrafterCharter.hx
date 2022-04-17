@@ -411,7 +411,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         settingsTab.add(hitsoundsEnabledCheckbox);
 
         hitsoundsBFCheckbox = new FlxUICheckBox(10 + (hitsoundsEnabledCheckbox.width / 2), y, null, null, "For the Player", 105, null, function() {
-            hitsoundsBFEnabled = hitsoundsBFCheckbox.checked;
+            Settings.engineSettings.data.charter_hitsoundsEnabledBF = hitsoundsBFEnabled = hitsoundsBFCheckbox.checked;
             hitsoundsEnabledCheckbox.checked = hitsoundsBFEnabled && hitsoundsDadEnabled;
         });
         hitsoundsBFCheckbox.scrollFactor.set(0, 0);
@@ -419,7 +419,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         settingsTab.add(hitsoundsBFCheckbox);
 
         hitsoundsDadCheckbox = new FlxUICheckBox(10, y, null, null, "For the Opponent", 105, null, function() {
-            hitsoundsDadEnabled = hitsoundsDadCheckbox.checked;
+            Settings.engineSettings.data.charter_hitsoundsEnabledGF = hitsoundsDadEnabled = hitsoundsDadCheckbox.checked;
             hitsoundsEnabledCheckbox.checked = hitsoundsBFEnabled && hitsoundsDadEnabled;
         });
         hitsoundsDadCheckbox.scrollFactor.set(0, 0);

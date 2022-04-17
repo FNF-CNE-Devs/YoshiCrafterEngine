@@ -33,7 +33,7 @@ class Main extends Sprite
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
 	// YOSHI ENGINE STUFF
-	public static var engineVer:Array<Int> = [1,7,3];
+	public static var engineVer:Array<Int> = [1,8,0];
 	public static var buildVer:String = "";
 	public static var fps:GameStats;
 
@@ -77,6 +77,12 @@ class Main extends Sprite
 			try {
 				// in case to prevent crashes
 				if (FileSystem.exists("temp.exe")) FileSystem.deleteFile('temp.exe');
+			} catch(e) {
+
+			}
+			try {
+				// in case to prevent crashes
+				if (FileSystem.exists("YoshiEngine.exe")) FileSystem.deleteFile('YoshiEngine.exe');
 			} catch(e) {
 
 			}
