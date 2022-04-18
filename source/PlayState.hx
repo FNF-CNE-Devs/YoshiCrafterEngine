@@ -2379,7 +2379,7 @@ class PlayState extends MusicBeatState
 			scripts.executeFunc("onPostDeath");
 		}
 
-		if (unspawnNotes[0] != null)
+		while (true && unspawnNotes[0] != null)
 		{
 			if (unspawnNotes[0].strumTime - Conductor.songPosition < 1500)
 			{
@@ -2388,6 +2388,8 @@ class PlayState extends MusicBeatState
 
 				var index:Int = unspawnNotes.indexOf(dunceNote);
 				unspawnNotes.splice(index, 1);
+			} else {
+				break;
 			}
 		}
 
