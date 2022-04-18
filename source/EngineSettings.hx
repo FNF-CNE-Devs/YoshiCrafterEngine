@@ -147,6 +147,11 @@ import flixel.FlxG;
 	 * Sets the GUI scale. Defaults to 1
 	 */
 	 @:keep public static var noteScale:Float = 1;
+	
+	/**
+	 * Maximum ratings allowed shown on screen. Helps with performance.
+	 */
+	 @:keep public static var maxRatingsAllowed:Int = 5;
 
 
 	

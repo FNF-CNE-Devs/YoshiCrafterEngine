@@ -1027,6 +1027,28 @@ class OptionsMenu extends MusicBeatState
 			checkboxChecked: function() {return false;},
 			value: function() {return Settings.engineSettings.data.fpsCap;}
 		});
+		
+		performance.options.push(
+		{
+			text : "Ratings Limit",
+			description : "Sets the maximum ratings that can appear on screen at once. If there's more ratings than allowed, the oldest ones will be destroyed and removed. \"None\" means it won't be limited, which can cause performance issues. Set to 0 to remove ratings completly.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.LEFT_P || controls.RIGHT_P) {
+					if (controls.LEFT_P) {
+						Settings.engineSettings.data.maxRatingsAllowed--;
+						if (Settings.engineSettings.data.maxRatingsAllowed < -1) Settings.engineSettings.data.maxRatingsAllowed = -1;
+					}
+					if (controls.RIGHT_P) {
+						Settings.engineSettings.data.maxRatingsAllowed++;
+						if (Settings.engineSettings.data.maxRatingsAllowed > 25) Settings.engineSettings.data.maxRatingsAllowed = 25;
+					}
+					o.setValue(Settings.engineSettings.data.maxRatingsAllowed == -1 ? "None" : Std.string(Settings.engineSettings.data.maxRatingsAllowed));
+				}
+			},
+			checkbox: false,
+			checkboxChecked: function() {return false;},
+			value: function() {return Settings.engineSettings.data.maxRatingsAllowed == -1 ? "None" : Std.string(Settings.engineSettings.data.maxRatingsAllowed);}
+		});
 		performance.options.push({
 			text : "Enable antialiasing on videos",
 			description : "If checked, will enable antialiasing on MP4 videos (cutscenes, ect...)",

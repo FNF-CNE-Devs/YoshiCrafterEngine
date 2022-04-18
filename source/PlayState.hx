@@ -1,6 +1,7 @@
 package;
 
 
+import flixel.tweens.misc.VarTween;
 import charter.YoshiCrafterCharter;
 import charter.ChartingState_New;
 import flixel.graphics.FlxGraphic;
@@ -2010,7 +2011,6 @@ class PlayState extends MusicBeatState
 	var discordTimer:Float = 0;
 	override public function update(elapsed:Float)
 	{
-		
 		#if profiler cpp.vm.Profiler.start("log.txt"); #end
 		if (inCutscene) {
 			(endCutscene ? end_cutscene : cutscene).executeFunc("preUpdate", [elapsed]);
@@ -2020,6 +2020,8 @@ class PlayState extends MusicBeatState
 		#if !debug
 		perfectMode = false;
 		#end
+
+		
 
 		if (msScoreLabel != null && engineSettings.animateMsLabel) {
 			msScoreLabel.offset.y = FlxMath.lerp(msScoreLabel.offset.y, 0, CoolUtil.wrapFloat(0.25 * 60 * elapsed, 0, 1));
@@ -2674,6 +2676,15 @@ class PlayState extends MusicBeatState
 			}
 		}
 		
+		while (optimizedTweenSet.length > engineSettings.maxRatingsAllowed && engineSettings.maxRatingsAllowed > -1) {
+			var tweens = optimizedTweenSet.shift();
+			for(t in tweens) {
+				var callbackFunc = t.onComplete;
+				t.cancel();
+				if (callbackFunc != null) callbackFunc(t);
+			}
+		}
+		
 		
 		if (inCutscene) {
 			(endCutscene ? end_cutscene : cutscene).executeFunc("postUpdate", [elapsed]);
@@ -2907,6 +2918,7 @@ class PlayState extends MusicBeatState
 
 		hits[daRating.name] += 1;
 
+		var tweens:Array<VarTween> = [];
 
 		if (scripts.executeFuncMultiple("onShowCombo", [combo, coolText], [true, null]) != false) {
 			var seperatedScore:Array<Int> = [];
@@ -2943,13 +2955,13 @@ class PlayState extends MusicBeatState
 				if (combo >= 10 || combo == 0)
 					add(numScore);
 	
-				FlxTween.tween(numScore, {alpha: 0}, 0.2, {
+				tweens.push(FlxTween.tween(numScore, {alpha: 0}, 0.2, {
 					onComplete: function(tween:FlxTween)
 					{
 						numScore.destroy();
 					},
 					startDelay: Conductor.crochet * 0.002
-				});
+				}));
 	
 				daLoop++;
 			}
@@ -2963,12 +2975,11 @@ class PlayState extends MusicBeatState
 		 */
 
 		// add(coolText);
-
-		FlxTween.tween(rating, {alpha: 0}, 0.2, {
+		tweens.push(FlxTween.tween(rating, {alpha: 0}, 0.2, {
 			startDelay: Conductor.crochet * 0.001
-		});
+		}));
 
-		FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
+		tweens.push(FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
 			onComplete: function(tween:FlxTween)
 			{
 				coolText.destroy();
@@ -2977,7 +2988,9 @@ class PlayState extends MusicBeatState
 				rating.destroy();
 			},
 			startDelay: Conductor.crochet * 0.001
-		});
+		}));
+
+		optimizedTweenSet.push(tweens);
 
 		
 		if (engineSettings.animateInfoBar) {
@@ -3253,6 +3266,7 @@ class PlayState extends MusicBeatState
 		justPressedArray: [],
 		justReleasedArray: []
 	};
+	public var optimizedTweenSet:Array<Array<VarTween>> = [];
 	private function keyShit(elapsed:Float):Void
 	{
 		if (botplayNoteHitMoment.length == 0) {
