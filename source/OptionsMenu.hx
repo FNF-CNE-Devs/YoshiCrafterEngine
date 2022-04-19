@@ -314,16 +314,12 @@ class OptionsMenu extends MusicBeatState
 			value: function() {return Std.string(Settings.engineSettings.data.scrollSpeed).indexOf(".") == -1 ? Std.string(Settings.engineSettings.data.scrollSpeed) + ".0" : Std.string(Settings.engineSettings.data.scrollSpeed);}
 		});
 		gameplay.options.push({
-			text : "Note Offset",
+			text : "Configure Note Offset",
 			description : "Sets the note offset.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
-				if (controls.LEFT_P) {
-					Settings.engineSettings.data.noteOffset -= 10;
-					o.setValue('${Std.string(Settings.engineSettings.data.noteOffset)} ms');
-				}
-				if (controls.RIGHT_P) {
-					Settings.engineSettings.data.noteOffset += 10;
-					o.setValue('${Std.string(Settings.engineSettings.data.noteOffset)} ms');
+				if (controls.ACCEPT) {
+					FlxG.switchState(new OffsetConfigState());
+					if (FlxG.sound.music != null) FlxG.sound.music.fadeOut(0.25);
 				}
 			},
 			checkbox: false,

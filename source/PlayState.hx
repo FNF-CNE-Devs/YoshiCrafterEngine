@@ -1750,7 +1750,7 @@ class PlayState extends MusicBeatState
 					}
 					continue;
 				}
-				var daStrumTime:Float = songNotes[0] + Settings.engineSettings.data.noteOffset;
+				var daStrumTime:Float = songNotes[0];
 				var daNoteData:Int = Std.int(songNotes[1]);
 
 				var gottaHitNote:Bool = section.mustHitSection;
@@ -2003,7 +2003,7 @@ class PlayState extends MusicBeatState
 		vocals.pause();
 
 		FlxG.sound.music.play();
-		Conductor.songPosition = FlxG.sound.music.time;
+		Conductor.songPosition = FlxG.sound.music.time + Settings.engineSettings.data.noteOffset;
 		vocals.time = Conductor.songPosition;
 		vocals.play();
 		scripts.executeFunc("onResyncVocalsPost", []);
@@ -2203,6 +2203,7 @@ class PlayState extends MusicBeatState
 			FlxG.switchState(new AnimationDebug(SONG.player2));
 		#end
 
+		Conductor.songPosition += Settings.engineSettings.data.noteOffset;
 		if (startingSong)
 		{
 			if (startedCountdown)
@@ -2249,6 +2250,8 @@ class PlayState extends MusicBeatState
 
 			// Conductor.lastSongPos = FlxG.sound.music.time;
 		}
+		
+		Conductor.songPosition -= Settings.engineSettings.data.noteOffset;
 
 		if (timerText != null) {
 			scripts.executeFunc("onPreTimerUpdate", []);
@@ -3738,6 +3741,9 @@ class PlayState extends MusicBeatState
 		
 		super.stepHit();
 		// songEvents.stepHit(curStep);
+		
+
+		Conductor.songPosition += Settings.engineSettings.data.noteOffset;
 		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
 		{
 			resyncVocals();
@@ -3747,6 +3753,9 @@ class PlayState extends MusicBeatState
 		{
 			// dad.dance();
 		}
+		
+
+		Conductor.songPosition -= Settings.engineSettings.data.noteOffset;
 	}
 
 	override function beatHit()

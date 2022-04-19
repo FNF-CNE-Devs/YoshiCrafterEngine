@@ -50,12 +50,12 @@ class FlxUISliderNew extends FlxUIGroup {
 
         sliderSprite.x = bar.x + ((bar.percent / 100) * bar.width) - (sliderSprite.width / 2);
 
-        if (FlxG.mouse.justPressed && (FlxG.mouse.overlaps(sliderSprite) || FlxG.mouse.overlaps(bar))) {
+        if (FlxG.mouse.justPressed && (FlxG.mouse.overlaps(sliderSprite, camera) || FlxG.mouse.overlaps(bar, camera))) {
             __isBeingMoved = true;
         }
         if (FlxG.mouse.justReleased) __isBeingMoved = false;
         if (__isBeingMoved) {
-            var cursorX = FlxG.mouse.screenX - bar.x;
+            var cursorX = FlxG.mouse.getScreenPosition(camera).x - bar.x;
             if (object != null && variable != null) {
                 if (step != 0) {
                     Reflect.setProperty(object, variable, CoolUtil.wrapFloat(min + (Math.floor(max / bar.width * cursorX / step) * step), min, max));
