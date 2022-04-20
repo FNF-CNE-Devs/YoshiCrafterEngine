@@ -36,7 +36,7 @@
         },
         {
             "name" : "Siivkoi",
-            "role" : "Artist - Drew the update screen background (and drew this icon)",
+            "role" : "Artist & Animator - Note Splashes & Drew the update and loading screen background (and drew this icon)",
             "icon" : "credits/siivkoi",
             "urls" : [
                 {
@@ -80,6 +80,21 @@
                 {
                     "name" : "Twitter",
                     "url" : "https://twitter.com/pictochat3"
+                }
+            ]
+        },
+        {
+            "name" : "Engine Socials",
+            "role" : "Join the official Discord Server, or follow the engine's Twitter!",
+            "icon" : "credits/empty",
+            "urls" : [
+                {
+                    "name" : "Discord Server",
+                    "url" : "https://discord.com/invite/5tC7vf3wSK"
+                },
+                {
+                    "name" : "Twitter",
+                    "url" : "https://twitter.com/FNFYoshiEngine"
                 }
             ]
         }

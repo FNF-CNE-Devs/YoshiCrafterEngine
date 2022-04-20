@@ -81,6 +81,8 @@ class Conductor
 	{
 		bpmChangeMap = [];
 
+		if (song == null) return;
+		if (song.notes == null) return;
 		var curBPM:Int = song.bpm;
 		var totalSteps:Int = 0;
 		var totalPos:Float = 0;

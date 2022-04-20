@@ -15,10 +15,10 @@
 [x] Better Optimization
 [x] Character Packer
 [x] Yoshi Engine events lol
-
-NEXT UPDATE
 [x] Custom hscript states
 [x] Custom Menus
+
+OOPSIE!!!
 [ ] Custom Discord RPC
 
 ADDITIONAL

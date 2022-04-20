@@ -15,6 +15,7 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 typedef LoadingShit = {
     var name:String;
@@ -27,9 +28,18 @@ class LoadingScreen extends FlxState {
     var step:Int = 0;
     var loadingText:FlxText;
     var switchin:Bool = false;
+    var bg:FlxTypedSpriteGroup<FlxSprite> = new FlxTypedSpriteGroup<FlxSprite>();
+    
+    var w = 775;
+    var h = 550;
 
     public override function create() {
         super.create();
+        // var loadingBG = new FlxSprite(0,0).loadGraphic(Paths.image("loading/bg", "preload"));
+        // add(loadingBG);
+
+        
+
         var loadingThingy = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
         loadingThingy.pixels.lock();
         var color1 = FlxColor.fromRGB(0, 66, 119);
@@ -37,19 +47,41 @@ class LoadingScreen extends FlxState {
         for(x in 0...loadingThingy.pixels.width) {
             for(y in 0...loadingThingy.pixels.height) {
                 loadingThingy.pixels.setPixel32(x, y, FlxColor.fromRGB(
-                    Std.int(FlxMath.remapToRange(((x / loadingThingy.pixels.width) * 0.5) + ((y / loadingThingy.pixels.height) * 0.5), 0, 1, color1.red, color2.red)),
-                    Std.int(FlxMath.remapToRange(((x / loadingThingy.pixels.width) * 0.5) + ((y / loadingThingy.pixels.height) * 0.5), 0, 1, color1.green, color2.green)),
-                    Std.int(FlxMath.remapToRange(((x / loadingThingy.pixels.width) * 0.5) + ((y / loadingThingy.pixels.height) * 0.5), 0, 1, color1.blue, color2.blue))
+                    Std.int(FlxMath.remapToRange(((y / loadingThingy.pixels.height) * 1), 0, 1, color1.red, color2.red)),
+                    Std.int(FlxMath.remapToRange(((y / loadingThingy.pixels.height) * 1), 0, 1, color1.green, color2.green)),
+                    Std.int(FlxMath.remapToRange(((y / loadingThingy.pixels.height) * 1), 0, 1, color1.blue, color2.blue))
                 ));
             }
         }
         loadingThingy.pixels.unlock();
         add(loadingThingy);
 
-        loadingText = new FlxText(0, 0, FlxG.width, "Loading...", 48);
-        loadingText.setFormat(Paths.font("vcr.ttf"), Std.int(48), FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+        
+
+        for(x in 0...Math.ceil(FlxG.width / w)+1) {
+            for(y in 0...(Math.ceil(FlxG.height / h)+1)) {
+                // bg pattern
+                var pattern = new FlxSprite(x * w, y * h);
+                pattern.loadGraphic(Paths.image("loading/bgpattern", "preload"));
+                pattern.antialiasing = true;
+                bg.add(pattern);
+            }
+        }
+        add(bg);
+
+        var loading = new FlxSprite().loadGraphic(Paths.image("loading/loading"));
+        loading.scale.set(0.85, 0.85);
+        loading.updateHitbox();
+        loading.y = FlxG.height - (loading.height * 0.85);
+        loading.screenCenter(X);
+        loading.antialiasing = true;
+        add(loading);
+
+        loadingText = new FlxText(0, 0, FlxG.width, "Loading...", 32);
+        loadingText.setFormat(Paths.font("vcr.ttf"), Std.int(32), FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
         loadingText.y = FlxG.height - (loadingText.height * 1.5);
         loadingText.screenCenter(X);
+        loadingText.antialiasing = true;
         add(loadingText);
 
         var logoBl = new FlxSprite(-150, -25);
@@ -103,6 +135,10 @@ class LoadingScreen extends FlxState {
     var aborted = false;
 
     public override function update(elapsed:Float) {
+        bg.x -= w * elapsed / 4;
+        bg.x %= w;
+        bg.y -= h * elapsed / 4;
+        bg.y %= h;
         super.update(elapsed);
 
         #if !sys

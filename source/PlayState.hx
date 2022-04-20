@@ -86,40 +86,7 @@ typedef SongEvent = {
 	var name:String;
 	var parameters:Array<String>;
 }
-class Rating {
-	
-	public var name:String = "Sick";
-	public var image(default, set):String = "Friday Night Funkin':ratings/sick";
-	public var accuracy:Float = 1;
-	public var health:Float = 0.1;
-	public var maxDiff:Float = 35;
-	public var score:Int = 350;
-	public var color:FlxColor = 0xFF24DEFF;
-	public var miss:Bool = false;
-	public var scale:Float = 1;
-	public var antialiasing:Bool = true;
-	public var fcRating:String = "FC";
 
-	public var bitmap:String = null;
-
-	public function new() {}
-
-	private function set_image(path:String):String {
-		var splittedPath = path.split(":");
-		if (splittedPath.length < 2) return path;
-		var mod = splittedPath[0];
-		var path = splittedPath[1];
-		if(mod.toLowerCase() == "yoshiengine") mod = "YoshiCrafterEngine";
-		var mPath = Paths.modsPath;
-		var bData = Paths.image(path, 'mods/$mod');
-		if (bData != null) {
-			// if (bitmap != null) bitmap.dispose();
-			image = path;
-			bitmap = bData;
-		}
-		return path;
-	}
-}
 
 typedef SustainHit = {
 	var time:Float;
@@ -130,6 +97,8 @@ class PlayState extends MusicBeatState
 	public var currentSustains:Array<SustainHit> = [];
 	public var vars:Map<String, Dynamic> = [];
 	public var ratings:Array<Rating> = [];
+
+	public var splashes:Array<Splash> = [];
 
 	public var hits:Map<String, Int> = [];
 
@@ -561,6 +530,7 @@ class PlayState extends MusicBeatState
 	{
 		Settings.engineSettings.data.selectedMod = songMod;
 		Paths.clearOtherModCache(songMod);
+
 		
 		GameOverSubstate.char = "Friday Night Funkin':bf-dead";
 		GameOverSubstate.firstDeathSFX = "Friday Night Funkin':fnf_loss_sfx";
@@ -680,7 +650,8 @@ class PlayState extends MusicBeatState
 				maxDiff : (166 + (2/3)) * 0.2,
 				score : 350,
 				color : "#24DEFF",
-				fcRating : "MFC"                                                                                                                                                                
+				fcRating : "MFC",
+				showSplashes : true
 			},
 			{
 				name : "Good",
@@ -929,6 +900,7 @@ class PlayState extends MusicBeatState
 			if (rating.scale != null) r.scale = rating.scale;
 			if (rating.score != null) r.score = rating.score;
 			if (rating.fcRating != null) r.fcRating = rating.fcRating;
+			if (rating.showSplashes != null) r.showSplashes = rating.showSplashes;
 
 			if (rating.bitmap == null) {
 				rating.bitmap = new BitmapData(1, 1, true, 0x00000000);
@@ -1221,8 +1193,13 @@ class PlayState extends MusicBeatState
 			pauseButton.antialiasing = true;
 			add(pauseButton);
 		#end
+		
+		for(i in 0...engineSettings.maxSplashes) {
+			splashes.push(new Splash());
+		}
 
 		super.create();
+
 
 		// https://discord.com/channels/860561967383445535/925492025258836059/941454799600242759
 		scripts.executeFunc("createPost");
@@ -1250,6 +1227,28 @@ class PlayState extends MusicBeatState
 		*/
 	}
 
+	function spawnSplashOnSprite(sprite:FlxSprite, color:FlxColor, ?camera:FlxCamera, behindStrums:Bool = false) {
+		if (camera == null) camera = FlxG.camera;
+		var splash = splashes.shift();
+		remove(splash);
+		splash.cameras = [camHUD];
+		if (behindStrums) {
+			insert(members.indexOf(strumLineNotes), splash);
+		} else {
+			add(splash);
+		}
+		splash.pop(color);
+		splash.setPosition(
+			sprite.x + ((sprite.width - splash.width) / 2),
+			sprite.y + ((sprite.height - splash.height) / 2));
+
+		splashes.push(splash);
+	}
+	function spawnSplashOnStrum(color:FlxColor, strum:Int, player:Int = 0) {
+		var strums = player == 0 ? playerStrums : cpuStrums;
+		var str = strums.members[strum % strums.length];
+		spawnSplashOnSprite(str, color, camHUD, engineSettings.spawnSplashBehind);
+	}
 	function schoolIntro(?dialogueBox:DialogueBox):Void
 	{
 		var black:FlxSprite = new FlxSprite(-100, -100).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
@@ -3020,6 +3019,8 @@ class PlayState extends MusicBeatState
 		
 		curSection += 1;
 
+		
+
 		return daRating;
 	}
 	// private function popUpScore(strumtime:Float):String
@@ -3623,6 +3624,9 @@ class PlayState extends MusicBeatState
 						health += rating.health;
 						if (rating.miss) 
 							noteMiss((note.noteData % _SONG.keyNumber) % SONG.keyNumber);
+						if (rating.showSplashes) {
+							spawnSplashOnStrum(note.splashColor, note.noteData, 0);
+						}
 					}
 				} else {
 					// smooth
