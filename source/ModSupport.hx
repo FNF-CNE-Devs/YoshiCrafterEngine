@@ -469,7 +469,7 @@ class ModSupport {
 		script.setVariable("ModState", ModState);
 		// script.setVariable("FlxKey", FlxKey);
 
-
+        script.mod = mod;
     }
     public static function parseSongConfig() {
         var songName = PlayState._SONG.song.toLowerCase();

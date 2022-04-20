@@ -1051,12 +1051,16 @@ class StageEditor extends MusicBeatState {
                 var sprite = cast(s, FlxStageSprite);
                 if (!homies.contains(sprite.type)) {
                     if (Conductor.crochet == 0 || sprite.onBeatOffset == null) {
-                        sprite.offset.set(0, 0);
+                        sprite.updateHitbox();
                     } else {
                         var easeFunc = easeFuncs[sprite.onBeatOffset.ease];
                         if (easeFunc == null) easeFunc = function(v) {return v;};
                         var easeVar = easeFunc((Conductor.songPosition / Conductor.crochet) % 1);
-                        sprite.offset.set(sprite.onBeatOffset.x * easeVar, sprite.onBeatOffset.y * easeVar);
+                        
+				
+                        sprite.updateHitbox();
+                        sprite.offset.x += (sprite.onBeatOffset.x * easeVar);
+                        sprite.offset.y += (sprite.onBeatOffset.y * easeVar);
                     }
                 }
             }

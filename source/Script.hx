@@ -1,3 +1,5 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
 import linc.Linc;
 import mod_support_stuff.ModScript;
 import cpp.Reference;
@@ -261,155 +263,6 @@ typedef LuaObject = {
 }
 
 
-/*
-class LuaScript extends Script {
-    public var state:llua.State;
-    public var variables:Map<String, Dynamic> = [];
-
-    function getVar(v:String) {
-        var splittedVar = v.split(".");
-        if (splittedVar.length == 0) return null;
-        var currentObj = variables[splittedVar[0]];
-        for (i in 1...splittedVar.length) {
-            var property = Reflect.getProperty(currentObj, splittedVar[i]);
-            if (property != null) {
-                currentObj = property;
-            } else {
-                this.trace('Variable $v doesn\'t exist or is equal to null.');
-                return null;
-            }
-        }
-        return currentObj;
-    }
-
-
-    
-    
-    public override function new() {
-        super();
-        state = LuaL.newstate();
-        Lua.init_callbacks(state);
-        LuaL.openlibs(state);
-        Lua_helper.register_hxtrace(state);
-        Lua_helper.add_callback(state, "print", function(toPtr:Dynamic) {
-            this.trace(Std.string(toPtr));
-        });
-
-		function get(pointer):Int {
-			var text:String = Lua.tostring(state, -1); // ayyy
-			Lua.pushstring(state, "good");
-			return 0; // lua error code
-		}
-		
-        //Lua.pushcfunction(state, Callable.fromFunction(new cpp.Function(get)));
-		Lua_helper.add_callback(state, "__get", get);
-		LuaL.dostring(state, "function get(value)
-			__get(value);
-		end");
-    }
-
-    public override function loadFile(path:String) {
-        // LuaL.loadfile(state, path);
-        // LuaL.dostring(state, Paths.getTextOutsideAssets(path));
-        var p = path;
-        if (Path.extension(p) == "") {
-            p = p + ".lua";
-        }
-        fileName = Path.withoutDirectory(p);
-        if (FileSystem.exists(p)) {
-            if (LuaL.dostring(state, File.getContent(p)) != 0) {
-                var err = Lua.tostring(state, -1);
-                this.trace('$err');
-            }
-        } else {
-            this.trace("Lua script does not exist.");
-        }
-    }
-
-    public override function trace(text:String)
-    {
-        // LuaL.error(state, "%s");
-        
-        var lua_debug:Lua_Debug = {
-
-        }
-        Lua.getinfo(state, "S", lua_debug);
-        Lua.getinfo(state, "n", lua_debug);
-        Lua.getinfo(state, "l", lua_debug);
-
-        // Lua.getinfo
-        var bText = '$fileName: ';
-        if (lua_debug.name != null)  bText += '${lua_debug.name}()';
-        if (lua_debug.currentline == -1)  {
-            if (lua_debug.linedefined != -1) {
-                bText += 'at line ${lua_debug.linedefined}: ';
-            }
-        } else {
-            bText += 'at line ${lua_debug.currentline}: ';
-        }
-
-        for(t in text.split("\n")) PlayState.log.push(bText + t);
-        trace(text);
-    }
-
-    public override function getVariable(name:String) {
-        // Lua.getglobal()
-        return variables[name];
-    }
-
-    // public override function executeFunc(name:String) {
-    //     // Lua.getglobal()
-    //     return variables[name];
-    // }
-
-    public override function setVariable(name:String, v:Dynamic) {
-        // Lua.getglobal()
-        variables[name] = v;
-    }
-
-    public override function executeFunc(funcName:String, ?args:Array<Any>) {
-        // Gets func
-        // Lua.
-        
-        if (args == null) args = [];
-        Lua.getglobal(state, funcName);
-
-        
-        for (k=>val in args) {
-            switch (Type.typeof(val)) {
-                case Type.ValueType.TNull:
-                    Lua.pushnil(state);
-                case Type.ValueType.TBool:
-                    Lua.pushboolean(state, val);
-                case Type.ValueType.TInt:
-                    Lua.pushinteger(state, cast(val, Int));
-                case Type.ValueType.TFloat:
-                    Lua.pushnumber(state, val);
-                case Type.ValueType.TClass(String):
-                    Lua.pushstring(state, cast(val, String));
-                case Type.ValueType.TClass(Array):
-                    Convert.arrayToLua(state, val);
-                case Type.ValueType.TObject:
-                    @:privateAccess
-                    Convert.objectToLua(state, val); // {}
-                default:
-                    variables["parameter" + Std.string(k + 1)] = val;
-                    Lua.pushnil(state);
-            }
-        }
-        if (Lua.pcall(state, args.length, 1, 0) != 0) {
-            var err = Lua.tostring(state, -1);
-            if (err != "attempt to call a nil value") {
-
-                // Lua.getinfo
-                this.trace('$err');
-            }
-        }
-        return Convert.fromLua(state, Lua.gettop(state));
-    }
-}
-*/
-
 class LuaScript extends Script {
     public var state:llua.State;
     public var variables:Map<String, Dynamic> = [];
@@ -482,6 +335,50 @@ class LuaScript extends Script {
                 return r;
             }
         });
+
+        Lua_helper.add_callback(state, "sprite_create", function(v:String, x:Int, y:Int) {
+            setVariable(v, new FlxSprite(x, y));
+        });
+
+        Lua_helper.add_callback(state, "sprite_loadSparrow", function(v:String, sparrowPath:String) {
+            var v = variables[v];
+            if (Std.isOfType(v, FlxSprite)) {
+                cast(v, FlxSprite).frames = Paths.getSparrowAtlas(sparrowPath, 'mods/$mod');
+            } else {
+                trace('Variable $v is not a sprite.');
+            }
+        });
+        Lua_helper.add_callback(state, "sprite_loadImage", function(v:String, imagePath:String, animated:Bool, width:Int, height:Int) {
+            var v = variables[v];
+            if (Std.isOfType(v, FlxSprite)) {
+                cast(v, FlxSprite).loadGraphic(Paths.image(imagePath, 'mods/$mod'), animated, width, height);
+            } else {
+                trace('Variable $v is not a sprite.');
+            }
+        });
+        Lua_helper.add_callback(state, "sprite_setInCamHUD", function(v:String, setInCamHud:Bool) {
+            var v = variables[v];
+            if (Std.isOfType(v, FlxSprite)) {
+                if (PlayState.current != null) cast(v, FlxSprite).cameras = [setInCamHud ? PlayState.current.camHUD : FlxG.camera];
+            } else {
+                trace('Variable $v is not a sprite.');
+            }
+        });
+
+        addClass(FlxSprite, new FlxSprite(), "sprite");
+        addClass(PlayState, PlayState.current, "PlayState", true);
+        /*
+       
+        Lua_helper.add_callback(state, "sprite_setAntialiasing", function(v:String, antialiasing:Bool) {
+            var v = variables[v];
+            if (Std.isOfType(v, FlxSprite)) {
+                cast(v, FlxSprite).loadGraphic(Paths.image(imagePath, 'mods/$mod'), animated, width, height);
+            } else {
+                trace('Variable $v is not a {$prefix}.');
+            }
+        });
+        */
+
         Lua_helper.add_callback(state, "getArray", function(array:String, key:Int, ?globalVar:String):Dynamic {
             if (array == null || array == "") {
                 this.trace("getArray(): You need to type a variable name");
@@ -614,6 +511,110 @@ class LuaScript extends Script {
         }
     }
 
+    public function addClass(cl:Class<Dynamic>, instance:Dynamic, prefix:String, useGivenObj:Bool = false) {
+        for(e in Type.getInstanceFields(cl)) {
+            var v = Reflect.getProperty(instance, e);
+            
+            var name = e.charAt(0).toUpperCase() + e.substr(1);
+
+            // sorry for this awful code
+            switch(Type.typeof(v)) {
+                case Type.ValueType.TBool:
+                    Lua_helper.add_callback(state, '${prefix}_get$name', function(v:String) {
+                        if (useGivenObj) {
+                            return Reflect.getProperty(instance, e);
+                        } else {
+                            var v = variables[v];
+                            if (Std.isOfType(v, cl)) {
+                                return Reflect.getProperty(v, e);
+                            } else {
+                                trace('Variable $v is not a {$prefix}.');
+                                return false;
+                            }
+                        }
+                    });
+                    Lua_helper.add_callback(state, '${prefix}_set$name', function(v:String, val:Bool) {
+                        if (useGivenObj) {
+                            Reflect.setProperty(instance, e, val);
+                        } else {
+                            var v = variables[v];
+                            if (Std.isOfType(v, cl)) {
+                                Reflect.setProperty(v, e, val);
+                            } else {
+                                trace('Variable $v is not a {$prefix}.');
+                            }
+                        }
+                    });
+                case Type.ValueType.TInt:
+                    Lua_helper.add_callback(state, '${prefix}_get$name', function(v:String) {
+                        var v = variables[v];
+                        if (Std.isOfType(v, cl)) {
+                            return Reflect.getProperty(v, e);
+                        } else {
+                            trace('Variable $v is not a {$prefix}.');
+                            return -1;
+                        }
+                    });
+                    Lua_helper.add_callback(state, '${prefix}_set$name', function(v:String, val:Int) {
+                        if (useGivenObj) {
+                            Reflect.setProperty(instance, e, val);
+                        } else {
+                            var v = variables[v];
+                            if (Std.isOfType(v, cl)) {
+                                Reflect.setProperty(v, e, val);
+                            } else {
+                                trace('Variable $v is not a {$prefix}.');
+                            }
+                        }
+                    });
+                case Type.ValueType.TFloat:
+                    Lua_helper.add_callback(state, '${prefix}_get$name', function(v:String) {
+                        var v = variables[v];
+                        if (Std.isOfType(v, cl)) {
+                            return Reflect.getProperty(v, e);
+                        } else {
+                            trace('Variable $v is not a {$prefix}.');
+                            return -1.0;
+                        }
+                    });
+                    Lua_helper.add_callback(state, '${prefix}_set$name', function(v:String, val:Float) {
+                        if (useGivenObj) {
+                            Reflect.setProperty(instance, e, val);
+                        } else {
+                            var v = variables[v];
+                            if (Std.isOfType(v, cl)) {
+                                Reflect.setProperty(v, e, val);
+                            } else {
+                                trace('Variable $v is not a {$prefix}.');
+                            }
+                        }
+                    });
+                case Type.ValueType.TClass(String):
+                    Lua_helper.add_callback(state, '${prefix}_get$name', function(v:String) {
+                        var v = variables[v];
+                        if (Std.isOfType(v, cl)) {
+                            return Reflect.getProperty(v, e);
+                        } else {
+                            trace('Variable $v is not a {$prefix}.');
+                            return -1.0;
+                        }
+                    });
+                    Lua_helper.add_callback(state, '${prefix}_set$name', function(v:String, val:String) {
+                        if (useGivenObj) {
+                            Reflect.setProperty(instance, e, val);
+                        } else {
+                            var v = variables[v];
+                            if (Std.isOfType(v, cl)) {
+                                Reflect.setProperty(v, e, val);
+                            } else {
+                                trace('Variable $v is not a {$prefix}.');
+                            }
+                        }
+                    });
+                default:
+            }
+        }
+    }
     public override function trace(text:String)
     {
         // LuaL.error(state, "%s");
@@ -637,8 +638,8 @@ class LuaScript extends Script {
         }
 
         for(t in text.split("\n")) PlayState.log.push(bText + t);
-        trace(text);
-        Lua.settop(state, 0);
+        trace(bText + text);
+        // Lua.pop(state, 1);
     }
 
     public override function getVariable(name:String) {
@@ -660,6 +661,7 @@ class LuaScript extends Script {
         // Gets func
         // Lua.
         
+        Lua.settop(state, 0);
         if (args == null) args = [];
         Lua.getglobal(state, funcName);
 
@@ -693,9 +695,11 @@ class LuaScript extends Script {
                 // Lua.getinfo
                 this.trace('$err');
             }
+            return null;
         }
-        return Convert.fromLua(state, Lua.gettop(state));
-        Lua.settop(state, 0);
+
+        var value = Convert.fromLua(state, Lua.gettop(state));
+        return value;
     }
 }
 #end

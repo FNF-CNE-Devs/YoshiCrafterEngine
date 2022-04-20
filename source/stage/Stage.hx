@@ -302,7 +302,10 @@ class Stage {
 				e.sprite.offset.set(0, 0);
 			} else {
 				var easeVar = e.easeFunc((Conductor.songPosition / Conductor.crochet) % 1);
-				e.sprite.offset.set(e.offset.x * easeVar, e.offset.y * easeVar);
+				
+				e.sprite.updateHitbox();
+				e.sprite.offset.x += e.offset.x * easeVar;
+				e.sprite.offset.y += e.offset.y * easeVar;
 			}
 		}
 	}
