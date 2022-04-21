@@ -161,12 +161,17 @@ import flixel.FlxG;
 	/**
 	 * Maximum amount of splashes. 0 disables them.
 	 */
-	 @:keep public static var splashesAlpha:Float = 1;
+	 @:keep public static var splashesEnabled:Bool = true;
+	
+	/**
+	 * Maximum amount of splashes. 0 disables them.
+	 */
+	 @:keep public static var splashesAlpha:Float = 0.8;
 	
 	/**
 	 * Whenever splashes should be spawn behind or in front of the strums.
 	 */
-	 @:keep public static var spawnSplashBehind:Bool = true;
+	 @:keep public static var spawnSplashBehind:Bool = false;
 
 
 	

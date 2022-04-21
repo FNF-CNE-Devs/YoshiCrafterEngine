@@ -10,6 +10,8 @@ import flixel.FlxSprite;
 typedef SplashConfig = {
     var animations:Array<SplashAnim>;
     var useColorShader:Bool;
+    var antialiasing:Null<Bool>;
+    var scale:Null<Float>;
 }
 typedef SplashAnim = {
     var name:String;
@@ -22,6 +24,8 @@ class Splash extends FlxSprite {
 
     public var config:SplashConfig = {
         useColorShader: true,
+        scale: 1,
+        antialiasing: true,
         animations: [
             {
                 name: "splash1",
@@ -44,6 +48,8 @@ class Splash extends FlxSprite {
         }
 
         if (config == null) config = {
+            antialiasing: true,
+            scale: 1,
             useColorShader: true,
             animations: null
         };
@@ -55,15 +61,17 @@ class Splash extends FlxSprite {
                 fps: 24
             }
         ];
+        if (config.scale == null) config.scale = 1;
+        if (config.antialiasing == null) config.antialiasing = true;
 
         for(a in config.animations) {
             animation.addByPrefix(a.name, a.name, a.fps, false);
         }
         visible = false;
         alpha = (PlayState.current == null ? Settings.engineSettings.data : PlayState.current.engineSettings).splashesAlpha;
-        scale.set(0.65, 0.65);
+        scale.set(config.scale, config.scale);
 
-        antialiasing = true;
+        antialiasing = config.antialiasing;
         
         shader = new ColoredNoteShader(255, 255, 255, false);
         updateHitbox();

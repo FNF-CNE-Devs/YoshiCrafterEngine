@@ -1224,11 +1224,13 @@ class PlayState extends MusicBeatState
 	}
 
 	function spawnSplashOnSprite(sprite:FlxSprite, color:FlxColor, splashSprite:String, ?camera:FlxCamera, behindStrums:Bool = false) {
+		if (engineSettings.maxSplashes <= 0 || !engineSettings.splashesEnabled) return;
 		// if (splashes.length <= 0) return;
 		if (camera == null) camera = FlxG.camera;
 		if (splashes[splashSprite] == null) splashes[splashSprite] = [];
 
 		var splash = (splashes[splashSprite].length >= engineSettings.maxSplashes) ? splashes[splashSprite].shift() : new Splash(splashSprite);
+		splash.alpha = engineSettings.splashesAlpha;
 
 		remove(splash);
 		splash.cameras = [camHUD];

@@ -1,4 +1,6 @@
 {
+    "antialiasing": true,
+    "scale": 0.65,
     "useColorShader": true,
     "animations": [
         {

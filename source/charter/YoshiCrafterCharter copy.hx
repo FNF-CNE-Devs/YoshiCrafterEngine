@@ -404,7 +404,7 @@ class YoshiCrafterCharter extends MusicBeatState {
     var changeBPMSection_bpm:FlxUINumericStepper = null;
 
     public function addSectionTab() {
-        var sectionTab = new FlxUI(null, UI_Menu);
+        var sectionTab = new FlxUI(null, UI_Section);
         sectionTab.name = "section";
 
         var label = new FlxUIText(10, 10, 280, "== Section Settings ==");

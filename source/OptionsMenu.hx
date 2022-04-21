@@ -738,6 +738,59 @@ class OptionsMenu extends MusicBeatState
 			value: function() {return "";}
 		});
 		customisation.options.push({
+			text : "Enable Splashes",
+			description : "If checked, will show splashes when you hit a note with a Sick rating. The \"Splashes Max\" value is how many splashes of the same note type can be shown on screen at the same time. Defaults to 10, lower for better performance.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.splashesEnabled = !Settings.engineSettings.data.splashesEnabled;
+					o.checkboxChecked = Settings.engineSettings.data.splashesEnabled;
+					o.check(Settings.engineSettings.data.splashesEnabled);
+				}
+				if (controls.LEFT_P || controls.RIGHT_P || controls.RESET) {
+					if (controls.LEFT_P) Settings.engineSettings.data.maxSplashes -= 1;
+					if (controls.RIGHT_P) Settings.engineSettings.data.maxSplashes += 1;
+					if (controls.RESET) Settings.engineSettings.data.maxSplashes = 10;
+					if (Settings.engineSettings.data.maxSplashes < 1) Settings.engineSettings.data.maxSplashes = 1;
+					o.setValue('${Settings.engineSettings.data.maxSplashes} Splashes Max.');
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.splashesEnabled;},
+			value: function() {return '${Settings.engineSettings.data.maxSplashes} Splashes Max.';}
+		});
+		customisation.options.push({
+			text : "Splashes Opacity",
+			description : "How opaque the splashes should be. 100% is fully opaque, 10% is barely visible.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				
+				if (controls.LEFT_P || controls.RIGHT_P || controls.RESET) {
+					if (controls.LEFT_P) Settings.engineSettings.data.splashesAlpha -= 0.1;
+					if (controls.RIGHT_P) Settings.engineSettings.data.splashesAlpha += 0.1;
+					if (controls.RESET) Settings.engineSettings.data.splashesAlpha = 0.8;
+					if (Settings.engineSettings.data.splashesAlpha < 0.1) Settings.engineSettings.data.splashesAlpha = 0.1;
+					if (Settings.engineSettings.data.splashesAlpha > 1) Settings.engineSettings.data.splashesAlpha = 1;
+					o.setValue('${Std.int(Settings.engineSettings.data.splashesAlpha * 100)}');
+				}
+			},
+			checkbox: false,
+			checkboxChecked: function() {return false;},
+			value: function() {return '${Std.int(Settings.engineSettings.data.splashesAlpha * 100)}';}
+		});
+		customisation.options.push({
+			text : "Show Splashes Behind Strums",
+			description : "If enabled, will make splashes appear behind strums, instead of in front.",
+			updateOnSelected: function(elapsed:Float, o:FNFOption) {
+				if (controls.ACCEPT) {
+					Settings.engineSettings.data.spawnSplashBehind = !Settings.engineSettings.data.spawnSplashBehind;
+					o.checkboxChecked = Settings.engineSettings.data.spawnSplashBehind;
+					o.check(Settings.engineSettings.data.spawnSplashBehind);
+				}
+			},
+			checkbox: true,
+			checkboxChecked: function() {return Settings.engineSettings.data.spawnSplashBehind;},
+			value: function() {return "";}
+		});
+		customisation.options.push({
 			text : "Apply notes colors on everyone",
 			description : "If checked, will also apply your character note colors to the opponent.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
@@ -1195,7 +1248,7 @@ class OptionsMenu extends MusicBeatState
 		});
 		misc.options.push({
 			text : "Auto add new installed mods",
-			description : "If checked, will separate each mod into their own respective list. For example, if the \"Friday Night Funkin'\" mod is selected, only songs and weeks from the Friday Night Funkin' mod will be shown in the menus. Mods with menu scripts will have this option on by default.",
+			description : "If checked, will automatically check and add new mods that has been moved in the mods folder.",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Settings.engineSettings.data.autoSwitchToLastInstalledMod = !Settings.engineSettings.data.autoSwitchToLastInstalledMod;
