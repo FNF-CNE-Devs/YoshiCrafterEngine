@@ -99,9 +99,6 @@ flixel-addons
 flixel-ui
 hscript
 newgrounds
-akifox-asynchttp
-linc_luajit
-zip
 ```
 So for each of those type `haxelib install [library]` so shit like `haxelib install newgrounds`
 
@@ -110,6 +107,8 @@ You'll also need to install a couple things that involve Gits. To do this, you n
 2. Follow instructions to install the application properly.
 3. Run `haxelib git polymod https://github.com/larsiusprime/polymod.git` to install Polymod.
 4. Run `haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc` to install Discord RPC.
+5. Run `haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit` to install hxvm-luajit.
+6. Run `haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit` to install linc_luajit.
 
 You should have everything ready for compiling the game! Follow the guide below to continue!
 

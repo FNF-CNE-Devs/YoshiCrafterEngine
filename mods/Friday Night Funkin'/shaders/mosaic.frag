@@ -1,5 +1,5 @@
 #pragma header
-uniform vec2 uBlocksize;
+uniform vec2 uBlocksize = vec2(3, 3);
 uniform bool small = false;
 
 void main()

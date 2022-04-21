@@ -1,7 +1,7 @@
 #pragma header
 
-uniform float curveX = 0.2;
-uniform float curveY = 0.2;
+uniform float curveX = 0.05;
+uniform float curveY = 0.05;
 
 void main() {
     vec2 pos = openfl_TextureCoordv;

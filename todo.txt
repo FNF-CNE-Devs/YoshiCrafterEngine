@@ -13,12 +13,12 @@
 [x] Make Chart Editor better
 [x] Custom Shaders without source code (VERY VERY IMPORTANT AAAAAAAAAAAAAAAAAAAAAAAAAAA)
 [x] Better Optimization
-[ ] Character Packer
+[x] Character Packer
 [x] Yoshi Engine events lol
+[x] Custom hscript states
+[x] Custom Menus
 
-NEXT UPDATE
-[ ] Custom hscript states
-[ ] Custom Menus
+OOPSIE!!!
 [ ] Custom Discord RPC
 
 ADDITIONAL
@@ -26,3 +26,5 @@ ADDITIONAL
 [ ] Fish Engine easter egg lol
 [ ] Dialogue (maybe????)
 [-] Better Menus
+
+[ ] "i've had some issues with the engine like crashing when i want to record some footage of the mod or not being able to remove songs" -bardzo_

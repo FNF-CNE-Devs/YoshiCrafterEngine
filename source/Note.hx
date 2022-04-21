@@ -52,6 +52,9 @@ class Note extends FlxSprite
 	public var prevSusNote:Note = null;
 
 	public var sustainHealth:Float = 0.012;
+
+	public var splash:String = Paths.splashes('splashes', "shared");
+	public var coloredSplash:Null<Bool> = null;
 	// #if secret
 	// 	var c:FlxColor = new FlxColor(0xFFFF0000);
 	// 	c.hue = (strumTime / 100) % 359;

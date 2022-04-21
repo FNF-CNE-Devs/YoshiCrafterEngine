@@ -14,6 +14,8 @@ function create() {
     note.animation.add('blueScroll', [5]);
     note.animation.add('purpleScroll', [4]);
 
+    note.splash = Paths.splashes('weeb/splash');
+    
     if (note.isSustainNote)
     {
         note.noteOffset.x += 30;

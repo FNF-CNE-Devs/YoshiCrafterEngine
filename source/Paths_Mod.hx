@@ -53,6 +53,10 @@ class Paths_Mod {
         return Paths.txt(file, 'mods/$mod');
     }
 
+    public function splashes(file:String) {
+        return Paths.splashes(file, 'mods/$mod');
+    }
+
     public function xml(file:String):String {
         var mFolder = Paths.modsPath;
         return Paths.xml(file, 'mods/$mod');

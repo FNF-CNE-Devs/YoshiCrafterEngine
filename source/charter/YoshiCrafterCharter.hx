@@ -325,7 +325,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         ], true);
         UI_Menu.x = FlxG.width - 300;
         UI_Menu.y = 0;
-        UI_Menu.resize(300, Std.int(FlxG.height * 0.75));
+        UI_Menu.resize(300, Std.int(FlxG.height * 0.65));
         UI_Menu.scrollFactor.set(0, 0);
         add(UI_Menu);
 
@@ -336,8 +336,8 @@ class YoshiCrafterCharter extends MusicBeatState {
             }
         ], true);
         UI_Section.x = FlxG.width - 300;
-        UI_Section.y = FlxG.height * 0.75;
-        UI_Section.resize(300, Std.int(FlxG.height * 0.25));
+        UI_Section.y = FlxG.height * 0.65;
+        UI_Section.resize(300, Std.int(FlxG.height * 0.35));
         UI_Section.scrollFactor.set(0, 0);
         add(UI_Section);
 
@@ -356,6 +356,9 @@ class YoshiCrafterCharter extends MusicBeatState {
     var duetSection:FlxUICheckBox = null;
     var duetCameraSlide:FlxUISliderNew = null;
 
+    var changeBPMSection:FlxUICheckBox = null;
+    var changeBPMSection_bpm:FlxUINumericStepper = null;
+
     public function addSectionTab() {
         var sectionTab = new FlxUI(null, UI_Menu);
         sectionTab.name = "section";
@@ -371,11 +374,20 @@ class YoshiCrafterCharter extends MusicBeatState {
         var sliderLabel = new FlxUIText(10, duetSection.y + duetSection.height + 10, 280, "Duet Target");
         duetCameraSlide = new FlxUISliderNew(10, Std.int(sliderLabel.y + sliderLabel.height), 280, 7, section, "duetCameraSlide", 0, 1, "Opponent", "Player");
 
+        changeBPMSection = new FlxUICheckBox(10, duetCameraSlide.y + duetCameraSlide.height + 10, null, null, "Change BPM", 100, null, function() {
+            section.changeBPM = changeBPMSection.checked;
+        });
+        changeBPMSection_bpm = new FlxUINumericStepper(290, changeBPMSection.y, 1, 120, 1, 999, 0);
+        changeBPMSection_bpm.x -= changeBPMSection_bpm.width;
+        changeBPMSection_bpm.y += (changeBPMSection.height - changeBPMSection_bpm.height) / 2;
+
         sectionTab.add(label);
         sectionTab.add(mustHitSection);
         sectionTab.add(duetSection);
         sectionTab.add(sliderLabel);
         sectionTab.add(duetCameraSlide);
+        sectionTab.add(changeBPMSection);
+        sectionTab.add(changeBPMSection_bpm);
         UI_Section.addGroup(sectionTab);
     }
 	public function addCharterSettingsTab() {
@@ -1021,18 +1033,7 @@ class YoshiCrafterCharter extends MusicBeatState {
             }
         }
 
-        var sec = Math.floor(Conductor.songPosition / Conductor.crochet / 4);
-        if (sec != sectionTabSection) {
-            @:privateAccess
-            cast(UI_Section._tabs[0], FlxUIButton).label.text = 'Section #$sec Settings';
-            sectionTabSection = sec;
-            mustHitSection.checked = section.mustHitSection;
-            duetSection.checked = section.duetCamera == true;
-            if (section.duetCameraSlide == null) section.duetCameraSlide = 0.5;
-            duetCameraSlide.bar.value = section.duetCameraSlide;
-            duetCameraSlide.object = section;
-            
-        }
+        
         if (FlxG.mouse.justPressedRight) {
             var overlaps = false;
             for(e in events) {
@@ -1124,7 +1125,32 @@ class YoshiCrafterCharter extends MusicBeatState {
             switchToPlayState();
         }
 
+        var sec = Math.floor(Conductor.songPosition / Conductor.crochet / 4);
+        if (sec != sectionTabSection) {
+            @:privateAccess
+            cast(UI_Section._tabs[0], FlxUIButton).label.text = 'Section #$sec Settings';
+            sectionTabSection = sec;
+            mustHitSection.checked = section.mustHitSection;
+            duetSection.checked = section.duetCamera == true;
+            if (section.duetCameraSlide == null) section.duetCameraSlide = 0.5;
+            duetCameraSlide.bar.value = section.duetCameraSlide;
+            duetCameraSlide.object = section;
+
+            changeBPMSection.checked = section.changeBPM;
+            var bpm = _song.bpm;
+            for(k=>s in _song.notes) {
+                if (k >= sec) continue;
+                if (s != null && s.changeBPM) bpm = s.bpm;
+            }
+            changeBPMSection_bpm.value = section.changeBPM ? section.bpm : bpm;
+        }
+
         if (section != null) {
+            if (section.bpm != (section.bpm = Std.int(changeBPMSection_bpm.value))) {
+                // bpm changes
+                Conductor.mapBPMChanges(_song);
+            }
+
             var s = (Conductor.songPosition / Conductor.crochet) % 1;
             if (section.mustHitSection) {
                 iconP1.alpha = 1;
