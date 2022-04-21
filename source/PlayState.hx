@@ -98,7 +98,7 @@ class PlayState extends MusicBeatState
 	public var vars:Map<String, Dynamic> = [];
 	public var ratings:Array<Rating> = [];
 
-	public var splashes:Array<Splash> = [];
+	public var splashes:Map<String, Array<Splash>> = [];
 
 	public var hits:Map<String, Int> = [];
 
@@ -1193,10 +1193,6 @@ class PlayState extends MusicBeatState
 			pauseButton.antialiasing = true;
 			add(pauseButton);
 		#end
-		
-		for(i in 0...engineSettings.maxSplashes) {
-			splashes.push(new Splash());
-		}
 
 		super.create();
 
@@ -1227,10 +1223,13 @@ class PlayState extends MusicBeatState
 		*/
 	}
 
-	function spawnSplashOnSprite(sprite:FlxSprite, color:FlxColor, ?camera:FlxCamera, behindStrums:Bool = false) {
-		if (splashes.length <= 0) return;
+	function spawnSplashOnSprite(sprite:FlxSprite, color:FlxColor, splashSprite:String, ?camera:FlxCamera, behindStrums:Bool = false) {
+		// if (splashes.length <= 0) return;
 		if (camera == null) camera = FlxG.camera;
-		var splash = splashes.shift();
+		if (splashes[splashSprite] == null) splashes[splashSprite] = [];
+
+		var splash = (splashes[splashSprite].length >= engineSettings.maxSplashes) ? splashes[splashSprite].shift() : new Splash(splashSprite);
+
 		remove(splash);
 		splash.cameras = [camHUD];
 		if (behindStrums) {
@@ -1238,17 +1237,17 @@ class PlayState extends MusicBeatState
 		} else {
 			add(splash);
 		}
-		splash.pop(color);
 		splash.setPosition(
-			sprite.x + ((sprite.width - splash.width) / 2),
-			sprite.y + ((sprite.height - splash.height) / 2));
+			sprite.x + ((sprite.width) / 2),
+			sprite.y + ((sprite.height) / 2));
+		splash.pop(color);
 
-		splashes.push(splash);
+		splashes[splashSprite].push(splash);
 	}
-	function spawnSplashOnStrum(color:FlxColor, strum:Int, player:Int = 0) {
+	function spawnSplashOnStrum(color:FlxColor, splashSprite:String, strum:Int, player:Int = 0) {
 		var strums = player == 0 ? playerStrums : cpuStrums;
 		var str = strums.members[strum % strums.length];
-		spawnSplashOnSprite(str, color, camHUD, engineSettings.spawnSplashBehind);
+		spawnSplashOnSprite(str, color, splashSprite, camHUD, engineSettings.spawnSplashBehind);
 	}
 	function schoolIntro(?dialogueBox:DialogueBox):Void
 	{
@@ -1614,6 +1613,8 @@ class PlayState extends MusicBeatState
 				note.animation.addByPrefix('purple', 'arrowLEFT');
 				note.animation.addByPrefix('red', 'arrowRIGHT');
 				note.colored = engineSettings.customArrowColors;
+
+				note.splash = Paths.splashes("splashes", "shared");
 
 				note.setGraphicSize(Std.int(note.width * 0.7));
 				note.updateHitbox();
@@ -3626,7 +3627,7 @@ class PlayState extends MusicBeatState
 						if (rating.miss) 
 							noteMiss((note.noteData % _SONG.keyNumber) % SONG.keyNumber);
 						if (rating.showSplashes) {
-							spawnSplashOnStrum(note.splashColor, note.noteData, 0);
+							spawnSplashOnStrum(note.splashColor, note.splash, note.noteData, 0);
 						}
 					}
 				} else {

@@ -1,0 +1,17 @@
+{
+    "useColorShader": true,
+    "animations": [
+        {
+            "name": "splash1",
+            "x": -173,
+            "y": -124,
+            "fps": 30
+        },
+        {
+            "name": "splash2",
+            "x": -194,
+            "y": -130,
+            "fps": 30
+        }
+    ]
+}

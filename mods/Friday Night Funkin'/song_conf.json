@@ -30,7 +30,10 @@
         },
         {
             "name": "Monster",
-            "scripts": ["stages/halloween"]
+            "scripts": [
+                "stages/halloween",
+                "modcharts/monster"
+            ]
         },
 
 
