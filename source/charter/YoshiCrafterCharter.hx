@@ -196,6 +196,7 @@ class YoshiCrafterCharter extends MusicBeatState {
 
         var voicesPath = Paths.modVoices(_song.song, PlayState.songMod, PlayState.storyDifficulty);
         vocals = new FlxSound().loadEmbedded(voicesPath);
+        vocals.persist = false;
         @:privateAccess
         voicesBuffer = AudioBuffer.fromFile(Assets.getPath(voicesPath));
 
@@ -659,6 +660,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         changeGFButton.resize(135, 20);
         
         var refreshButton = new FlxUIButton(10, changeGFButton.y + changeGFButton.height + 10, "Refresh", function() {
+            if (vocals != null) vocals.stop();
             compile();
             PlayState._SONG = _song;
             FlxG.resetState();
