@@ -94,6 +94,8 @@ class Paths
 		if (!Settings.engineSettings.data.memoryOptimization) return;
 		Assets.cache.clear('mods/');
 		Assets.cache.clear('skins');
+		Assets.cache.clear('shared');
+		Assets.cache.clear('preload');
 	}
 	public static function clearOtherModCache(currentMod:String) {
 		if (!Settings.engineSettings.data.memoryOptimization) return;

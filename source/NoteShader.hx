@@ -52,8 +52,8 @@ class ColoredNoteShader extends FlxFixedShader {
                     float a = 0;
                     float t = 0;
             
-                    float realX = x;
-                    float realY = y;
+                    float realX = x / openfl_TextureSize.x;
+                    float realY = y / openfl_TextureSize.y;
                     for (int i = -passes; i < passes; ++i) {
                         vec4 color = flixel_texture2D(bitmap, vec2(openfl_TextureCoordv.x + (i * realX / passes), openfl_TextureCoordv.y + (i * realY / passes)));
                         r += color.r;

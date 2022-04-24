@@ -1,5 +1,7 @@
 package;
 
+import flixel.math.FlxMath;
+import flixel.FlxCamera;
 import lime.utils.Assets;
 import dev_toolbox.ToolboxHome;
 import dev_toolbox.stage_editor.StageEditor;
@@ -34,14 +36,20 @@ class PauseSubState extends MusicBeatSubstate
 	public var script:Script;
 	
 	public var pauseMenuScript:Script = null;
-	public var bg:FlxSprite;
 	public var levelInfo:FlxText;
 	public var levelDifficulty:FlxText;
+
+	public var cam:FlxCamera;
+
+	public var alpha:Float = 0;
 
 	public function new(x:Float, y:Float)
 	{
 		super();
 		
+		cam = new FlxCamera(0, 0, FlxG.width, FlxG.height, 1);
+		cam.bgColor = 0;
+		FlxG.cameras.add(cam);
 		var valid = true;
 		script = Script.create('${Paths.modsPath}/${PlayState.songMod}/ui/PauseSubState');
 		if (script == null) {
@@ -70,11 +78,6 @@ class PauseSubState extends MusicBeatSubstate
 
 		FlxG.sound.list.add(pauseMusic);
 
-		bg = new FlxSprite(0, 0).makeGraphic(Std.int(PlayState.current.guiSize.x), Std.int(PlayState.current.guiSize.x), FlxColor.BLACK);
-		bg.alpha = 0;
-		bg.scrollFactor.set();
-		// bg.scale.x = bg.scale.y = 1 / Settings.engineSettings.data.noteScale;
-		add(bg);
 
 		levelInfo = new FlxText(20, 15, 0, "", 32);
 		levelInfo.text += PlayState.SONG.song;
@@ -96,7 +99,6 @@ class PauseSubState extends MusicBeatSubstate
 		levelInfo.x = Std.int(PlayState.current.guiSize.x) - (levelInfo.width + 20);
 		levelDifficulty.x = Std.int(PlayState.current.guiSize.x) - (levelDifficulty.width + 20);
 
-		FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
 		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 		FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
 		if (Settings.engineSettings.data.developerMode == true) {
@@ -122,14 +124,18 @@ class PauseSubState extends MusicBeatSubstate
 
 		changeSelection();
 
-		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+		cameras = [cam];
 		script.executeFunc("postCreate");
 		script.executeFunc("createPost");
 	}
 
 	override function update(elapsed:Float)
 	{
+		alpha = FlxMath.lerp(alpha, 0.6, 0.125 * elapsed * 60);
+
+		cam.bgColor = FlxColor.fromRGBFloat(0, 0, 0, alpha);
 		script.executeFunc("preUpdate", [elapsed]);
+		cam.setSize(FlxG.width, FlxG.height);
 		if (pauseMusic.volume < 0.5)
 			pauseMusic.volume += 0.01 * elapsed;
 
@@ -160,12 +166,12 @@ class PauseSubState extends MusicBeatSubstate
 					case "Restart Song":
 						FlxG.resetState();
 					case "Change Keybinds":
-						var oldZoom = PlayState.current.camHUD.zoom;
-						var s = new ControlsSettingsSub(PlayState.SONG.keyNumber, PlayState.current.camHUD);
-						FlxTween.tween(PlayState.current.camHUD, {zoom : 1}, 0.2, {ease : FlxEase.smoothStepInOut});
-						s.closeCallback = function() {
-							FlxTween.tween(PlayState.current.camHUD, {zoom : oldZoom}, 0.2, {ease : FlxEase.smoothStepInOut});
-						};
+						// var oldZoom = PlayState.current.camHUD.zoom;
+						var s = new ControlsSettingsSub(PlayState.SONG.keyNumber, cam);
+						// FlxTween.tween(PlayState.current.camHUD, {zoom : 1}, 0.2, {ease : FlxEase.smoothStepInOut});
+						// s.closeCallback = function() {
+						// 	FlxTween.tween(PlayState.current.camHUD, {zoom : oldZoom}, 0.2, {ease : FlxEase.smoothStepInOut});
+						// };
 						openSubState(s);
 					case "Logs":
 						var s = new LogSubState();
@@ -207,6 +213,8 @@ class PauseSubState extends MusicBeatSubstate
 	override function destroy()
 	{
 		pauseMusic.destroy();
+		FlxG.cameras.remove(cam);
+		cam.destroy();
 
 		super.destroy();
 	}

@@ -293,6 +293,7 @@ class TitleState extends MusicBeatState
 				titleSpriteGrp = new FlxSpriteGroup(0, 0);
 				script.setVariable("create", function() {});
 				script.setVariable("beatHit", function() {});
+				script.setVariable("update", function(elapsed:Float) {});
 				script.setVariable("add", titleSpriteGrp.add);
 				ModSupport.setScriptDefaultVars(script, mod, {});
 				script.loadFile('$path/titlescreen');
@@ -443,6 +444,7 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (script != null) script.executeFunc("update", [elapsed]);
 		#if secretCharter
 			if (FlxG.keys.justPressed.F2) {
 				CoolUtil.loadSong("Friday Night Funkin'", "MILF", "Hard");
@@ -551,6 +553,7 @@ class TitleState extends MusicBeatState
 		} catch(e) {
 			
 		}
+		if (script != null) script.executeFunc("postUpdate", [elapsed]);
 	}
 
 	function onUpdateData(data:String) {

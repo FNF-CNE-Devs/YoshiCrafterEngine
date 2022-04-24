@@ -35,7 +35,8 @@ function beatHit(curBeat) {
         ],
         bfOffset: [0, 0],
         gfOffset: [0, 0],
-        dadOffset: [0, 0]
+        dadOffset: [0, 0],
+        followLerp: 0.04
     };
 
     public static var songConfTemplate:SongConfJson = {

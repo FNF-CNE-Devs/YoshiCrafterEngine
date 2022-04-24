@@ -75,7 +75,7 @@ class FreeplayState extends MusicBeatState
 
 	var bg:FlxSprite = null;
 
-	private var grpSongs:FlxTypedGroup<AlphabetOptimized>;
+	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
 	private var instPlaying:Bool = false;
 
@@ -121,7 +121,7 @@ class FreeplayState extends MusicBeatState
 		});
 		remove(grpSongs);
 		
-		grpSongs = new FlxTypedGroup<AlphabetOptimized>();
+		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
 		for(e in iconArray) {
 			e.destroy();
@@ -139,7 +139,7 @@ class FreeplayState extends MusicBeatState
 		{
 			var songName = _songs[i].songName;
 			if (_songs[i].displayName != null) songName = _songs[i].displayName;
-			var songText:AlphabetOptimized = new AlphabetOptimized(0, (70 * i) + 30, songName);
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songName, true, false);
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			if (_songs[i].disabled) for(c in songText.members) c.color = 0xFF888888;
@@ -206,7 +206,10 @@ class FreeplayState extends MusicBeatState
 		// 	songs.push(new SongMetadata(splittedThingy[1], splittedThingy[0], splittedThingy[2]));
 		// }
 
-		CoolUtil.playMenuMusic();
+			if (FlxG.sound.music != null)
+			{
+				CoolUtil.playMenuMusic();
+			}
 
 		#if desktop
 		// Updating Discord Rich Presence
@@ -226,7 +229,7 @@ class FreeplayState extends MusicBeatState
 		bg = CoolUtil.addWhiteBG(this);
 		bg.color = 0xFF8163DF;
 
-		grpSongs = new FlxTypedGroup<AlphabetOptimized>();
+		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
 
 		for (s in songs) if (showAllSongs || (s.mod.toLowerCase() == Settings.engineSettings.data.selectedMod.toLowerCase())) _songs.push(s);
@@ -436,6 +439,7 @@ class FreeplayState extends MusicBeatState
 				CoolUtil.playMenuSFX(3);
 				return;
 			}
+			currentInstPath = selectedSongInstPath;
 			var ost = Paths.modInst(_songs[curSelected].songName, _songs[curSelected].mod, _songs[curSelected].difficulties[curDifficulty]);
 			if (ost != null) {
 				FlxG.sound.playMusic(ost, 0);
@@ -451,8 +455,6 @@ class FreeplayState extends MusicBeatState
 				Conductor.changeBPM(_songs[curSelected].bpm);
 				iconBumping = true;
 			}
-			Assets.cache.clear(currentInstPath);
-			currentInstPath = selectedSongInstPath;
 			freeplayScript.executeFunc("onSongPlayPost", [_songs[curSelected]]);
 		}
 		
@@ -498,7 +500,7 @@ class FreeplayState extends MusicBeatState
 				playSelectedSong();
 			}
 		}
-		if (FlxG.sound.music != null) {
+		if (instPlaying && null != FlxG.sound.music) {
 
 			if (FlxG.sound.music.volume < 0.7)
 			{

@@ -38,7 +38,7 @@ class CoolUtil
 
 	public static function loadUIStuff(sprite:FlxSprite, ?anim:String) {
 		sprite.loadGraphic(Paths.image("uiIcons", "preload"), true, 16, 16);
-		var anims = ["up", "refresh", "delete", "copy", "paste", "x", "swap"];
+		var anims = ["up", "refresh", "delete", "copy", "paste", "x", "swap", "folder"];
 		
 		for(k=>a in anims) {
 			sprite.animation.add(a, [k], 0, false);

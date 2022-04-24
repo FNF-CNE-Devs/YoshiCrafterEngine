@@ -91,7 +91,13 @@ class Splash extends FlxSprite {
     }
 
     public override function update(elapsed:Float) {
-        super.update(elapsed);
         visible = animation.curAnim != null && !animation.curAnim.finished;
+        super.update(elapsed);
+    }
+
+    public override function draw() {
+        if (animation.curAnim != null && !animation.curAnim.finished) {
+            super.draw();
+        }
     }
 }

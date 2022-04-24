@@ -11,4 +11,5 @@ typedef StageSprite = {
 	@:optional var scale:Null<Float>;
 	@:optional var beatTween:BeatTween;
 	@:optional var shader:String;
+	@:optional var alpha:Null<Float>;
 }

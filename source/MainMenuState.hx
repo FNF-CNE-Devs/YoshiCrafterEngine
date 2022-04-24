@@ -71,38 +71,38 @@ class MainMenuState extends MusicBeatState
 		
 		optionShit.add('story mode', function() {
 			FlxG.switchState(new StoryMenuState());
-		}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'story mode basic', 'story mode white');
+		}, Paths.getCustomizableSparrowAtlas('FNF_main_menu_assets'), 'story mode basic', 'story mode white');
 		optionShit.add('freeplay', function() {
 			// FlxTransitionableState.skipNextTransIn = true;
 			// FlxTransitionableState.skipNextTransOut = true;
 			FlxG.switchState(new FreeplayState());
-		}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'freeplay basic', 'freeplay white');
+		}, Paths.getCustomizableSparrowAtlas('FNF_main_menu_assets'), 'freeplay basic', 'freeplay white');
 		optionShit.add('mods', function() {
 			FlxG.switchState(new ModMenuState());
-		}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'mods basic', 'mods white');
+		}, Paths.getCustomizableSparrowAtlas('FNF_main_menu_assets'), 'mods basic', 'mods white');
 		optionShit.add('donate', function() {
 			#if linux
 				Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
 			#else
 				FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
 			#end
-		}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'donate basic', 'donate white').direct = true;
+		}, Paths.getCustomizableSparrowAtlas('FNF_main_menu_assets'), 'donate basic', 'donate white').direct = true;
 		optionShit.add('credits', function() {
 			FlxG.switchState(new CreditsState());
-		}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'credits basic', 'credits white');
+		}, Paths.getCustomizableSparrowAtlas('FNF_main_menu_assets'), 'credits basic', 'credits white');
 		optionShit.add('options', function() {
 			FlxTransitionableState.skipNextTransIn = true;
 			FlxTransitionableState.skipNextTransOut = true;
 			OptionsMenu.fromFreeplay = false;
 			// smooth af transition
 			FlxG.switchState(new OptionsMenu(0, -FlxG.camera.scroll.y * 0.18));
-		}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'options basic', 'options white');
+		}, Paths.getCustomizableSparrowAtlas('FNF_main_menu_assets'), 'options basic', 'options white');
 
         // persistentUpdate = false;
 		if (Settings.engineSettings.data.developerMode) {
 			optionShit.insert(4, 'toolbox', function() {
 				FlxG.switchState(new ToolboxMain());
-			}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'toolbox basic', 'toolbox white');
+			}, Paths.getCustomizableSparrowAtlas('FNF_main_menu_assets'), 'toolbox basic', 'toolbox white');
 		}
 		if (Settings.engineSettings.data.memoryOptimization) {
 			Paths.clearModCache();
