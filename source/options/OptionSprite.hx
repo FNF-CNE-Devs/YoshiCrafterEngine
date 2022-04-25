@@ -19,7 +19,7 @@ class OptionSprite extends FlxSpriteGroup {
         _descAlphabet = new AlphabetOptimized(155, 60, option.desc, false);
         _descAlphabet.textSize = 1 / 3;
         add(_descAlphabet);
-        _icon = new FlxSprite(40, 0).makeGraphic(100, 100, 0xFFFFFFFF);
+        _icon = new FlxSprite(40, 0).loadGraphic(option.img);
         _icon.setGraphicSize(100, 100);
         _icon.updateHitbox();
         _icon.antialiasing = true;

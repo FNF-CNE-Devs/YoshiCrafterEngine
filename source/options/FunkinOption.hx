@@ -5,4 +5,5 @@ typedef FunkinOption = {
     var desc:String;
     var value:String;
     var onUpdate:Float->Void;
+    var img:String;
 }

@@ -25,42 +25,49 @@ class OptionMain extends OptionScreen {
                 name: "Keybinds",
                 desc: 'Edit Keybinds for $label keys charts.',
                 value: "",
+                img: Paths.image('newgrounds_logo', 'shared'),
                 onUpdate: null
             },
             {
                 name: "Gameplay",
                 desc: "Customize Gameplay Settings such as Downscroll, Middlescroll and more.",
                 value: "",
+                img: null,
                 onUpdate: null
             },
             {
                 name: "GUI Settings",
                 desc: "Customize GUI Settings such as Gui Size, or Score Bar appearance.",
                 value: "",
+                img: null,
                 onUpdate: null
             },
             {
                 name: "Notes",
                 desc: "Customize Note settings, such as note colors and splashes.",
                 value: "",
+                img: null,
                 onUpdate: null
             },
             {
                 name: "Skins",
                 desc: "Select your BF or GF skin here.",
                 value: "",
+                img: null,
                 onUpdate: null
             },
             {
                 name: "Miscellaneous",
                 desc: "Other settings that does not fit any of the categories above.",
                 value: "",
+                img: null,
                 onUpdate: null
             },
             {
                 name: "Developer Settings",
                 desc: "Enable Developer Mode to access the Toolbox.",
                 value: "",
+                img: null,
                 onUpdate: null
             }
         ];
