@@ -188,20 +188,7 @@ class OptionsMenu extends MusicBeatState
 			checkboxChecked: function() {return false;},
 			value: function() {return "";}
 		});
-		var controlKeys:Array<Int> = [];
-		var it = ModSupport.modConfig.keys();
-		while(it.hasNext()) {
-			var e = it.next();
-			var config = ModSupport.modConfig[e];
-			if (config.keyNumbers != null) {
-				for (k in config.keyNumbers) {
-					if (!controlKeys.contains(k)) controlKeys.push(k);
-				}
-			}
-		}
-		haxe.ds.ArraySort.sort(controlKeys, function(x, y) {
-			return x - y;
-		});
+		var controlKeys = CoolUtil.getAllChartKeys();
 		for (index => value in controlKeys) {
 			kBinds.options.push({
 				text : Std.string(value) + ' keys',

@@ -1,6 +1,7 @@
 package;
 
 
+import haxe.ds.EnumValueMap;
 import flixel.tweens.misc.VarTween;
 import charter.YoshiCrafterCharter;
 import charter.ChartingState_New;
@@ -344,6 +345,7 @@ class PlayState extends MusicBeatState
 			camHUD.y = 0;
 		}
 		if (scripts != null) scripts.executeFunc("onWidescreen", [enable]);
+
 		return enable;
 	}
 

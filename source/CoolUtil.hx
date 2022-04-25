@@ -306,6 +306,23 @@ class CoolUtil
 		return dumbArray;
 	}
 
+	public static function getAllChartKeys() {
+		var controlKeys:Array<Int> = [];
+		var it = ModSupport.modConfig.keys();
+		while(it.hasNext()) {
+			var e = it.next();
+			var config = ModSupport.modConfig[e];
+			if (config.keyNumbers != null) {
+				for (k in config.keyNumbers) {
+					if (!controlKeys.contains(k)) controlKeys.push(k);
+				}
+			}
+		}
+		haxe.ds.ArraySort.sort(controlKeys, function(x, y) {
+			return x - y;
+		});
+		return controlKeys;
+	}
 	public static function playMenuSFX(id:Int) {
 		var soundId:String = 'scrollMenu';
 		switch(id) {

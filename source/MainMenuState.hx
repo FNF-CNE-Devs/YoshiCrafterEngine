@@ -91,8 +91,8 @@ class MainMenuState extends MusicBeatState
 			FlxG.switchState(new CreditsState());
 		}, Paths.getCustomizableSparrowAtlas('FNF_main_menu_assets'), 'credits basic', 'credits white');
 		optionShit.add('options', function() {
-			FlxTransitionableState.skipNextTransIn = true;
-			FlxTransitionableState.skipNextTransOut = true;
+			// FlxTransitionableState.skipNextTransIn = true;
+			// FlxTransitionableState.skipNextTransOut = true;
 			OptionsMenu.fromFreeplay = false;
 			// smooth af transition
 			FlxG.switchState(new OptionsMenu(0, -FlxG.camera.scroll.y * 0.18));
