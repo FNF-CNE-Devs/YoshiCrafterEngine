@@ -1,11 +1,14 @@
 package options;
 
+import options.screens.OptionMain;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.tweens.FlxEase;
 import flixel.math.FlxMath;
 import flixel.FlxG;
 import flixel.util.FlxColor;
 import flixel.text.FlxText;
 import flixel.FlxState;
+import flixel.group.FlxSpriteGroup;
 
 class OptionScreen extends MusicBeatState {
     public var options:Array<FunkinOption> = [];
@@ -15,12 +18,14 @@ class OptionScreen extends MusicBeatState {
     public var curSelected:Int = 0;
 
     var spawnedOptions:Array<OptionSprite> = [];
+    var optionsPanel:FlxSpriteGroup = new FlxSpriteGroup();
     public function new() {
+        FlxTransitionableState.skipNextTransIn = true;
         super();
     }
     public override function create() {
         super.create();
-        CoolUtil.addBG(this);
+        var bg = CoolUtil.addBG(this);
         if (options.length <= 0) {
             emptyTxt = new FlxText(0, 0, 0, "Oops! Seems like this menu is empty.\nPress [Esc] to go back.\n");
             emptyTxt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -34,9 +39,10 @@ class OptionScreen extends MusicBeatState {
             for(o in options) {
                 var option = new OptionSprite(o);
                 spawnedOptions.push(option);
-                add(option);
+                optionsPanel.add(option);
             }
         }
+        add(optionsPanel);
     }
 
     var time:Float = 0;
@@ -46,6 +52,7 @@ class OptionScreen extends MusicBeatState {
     public override function update(elapsed:Float) {
         super.update(elapsed);
         time += elapsed;
+        FlxG.camera.y = FlxMath.lerp(-FlxG.height, 0, FlxEase.quartOut(FlxMath.bound(time, 0, 1)));
         if (controls.BACK) onExit();
         if (options.length <= 0) {
             var l = FlxEase.quintOut(FlxMath.bound(time, 0, 1));
@@ -74,24 +81,28 @@ class OptionScreen extends MusicBeatState {
                 onSelect(curSelected);
             }
         }
-        if (flickerId > -1) {
+        if (flickerId != -1) {
+            var flickerTime = time - flickerTime;
             for(k=>o in spawnedOptions) {
-                flickerTime += elapsed;
                 if (k == flickerId) {
                     o.alpha = (Std.int(flickerTime * 2) % 2) != 0 ? 1 : 0;
                 } else {
                     o.alpha = 0;
                 }
-                if (flickerTime > 2.5) {
+                if (flickerTime > 1) {
                     flickerId = -1;
+                    FlxTransitionableState.skipNextTransOut = true;
                     flickerCallback();
                 }
             }
+            FlxG.camera.y = FlxMath.lerp(0, FlxG.height, FlxEase.quartIn(FlxMath.bound(flickerTime / 1, 0, 1)));
         }
     }
 
     public function onExit() {
-        FlxG.switchState(new MainMenuState());
+        doFlickerAnim(-2, function() {
+            FlxG.switchState(new OptionMain(0, 0));
+        });
     }
 
     public function onSelect(id:Int) {
@@ -101,7 +112,8 @@ class OptionScreen extends MusicBeatState {
     public function doFlickerAnim(id:Int, callback:Void->Void) {
         canSelect = false;
         flickerId = id;
-        flickerTime = 0;
+        flickerTime = time;
         flickerCallback = callback;
+        CoolUtil.playMenuSFX(1);
     }
 }

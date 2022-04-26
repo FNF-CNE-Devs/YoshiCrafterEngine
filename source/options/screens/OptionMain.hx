@@ -1,5 +1,6 @@
 package options.screens;
 
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxG;
 
 class OptionMain extends OptionScreen {
@@ -75,6 +76,8 @@ class OptionMain extends OptionScreen {
     }
 
     public override function onExit() {
+        FlxTransitionableState.skipNextTransIn = false;
+        FlxTransitionableState.skipNextTransOut = false;
         if (fromFreeplay)
             FlxG.switchState(new PlayState());
         else
