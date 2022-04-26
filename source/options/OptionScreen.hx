@@ -22,11 +22,11 @@ class OptionScreen extends MusicBeatState {
     var spawnedOptions:Array<OptionSprite> = [];
     var optionsPanel:FlxSpriteGroup = new FlxSpriteGroup();
     public function new() {
-        FlxTransitionableState.skipNextTransIn = true;
         super();
     }
     public override function create() {
         super.create();
+        if (subState != null) subState.close();
         var bg = CoolUtil.addBG(this);
         if (options.length <= 0) {
             emptyTxt = new FlxText(0, 0, 0, "Oops! Seems like this menu is empty.\nPress [Esc] to go back.\n");
@@ -96,6 +96,7 @@ class OptionScreen extends MusicBeatState {
                 if (flickerTime > speedMultiplier) {
                     flickerId = -1;
                     FlxTransitionableState.skipNextTransOut = true;
+                    FlxTransitionableState.skipNextTransIn = true;
                     flickerCallback();
                 }
             }

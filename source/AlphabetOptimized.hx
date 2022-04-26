@@ -113,7 +113,15 @@ class AlphabetOptimized extends FlxSpriteGroup {
         "y" => "y lowercase",
         "z" => "z lowercase"
     ];
-    public var text:String = "";
+    public var text(default, set):String = "";
+
+    private var __ready:Bool = false;
+    public function set_text(t:String) {
+        if (!__ready) return text = t;
+        text = t;
+        calculateShit(false);
+        return text;
+    }
     public var letterSprite:FlxSprite;
 
     public var isMenuItem:Bool = false;
@@ -152,6 +160,8 @@ class AlphabetOptimized extends FlxSpriteGroup {
         }
 
         add(letterSprite);
+        __ready = true;
+        calculateShit(false);
     }
 
     var time:Float = 0;
@@ -182,6 +192,10 @@ class AlphabetOptimized extends FlxSpriteGroup {
         }
     }
     public override function draw() {
+        calculateShit(true);
+    }
+
+    public function calculateShit(draw:Bool) {
         if (text == null || text.length <= 0) {
             __cacheWidth = 0;
             return;
@@ -233,7 +247,7 @@ class AlphabetOptimized extends FlxSpriteGroup {
                 letterSprite.alpha = alpha;
                 letterSprite.x = x + w;
                 letterSprite.y = y + ((70 * textSize) - letterSprite.height);
-                letterSprite.draw();
+                if (draw) letterSprite.draw();
                 w += letterSprite.width;
             } else {
                 w += 48 * textSize;

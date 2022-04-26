@@ -76,8 +76,6 @@ class OptionMain extends OptionScreen {
     }
 
     public override function onExit() {
-        FlxTransitionableState.skipNextTransIn = false;
-        FlxTransitionableState.skipNextTransOut = false;
         if (fromFreeplay)
             FlxG.switchState(new PlayState());
         else
