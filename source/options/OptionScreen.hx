@@ -85,7 +85,7 @@ class OptionScreen extends MusicBeatState {
             var flickerTime = time - flickerTime;
             for(k=>o in spawnedOptions) {
                 if (k == flickerId) {
-                    o.alpha = (Std.int(flickerTime * 2) % 2) != 0 ? 1 : 0;
+                    o.alpha = (Std.int(flickerTime * 5) % 2) != 0 ? 1 : 0;
                 } else {
                     o.alpha = 0;
                 }
