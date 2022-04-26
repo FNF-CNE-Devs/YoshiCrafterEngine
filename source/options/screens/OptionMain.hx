@@ -25,7 +25,7 @@ class OptionMain extends OptionScreen {
                 name: "Keybinds",
                 desc: 'Edit Keybinds for $label keys charts.',
                 value: "",
-                img: Paths.image('newgrounds_logo', 'shared'),
+                img: Paths.image('newgrounds_logo', 'preload'),
                 onUpdate: null
             },
             {
@@ -79,5 +79,14 @@ class OptionMain extends OptionScreen {
             FlxG.switchState(new PlayState());
         else
             FlxG.switchState(new MainMenuState());
+    }
+
+    public override function onSelect(id:Int) {
+        switch(id) {
+            case 0:
+                doFlickerAnim(id, function() {FlxG.switchState(new KeybindsMenu());});
+            default:
+                trace(id);
+        }
     }
 }

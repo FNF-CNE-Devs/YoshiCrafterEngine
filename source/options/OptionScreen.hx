@@ -40,6 +40,9 @@ class OptionScreen extends MusicBeatState {
     }
 
     var time:Float = 0;
+    var flickerId:Int = -1;
+    var flickerTime:Float = 0;
+    var flickerCallback:Void->Void = null;
     public override function update(elapsed:Float) {
         super.update(elapsed);
         time += elapsed;
@@ -67,10 +70,38 @@ class OptionScreen extends MusicBeatState {
                 curSelected %= spawnedOptions.length;
                 CoolUtil.playMenuSFX(0);
             }
+            if (controls.ACCEPT) {
+                onSelect(curSelected);
+            }
+        }
+        if (flickerId > -1) {
+            for(k=>o in spawnedOptions) {
+                flickerTime += elapsed;
+                if (k == flickerId) {
+                    o.alpha = (Std.int(flickerTime * 2) % 2) != 0 ? 1 : 0;
+                } else {
+                    o.alpha = 0;
+                }
+                if (flickerTime > 2.5) {
+                    flickerId = -1;
+                    flickerCallback();
+                }
+            }
         }
     }
 
     public function onExit() {
         FlxG.switchState(new MainMenuState());
+    }
+
+    public function onSelect(id:Int) {
+
+    }
+    
+    public function doFlickerAnim(id:Int, callback:Void->Void) {
+        canSelect = false;
+        flickerId = id;
+        flickerTime = 0;
+        flickerCallback = callback;
     }
 }

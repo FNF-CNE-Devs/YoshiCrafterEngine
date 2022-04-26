@@ -186,7 +186,7 @@ class AlphabetOptimized extends FlxSpriteGroup {
         var w:Float = 0;
         for(i in 0...t.length) {
             var char = t.charAt(i);
-            var animName:String = "";
+            var animName:String = null;
 
             var color = textColor;
             if (textColorSequences != null) {
@@ -200,10 +200,9 @@ class AlphabetOptimized extends FlxSpriteGroup {
             }
             if (bold) {
                 char = char.toUpperCase();
-                animName = '$char bold';
-            } else {
-                animName = nonBoldLetters[char];
+                if (letters.indexOf(char) > -1) animName = '$char bold';
             }
+            if (animName == null) animName = nonBoldLetters[char];
 
             if (animName != null && animName.trim() != "" && char.trim() != "") {
                 letterSprite.animation.play(animName);
