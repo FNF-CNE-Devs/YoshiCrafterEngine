@@ -130,7 +130,7 @@ class AlphabetOptimized extends FlxSpriteGroup {
 	public var wentToTargetY:Bool = false;
 
     public override function get_width():Float {
-        return __cacheWidth;
+        return __cacheWidth * textSize;
     }
     public function new(x:Float, y:Float, text:String, bold:Bool = true) {
         super();
@@ -182,6 +182,10 @@ class AlphabetOptimized extends FlxSpriteGroup {
         }
     }
     public override function draw() {
+        if (text == null || text.length <= 0) {
+            __cacheWidth = 0;
+            return;
+        }
         var t = text;
         var w:Float = 0;
         for(i in 0...t.length) {

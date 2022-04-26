@@ -17,6 +17,8 @@ class OptionScreen extends MusicBeatState {
     public var canSelect:Bool = true;
     public var curSelected:Int = 0;
 
+    public static inline var speedMultiplier:Float = 0.75;
+
     var spawnedOptions:Array<OptionSprite> = [];
     var optionsPanel:FlxSpriteGroup = new FlxSpriteGroup();
     public function new() {
@@ -52,7 +54,7 @@ class OptionScreen extends MusicBeatState {
     public override function update(elapsed:Float) {
         super.update(elapsed);
         time += elapsed;
-        FlxG.camera.y = FlxMath.lerp(-FlxG.height, 0, FlxEase.quartOut(FlxMath.bound(time, 0, 1)));
+        FlxG.camera.y = FlxMath.lerp(-FlxG.height, 0, FlxEase.quartOut(FlxMath.bound(time / speedMultiplier, 0, 1)));
         if (controls.BACK) onExit();
         if (options.length <= 0) {
             var l = FlxEase.quintOut(FlxMath.bound(time, 0, 1));
@@ -84,18 +86,20 @@ class OptionScreen extends MusicBeatState {
         if (flickerId != -1) {
             var flickerTime = time - flickerTime;
             for(k=>o in spawnedOptions) {
-                if (k == flickerId) {
+                if (flickerId < 0) {
+
+                } else if (k == flickerId) {
                     o.alpha = (Std.int(flickerTime * 5) % 2) != 0 ? 1 : 0;
                 } else {
                     o.alpha = 0;
                 }
-                if (flickerTime > 1) {
+                if (flickerTime > speedMultiplier) {
                     flickerId = -1;
                     FlxTransitionableState.skipNextTransOut = true;
                     flickerCallback();
                 }
             }
-            FlxG.camera.y = FlxMath.lerp(0, FlxG.height, FlxEase.quartIn(FlxMath.bound(flickerTime / 1, 0, 1)));
+            FlxG.camera.y = FlxMath.lerp(0, FlxG.height, FlxEase.quartIn(FlxMath.bound(flickerTime / speedMultiplier, 0, 1)));
         }
     }
 

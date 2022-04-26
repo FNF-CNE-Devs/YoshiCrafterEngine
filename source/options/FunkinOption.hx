@@ -4,6 +4,6 @@ typedef FunkinOption = {
     var name:String;
     var desc:String;
     var value:String;
-    var onUpdate:Float->Void;
-    var img:String;
+    @:optional var onUpdate:Float->Void;
+    @:optional var img:String;
 }

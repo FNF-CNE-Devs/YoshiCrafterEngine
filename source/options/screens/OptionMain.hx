@@ -88,6 +88,8 @@ class OptionMain extends OptionScreen {
         switch(id) {
             case 0:
                 doFlickerAnim(id, function() {FlxG.switchState(new KeybindsMenu());});
+            case 1:
+                doFlickerAnim(id, function() {FlxG.switchState(new GameplayMenu());});
             default:
                 trace(id);
         }
