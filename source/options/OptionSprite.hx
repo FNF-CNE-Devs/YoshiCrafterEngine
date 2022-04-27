@@ -13,6 +13,9 @@ class OptionSprite extends FlxSpriteGroup {
     public var _valueAlphabet:AlphabetOptimized;
     public var _icon:FlxSprite;
     public var optionWidth:Int = FlxG.width - 200;
+    public var onCreate:OptionSprite->Void = null;
+    public var onUpdate:Float->Void = null;
+    public var onSelect:OptionSprite->Void = null;
     public function new(option:FunkinOption) {
         super();
         name = option.name;
@@ -32,7 +35,19 @@ class OptionSprite extends FlxSpriteGroup {
         _valueAlphabet = new AlphabetOptimized(100, 20, option.value, false);
         _valueAlphabet.textSize = 0.6;
         add(_valueAlphabet);
+        onSelect = option.onSelect;
+        onUpdate = option.onUpdate;
+        if (onCreate != null) onCreate(this);
+    }
 
+    public function check(bool:Bool) {
+        if (bool) {
+            value = "Enabled";
+            _valueAlphabet.textColor = 0xFF44FF44;
+        } else {
+            value = "Disabled";
+            _valueAlphabet.textColor = 0xFFFF4444;
+        }
     }
 
     public override function update(elapsed:Float) {

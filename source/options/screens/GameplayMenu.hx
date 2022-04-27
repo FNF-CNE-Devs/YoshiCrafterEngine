@@ -7,6 +7,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.FlxSprite;
 import flixel.FlxG;
 import Note.NoteDirection;
+import NoteShader.ColoredNoteShader;
 
 class GameplayMenu extends OptionScreen {
     var strums:FlxSpriteGroup = new FlxSpriteGroup();
@@ -16,16 +17,19 @@ class GameplayMenu extends OptionScreen {
             {
                 name: "Downscroll",
                 desc: "If enabled, Notes will scroll from up to down, instead of from down to up.",
-                value: "Enabled"
+                value: "",
+                onCreate: function(e) {e.check(Settings.engineSettings.data.downscroll = !Settings.engineSettings.data.downscroll);},
+                onSelect: function(e) {e.check(Settings.engineSettings.data.downscroll = !Settings.engineSettings.data.downscroll);}
             },
             {
                 name: "Middlescroll",
                 desc: "If enabled, Strums will be centered, and opponent strums will be hidden.",
-                value: "Enabled"
+                value: "Enabled",
+                onCreate: function(e) {e.check(Settings.engineSettings.data.middleScroll = !Settings.engineSettings.data.middleScroll);},
+                onSelect: function(e) {e.check(Settings.engineSettings.data.middleScroll = !Settings.engineSettings.data.middleScroll);}
             }
         ];
         super.create();
-        updateSettings(-1);
         var w:Float = 0;
         for(i in 0...4) {
             var babyArrow = new FlxSprite(Note._swagWidth * i, 0);
@@ -61,10 +65,13 @@ class GameplayMenu extends OptionScreen {
         arrow = new FlxSprite(0, 0);
             
         arrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getCustomizableSparrowAtlas(Settings.engineSettings.data.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets', 'shared') : Paths.getSparrowAtlas(Settings.engineSettings.data.customArrowSkin.toLowerCase(), 'skins');
-        arrow.animation.addByPrefix('green', 'green');
+        arrow.animation.addByPrefix('green', 'green0');
         arrow.antialiasing = true;
         arrow.setGraphicSize(Std.int(arrow.width * 0.7));
         arrow.animation.play('green');
+        var shader:ColoredNoteShader;
+        var color:FlxColor = Settings.engineSettings.data.arrowColor2;
+        arrow.shader = shader = new ColoredNoteShader(color.red, color.green, color.blue, false);
 
         add(arrow);
         if (Settings.engineSettings.data.downscroll) {
@@ -78,17 +85,6 @@ class GameplayMenu extends OptionScreen {
         } else {
             strums.x = FlxG.width / 4 * 3;
             strums.x -= strums.width / 2;
-        }
-    }
-
-    public override function onSelect(id:Int) {
-        switch(id) {
-            case 0:
-                Settings.engineSettings.data.downscroll = !Settings.engineSettings.data.downscroll;
-                updateSettings(0);
-            case 1:
-                Settings.engineSettings.data.middleScroll = !Settings.engineSettings.data.middleScroll;
-                updateSettings(1);
         }
     }
 
@@ -113,30 +109,17 @@ class GameplayMenu extends OptionScreen {
         strums.x = FlxMath.lerp(strums.x, pointX, l);
         strums.y = FlxMath.lerp(strums.y, pointY, l);
         
-        var notePos = (FlxG.sound.music.time % (Conductor.crochet * 4)) * (0.45 * FlxMath.roundDecimal(Settings.engineSettings.data.scrollSpeed, 2));
+        Conductor.songPosition += Settings.engineSettings.data.noteOffset;
+        if (FlxG.sound.music.time == Conductor.songPositionOld) {
+            Conductor.songPosition += FlxG.elapsed * 1000;
+        } else {
+            Conductor.songPosition = Conductor.songPositionOld = FlxG.sound.music.time;
+        }
+        Conductor.songPosition -= Settings.engineSettings.data.noteOffset;
+
+        var notePos = FlxG.height - (((time * 1000) * (0.45 * FlxMath.roundDecimal(Settings.engineSettings.data.scrollSpeed, 2))) % FlxG.height);
         if (Settings.engineSettings.data.downscroll) notePos = -notePos;
         arrow.x = strums.members[2].x;
         arrow.y = strums.members[2].y + notePos;
-    }
-
-    public function updateSettings(id:Int) {
-        if (id == 0 || id == -1) {
-            if (Settings.engineSettings.data.downscroll) {
-                spawnedOptions[0].value = "Enabled";
-                spawnedOptions[0]._valueAlphabet.textColor = 0xFF44FF44;
-            } else {
-                spawnedOptions[0].value = "Disabled";
-                spawnedOptions[0]._valueAlphabet.textColor = 0xFFFF4444;
-            }
-        }
-        if (id == 1 || id == -1) {
-            if (Settings.engineSettings.data.middleScroll) {
-                spawnedOptions[1].value = "Enabled";
-                spawnedOptions[1]._valueAlphabet.textColor = 0xFF44FF44;
-            } else {
-                spawnedOptions[1].value = "Disabled";
-                spawnedOptions[1]._valueAlphabet.textColor = 0xFFFF4444;
-            }
-        }
     }
 }

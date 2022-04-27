@@ -26,6 +26,7 @@ class OptionScreen extends MusicBeatState {
     }
     public override function create() {
         super.create();
+        CoolUtil.playMenuMusic();
         if (subState != null) subState.close();
         var bg = CoolUtil.addBG(this);
         if (options.length <= 0) {
@@ -68,6 +69,9 @@ class OptionScreen extends MusicBeatState {
             o.y = FlxMath.lerp(o.y, ((FlxG.height / 2) - 50) + (i * 125), 0.125 * elapsed * 60);
             o.alpha = FlxMath.lerp(o.alpha, k == curSelected ? 1 : 0.3, 0.125 * elapsed * 60);
         }
+        if (spawnedOptions[curSelected] != null) {
+            if (spawnedOptions[curSelected].onUpdate != null) spawnedOptions[curSelected].onUpdate(elapsed);
+        }
         if (canSelect) {
             var oldCur = curSelected;
             if (controls.DOWN_P)
@@ -80,7 +84,10 @@ class OptionScreen extends MusicBeatState {
                 CoolUtil.playMenuSFX(0);
             }
             if (controls.ACCEPT) {
-                onSelect(curSelected);
+                if (spawnedOptions[curSelected] != null) {
+                    if (spawnedOptions[curSelected].onSelect != null) spawnedOptions[curSelected].onSelect(spawnedOptions[curSelected]);
+                    onSelect(curSelected);
+                }
             }
         }
         if (flickerId != -1) {
