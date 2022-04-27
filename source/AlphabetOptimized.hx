@@ -249,10 +249,12 @@ class AlphabetOptimized extends FlxSpriteGroup {
                 letterSprite.y = y + ((70 * textSize) - letterSprite.height);
                 if (draw) letterSprite.draw();
                 w += letterSprite.width;
+                if (letterSprite.animation.curAnim != null) w += letterSprite.frames.frames[letterSprite.animation.curAnim.frames[0]].offset.x;
             } else {
                 w += 48 * textSize;
             }
+            
         }
-        __cacheWidth = w;
+        __cacheWidth = letterSprite.x + letterSprite.width - x;
     }
 }
