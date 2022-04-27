@@ -117,9 +117,12 @@ class GameplayMenu extends OptionScreen {
         }
         Conductor.songPosition -= Settings.engineSettings.data.noteOffset;
 
-        var notePos = FlxG.height - (((time * 1000) * (0.45 * FlxMath.roundDecimal(Settings.engineSettings.data.scrollSpeed, 2))) % FlxG.height);
-        if (Settings.engineSettings.data.downscroll) notePos = -notePos;
-        arrow.x = strums.members[2].x;
-        arrow.y = strums.members[2].y + notePos;
+        if (arrow.visible = (curSelected == 2)) {
+            var notePos = FlxG.height - (((time * 1000) * (0.45 * FlxMath.roundDecimal(Settings.engineSettings.data.scrollSpeed, 2))) % FlxG.height);
+            if (Settings.engineSettings.data.downscroll) notePos = -notePos;
+            arrow.x = strums.members[2].x;
+            arrow.y = strums.members[2].y + notePos;
+            arrow.visible = true;
+        }
     }
 }
