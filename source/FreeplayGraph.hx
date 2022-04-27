@@ -15,7 +15,7 @@ class FreeplayGraph {
         var maxAngle = Math.PI * 2;
         var bData = new BitmapDataPlus(width, height + thickness, true, 0x00000000);
         var center = new FlxPoint(Math.floor((width / 2) + 1), Math.floor((height / 2) + 1));
-        bData.drawEllipse(center, width - 2, height - 2, FlxColor.BLACK, false, 4, 720);
+        bData.drawEllipse(center, width - 2, height - 2, FlxColor.BLACK, false, 4);
         bData.floodFill(Std.int(center.x), Std.int(center.y), FlxColor.BLACK);
         var current:Float = 0;
         var colorToReplace:FlxColor = FlxColor.BLACK;
@@ -40,7 +40,7 @@ class FreeplayGraph {
             //     center.x + ((Math.sin(current / total * maxAngle) * ((width) / 2)) * 0.9),
             //     center.y + (Math.cos(current / total * maxAngle) * ((height) / 2) * 0.9)
             // );
-            bData.floodFill(Std.int(pos2.x), Std.int(pos2.y), g.color);
+            if (pos2.x > center.x && (pos2.x < pos.x || pos.x <= center.x || pos.y > center.y)) bData.floodFill(Std.int(pos2.x), Std.int(pos2.y), g.color);
             colorToReplace = g.color;
 
             current += g.number;
