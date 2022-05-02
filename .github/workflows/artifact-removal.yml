@@ -1,8 +1,12 @@
 name: Clean Workflow Logs
 
-on: [push, pull_request]
-
-
+on:
+  workflow_dispatch:
+    inputs:
+      days_old:
+        description: "The amount of days old to delete"
+        default: "7"
+        required: false
 
 jobs:
   clean-logs:
@@ -13,4 +17,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           owner: ${{ github.repository_owner }}
           repo: ${{ github.event.repository.name }}
-          days_old: 9999
+          days_old: ${{ github.event.inputs.days_old }}
