@@ -2,6 +2,7 @@ name: Clean Workflow Logs
 
 on: [push, pull_request]
 
+
 jobs:
   clean-logs:
     runs-on: ubuntu-latest
