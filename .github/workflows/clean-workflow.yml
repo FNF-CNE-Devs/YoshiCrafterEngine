@@ -2,11 +2,6 @@ name: Clean Workflow
 
 on:
   workflow_dispatch:
-    inputs:
-      days_old:
-        description: "The amount of days old to delete"
-        default: "7 days"
-        required: true
 
 jobs:
   clean-logs:
@@ -18,7 +13,7 @@ jobs:
          uses: c-hive/gha-remove-artifacts@v1.2.0
          with:
             # Artifacts older than this will be deleted (e.g. "2 months", "1 day"). Parsed by moment.
-            age: ${{ github.events.input.days_old }}
+            age: "1 day"
             # Access token for the repository, available under the same name in secrets.
             GITHUB_TOKEN: ${{ github.token }}
             # true/false. If enabled, tag build artifacts (e.g. release artifacts) will be kept.
