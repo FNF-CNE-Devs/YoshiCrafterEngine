@@ -14,7 +14,7 @@
 	<haxedef name="HXCPP_CHECK_POINTER" if="release" />
 	<haxedef name="HXCPP_STACK_LINE" if="release" />
 	<haxedef name="HXCPP_DEBUG_LINK" if="release" />
-	<haxedef name="hscriptPos" />
+	<haxedef name="hscriptPos" /> <!-- for logging -->
 	<haxedef name="newgrounds" if="windows"/>
 	<!-- <haxedef name="lua" unless="android"/> -->
 	

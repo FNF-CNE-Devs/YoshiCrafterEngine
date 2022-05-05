@@ -1,5 +1,6 @@
 package dev_toolbox.stage_editor;
 
+import dev_toolbox.file_explorer.FileExplorer;
 import charter.ChooseCharacterScreen;
 import flixel.tweens.FlxEase;
 import haxe.Serializer;
@@ -63,7 +64,7 @@ class StageEditor extends MusicBeatState {
         objName.text = selectedObj != null ? selectedObj.name : "(No selected sprite)";
         if (selectedObj == null) {
              // global shit
-            for (e in [posLabel, sprPosX, sprPosY, scaleLabel, scaleNum, antialiasingCheckbox, scrFacX, scrFacY, scrollFactorLabel, shaderLabel, shaderNameInput, bumpOffsetLabel, bumpOffsetXLabel, bumpOffsetYLabel, bumpOffsetY, bumpOffsetX, bumpOffsetEase, bumpOffsetEaseType]) {
+            for (e in [posLabel, sprPosX, sprPosY, scaleLabel, scaleNum, opacityLabel, opacityNum, antialiasingCheckbox, scrFacX, scrFacY, scrollFactorLabel, shaderLabel, shaderNameInput, pickShader, pickShaderIcon, bumpOffsetLabel, bumpOffsetXLabel, bumpOffsetYLabel, bumpOffsetY, bumpOffsetX, bumpOffsetEase, bumpOffsetEaseType]) {
                 e.visible = false;
             }
             // sparrow shit
@@ -81,7 +82,7 @@ class StageEditor extends MusicBeatState {
             //     antialiasingCheckbox.checked = selectedObj.antialiasing;
             // }
         } else {
-            for (e in [posLabel, sprPosX, sprPosY, scaleLabel, scaleNum, antialiasingCheckbox, scrFacX, scrFacY, scrollFactorLabel, shaderLabel, shaderNameInput, bumpOffsetLabel, bumpOffsetXLabel, bumpOffsetYLabel, bumpOffsetY, bumpOffsetX, bumpOffsetEase, bumpOffsetEaseType]) {
+            for (e in [posLabel, sprPosX, sprPosY, scaleLabel, scaleNum, opacityLabel, opacityNum, antialiasingCheckbox, scrFacX, scrFacY, scrollFactorLabel, shaderLabel, shaderNameInput, pickShader, pickShaderIcon, bumpOffsetLabel, bumpOffsetXLabel, bumpOffsetYLabel, bumpOffsetY, bumpOffsetX, bumpOffsetEase, bumpOffsetEaseType]) {
                 e.visible = true;
             }
             sprPosX.value = selectedObj.x;
@@ -125,7 +126,7 @@ class StageEditor extends MusicBeatState {
             }
 
             if (homies.contains(selectedObj.type)) {
-                for (e in [scaleLabel, scaleNum, antialiasingCheckbox, bumpOffsetLabel, bumpOffsetXLabel, bumpOffsetYLabel, bumpOffsetY, bumpOffsetX, bumpOffsetEase, bumpOffsetEaseType]) {
+                for (e in [scaleLabel, scaleNum, opacityLabel, opacityNum, antialiasingCheckbox, bumpOffsetLabel, bumpOffsetXLabel, bumpOffsetYLabel, bumpOffsetY, bumpOffsetX, bumpOffsetEase, bumpOffsetEaseType]) {
                     e.visible = false;
                 }
             }
@@ -158,6 +159,7 @@ class StageEditor extends MusicBeatState {
     public var selectedObjTab:FlxUI;
 
     public var defCamZoomNum:FlxUINumericStepper;
+    public var followLerpNum:FlxUINumericStepper;
 
     public var objName:FlxUIText;
     public var posLabel:FlxUIText;
@@ -168,6 +170,8 @@ class StageEditor extends MusicBeatState {
     public var scrFacY:FlxUINumericStepper;
     public var scaleLabel:FlxUIText;
     public var scaleNum:FlxUINumericStepper;
+    public var opacityLabel:FlxUIText;
+    public var opacityNum:FlxUINumericStepper;
     public var antialiasingCheckbox:FlxUICheckBox;
     public var sparrowAnimationTitle:FlxUIText;
     public var animationNameTitle:FlxUIText;
@@ -177,6 +181,8 @@ class StageEditor extends MusicBeatState {
     public var fpsLabel:FlxUIText;
     public var shaderLabel:FlxUIText;
     public var shaderNameInput:FlxUIInputText;
+    public var pickShader:FlxUIButton;
+    public var pickShaderIcon:FlxSprite;
     public var animationTypeLabel:FlxUIText;
     public var applySparrowButton:FlxUIButton;
     public var bumpOffsetLabel:FlxUIText;
@@ -396,8 +402,15 @@ class StageEditor extends MusicBeatState {
         defCamZoomNum.x -= defCamZoomNum.width;
         var defCamZoomLabel = new FlxUIText(10, defCamZoomNum.y + (defCamZoomNum.height / 2), 0, "Camera Zoom");
         defCamZoomLabel.y -= defCamZoomLabel.height / 2;
+
+        followLerpNum = new FlxUINumericStepper(defCamZoomNum.x, defCamZoomNum.y + defCamZoomNum.height + 5, 0.01, stage.followLerp == null ? 0.04 : stage.followLerp, 0.01, 1, 2);
+        var followLerpNumLabel = new FlxUIText(10, followLerpNum.y + (followLerpNum.height / 2), 0, "Follow Lerp");
+        followLerpNumLabel.y -= followLerpNumLabel.height / 2;
+        
         globalSetsTab.add(defCamZoomLabel);
         globalSetsTab.add(defCamZoomNum);
+        globalSetsTab.add(followLerpNumLabel);
+        globalSetsTab.add(followLerpNum);
         tabs.addGroup(globalSetsTab);
     }
 
@@ -532,13 +545,37 @@ class StageEditor extends MusicBeatState {
         scaleNum.y -= scaleLabel.height / 2;
         scaleNum.x = 290 - scaleNum.width;
 
-        antialiasingCheckbox = new FlxUICheckBox(10, scaleNum.y + scaleNum.height, null, null, "Anti-aliasing", 100, null, function() {
+        opacityLabel = new FlxUIText(10, scaleLabel.y + scaleNum.height + 5, 280, "Opacity");
+        opacityNum = new FlxUINumericStepper(10, opacityLabel.y + (opacityLabel.height / 2), 0.1, 0, 0, 1, 2);
+        opacityNum.y -= opacityNum.height / 2;
+        opacityNum.x = 290 - opacityNum.width;
+
+        antialiasingCheckbox = new FlxUICheckBox(10, opacityNum.y + opacityNum.height, null, null, "Anti-aliasing", 100, null, function() {
             // sets antialiasing
             if (selectedObj != null) selectedObj.antialiasing = antialiasingCheckbox.checked;
         });
 
         shaderLabel = new FlxUIText(10, antialiasingCheckbox.y + antialiasingCheckbox.height + 10, 280, "Custom Shader name (without the .frag and .vert ext)");
-        shaderNameInput = new FlxUIInputText(10, shaderLabel.y + shaderLabel.height, 280, '');
+        shaderNameInput = new FlxUIInputText(10, shaderLabel.y + shaderLabel.height, 250, '');
+        pickShader = new FlxUIButton(shaderNameInput.x + shaderNameInput.width + 10, shaderNameInput.y, "", function() {
+            var fe:FileExplorer;
+            openSubState(fe = new FileExplorer(ToolboxHome.selectedMod, Shader, '', function(p) {
+                p = p.replace("\\", "/");
+                while(p.charAt(0) == "/") p = p.substr(1);
+                if (p.startsWith("shaders/")) {
+                    shaderNameInput.text = '${ToolboxHome.selectedMod}:${Path.withoutExtension(p.substr(8))}';
+                } else {
+                    var m = ToolboxMessage.showMessage("Error", "The shader must be in the \"shaders\" folder");
+                    m.cameras = [dummyHUDCamera, camHUD];
+                    openSubState(m);
+                }
+            }));
+            fe.cameras = [dummyHUDCamera, camHUD];
+        });
+        pickShader.resize(20, 20);
+        pickShaderIcon = new FlxSprite(pickShader.x + 2, pickShader.y + 2);
+        CoolUtil.loadUIStuff(pickShaderIcon, "folder");
+        shaderNameInput.y += 2;
 
         bumpOffsetLabel = new FlxUIText(10, shaderNameInput.y + shaderNameInput.height + 10, 280, "On Beat tween");
         bumpOffsetX = new FlxUINumericStepper(10, bumpOffsetLabel.y + bumpOffsetLabel.height, 10, 0, -9999, 9999);
@@ -632,9 +669,13 @@ class StageEditor extends MusicBeatState {
         selectedObjTab.add(scrFacY);
         selectedObjTab.add(scaleLabel);
         selectedObjTab.add(scaleNum);
+        selectedObjTab.add(opacityLabel);
+        selectedObjTab.add(opacityNum);
         selectedObjTab.add(antialiasingCheckbox);
         selectedObjTab.add(shaderLabel);
         selectedObjTab.add(shaderNameInput);
+        selectedObjTab.add(pickShader);
+        selectedObjTab.add(pickShaderIcon);
         selectedObjTab.add(bumpOffsetLabel);
         selectedObjTab.add(bumpOffsetX);
         selectedObjTab.add(bumpOffsetXLabel);
@@ -941,7 +982,8 @@ class StageEditor extends MusicBeatState {
                     antialiasing: sprite.antialiasing,
                     animation: sprite.anim,
                     shader: sprite.shaderName,
-                    beatTween: sprite.onBeatOffset
+                    beatTween: sprite.onBeatOffset,
+                    alpha: sprite.alpha
                 });
             }
         }
@@ -1099,6 +1141,7 @@ class StageEditor extends MusicBeatState {
                     scrFacX.value = selectedObj.scrollFactor.x;
                     scrFacY.value = selectedObj.scrollFactor.y;
                     scaleNum.value = (selectedObj.scale.x + selectedObj.scale.y) / 2;
+                    opacityNum.value = (selectedObj.alpha) / 2;
                 }
 
                 // if (FlxG.mouse.getScreenPosition(camHUD).x >= 315 && !closed) {
@@ -1132,6 +1175,7 @@ class StageEditor extends MusicBeatState {
                         selectedObj.scale.set(scaleNum.value, scaleNum.value);
                         selectedObj.updateHitbox();
                     }
+                    selectedObj.alpha = opacityNum.value;
                 }
             } else {
                 
@@ -1141,6 +1185,7 @@ class StageEditor extends MusicBeatState {
                     scrFacX.value = selectedObj.scrollFactor.x;
                     scrFacY.value = selectedObj.scrollFactor.y;
                     scaleNum.value = (selectedObj.scale.x + selectedObj.scale.y) / 2;
+                    opacityNum.value = (selectedObj.alpha);
                 }
 
                 // when on stage thingy
@@ -1172,6 +1217,7 @@ class StageEditor extends MusicBeatState {
         }
 
         stage.defaultCamZoom = defCamZoomNum.value;
+        stage.followLerp = followLerpNum.value;
         camThingy.scale.x = camThingy.scale.y = camGame.zoom / stage.defaultCamZoom;
         // if (Settings.engineSettings.data.moveCameraInStageEditor) {
         //     FlxG.mouse.cursorContainer.x = FlxG.game.mouseX + 150 + camGame.x;

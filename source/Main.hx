@@ -1,5 +1,8 @@
 package;
 
+import haxe.io.Input;
+import haxe.io.Eof;
+import haxe.io.BytesBuffer;
 import openfl.text.TextFormat;
 import lime.ui.Window;
 import sys.io.Process;
@@ -32,8 +35,52 @@ class Main extends Sprite
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
+	public static function readLine(buff:Input, l:Int):String {
+		var line:Int = 0;
+		while(true) {
+			var buf = new BytesBuffer();
+			var last:Int = 0;
+			var s = "";
+
+			trace(line);
+			// try {
+				while ((last = buff.readByte()) != 10)
+					buf.addByte(last);
+				s = buf.getBytes().toString();
+				if (s.charCodeAt(s.length - 1) == 13)
+					s = s.substr(0, -1);
+				if (line >= l) {
+					return s;
+				} else {
+					line++;
+				}
+			// } catch (e:Eof) {
+			// 	s = buf.getBytes().toString();
+			// 	if (s.length == 0)
+			// 		#if neko neko.Lib.rethrow #else throw #end (e);
+			// 	break;
+			// }
+		}
+	}
+
+	public static function getMemoryAmount():Float {
+		#if windows
+			try {
+				var process = new Process('wmic ComputerSystem get TotalPhysicalMemory').stdout;
+				var amount:Float = Std.parseFloat(readLine(process, 1));
+				return amount;
+			} catch(e) {
+				return Math.pow(2, 32);
+			}
+			
+			
+
+		#else 
+			return Math.pow(2, 32); // 4gb
+		#end
+	}
 	// YOSHI ENGINE STUFF
-	public static var engineVer:Array<Int> = [1,8,1];
+	public static var engineVer:Array<Int> = [1,9,0];
 	public static var buildVer:String = "";
 	public static var fps:GameStats;
 
@@ -94,6 +141,8 @@ class Main extends Sprite
 			Lib.current.addChild(new Main());
 			#end
 		}
+
+		getMemoryAmount();
 	}
 
 	public function new()
@@ -196,6 +245,7 @@ class Main extends Sprite
 
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
+		
 		#if !mobile
 		fps = new GameStats(10, 3, 0xFFFFFF);
 		// fps.setTextFormat(new TextFormat(Assets.getFont(Paths.font("vcr.ttf")).fontName, 12, 0xFFFFFFFF, false, false, false, null, null, null, null, null, null, null));

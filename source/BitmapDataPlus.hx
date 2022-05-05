@@ -99,11 +99,16 @@ class BitmapDataPlus extends BitmapData {
      * @param color Color of the circle
      * @param fill Whenever it should fill the circle or not
      * @param thickness How thick the circle's border will be (in pixels)
-     * @param step Step (optional, defaults to 360)
+     * @param step Step (optional, automatically calculated if inferior to 1)
      */
-    public function drawEllipse(centerPoint:FlxPoint, width:Float, height:Float, color:FlxColor, fill:Bool = false, thickness:Float = 2, step:Int = 360) {
+    public function drawEllipse(centerPoint:FlxPoint, width:Float, height:Float, color:FlxColor, fill:Bool = false, thickness:Float = 2, ?step:Int = -1) {
         var circleVal = Math.PI * 2;
-        if (step <= 0) return;
+        if (step <= 0) {
+            if (width > height)
+                step = Math.ceil(width * 2 * Math.PI);
+            else
+                step = Math.ceil(height * 2 * Math.PI);
+        };
         for (i in 0...step) {
             fillRect(new Rectangle(
                 centerPoint.x + (Math.sin(i / step * circleVal) * (width / 2)) - Math.floor(thickness / 2),

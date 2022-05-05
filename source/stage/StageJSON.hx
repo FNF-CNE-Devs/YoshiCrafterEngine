@@ -6,4 +6,5 @@ typedef StageJSON = {
 	var gfOffset:Array<Float>;	
 	var dadOffset:Array<Float>;
 	var sprites:Array<StageSprite>;
+	var followLerp:Null<Float>;
 }

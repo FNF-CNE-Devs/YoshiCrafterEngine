@@ -9,6 +9,10 @@ class StrumNote extends FlxSprite {
     public var isCpu:Bool = false;
     public var scrollSpeed:Null<Float> = null;
 
+    public function getAnimName() {
+        return animation.curAnim == null ? "" : animation.curAnim.name;
+    }
+
     public function getScrollSpeed() {
         return PlayState.current.engineSettings.customScrollSpeed ? PlayState.current.engineSettings.scrollSpeed : (scrollSpeed == null ? PlayState.SONG.speed : scrollSpeed);
     }
@@ -22,8 +26,7 @@ class StrumNote extends FlxSprite {
     }
 
     public override function update(elapsed:Float) {
-        var animName = "";
-        if (animation.curAnim != null) animName = animation.curAnim.name;
+        var animName = getAnimName();
         if (isCpu) {
             cpuRemainingGlowTime -= elapsed;
             if (cpuRemainingGlowTime <= 0 && animName != "static") {

@@ -286,13 +286,13 @@ class Alphabet extends FlxSpriteGroup
 			var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
 
 			var h:Float = FlxG.height;
-			if (Std.isOfType(FlxG.state, PlayState))
-				if (isMenuItem)
-					h = PlayState.current.guiSize.y;
+			// if (Std.isOfType(FlxG.state, PlayState))
+			// 	if (isMenuItem)
+			// 		h = PlayState.current.guiSize.y;
 			var w:Float = FlxG.width;
-			if (Std.isOfType(FlxG.state, PlayState))
-				if (isMenuItem)
-					w = PlayState.current.guiSize.x;
+			// if (Std.isOfType(FlxG.state, PlayState))
+			// 	if (isMenuItem)
+			// 		w = PlayState.current.guiSize.x;
 
 			if (wentToTargetY) {
 				y = FlxMath.lerp(y, (scaledY * 120) + (h * 0.48), 0.16 * 60 * elapsed);

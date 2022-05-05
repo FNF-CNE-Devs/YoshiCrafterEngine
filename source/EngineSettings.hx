@@ -22,9 +22,6 @@ import flixel.FlxG;
 	// Whenever the engine will apply your arrow colors to every character, or only you.
 	@:keep public static var customArrowColors_allChars:Bool = false;
 
-	// If true, will enable arrow colors;
-	@:keep public static var customArrowColors:Bool = true;
-
 	// Unused for now
 	@:keep public static var smoothHealthbar:Bool = true;
 
@@ -115,6 +112,9 @@ import flixel.FlxG;
 	// Center the strums instead of keeping them like the original game.
 	@:keep public static var centerStrums:Bool = true;
 
+	// Center the strums instead of keeping them like the original game.
+	@:keep public static var optimizationType:Int = 0;
+
 	
 	// If true, will show the ratings at the bottom left of the screen like this :
 	// Sick: 0
@@ -202,6 +202,8 @@ import flixel.FlxG;
 	@:keep public static var fps_showMemory:Bool = true;
 	@:keep public static var fps_showMemoryPeak:Bool = true;
 	@:keep public static var volume:Float = 1;
+	@:keep public static var checkForUpdates:Bool = true;
+	@:keep public static var useStressMP4:Bool = true;
 	@:keep public static var lastInstalledMods:Array<String> = ["Friday Night Funkin'", "YoshiCrafterEngine"];
 	
 	@:keep public static var charter_showStrums:Bool = true;
@@ -215,6 +217,7 @@ import flixel.FlxG;
 	@:keep public static var charter_voicesVolume:Float = 1;
 	@:keep public static var charter_opponentHitsoundVolume:Float = 1 / 3;
 	@:keep public static var charter_playerHitsoundVolume:Float = 1 / 3;
+	@:keep public static var charter_separatorColor:FlxColor = 0xFFFFFFFF;
 	
 	// @:keep public static var moveCameraInStageEditor:Bool = true;
 
@@ -318,7 +321,12 @@ class Settings {
 		for(k in Type.getClassFields(SuperCoolSettings)) {
 			var ogVal:Dynamic = std.Reflect.field(engineSettings.data, k);
 			if (ogVal == null) {
-				std.Reflect.setField(engineSettings.data, k, std.Reflect.field(SuperCoolSettings, k));
+				if (k == "useStressMP4") {
+					engineSettings.data.useStressMP4 = Main.getMemoryAmount() > Math.pow(2, 32) * 1.5 /* 6GB */ ? false : true;
+				} else {
+					std.Reflect.setField(engineSettings.data, k, std.Reflect.field(SuperCoolSettings, k));
+				}
+				
 				
 			}
 			// var thingy:Dynamic = std.Reflect.field(engineSettings, k);

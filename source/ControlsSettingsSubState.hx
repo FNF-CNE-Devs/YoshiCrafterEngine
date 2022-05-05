@@ -1,3 +1,5 @@
+import options.screens.KeybindsMenu;
+import flixel.math.FlxMath;
 import NoteShader.ColoredNoteShader;
 import flixel.math.FlxPoint;
 import flixel.FlxCamera;
@@ -13,26 +15,9 @@ import EngineSettings.Settings;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.FlxG;
+import flixel.group.FlxSpriteGroup;
 
-class ControlsSettingsSub extends MusicBeatSubstate {
-    public var arrows:Array<FlxSprite> = [];
-    public var currentControls:Array<FlxKey> = [];
-    public var size:Float = 0;
-    public var saveButton:FlxSprite;
-    public var exitButton:FlxSprite;
-    public var selectedColor:FlxColor = new FlxColor(0xFF2384E4);
-    public var saveButtonEnabled:Bool = false;
-    public var arrowsText:Array<FlxText> = [];
-    public var isSettingKeybind = false;
-
-    public var arrowNumber:Int = 4;
-
-    public var keybindSettingBackground:FlxSprite;
-    public var keybindSettingBackground2:FlxSprite;
-    public var keybindSettingText:FlxText;
-    public var keybindSettingInstructions:FlxText;
-    public var keybindSettingCancel:FlxSprite;
-    public var keybindSettingKey:Int = 0;
+class ControlsSettingsSubState extends MusicBeatSubstate {
 
     public static var customKeybindsNameOverride:Map<String, String> = [
         "numpadone" => "Numpad 1",
@@ -84,164 +69,43 @@ class ControlsSettingsSub extends MusicBeatSubstate {
         "numpadminus" => "#-",
         "numpadmultiply" => "#*"
     ];
+    var bg = new FlxSprite(0, 0).makeGraphic(1280, 720, 0xFF000000);
 
-    public function mouseOverlaps(f:FlxSprite):Bool {
-        // var pos = new FlxPoint(FlxG.game.mouseX / FlxG.scaleMode.gameSize.x * 1280, FlxG.game.mouseY / FlxG.scaleMode.gameSize.y * 720);
-        var pos = FlxG.mouse.getScreenPosition(PlayState.current != null ? PlayState.current.camHUD : FlxG.camera);
-        // if (PlayState.current != null) {
-        // }
-        
-        // trace(pos);
-        return (pos.x > f.x + f.offset.x && pos.x < f.x + f.width) && (pos.y > f.y && pos.y < f.y + f.height);
-    }
-    public function switchKeybindSetting(enable:Bool, key:Int = 0) {
-        isSettingKeybind = enable;
-        var list:Array<FlxBasic> = [keybindSettingBackground, keybindSettingBackground2, keybindSettingCancel, keybindSettingInstructions, keybindSettingText];
-        if (enable) {
-            keybindSettingKey = key;
-            for (index => value in list) {
-                add(value);
-                FlxTween.tween(value, {alpha : 1}, 0.2, {ease : FlxEase.smoothStepInOut});
-            }
-        } else {
-            keybindSettingKey = key;
-            for (index => value in list) {
-                FlxTween.tween(value, {alpha : 0}, 0.2, {ease : FlxEase.smoothStepInOut, onComplete: function(e) {
-                    remove(value);
-                }});
-            }
-        }
-    }
-    public override function update(elapsed:Float) {
-        super.update(elapsed);
-        if (isSettingKeybind) {
-            if (mouseOverlaps(keybindSettingCancel)) {
-                keybindSettingCancel.color = selectedColor;
-                if (FlxG.mouse.justReleased) {
-                    CoolUtil.playMenuSFX(2);
-                    switchKeybindSetting(false);
-                    return;
-                }
-            } else {
-                keybindSettingCancel.color = FlxColor.WHITE;
-            }
-            if (FlxControls.firstJustPressed() != -1) {
-                var key:FlxKey = cast(FlxControls.firstJustPressed(), FlxKey);
-                currentControls[keybindSettingKey] = key;
-                arrowsText[keybindSettingKey].text = getKeyName(key);
-                saveButtonEnabled = true;
-                switchKeybindSetting(false);
-            }
-        } else {
-            if (controls.BACK) {
-                trace("closed");
-                close();
-                return;
-            }
-            for (i => value in currentControls) {
-                try {
+    public var strums:Array<FlxSprite> = [];
+    public var labels:Array<AlphabetOptimized> = [];
 
-                    var isPressed:Bool = FlxControls.anyPressed([value]);
-                    if (isPressed && arrows[i].animation.curAnim.name != "pressed") {
-                        arrows[i].animation.play("pressed");
-                        arrows[i].centerOffsets();
-                        arrows[i].centerOrigin();
-                        cast(arrows[i].shader, ColoredNoteShader).enabled.value = [true];
-                    }
-                    if (!isPressed && arrows[i].animation.curAnim.name != "static") {
-                        arrows[i].animation.play("static");
-                        arrows[i].centerOffsets();
-                        arrows[i].centerOrigin();
-                        cast(arrows[i].shader, ColoredNoteShader).enabled.value = [false];
-                    }
-                } catch(e) {
+    public var arrowNumber = 4;
+    public var size:Float = 0;
+    public var curSelected:Int = 0;
+    public var currentKeys:Array<FlxKey> = [];
+    public var changeThingGrp:FlxSpriteGroup = new FlxSpriteGroup();
+    public var strumsGrp:FlxSpriteGroup = new FlxSpriteGroup();
+    public var callback:Void->Void = null;
 
-                }
-            }
-            for (index => value in arrows) {
-                if (mouseOverlaps(value) && FlxG.mouse.justReleased) {
-                    switchKeybindSetting(true, index);
-                }
-            }
-            saveButton.alpha = saveButtonEnabled ? 1 : 0.5;
-            // if (FlxG.mouse.overlaps(saveButton, saveButton.camera) && saveButtonEnabled) {
-            if (mouseOverlaps(saveButton) && saveButtonEnabled) {
-                saveButton.color = selectedColor;
-                if (FlxG.mouse.justReleased) {
-                    for(i in 0...arrowNumber) {
-                        Reflect.setField(Settings.engineSettings.data, 'control_' + arrowNumber + '_$i', currentControls[i]);
-                        if (PlayState.current != null) Reflect.setField(PlayState.current.engineSettings, 'control_' + arrowNumber + '_$i', currentControls[i]);
-                    }
-                    CoolUtil.playMenuSFX(1);
-                    saveButtonEnabled = false;
-                }
-            } else {
-                saveButton.color = FlxColor.WHITE;
-            }
-            // if (FlxG.mouse.overlaps(exitButton, exitButton.camera)) {
-            if (mouseOverlaps(exitButton)) {
-                exitButton.color = selectedColor;
-                if (FlxG.mouse.justReleased) {
-                    CoolUtil.playMenuSFX(2);
-                    trace("closed");
-                    close();
-                }
-            } else {
-                exitButton.color = FlxColor.WHITE;
-            }
-        }
-    }
-
-    public function new(arrowNumber:Int, camera:FlxCamera) {
+    public function new(arrowNumber:Int, camera:FlxCamera, ?callback:Void->Void) {
         super();
+        this.cameras = [camera];
         this.arrowNumber = arrowNumber;
-        FlxG.mouse.visible = true;
+        this.callback = callback;
+        bg.alpha = 0.5;
+        add(bg);
 
-        var menuBG:FlxSprite = new FlxSprite().makeGraphic(1280, 720, 0x88000000);
-        menuBG.camera = camera;
-		menuBG.updateHitbox();
-		menuBG.screenCenter();
-        add(menuBG);
+        var title = new AlphabetOptimized(0, 20, "Change Keybinds", true);
+        title.textSize = 0.75;
+        title.calculateShit(false);
+        title.screenCenter(X);
+        add(title);
 
-        var infoText = new FlxText(0, 10, 1280 * 2, "Click on an arrow to configure the keybind.");
-        infoText.scale.x = 0.5;
-        infoText.scale.y = 0.5;
-        infoText.camera = camera;
-        infoText.antialiasing = true;
-        infoText.setFormat(Paths.font("vcr.ttf"), 45, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-        infoText.screenCenter(X);
-        add(infoText);
+        var statusThing = new AlphabetOptimized(10, FlxG.height - 70, "[Enter] Change Selected Keybind | [Esc] Save & Exit", false);
+        statusThing.textSize = 0.5;
+        statusThing.calculateShit(false);
+        statusThing.screenCenter(X);
+        add(statusThing);
 
-        saveButton = new FlxSprite(0, 0);
-        saveButton.frames = Paths.getSparrowAtlas("ui_buttons", "preload");
-        saveButton.animation.addByPrefix("button", "save button", 1, true);
-        saveButton.animation.play("button");
-        saveButton.scale.x = 0.75;
-        saveButton.scale.y = 0.75;
-        saveButton.antialiasing = true;
-        saveButton.updateHitbox();
-        saveButton.x = 1280 - saveButton.width - 25;
-        saveButton.y = 720 - saveButton.height - 25;
-        saveButton.camera = camera;
-        add(saveButton);
-
-        exitButton = new FlxSprite(0, 0);
-        exitButton.frames = Paths.getSparrowAtlas("ui_buttons", "preload");
-        exitButton.animation.addByPrefix("button", "exit button", 1, true);
-        exitButton.animation.play("button");
-        exitButton.scale.x = 0.75;
-        exitButton.scale.y = 0.75;
-        exitButton.antialiasing = true;
-        exitButton.updateHitbox();
-        exitButton.x = 1280 - saveButton.width - 25 - exitButton.width - 25;
-        exitButton.y = 720 - exitButton.height - 25;
-        exitButton.camera = camera;
-        add(exitButton);
-
-        size = Math.min(1, 10 / arrowNumber) * 160 * 0.7;
+        size = Note._swagWidth;
 
         for(i in 0...arrowNumber) {
-            var babyArrow = new FlxSprite((1280 / 2) + size * (-(arrowNumber / 2) + i - 0.5), 50);
+            var babyArrow = new FlxSprite(size * (i), 110);
             
             babyArrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas_Custom("skins/notes/" + Settings.engineSettings.data.customArrowSkin.toLowerCase());
 					
@@ -284,61 +148,109 @@ class ControlsSettingsSub extends MusicBeatSubstate {
             babyArrow.antialiasing = true;
             babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
 
-            babyArrow.scale.x *= Math.min(1, 10 / arrowNumber);
-			babyArrow.scale.y *= Math.min(1, 10 / arrowNumber);
+            // babyArrow.scale.x *= Math.min(1, 10 / arrowNumber);
+			// babyArrow.scale.y *= Math.min(1, 10 / arrowNumber);
             babyArrow.camera = camera;
 
             
             babyArrow.centerOffsets();
             babyArrow.centerOrigin();
+            babyArrow.offset.y = 30;
 
-            arrows.push(babyArrow);
-            add(babyArrow);
+            strums.push(babyArrow);
+            strumsGrp.add(babyArrow);
+
             var key:FlxKey = cast(Reflect.field(Settings.engineSettings.data, 'control_' + arrowNumber + '_$i'), FlxKey);
-            currentControls.push(key);
+            currentKeys.push(key);
 
-            var text:FlxText = new FlxText(babyArrow.x, babyArrow.y + babyArrow.height, babyArrow.width, getKeyName(key));
-            text.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-            text.antialiasing = true;
-            text.camera = camera;
-            arrowsText.push(text);
-            add(text);
+            var t = new AlphabetOptimized(babyArrow.x + (babyArrow.width / 2), babyArrow.y + size + 20, getKeyName(key, true), false);
+            t.textColor = 0xFFFFFFFF;
+            t.textSize = 0.5;
+            t.calculateShit(false);
+            t.x -= t.width / 2;
+            labels.push(t);
+            strumsGrp.add(t);
         }
 
-        keybindSettingBackground = new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000);
-        keybindSettingBackground.camera = camera;
+        var bg = new FlxSprite(0, 0).makeGraphic(1280, 720, 0xFF000000);
+        bg.alpha = 0.5;
+        changeThingGrp.add(bg);
 
-        keybindSettingBackground2 = new FlxSprite(0, 0).makeGraphic(Std.int(1280 / 1.5), Std.int(720 / 1.5), 0x44000000);
-        keybindSettingBackground2.screenCenter();
-        keybindSettingBackground2.camera = camera;
+        var instructions = new AlphabetOptimized(30, 30, "Press any key to change the keybind\n     or press [Esc] to cancel.", false);
+        instructions.textSize = 0.75;
+        instructions.calculateShit(false);
+        instructions.screenCenter();
+        instructions.y -= 60;
 
-        keybindSettingInstructions = new FlxText(keybindSettingBackground2.x, keybindSettingBackground2.y, keybindSettingBackground.width * 2, "Press any key to continue or click on [Cancel] to cancel.");
-        keybindSettingInstructions.setFormat(Paths.font("vcr.ttf"), 45, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-        keybindSettingInstructions.scale.x = keybindSettingInstructions.scale.y = 0.5;
-        keybindSettingInstructions.antialiasing = true;
-        keybindSettingInstructions.updateHitbox();
-        keybindSettingInstructions.screenCenter(X);
-        keybindSettingInstructions.camera = camera;
+        changeThingGrp.add(instructions);
+        add(strumsGrp);
+        add(changeThingGrp);
+        if (strumsGrp.width < FlxG.width - size)
+            strumsGrp.screenCenter(X);
+        else
+            strumsGrp.x = size / 2;
+    }
 
-        keybindSettingText = new FlxText(keybindSettingBackground2.x, keybindSettingBackground2.y, keybindSettingBackground2.width * 2, "(blank)");
-        keybindSettingText.setFormat(Paths.font("vcr.ttf"), 75, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-        keybindSettingText.scale.x = keybindSettingText.scale.y = 0.5;
-        keybindSettingText.antialiasing = true;
-        keybindSettingText.updateHitbox();
-        keybindSettingText.screenCenter();
-        keybindSettingText.camera = camera;
+    var isChanging:Bool = false;
+    var isAccept:Bool = true;
 
-        keybindSettingCancel = new FlxSprite(0, 0);
-        keybindSettingCancel.frames = Paths.getSparrowAtlas("ui_buttons", "preload");
-        keybindSettingCancel.animation.addByPrefix("button", "exit button", 1, true);
-        keybindSettingCancel.animation.play("button");
-        keybindSettingCancel.scale.x = 0.75;
-        keybindSettingCancel.scale.y = 0.75;
-        keybindSettingCancel.antialiasing = true;
-        keybindSettingCancel.updateHitbox();
-        keybindSettingCancel.x = (keybindSettingBackground2.x + keybindSettingBackground2.width) - keybindSettingCancel.width - 25;
-        keybindSettingCancel.y = (keybindSettingBackground2.x + keybindSettingBackground2.width) - keybindSettingCancel.height - 25;
-        keybindSettingCancel.camera = camera;
+    public function updateLabels() {
+        for(i=>k in currentKeys) {
+            var label = labels[i];
+            var strum = strums[i];
+
+            label.text = getKeyName(k, true);
+            label.calculateShit(false);
+            label.x = strum.x + ((strum.width - label.width) / 2);
+        }
+    }
+    public override function update(elapsed:Float) {
+        super.update(elapsed);
+        if (Std.isOfType(FlxG.state, PlayState)) {
+            camera.scroll.x = -(FlxG.width - 1280) / 2;
+            camera.scroll.y = -(FlxG.height - 720) / 2;
+        }
+        changeThingGrp.visible = isChanging;
+        if (!controls.ACCEPT) isAccept = false;
+        if (isChanging) {
+            if (controls.BACK) {
+                isChanging = false;
+            } else {
+                var k = 0;
+                if ((k = FlxControls.firstJustPressed()) != -1) {
+                    var key:FlxKey = cast(k, FlxKey);
+                    currentKeys[curSelected] = key;
+                    isChanging = false;
+                    updateLabels();
+                }
+            }
+        } else {
+            if (strumsGrp.width >= FlxG.width - size) {
+                strumsGrp.x = FlxMath.lerp(strumsGrp.x, FlxMath.bound(-curSelected * size + (FlxG.width / 2) - (size * 0.5), -(strumsGrp.width - FlxG.width) - 100, 100), 0.125 * 60 * elapsed); 
+            } else {
+                strumsGrp.x = 640 - (size * 0.5 * arrowNumber);
+            }
+            if (controls.BACK) {
+                for(i=>k in currentKeys) {
+                    Reflect.setField(Settings.engineSettings.data, 'control_' + arrowNumber + '_$i', k);
+                }
+                CoolUtil.playMenuSFX(1);
+                close();
+                if (callback != null) callback();
+            }
+            if (controls.LEFT_P) curSelected--;
+            if (controls.RIGHT_P) curSelected++;
+            if (curSelected < 0) curSelected = arrowNumber + (curSelected % arrowNumber);
+            curSelected %= arrowNumber;
+            for(k=>s in strums) {
+                s.alpha = FlxMath.lerp(s.alpha, (k == curSelected ? 1 : 0.3), 0.25 * 60 * elapsed);
+                s.offset.y = FlxMath.lerp(s.offset.y, (k == curSelected ? 10 : 30), 0.25 * 60 * elapsed);
+            }
+            if (controls.ACCEPT && !isAccept) {
+                isChanging = true;
+            }
+        }
+        if (controls.ACCEPT) isAccept = true;
     }
 
     public static function getKeyName(key:FlxKey, simple:Bool = false) {

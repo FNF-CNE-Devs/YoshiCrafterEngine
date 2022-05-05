@@ -20,6 +20,7 @@ enum FileExplorerType {
     Lua;
     OGG;
 	Script;
+    Shader;
 }
 
 @:enum
@@ -186,6 +187,8 @@ class FileExplorer extends MusicBeatSubstate {
                 ".lua script";
             case Script:
                 "script";
+            case Shader:
+                "shader (.frag or .vert)";
             case OGG:
                 "OGG sound";
         }
@@ -201,6 +204,8 @@ class FileExplorer extends MusicBeatSubstate {
                 "xml";
             case JSON:
                 "json";
+            case Shader:
+                "frag;vert";
             case HScript:
                 "hx;hscript;hsc";
             case Script:

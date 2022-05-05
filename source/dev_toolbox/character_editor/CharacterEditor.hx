@@ -722,8 +722,13 @@ class CharacterEditor extends MusicBeatState {
         character.scale.set(scale.value, scale.value);
         shadowCharacter.scale.set(scale.value, scale.value);
         var midpoint = character.getMidpoint();
-        cross.x = -25 + midpoint.x + 150 + character.camOffset.x;
-        cross.y = -25 + midpoint.y - 100 + character.camOffset.y;
+        if (isPlayer) {
+            cross.x = -25 + midpoint.x - 100 + character.camOffset.x;
+            cross.y = -25 + midpoint.y - 100 + character.camOffset.y;
+        } else {
+            cross.x = -25 + midpoint.x + 150 + character.camOffset.x;
+            cross.y = -25 + midpoint.y - 100 + character.camOffset.y;
+        }
         // FlxG.camera.scroll.x = midpoint.x + character.camOffset.x + 150 - 640;
         // FlxG.camera.scroll.y = midpoint.y + character.camOffset.y - 100 - 360;
     }

@@ -293,6 +293,7 @@ class TitleState extends MusicBeatState
 				titleSpriteGrp = new FlxSpriteGroup(0, 0);
 				script.setVariable("create", function() {});
 				script.setVariable("beatHit", function() {});
+				script.setVariable("update", function(elapsed:Float) {});
 				script.setVariable("add", titleSpriteGrp.add);
 				ModSupport.setScriptDefaultVars(script, mod, {});
 				script.loadFile('$path/titlescreen');
@@ -443,6 +444,7 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (script != null) script.executeFunc("update", [elapsed]);
 		#if secretCharter
 			if (FlxG.keys.justPressed.F2) {
 				CoolUtil.loadSong("Friday Night Funkin'", "MILF", "Hard");
@@ -519,24 +521,27 @@ class TitleState extends MusicBeatState
 			#end
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
-				// Check if version is outdated
-				Thread.create(function() {
-					try {
-						//var data = Http.requestUrl("https://raw.githubusercontent.com/YoshiCrafter29/YoshiCrafterEngine/main/update.json");
-						var data = Http.requestUrl("https://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/_changes/list.txt");
-						updateIcon.visible = false;
-						updateAlphabet.visible = false;
-						updateRibbon.visible = false;
-						onUpdateData(data);
-					} catch(e) {
-						trace(e);
-						FlxG.switchState(new MainMenuState());
-					}
-				});
-				updateIcon.visible = true;
-				updateAlphabet.visible = true;
-				updateRibbon.visible = true;
-				updateRibbon.alpha = 0;
+				if (Settings.engineSettings.data.checkForUpdates) {
+					// Check if version is outdated
+					Thread.create(function() {
+						try {
+							//var data = Http.requestUrl("https://raw.githubusercontent.com/YoshiCrafter29/YoshiCrafterEngine/main/update.json");
+							var data = Http.requestUrl("https://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/_changes/list.txt");
+							
+							onUpdateData(data);
+						} catch(e) {
+							trace(e);
+							FlxG.switchState(new MainMenuState());
+						}
+					});
+					updateIcon.visible = true;
+					updateAlphabet.visible = true;
+					updateRibbon.visible = true;
+					updateRibbon.alpha = 0;
+				} else {
+					FlxG.switchState(new MainMenuState());
+				}
+				
 			});
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
@@ -551,6 +556,7 @@ class TitleState extends MusicBeatState
 		} catch(e) {
 			
 		}
+		if (script != null) script.executeFunc("postUpdate", [elapsed]);
 	}
 
 	function onUpdateData(data:String) {
@@ -598,6 +604,11 @@ class TitleState extends MusicBeatState
 		#if enable_updates
 		trace(currentVerPos);
 		trace(versions.length);
+		
+		updateIcon.visible = false;
+		updateAlphabet.visible = false;
+		updateRibbon.visible = false;
+		
 		if (currentVerPos+1 < versions.length)
 		{
 			trace("OLD VER!!!");

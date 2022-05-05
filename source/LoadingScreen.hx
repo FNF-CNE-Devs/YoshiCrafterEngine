@@ -206,11 +206,11 @@ class LoadingScreen extends FlxState {
         diamond.destroyOnNoUse = false;
 
         trace("transitions");
-        FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
+        FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 0.5, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
             new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
         trace(FlxTransitionableState.defaultTransIn);
 
-        FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
+        FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.35, new FlxPoint(0, 1),
             {asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
         trace(FlxTransitionableState.defaultTransOut);
         // transIn = FlxTransitionableState.defaultTransIn;

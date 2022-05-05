@@ -75,7 +75,7 @@ class FreeplayState extends MusicBeatState
 
 	var bg:FlxSprite = null;
 
-	private var grpSongs:FlxTypedGroup<Alphabet>;
+	private var grpSongs:FlxTypedGroup<AlphabetOptimized>;
 	private var curPlaying:Bool = false;
 	private var instPlaying:Bool = false;
 
@@ -121,7 +121,7 @@ class FreeplayState extends MusicBeatState
 		});
 		remove(grpSongs);
 		
-		grpSongs = new FlxTypedGroup<Alphabet>();
+		grpSongs = new FlxTypedGroup<AlphabetOptimized>();
 		add(grpSongs);
 		for(e in iconArray) {
 			e.destroy();
@@ -139,7 +139,7 @@ class FreeplayState extends MusicBeatState
 		{
 			var songName = _songs[i].songName;
 			if (_songs[i].displayName != null) songName = _songs[i].displayName;
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songName, true, false);
+			var songText:AlphabetOptimized = new AlphabetOptimized(0, (70 * i) + 30, songName.replace("-", " "));
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			if (_songs[i].disabled) for(c in songText.members) c.color = 0xFF888888;
@@ -206,10 +206,7 @@ class FreeplayState extends MusicBeatState
 		// 	songs.push(new SongMetadata(splittedThingy[1], splittedThingy[0], splittedThingy[2]));
 		// }
 
-			if (FlxG.sound.music != null)
-			{
-				CoolUtil.playMenuMusic();
-			}
+		CoolUtil.playMenuMusic();
 
 		#if desktop
 		// Updating Discord Rich Presence
@@ -229,7 +226,7 @@ class FreeplayState extends MusicBeatState
 		bg = CoolUtil.addWhiteBG(this);
 		bg.color = 0xFF8163DF;
 
-		grpSongs = new FlxTypedGroup<Alphabet>();
+		grpSongs = new FlxTypedGroup<AlphabetOptimized>();
 		add(grpSongs);
 
 		for (s in songs) if (showAllSongs || (s.mod.toLowerCase() == Settings.engineSettings.data.selectedMod.toLowerCase())) _songs.push(s);
@@ -439,7 +436,6 @@ class FreeplayState extends MusicBeatState
 				CoolUtil.playMenuSFX(3);
 				return;
 			}
-			currentInstPath = selectedSongInstPath;
 			var ost = Paths.modInst(_songs[curSelected].songName, _songs[curSelected].mod, _songs[curSelected].difficulties[curDifficulty]);
 			if (ost != null) {
 				FlxG.sound.playMusic(ost, 0);
@@ -455,6 +451,8 @@ class FreeplayState extends MusicBeatState
 				Conductor.changeBPM(_songs[curSelected].bpm);
 				iconBumping = true;
 			}
+			Assets.cache.clear(currentInstPath);
+			currentInstPath = selectedSongInstPath;
 			freeplayScript.executeFunc("onSongPlayPost", [_songs[curSelected]]);
 		}
 		
@@ -500,7 +498,7 @@ class FreeplayState extends MusicBeatState
 				playSelectedSong();
 			}
 		}
-		if (instPlaying && null != FlxG.sound.music) {
+		if (FlxG.sound.music != null) {
 
 			if (FlxG.sound.music.volume < 0.7)
 			{
@@ -564,16 +562,6 @@ class FreeplayState extends MusicBeatState
 
 		if (controls.BACK)
 		{
-			if (Settings.engineSettings.data.memoryOptimization) {
-				// for (k=>v in ) {
-				// 	trace(k);
-				// 	v.dispose();
-				// 	Assets.cache.audio.remove(k);
-				// }
-				
-				// openfl.utils.Assets.cache.clear("assets");
-
-			}
 			FlxG.switchState(new MainMenuState());
 			
 		}
@@ -633,9 +621,13 @@ class FreeplayState extends MusicBeatState
 			Settings.engineSettings.data.lastSelectedSong = '${_songs[curSelected].mod}:${_songs[curSelected].songName.toLowerCase()}';
 			Settings.engineSettings.data.lastSelectedSongDifficulty = curDifficulty;
 	
-			CoolUtil.loadSong(_songs[curSelected].mod, _songs[curSelected].songName.toLowerCase(), _songs[curSelected].difficulties[curDifficulty]);
-			// trace('CUR WEEK' + PlayState.storyWeek);
-			LoadingState.loadAndSwitchState(new PlayState());
+			var e:haxe.Exception;
+			if ((e = CoolUtil.loadSong(_songs[curSelected].mod, _songs[curSelected].songName.toLowerCase(), _songs[curSelected].difficulties[curDifficulty])) != null) {
+				trace("TODO!!");
+			} else {
+				// trace('CUR WEEK' + PlayState.storyWeek);
+				LoadingState.loadAndSwitchState(new PlayState());
+			}
 		} else {
 			CoolUtil.playMenuSFX(3);
 			return;
