@@ -1,5 +1,6 @@
 package;
 
+import options.screens.NotesMenu;
 import openfl.desktop.Clipboard;
 import flixel.addons.display.shapes.FlxShape;
 import haxe.io.Bytes;
@@ -173,7 +174,7 @@ class OptionsNotesColors extends MusicBeatState {
 						var shader = cast(arrow.shader, ColoredNoteShader);
 						Reflect.setField(Settings.engineSettings.data, 'arrowColor$k', FlxColor.fromRGBFloat(shader.r.value[0], shader.g.value[0], shader.b.value[0]));
 					}
-					FlxG.switchState(new OptionsMenu(0, 0));
+					FlxG.switchState(new NotesMenu());
 			}
 		}
 		switch(selectionLevel) {

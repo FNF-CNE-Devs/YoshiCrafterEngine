@@ -1,5 +1,6 @@
 package options.screens;
 
+import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 import EngineSettings.Settings;
 import options.OptionScreen;
@@ -18,23 +19,94 @@ class GameplayMenu extends OptionScreen {
                 name: "Downscroll",
                 desc: "If enabled, Notes will scroll from up to down, instead of from down to up.",
                 value: "",
-                onCreate: function(e) {e.check(Settings.engineSettings.data.downscroll = !Settings.engineSettings.data.downscroll);},
+                onCreate: function(e) {e.check(Settings.engineSettings.data.downscroll);},
                 onSelect: function(e) {e.check(Settings.engineSettings.data.downscroll = !Settings.engineSettings.data.downscroll);}
             },
             {
                 name: "Middlescroll",
                 desc: "If enabled, Strums will be centered, and opponent strums will be hidden.",
-                value: "Enabled",
-                onCreate: function(e) {e.check(Settings.engineSettings.data.middleScroll = !Settings.engineSettings.data.middleScroll);},
+                value: "",
+                onCreate: function(e) {e.check(Settings.engineSettings.data.middleScroll);},
                 onSelect: function(e) {e.check(Settings.engineSettings.data.middleScroll = !Settings.engineSettings.data.middleScroll);}
+            },
+            {
+                name: "Scroll Speed",
+                desc: "If enabled, override the chart's scroll speed. Press Enter to Enable/Disable.",
+                value: "",
+                onCreate: function(e) {
+                    e.check(Settings.engineSettings.data.customScrollSpeed);
+                    if (Settings.engineSettings.data.customScrollSpeed) {
+                        e.value = Std.string(Settings.engineSettings.data.scrollSpeed);
+                    }
+                },
+                onSelect: function(e) {
+                    e.check(Settings.engineSettings.data.customScrollSpeed = !Settings.engineSettings.data.customScrollSpeed);
+                    if (Settings.engineSettings.data.customScrollSpeed) {
+                        e.value = '< ${Settings.engineSettings.data.scrollSpeed} >';
+                    }
+                },
+                onLeft: function(e) {
+                    e.check(Settings.engineSettings.data.customScrollSpeed);
+                    if (Settings.engineSettings.data.customScrollSpeed) {
+                        e.value = Std.string(Settings.engineSettings.data.scrollSpeed);
+                    }
+                },
+                onUpdate: function(e) {
+                    e.check(Settings.engineSettings.data.customScrollSpeed);
+                    if (!Settings.engineSettings.data.customScrollSpeed) return;
+                    var elapsed = FlxG.elapsed;
+                    var oldScroll = FlxMath.roundDecimal(Settings.engineSettings.data.scrollSpeed, 1);
+
+                    if (controls.LEFT_P)  Settings.engineSettings.data.scrollSpeed -= 0.1;
+                    if (controls.RIGHT_P) Settings.engineSettings.data.scrollSpeed += 0.1;
+                   
+                    Settings.engineSettings.data.scrollSpeed = FlxMath.roundDecimal(Settings.engineSettings.data.scrollSpeed, 1);
+                    noteTime = noteTime * oldScroll / Settings.engineSettings.data.scrollSpeed;
+                    e.value = '< ${Settings.engineSettings.data.scrollSpeed} >';
+                }
+            },
+            {
+                name: "Configure Note Offset",
+                desc: "If enabled, Strums will be centered, and opponent strums will be hidden.",
+                value: '${Std.int(Settings.engineSettings.data.noteOffset)}ms',
+                onSelect: function(e) {doFlickerAnim(curSelected, function() {FlxG.switchState(new OffsetConfigState());});}
+            },
+            {
+                name: "Botplay",
+                desc: "If enabled, the game will be played by a bot. Useful for showcasing charts.",
+                value: "",
+                onCreate: function(e) {e.check(Settings.engineSettings.data.botplay);},
+                onSelect: function(e) {e.check(Settings.engineSettings.data.botplay = !Settings.engineSettings.data.botplay);}
+            },
+            {
+                name: "Reset Button",
+                desc: "If enabled, pressing [R] will blue ball yourself.",
+                value: "",
+                onCreate: function(e) {e.check(Settings.engineSettings.data.resetButton);},
+                onSelect: function(e) {e.check(Settings.engineSettings.data.resetButton = !Settings.engineSettings.data.resetButton);}
+            },
+            {
+                name: "Accuracy mode",
+                desc: "Sets the accuracy mode. Simple means based on the rating, Complex means based on the\npress delay.",
+                value: "",
+                onCreate: function(e) {e.value = ScoreText.accuracyTypesText[Settings.engineSettings.data.accuracyMode];},
+                onUpdate: function(e) {
+                    if (controls.ACCEPT || controls.RIGHT_P) Settings.engineSettings.data.accuracyMode++;
+                    if (controls.LEFT_P) Settings.engineSettings.data.accuracyMode--;
+                    while(Settings.engineSettings.data.accuracyMode < 0) Settings.engineSettings.data.accuracyMode += ScoreText.accuracyTypesText.length;
+                    Settings.engineSettings.data.accuracyMode %= ScoreText.accuracyTypesText.length;
+                    e.value = '< ${ScoreText.accuracyTypesText[Settings.engineSettings.data.accuracyMode]} >';
+                },
+                onLeft: function(e) {
+                    e.value = ScoreText.accuracyTypesText[Settings.engineSettings.data.accuracyMode];
+                }
             }
         ];
         super.create();
-        var w:Float = 0;
         for(i in 0...4) {
             var babyArrow = new FlxSprite(Note._swagWidth * i, 0);
             
-            babyArrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getCustomizableSparrowAtlas(Settings.engineSettings.data.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets', 'shared') : Paths.getSparrowAtlas(Settings.engineSettings.data.customArrowSkin.toLowerCase(), 'skins');
+            babyArrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getCustomizableSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas(Settings.engineSettings.data.customArrowSkin.toLowerCase(), 'skins');
 					
 					
             babyArrow.animation.addByPrefix('green', 'arrowUP');
@@ -64,7 +136,7 @@ class GameplayMenu extends OptionScreen {
 
         arrow = new FlxSprite(0, 0);
             
-        arrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getCustomizableSparrowAtlas(Settings.engineSettings.data.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets', 'shared') : Paths.getSparrowAtlas(Settings.engineSettings.data.customArrowSkin.toLowerCase(), 'skins');
+        arrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getCustomizableSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas(Settings.engineSettings.data.customArrowSkin.toLowerCase(), 'skins');
         arrow.animation.addByPrefix('green', 'green0');
         arrow.antialiasing = true;
         arrow.setGraphicSize(Std.int(arrow.width * 0.7));
@@ -88,37 +160,37 @@ class GameplayMenu extends OptionScreen {
         }
     }
 
+    var noteTime:Float = 0;
     public override function update(elapsed:Float) {
         super.update(elapsed);
         var pointX:Float = 0;
         var pointY:Float = 0;
 
-        if (Settings.engineSettings.data.downscroll && curSelected < 3) {
-            pointY = FlxG.height - Note._swagWidth - 50;
+        if (curSelected < 3) {
+            if (Settings.engineSettings.data.downscroll) {
+                pointY = FlxG.height - Note._swagWidth - 50;
+            } else {
+                pointY = 50;
+            }
+            if (Settings.engineSettings.data.middleScroll) {
+                pointX = FlxG.width / 2;
+                pointX -= strums.width / 2;
+            } else {
+                pointX = FlxG.width / 4 * 3;
+                pointX -= strums.width / 2;
+            }
         } else {
-            pointY = 50;
-        }
-        if (Settings.engineSettings.data.middleScroll && curSelected < 3) {
-            pointX = FlxG.width / 2;
-            pointX -= strums.width / 2;
-        } else {
-            pointX = FlxG.width / 4 * 3;
-            pointX -= strums.width / 2;
+            pointX = strums.x;
+            pointY = -FlxG.height / 4;
         }
         var l = FlxMath.bound(0.125 * 60 * elapsed, 0, 1);
         strums.x = FlxMath.lerp(strums.x, pointX, l);
         strums.y = FlxMath.lerp(strums.y, pointY, l);
-        
-        Conductor.songPosition += Settings.engineSettings.data.noteOffset;
-        if (FlxG.sound.music.time == Conductor.songPositionOld) {
-            Conductor.songPosition += FlxG.elapsed * 1000;
-        } else {
-            Conductor.songPosition = Conductor.songPositionOld = FlxG.sound.music.time;
-        }
-        Conductor.songPosition -= Settings.engineSettings.data.noteOffset;
+        arrow.alpha = strums.alpha = FlxMath.lerp(strums.alpha, curSelected < 3 ? 1 : 0, l);
 
-        if (arrow.visible = (curSelected == 2)) {
-            var notePos = FlxG.height - (((time * 1000) * (0.45 * FlxMath.roundDecimal(Settings.engineSettings.data.scrollSpeed, 2))) % FlxG.height);
+        if (arrow.visible = (curSelected == 2 && Settings.engineSettings.data.customScrollSpeed)) {
+            noteTime += elapsed;
+            var notePos = FlxG.height - (((noteTime * 1000) * (0.45 * FlxMath.roundDecimal(Settings.engineSettings.data.scrollSpeed, 2))) % FlxG.height);
             if (Settings.engineSettings.data.downscroll) notePos = -notePos;
             arrow.x = strums.members[2].x;
             arrow.y = strums.members[2].y + notePos;

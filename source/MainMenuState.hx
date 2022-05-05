@@ -104,9 +104,6 @@ class MainMenuState extends MusicBeatState
 				FlxG.switchState(new ToolboxMain());
 			}, Paths.getCustomizableSparrowAtlas('FNF_main_menu_assets'), 'toolbox basic', 'toolbox white');
 		}
-		if (Settings.engineSettings.data.memoryOptimization) {
-			Paths.clearModCache();
-		}
 			
 		mainMenuScript = Script.create('${Paths.modsPath}/${Settings.engineSettings.data.selectedMod}/ui/MainMenuState');
 		var valid = true;

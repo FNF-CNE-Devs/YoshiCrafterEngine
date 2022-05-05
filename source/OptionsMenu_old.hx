@@ -602,7 +602,7 @@ class OptionsMenu extends MusicBeatState
 		
 		guiOptions.options.push({
 			text : "Score Text Size",
-			description : "Sets the score text size. 16 is base game size, 20 is Psych size. Defaults to 18.",
+			description : "",
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				var changed = false;
 				if (controls.LEFT_P) {
@@ -1134,7 +1134,6 @@ class OptionsMenu extends MusicBeatState
 			updateOnSelected: function(elapsed:Float, o:FNFOption) {
 				if (controls.ACCEPT) {
 					Paths.clearCache();
-					Paths.clearModCache();
 					o.setValue("Cache Cleared");
 				}
 			},

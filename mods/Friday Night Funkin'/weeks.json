@@ -90,6 +90,25 @@
                 "flipX" : false,
                 "offset" : [130,-25]
             }
-        }
+        },
+        {
+			"songs": [
+				"Ugh",
+				"Guns",
+				"Stress"
+			],
+			"dad": {
+				"animation": "Tankman Menu BLACK",
+				"file": "images/storymenu/campaign_menu_UI_characters",
+				"scale": 1,
+				"offset": [
+					100,
+					-25
+				],
+				"flipX": false
+			},
+			"name": "TANKMAN",
+			"buttonSprite": "images/storymenu/week7.png"
+		}
     ]
 }

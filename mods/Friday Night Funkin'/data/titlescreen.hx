@@ -1,3 +1,5 @@
+import("LoadingState");
+
 var crafterEngineLogo:FlxSprite = null;
 var gfDancing:FlxSprite = null;
 
@@ -23,4 +25,15 @@ var danced = false;
 function beatHit() {
     gfDancing.animation.play(danced ? "danceLeft" : "danceRight");
     danced = !danced;
+}
+
+function update(elapsed:Float) {
+    if (FlxG.mouse.justPressed) {
+        var pos = FlxG.mouse.getScreenPosition();
+        if (pos.x >= 9 && pos.x < 186 && pos.y >= 238 && pos.y < 411) {
+            // gray you fucking genius
+            CoolUtil.loadSong("YoshiCrafterEngine", "yoshi", "normal");
+            LoadingState.loadAndSwitchState(new PlayState_());
+        }
+    }
 }

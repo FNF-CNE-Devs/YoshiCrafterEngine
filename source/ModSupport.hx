@@ -144,12 +144,20 @@ class ModSupport {
         }
     }
     public static function reloadModsConfig(reloadAll:Bool = false, reloadSkins:Bool = true):Bool {
-        Assets.cache.clear('mods/');
-        Assets.cache.clear('shared');
-        Assets.cache.clear('preload');
-        openfl.utils.Assets.cache.clear('mods/');
-        openfl.utils.Assets.cache.clear('shared');
-        openfl.utils.Assets.cache.clear('preload');
+        switch(Settings.engineSettings.data.optimizationType) {
+            default:
+                Assets.cache.clear('');
+                openfl.utils.Assets.cache.clear('');
+            case 1:
+                Assets.cache.clear('mods');
+                openfl.utils.Assets.cache.clear('mods');
+            case 2:
+                Assets.cache.clear('mods/${Settings.engineSettings.data.selectedMod}');
+                openfl.utils.Assets.cache.clear('mods/${Settings.engineSettings.data.selectedMod}');
+            case 3:
+                // no clearing
+
+        }
         modConfig = [];
 
         if (reloadSkins) {

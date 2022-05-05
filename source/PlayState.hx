@@ -124,6 +124,7 @@ class PlayState extends MusicBeatState
 	static private function set_difficulty(s:String) {return storyDifficulty = s;}
 	public static var actualModWeek:FNFWeek;
 	public static var log:Array<String> = [];
+	public static var startTime:Float = 0;
 	public static function trace(thing:String) {
 		for (e in thing.split("\n")) log.push(e);
 		trace(thing);
@@ -360,7 +361,7 @@ class PlayState extends MusicBeatState
 			if (!engineSettings.botplay) {
 				var field = cast(Reflect.field(engineSettings, 'control_' + SONG.keyNumber + '_$i'), FlxKey);
 				// if (field != null) {
-					t.text = ControlsSettingsSubState.ControlsSettingsSub.getKeyName(field);
+					t.text = ControlsSettingsSubState.getKeyName(field);
 				// }
 			}
 			t.x = playerStrums.members[i].x + (playerStrums.members[i].width / 2) - (t.width / 2);
@@ -499,13 +500,21 @@ class PlayState extends MusicBeatState
 	}
 	var p2isGF:Bool = false;
 
+	public override function finishTransOut() {
+		PlayState.current = null;
+		super.finishTransOut();
+	}
 	public override function destroy() {
 		scripts.executeFunc("onDestroy");
 		scripts.executeFunc("destroy");
-		if (PlayState.current == this) PlayState.current = null;
+		PlayState.current = null;
 		if (engineSettings.memoryOptimization && (!isStoryMode || (isStoryMode && storyPlaylist.length == 0))) {
 			// Paths.clearForMod(songMod);
 		}
+		scripts = null;
+		cutscene = null;
+		end_cutscene = null;
+		SONG = null;
 		super.destroy();
 	}
 
@@ -1351,7 +1360,7 @@ class PlayState extends MusicBeatState
 
 		talking = false;
 		startedCountdown = true;
-		Conductor.songPosition = 0;
+		Conductor.songPosition = startTime;
 		Conductor.songPosition -= Conductor.crochet * 5;
 
 		var swagCounter:Int = 0;
@@ -1408,7 +1417,8 @@ class PlayState extends MusicBeatState
 						if (curStage.startsWith('school'))
 							ready.setGraphicSize(Std.int(ready.width * daPixelZoom));
 	
-						ready.screenCenter();
+						ready.cameras = [camHUD];
+						ready.cameraCenter();
 						add(ready);
 						FlxTween.tween(ready, {y: ready.y += 100, alpha: 0}, Conductor.crochet / 1000, {
 							ease: FlxEase.cubeInOut,
@@ -1427,7 +1437,8 @@ class PlayState extends MusicBeatState
 						if (curStage.startsWith('school'))
 							set.setGraphicSize(Std.int(set.width * daPixelZoom));
 	
-						set.screenCenter();
+						set.cameras = [camHUD];
+						set.cameraCenter();
 						add(set);
 						FlxTween.tween(set, {y: set.y += 100, alpha: 0}, Conductor.crochet / 1000, {
 							ease: FlxEase.cubeInOut,
@@ -1448,8 +1459,9 @@ class PlayState extends MusicBeatState
 							go.setGraphicSize(Std.int(go.width * daPixelZoom));
 	
 						go.updateHitbox();
-	
-						go.screenCenter();
+						
+						go.cameras = [camHUD];
+						go.cameraCenter();
 						add(go);
 						FlxTween.tween(go, {y: go.y += 100, alpha: 0}, Conductor.crochet / 1000, {
 							ease: FlxEase.cubeInOut,
@@ -1490,15 +1502,19 @@ class PlayState extends MusicBeatState
 		if (!paused) {
 			// FlxG.sound.playMusic(inst, 1, false);
 			FlxG.sound.music = inst;
+			FlxG.sound.music.time = startTime;
 			FlxG.sound.music.play();
+			FlxG.sound.music.time = startTime;
 			// FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
 		}
+		Conductor.songPosition = startTime;
 
 		
 
 		
 
 		FlxG.sound.music.onComplete = endSong;
+		vocals.time = startTime;
 		vocals.play();
 
 		#if desktop
@@ -1533,6 +1549,7 @@ class PlayState extends MusicBeatState
 			vocals = new FlxSound();
 
 		inst = new FlxSound().loadEmbedded(Paths.modInst(PlayState.SONG.song, songMod, storyDifficulty.toLowerCase() == "normal" ? "" : storyDifficulty.toLowerCase().replace(" ", "-")));
+		inst.stop();
 
 		FlxG.sound.list.add(vocals);
 
@@ -1599,22 +1616,14 @@ class PlayState extends MusicBeatState
 			});
 			script.setVariable("create", function() {
 				var note:Note = script.getVariable("note");
-				if (engineSettings.customArrowColors) {
-					// var colors:Array<Int> = (note.mustPress || EngineSettings.customArrowColors_allChars) ? PlayState.boyfriend.getColors(note.altAnim) : PlayState.dad.getColors(note.altAnim);
-					// note.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas_Custom(StringTools.replace(StringTools.replace(Paths.getSkinsPath() + "notes/" + engineSettings.customArrowSkin.toLowerCase(), "/", "/"), "\r", ""));
-					note.frames = (engineSettings.customArrowSkin == "default") ? Paths.getCustomizableSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas(engineSettings.customArrowSkin.toLowerCase(), 'skins');
-					note.colored = true;
-					// note.color = colors[(note.noteData % 4) + 1];
-				} else {
-					// note.frames = (engineSettings.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets', 'shared') : Paths.getSparrowAtlas_Custom(StringTools.replace(StringTools.replace(Paths.getSkinsPath() + "notes/" + engineSettings.customArrowSkin.toLowerCase(), "/", "/"), "\r", ""));
-					note.frames = (engineSettings.customArrowSkin == "default") ? Paths.getCustomizableSparrowAtlas('NOTE_assets', 'shared') : Paths.getSparrowAtlas(engineSettings.customArrowSkin.toLowerCase(), 'skins');
-				}
+				note.frames = (engineSettings.customArrowSkin == "default") ? Paths.getCustomizableSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas(engineSettings.customArrowSkin.toLowerCase(), 'skins');
+				note.colored = true;
 				
 				note.animation.addByPrefix('green', 'arrowUP');
 				note.animation.addByPrefix('blue', 'arrowDOWN');
 				note.animation.addByPrefix('purple', 'arrowLEFT');
 				note.animation.addByPrefix('red', 'arrowRIGHT');
-				note.colored = engineSettings.customArrowColors;
+				note.colored = true;
 
 				note.splash = Paths.splashes("splashes", "shared");
 
@@ -1646,14 +1655,14 @@ class PlayState extends MusicBeatState
 				
 			});
 			script.setVariable("generateStaticArrow", function(babyArrow:StrumNote, i:Int, player:Int) {
-					babyArrow.frames = (engineSettings.customArrowSkin == "default") ? Paths.getCustomizableSparrowAtlas(engineSettings.customArrowColors ? 'NOTE_assets_colored' : 'NOTE_assets', 'shared') : Paths.getSparrowAtlas(engineSettings.customArrowSkin.toLowerCase(), 'skins');
+					babyArrow.frames = (engineSettings.customArrowSkin == "default") ? Paths.getCustomizableSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas(engineSettings.customArrowSkin.toLowerCase(), 'skins');
 					
 					
 					babyArrow.animation.addByPrefix('green', 'arrowUP');
 					babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
 					babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
 					babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
-					babyArrow.colored = engineSettings.customArrowColors;
+					babyArrow.colored = true;
 
 					babyArrow.antialiasing = true;
 					babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
@@ -1741,6 +1750,7 @@ class PlayState extends MusicBeatState
 
 			for (songNotes in section.sectionNotes)
 			{
+				if (songNotes[0] < startTime && startTime > 0) continue;
 				if (songNotes[1] < 0) {
 					if (songNotes.length == 5 && Std.isOfType(songNotes[2], String) && Std.isOfType(songNotes[3], String) && Std.isOfType(songNotes[4], String)) {
 						// psych engine event for yall psych people who want to port their chart easily
@@ -1820,6 +1830,7 @@ class PlayState extends MusicBeatState
 		}
 
 		for (e in _SONG.events) {
+			if (e.time < startTime && startTime > 0) continue;
 			events.push({name: e.name, time: e.time, parameters: e.parameters});
 		}
 
@@ -1946,19 +1957,22 @@ class PlayState extends MusicBeatState
 				resyncVocals();
 			}
 
-			if (!startTimer.finished)
-				startTimer.active = true;
-			paused = false;
-
-			#if desktop
-			if (startTimer.finished)
-			{
-				DiscordClient.changePresence(detailsText, '$songMod - ${CoolUtil.prettySong(song.song)} ($storyDifficultyText)', iconRPC, true, songLength - Conductor.songPosition);
+			if (startTimer != null) {
+				if (!startTimer.finished)
+					startTimer.active = true;
+				paused = false;
+	
+				#if desktop
+				if (startTimer.finished)
+				{
+					DiscordClient.changePresence(detailsText, '$songMod - ${CoolUtil.prettySong(song.song)} ($storyDifficultyText)', iconRPC, true, songLength - Conductor.songPosition);
+				}
+				else
+				{
+					DiscordClient.changePresence(detailsText, '$songMod - ${CoolUtil.prettySong(song.song)} ($storyDifficultyText)', iconRPC);
+				}
 			}
-			else
-			{
-				DiscordClient.changePresence(detailsText, '$songMod - ${CoolUtil.prettySong(song.song)} ($storyDifficultyText)', iconRPC);
-			}
+				
 			#end
 		}
 
@@ -2213,12 +2227,15 @@ class PlayState extends MusicBeatState
 			if (startedCountdown)
 			{
 				Conductor.songPosition += FlxG.elapsed * 1000;
-				if (Conductor.songPosition >= 0)
+				if (Conductor.songPosition >= startTime)
 					startSong();
 			}
 		}
 		else
 		{
+			if (Conductor.songPosition < startTime) {
+				FlxG.sound.music.time = vocals.time = Conductor.songPosition = startTime;
+			}
 			if (FlxG.sound.music.time == Conductor.songPositionOld) {
 				Conductor.songPosition += FlxG.elapsed * 1000;
 				vocalsOffsetInfraction -= elapsed / 3;
@@ -2515,8 +2532,10 @@ class PlayState extends MusicBeatState
 							var swagRect = new FlxRect(0, daNote.frameHeight - h, daNote.width * 2, daNote.frameHeight + h);
 							daNote.clipRect = swagRect;
 						}
+						
 					} else {
 						
+						/*
 						// i am so fucking sorry for this if condition
 						var idk = daNote.isSustainNote
 						&& (daNote.y + daNote.offset.y <= strum.y + Note.swagWidth / 2);
@@ -2527,10 +2546,18 @@ class PlayState extends MusicBeatState
 						}
 						if (idk) 
 						{
+							
 							var swagRect = new FlxRect(0, strum.y + Note.swagWidth / 2 - daNote.y, daNote.width * 2, daNote.height * 2);
 							swagRect.y /= daNote.scale.y;
 							swagRect.height -= swagRect.y;
-							// trace(swagRect);
+
+							daNote.clipRect = swagRect;
+						}
+						*/
+						if ((!daNote.mustPress || daNote.wasGoodHit) && Conductor.songPosition > daNote.strumTime - (Note.swagWidth / (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2)) / 2)) {
+							var t = FlxMath.bound((Conductor.songPosition - daNote.strumTime) / (daNote.height / (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2))), 0, 1);
+							var swagRect = new FlxRect(0, t * daNote.frameHeight, daNote.frameWidth, daNote.frameHeight);
+
 							daNote.clipRect = swagRect;
 						}
 					}
@@ -2559,7 +2586,7 @@ class PlayState extends MusicBeatState
 						if (engineSettings.glowCPUStrums) {
 							var strum = cpuStrums.members[daNote.noteData % _SONG.keyNumber % SONG.keyNumber];
 							strum.cpuRemainingGlowTime = Conductor.stepCrochet * 1.5 / 1000;
-							cast(strum.shader, ColoredNoteShader).setColors(daNote.splashColor.red, daNote.splashColor.green, daNote.splashColor.blue);
+							if (Std.isOfType(strum.shader, ColoredNoteShader)) cast(strum.shader, ColoredNoteShader).setColors(daNote.splashColor.red, daNote.splashColor.green, daNote.splashColor.blue);
 							strum.animation.play("confirm", true);
 							strum.centerOffsets();
 							strum.centerOrigin();
@@ -2655,7 +2682,7 @@ class PlayState extends MusicBeatState
 			
 			var noteColors:Array<FlxColor> = boyfriend.getColors();
 			for (strum in playerStrums) {
-				strum.toggleColor(strum.colored && strum.animation.curAnim.name != "static");
+				strum.toggleColor(strum.colored && strum.getAnimName() != "static");
 			}
 
 		#if debug
@@ -3482,17 +3509,17 @@ class PlayState extends MusicBeatState
 			}
 		}
 		
-		playerStrums.forEach(function(spr:FlxSprite)
+		playerStrums.forEach(function(spr:StrumNote)
 		{
 			if (spr == null) return;
-			if (justPressedArray[spr.ID % SONG.keyNumber] && spr.animation.curAnim.name != 'confirm')
+			if (justPressedArray[spr.ID % SONG.keyNumber] && spr.getAnimName() != 'confirm')
 				spr.animation.play('pressed');
 			if (justReleasedArray[spr.ID % SONG.keyNumber])
 				spr.animation.play('static');
-			if (spr.animation.curAnim.name == 'pressed') {
+			if (spr.getAnimName() == 'pressed') {
 				var customColors = PlayState.current.boyfriend.getColors(false);
 				var c = customColors[(spr.ID % (customColors.length - 1)) + 1];
-				cast(spr.shader, ColoredNoteShader).setColors(c.red, c.green, c.blue);
+				if (Std.isOfType(spr.shader, ColoredNoteShader)) cast(spr.shader, ColoredNoteShader).setColors(c.red, c.green, c.blue);
 			}
 			// switch (spr.ID)
 			// {
@@ -3521,7 +3548,7 @@ class PlayState extends MusicBeatState
 			if (spr != null) {
 				if (spr.animation != null) {
 					if (spr.animation.curAnim != null) {
-						if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+						if (spr.getAnimName() == 'confirm' && !curStage.startsWith('school'))
 						{
 							spr.centerOffsets();
 							// spr.offset.x -= 13;
@@ -3655,7 +3682,7 @@ class PlayState extends MusicBeatState
 			{
 				if (Math.abs((note.noteData % _SONG.keyNumber) % SONG.keyNumber) == spr.ID)
 				{
-					cast(spr.shader, ColoredNoteShader).setColors(note.splashColor.red, note.splashColor.green, note.splashColor.blue);
+					if (Std.isOfType(spr.shader, ColoredNoteShader)) cast(spr.shader, ColoredNoteShader).setColors(note.splashColor.red, note.splashColor.green, note.splashColor.blue);
 					spr.animation.play('confirm', true);
 				}
 			});
@@ -3750,12 +3777,13 @@ class PlayState extends MusicBeatState
 		
 		super.stepHit();
 		// songEvents.stepHit(curStep);
-		
 
 		Conductor.songPosition += Settings.engineSettings.data.noteOffset;
-		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
-		{
-			resyncVocals();
+		if (FlxG.sound.music != null && !startingSong && startedCountdown) {
+			if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
+			{
+				if (Conductor.songPosition > startTime && FlxG.sound.music.time > startTime) resyncVocals();
+			}
 		}
 
 		if (dad.curCharacter == 'spooky' && curStep % 4 == 2)

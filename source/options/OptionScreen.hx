@@ -10,7 +10,8 @@ import flixel.text.FlxText;
 import flixel.FlxState;
 import flixel.group.FlxSpriteGroup;
 
-class OptionScreen extends MusicBeatState {
+// substate cause faster lol get fucked
+class OptionScreen extends MusicBeatSubstate {
     public var options:Array<FunkinOption> = [];
 
     public var emptyTxt:FlxText;
@@ -65,12 +66,12 @@ class OptionScreen extends MusicBeatState {
         }
         for(k=>o in spawnedOptions) {
             var i = k - curSelected;
-            o.x = FlxMath.lerp(o.x, 0 + (i * 10), 0.125 * elapsed * 60);
-            o.y = FlxMath.lerp(o.y, ((FlxG.height / 2) - 50) + (i * 125), 0.125 * elapsed * 60);
+            o.x = FlxMath.lerp(o.x, 0 + (i * 15), 0.125 * elapsed * 60);
+            o.y = FlxMath.lerp(o.y, ((FlxG.height / 2) - 50) + (i * 150), 0.125 * elapsed * 60);
             o.alpha = FlxMath.lerp(o.alpha, k == curSelected ? 1 : 0.3, 0.125 * elapsed * 60);
         }
         if (spawnedOptions[curSelected] != null) {
-            if (spawnedOptions[curSelected].onUpdate != null) spawnedOptions[curSelected].onUpdate(elapsed);
+            if (spawnedOptions[curSelected].onUpdate != null) spawnedOptions[curSelected].onUpdate(spawnedOptions[curSelected]);
         }
         if (canSelect) {
             var oldCur = curSelected;
@@ -81,7 +82,11 @@ class OptionScreen extends MusicBeatState {
             if (curSelected != oldCur) {
                 while(curSelected < 0) curSelected += spawnedOptions.length;
                 curSelected %= spawnedOptions.length;
+                
                 CoolUtil.playMenuSFX(0);
+
+                if (spawnedOptions[curSelected].onEnter != null) spawnedOptions[curSelected].onEnter(spawnedOptions[curSelected]);
+                if (spawnedOptions[oldCur].onLeft != null) spawnedOptions[oldCur].onLeft(spawnedOptions[oldCur]);
             }
             if (controls.ACCEPT) {
                 if (spawnedOptions[curSelected] != null) {
@@ -102,8 +107,6 @@ class OptionScreen extends MusicBeatState {
                 }
                 if (flickerTime > speedMultiplier) {
                     flickerId = -1;
-                    FlxTransitionableState.skipNextTransOut = true;
-                    FlxTransitionableState.skipNextTransIn = true;
                     flickerCallback();
                 }
             }
@@ -126,6 +129,6 @@ class OptionScreen extends MusicBeatState {
         flickerId = id;
         flickerTime = time;
         flickerCallback = callback;
-        CoolUtil.playMenuSFX(1);
+        CoolUtil.playMenuSFX(id < 0 ? 2 : 1);
     }
 }

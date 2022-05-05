@@ -23,7 +23,7 @@ class CoolUtil
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 
 	
-	public static function getSizeLabel(num:Int):String{
+	public static function getSizeLabel(num:UInt):String{
         var size:Float = num;
         var data = 0;
         var dataTexts = ["B", "KB", "MB", "GB", "TB", "PB"]; // IS THAT A QT MOD REFERENCE!!!??!!111!!11???
@@ -38,7 +38,7 @@ class CoolUtil
 
 	public static function loadUIStuff(sprite:FlxSprite, ?anim:String) {
 		sprite.loadGraphic(Paths.image("uiIcons", "preload"), true, 16, 16);
-		var anims = ["up", "refresh", "delete", "copy", "paste", "x", "swap", "folder"];
+		var anims = ["up", "refresh", "delete", "copy", "paste", "x", "swap", "folder", "play"];
 		
 		for(k=>a in anims) {
 			sprite.animation.add(a, [k], 0, false);
@@ -46,7 +46,7 @@ class CoolUtil
 		if (anim != null) sprite.animation.play(anim);
 	}
 
-	public static function loadSong(mod:String, song:String, ?difficulty:String):Bool {
+	public static function loadSong(mod:String, song:String, ?difficulty:String):haxe.Exception {
 		if (difficulty == null) difficulty = "normal";
 
 
@@ -55,16 +55,16 @@ class CoolUtil
 		try {
 			PlayState._SONG = Song.loadModFromJson(Highscore.formatSong(song, difficulty), mod, song);
 		} catch(e) {
-			FlxG.state.openSubState(new MenuMessage('Error while loading the chart. Make sure the ${difficulty} chart for ${song} exists in the ${mod} mod.'));
-			return false;
+			return e;
 		}
 		PlayState._SONG.validScore = true;
 		PlayState.isStoryMode = false;
+		PlayState.startTime = 0;
 		PlayState.songMod = mod;
 		PlayState.jsonSongName = song;
 		PlayState.storyDifficulty = difficulty;
 		PlayState.fromCharter = false;
-		return true;
+		return null;
 	}
 
 	public static function loadWeek(mod:String, week:String, ?difficulty:String) {

@@ -564,16 +564,6 @@ class FreeplayState extends MusicBeatState
 
 		if (controls.BACK)
 		{
-			if (Settings.engineSettings.data.memoryOptimization) {
-				// for (k=>v in ) {
-				// 	trace(k);
-				// 	v.dispose();
-				// 	Assets.cache.audio.remove(k);
-				// }
-				
-				// openfl.utils.Assets.cache.clear("assets");
-
-			}
 			FlxG.switchState(new MainMenuState());
 			
 		}

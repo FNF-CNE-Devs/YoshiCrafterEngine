@@ -559,6 +559,7 @@ class StoryMenuState extends MusicBeatState
 			PlayState.songMod = activeWeekData[curWeek].mod;
 			PlayState.storyPlaylist = activeWeekData[curWeek].songs;
 			PlayState.isStoryMode = true;
+			PlayState.startTime = 0;
 			selectedWeek = true;
 
 			// var diffic = "";

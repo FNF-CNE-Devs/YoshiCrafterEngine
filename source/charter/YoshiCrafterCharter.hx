@@ -382,6 +382,11 @@ class YoshiCrafterCharter extends MusicBeatState {
         changeBPMSection_bpm.x -= changeBPMSection_bpm.width;
         changeBPMSection_bpm.y += (changeBPMSection.height - changeBPMSection_bpm.height) / 2;
 
+        var playHereButton = new FlxUIButton(10, changeBPMSection_bpm.y + changeBPMSection_bpm.height + 10, "Play Here", function() {
+            switchToPlayState(Conductor.songPosition);
+        });
+        playHereButton.color = 0xFF44FF44;
+
         sectionTab.add(label);
         sectionTab.add(mustHitSection);
         sectionTab.add(duetSection);
@@ -389,6 +394,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         sectionTab.add(duetCameraSlide);
         sectionTab.add(changeBPMSection);
         sectionTab.add(changeBPMSection_bpm);
+        sectionTab.add(playHereButton);
         UI_Section.addGroup(sectionTab);
     }
 	public function addCharterSettingsTab() {
@@ -478,10 +484,22 @@ class YoshiCrafterCharter extends MusicBeatState {
 				voicesWaveform.color = Settings.engineSettings.data.charter_voicesWaveformColor = newColor;
 			}));
 		});
+		
+        y += chooseVoicesWaveColorButton.height + 10;
+		var chooseSeparatorColorButton:FlxUIButton = new FlxUIButton(10, y, "Choose Separator Color", function() {
+			persistentUpdate = false;
+			persistentDraw = true;
+			openSubState(new dev_toolbox.ColorPicker(Settings.engineSettings.data.charter_separatorColor, function(newColor) {
+				Settings.engineSettings.data.charter_separatorColor = newColor;
+			}));
+		});
 		chooseVoicesWaveColorButton.resize(145, chooseVoicesWaveColorButton.height);
         chooseVoicesWaveColorButton.scrollFactor.set(0, 0);
-        y += chooseVoicesWaveColorButton.height;
+		chooseSeparatorColorButton.resize(145, chooseSeparatorColorButton.height);
+        chooseSeparatorColorButton.scrollFactor.set(0, 0);
+        y += chooseSeparatorColorButton.height;
         settingsTab.add(chooseVoicesWaveColorButton);
+        settingsTab.add(chooseSeparatorColorButton);
 
         // var instVolume = new FlxUISlider(FlxG.sound.music, "volume", 10, 10, y, 0, 1, 280, 20, 5);
 		// y += instVolume.height;
@@ -876,12 +894,14 @@ class YoshiCrafterCharter extends MusicBeatState {
 
         gridOverlay = new FlxSprite(-GRID_SIZE, 0).makeGraphic(GRID_SIZE * (_song.keyNumber * 2 + 1), Math.ceil(FlxG.height / (GRID_SIZE * 16)) * 2 * (GRID_SIZE * 16) * 4, 0);
         gridOverlay.pixels.lock();
-        gridOverlay.pixels.fillRect(new Rectangle(GRID_SIZE - 1, 0, 2, gridOverlay.pixels.height), 0x88FFFFFF);
-        gridOverlay.pixels.fillRect(new Rectangle(GRID_SIZE + (GRID_SIZE * _song.keyNumber) - 1, 0, 2, gridOverlay.pixels.height), 0x88FFFFFF);
+        gridOverlay.pixels.fillRect(new Rectangle(GRID_SIZE - 1, 0, 2, gridOverlay.pixels.height), 0xFFFFFFFF);
+        gridOverlay.pixels.fillRect(new Rectangle(GRID_SIZE + (GRID_SIZE * _song.keyNumber) - 1, 0, 2, gridOverlay.pixels.height), 0xFFFFFFFF);
         for(i in 0...Math.floor(gridOverlay.pixels.height / (GRID_SIZE * 16))) {
             gridOverlay.pixels.fillRect(new Rectangle(0, (GRID_SIZE * 16 * (i + 1)) - 2, gridOverlay.pixels.width, 4), 0xAAFFFFFF);
         }
         gridOverlay.pixels.unlock();
+        gridOverlay.color = Settings.engineSettings.data.charter_separatorColor;
+        gridOverlay.alpha = 1;
         add(grid);
         add(gridOverlay);
 
@@ -928,12 +948,13 @@ class YoshiCrafterCharter extends MusicBeatState {
         }
     }
 
-    public function switchToPlayState() {
+    public function switchToPlayState(time:Float = 0) {
         compile();
         
         PlayState._SONG = _song;
         PlayState._SONG.validScore = false;
         PlayState.fromCharter = true;
+        PlayState.startTime = time;
         FlxG.sound.music.stop();
         vocals.stop();
         FlxG.switchState(new PlayState());
@@ -944,7 +965,7 @@ class YoshiCrafterCharter extends MusicBeatState {
             FlxG.sound.music.pause();
             vocals.pause();
         }
-        FlxG.sound.music.time = vocals.time = (Conductor.songPosition += steps * Conductor.stepCrochet);
+        FlxG.sound.music.time = vocals.time = (Conductor.songPosition += steps * Conductor.stepCrochet) + Settings.engineSettings.data.noteOffset;
     }
     public override function update(elapsed:Float) {
 
@@ -955,7 +976,7 @@ class YoshiCrafterCharter extends MusicBeatState {
             pageSwitchLerpRemaining = 0;
         } else {
             var val = CoolUtil.wrapFloat(pageSwitchLerpRemaining * 0.40 * 60 * elapsed, pageSwitchLerpRemaining < 0 ? pageSwitchLerpRemaining : 0, pageSwitchLerpRemaining > 0 ? pageSwitchLerpRemaining : 0);
-            vocals.time = FlxG.sound.music.time = (Conductor.songPosition += val);
+            vocals.time = FlxG.sound.music.time = (Conductor.songPosition += val) + Settings.engineSettings.data.noteOffset;
             pageSwitchLerpRemaining -= val;
             if (Conductor.songPosition < 0) {
                 pageSwitchLerpRemaining = 0;
@@ -968,6 +989,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         gridOverlay.y = Math.max(0, FlxG.camera.scroll.y - (FlxG.camera.scroll.y % (GRID_SIZE * 16 * zoom)));
         gridOverlay.scale.y = zoom;
         gridOverlay.updateHitbox();
+        gridOverlay.color = Settings.engineSettings.data.charter_separatorColor;
         voicesWaveform.y = instWaveform.y = ((Math.floor(Conductor.songPosition / (Conductor.crochet * 4)) * GRID_SIZE * 16) + (-GRID_SIZE * 16)) * zoom;
         for(waveform in [instWaveform, voicesWaveform]) {
             waveform.scale.set(1, zoom);
@@ -1177,11 +1199,13 @@ class YoshiCrafterCharter extends MusicBeatState {
             iconP2.scale.set(0.66, 0.66);
             iconP1.alpha = iconP2.alpha = 0.33;
         }
+        Conductor.songPosition += Settings.engineSettings.data.noteOffset;
         if (Conductor.songPositionOld != FlxG.sound.music.time) {
             Conductor.songPosition = Conductor.songPositionOld = FlxG.sound.music.time;
         } else {
             if (FlxG.sound.music.playing) Conductor.songPosition += elapsed * 1000 * FlxG.sound.music.pitch;
         }
+        Conductor.songPosition -= Settings.engineSettings.data.noteOffset;
         // grid.y = -((Conductor.songPosition % (Conductor.crochet * 4)) / (Conductor.crochet * 4) * (GRID_SIZE * 16));
         followThing.y = Conductor.songPosition / (Conductor.crochet * 4) * (GRID_SIZE * 16) * zoom;
         // instWaveform.y = voicesWaveform.y = followThing.y - (GRID_SIZE * 16);
@@ -1214,6 +1238,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         if (FlxG.keys.justPressed.SPACE) {
             playing = !playing;
             if (playing) {
+                FlxG.sound.music.time = Conductor.songPosition + Settings.engineSettings.data.noteOffset;
                 FlxG.sound.music.play();
                 vocals.play();
                 vocals.time = FlxG.sound.music.time;

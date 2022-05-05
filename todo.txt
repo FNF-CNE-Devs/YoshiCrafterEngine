@@ -27,4 +27,10 @@ ADDITIONAL
 [ ] Dialogue (maybe????)
 [-] Better Menus
 
-[ ] "i've had some issues with the engine like crashing when i want to record some footage of the mod or not being able to remove songs" -bardzo_
+[ ] Copy last sections in Charter
+[x] Customisable Separators
+[x] Play Here in Charter
+[ ] In-Game Tutorial
+[ ] Beat Separators
+
+[x] "i've had some issues with the engine like crashing when i want to record some footage of the mod or not being able to remove songs" -bardzo_

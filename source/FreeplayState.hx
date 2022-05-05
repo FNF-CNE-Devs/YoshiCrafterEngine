@@ -139,7 +139,7 @@ class FreeplayState extends MusicBeatState
 		{
 			var songName = _songs[i].songName;
 			if (_songs[i].displayName != null) songName = _songs[i].displayName;
-			var songText:AlphabetOptimized = new AlphabetOptimized(0, (70 * i) + 30, songName);
+			var songText:AlphabetOptimized = new AlphabetOptimized(0, (70 * i) + 30, songName.replace("-", " "));
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			if (_songs[i].disabled) for(c in songText.members) c.color = 0xFF888888;
@@ -562,16 +562,6 @@ class FreeplayState extends MusicBeatState
 
 		if (controls.BACK)
 		{
-			if (Settings.engineSettings.data.memoryOptimization) {
-				// for (k=>v in ) {
-				// 	trace(k);
-				// 	v.dispose();
-				// 	Assets.cache.audio.remove(k);
-				// }
-				
-				// openfl.utils.Assets.cache.clear("assets");
-
-			}
 			FlxG.switchState(new MainMenuState());
 			
 		}
@@ -631,9 +621,13 @@ class FreeplayState extends MusicBeatState
 			Settings.engineSettings.data.lastSelectedSong = '${_songs[curSelected].mod}:${_songs[curSelected].songName.toLowerCase()}';
 			Settings.engineSettings.data.lastSelectedSongDifficulty = curDifficulty;
 	
-			CoolUtil.loadSong(_songs[curSelected].mod, _songs[curSelected].songName.toLowerCase(), _songs[curSelected].difficulties[curDifficulty]);
-			// trace('CUR WEEK' + PlayState.storyWeek);
-			LoadingState.loadAndSwitchState(new PlayState());
+			var e:haxe.Exception;
+			if ((e = CoolUtil.loadSong(_songs[curSelected].mod, _songs[curSelected].songName.toLowerCase(), _songs[curSelected].difficulties[curDifficulty])) != null) {
+				trace("TODO!!");
+			} else {
+				// trace('CUR WEEK' + PlayState.storyWeek);
+				LoadingState.loadAndSwitchState(new PlayState());
+			}
 		} else {
 			CoolUtil.playMenuSFX(3);
 			return;

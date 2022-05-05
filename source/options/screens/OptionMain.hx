@@ -26,7 +26,6 @@ class OptionMain extends OptionScreen {
                 name: "Keybinds",
                 desc: 'Edit Keybinds for $label keys charts.',
                 value: "",
-                img: Paths.image('newgrounds_logo', 'preload'),
                 onUpdate: null
             },
             {
@@ -58,6 +57,13 @@ class OptionMain extends OptionScreen {
                 onUpdate: null
             },
             {
+                name: "Optimization",
+                desc: "Change optimization settings here.",
+                value: "",
+                img: null,
+                onUpdate: null
+            },
+            {
                 name: "Miscellaneous",
                 desc: "Other settings that does not fit any of the categories above.",
                 value: "",
@@ -76,10 +82,12 @@ class OptionMain extends OptionScreen {
     }
 
     public override function onExit() {
-        if (fromFreeplay)
-            FlxG.switchState(new PlayState());
-        else
-            FlxG.switchState(new MainMenuState());
+        doFlickerAnim(-2, function() {
+            if (fromFreeplay)
+                FlxG.switchState(new PlayState());
+            else
+                FlxG.switchState(new MainMenuState());
+        });
     }
 
     public override function onSelect(id:Int) {
@@ -88,6 +96,18 @@ class OptionMain extends OptionScreen {
                 doFlickerAnim(id, function() {FlxG.switchState(new KeybindsMenu());});
             case 1:
                 doFlickerAnim(id, function() {FlxG.switchState(new GameplayMenu());});
+            case 2:
+                doFlickerAnim(id, function() {FlxG.switchState(new GUIMenu());});
+            case 3:
+                doFlickerAnim(id, function() {FlxG.switchState(new NotesMenu());});
+            case 4:
+                doFlickerAnim(id, function() {FlxG.switchState(new SkinsMenu());});
+            case 5:
+                doFlickerAnim(id, function() {FlxG.switchState(new OptiMenu());});
+            case 6:
+                doFlickerAnim(id, function() {FlxG.switchState(new MiscMenu());});
+            case 7:
+                doFlickerAnim(id, function() {FlxG.switchState(new DevMenu());});
             default:
                 trace(id);
         }

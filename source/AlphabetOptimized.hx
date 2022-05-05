@@ -14,10 +14,10 @@ class AlphabetOptimized extends FlxSpriteGroup {
 
     public static var nonBoldLetters:Map<String, String> = [
         "_" => "_",
-        "#" => "#",
-        "$" => "$",
+        "#" => "hashtag ",
+        "$" => "dollarsign ",
         "%" => "%",
-        "&" => "&",
+        "&" => "amp",
         "(" => "(",
         ")" => ")",
         "*" => "*",
@@ -56,6 +56,7 @@ class AlphabetOptimized extends FlxSpriteGroup {
         "↑" => "up arrow",
         "|" => "|",
         "~" => "~",
+        "." => "period",
 
         "😡" => "angry faic", // so that ng emoticon can be used
 
@@ -132,13 +133,15 @@ class AlphabetOptimized extends FlxSpriteGroup {
     public var bold:Bool = false;
 
     public var __cacheWidth:Float = 0;
+
+    public var maxWidth:Float = 0;
 	/**
 	 * If false, the Alphabet will go to the target Y without any lerp and set this to true.
 	**/
 	public var wentToTargetY:Bool = false;
 
     public override function get_width():Float {
-        return __cacheWidth * textSize;
+        return __cacheWidth;
     }
     public function new(x:Float, y:Float, text:String, bold:Bool = true) {
         super();
@@ -202,6 +205,8 @@ class AlphabetOptimized extends FlxSpriteGroup {
         }
         var t = text;
         var w:Float = 0;
+        var line:Int = 0;
+        var widths:Array<Float> = [];
         for(i in 0...t.length) {
             var char = t.charAt(i);
             var animName:String = null;
@@ -221,16 +226,22 @@ class AlphabetOptimized extends FlxSpriteGroup {
                 if (letters.indexOf(char) > -1) animName = '$char bold';
             }
             if (animName == null) animName = nonBoldLetters[char];
+            if (char == "\n") {
+                line++;
+                if (maxWidth <= 0) widths.push(w);
+                w = 0;
+                continue;
+            }
 
-            if (animName != null && animName.trim() != "" && char.trim() != "") {
+            if (animName != null && animName.trim() != "" && char.trim() != "" && char != "\n") {
                 letterSprite.animation.play(animName);
                 if (letterSprite.animation.curAnim != null) {
                     letterSprite.animation.curAnim.curFrame = Std.int(time * letterSprite.animation.curAnim.frameRate) % letterSprite.animation.curAnim.frames.length;
                 }
                 if (bold) {
-                    letterSprite.colorTransform.redMultiplier = 1;
-                    letterSprite.colorTransform.greenMultiplier = 1;
-                    letterSprite.colorTransform.blueMultiplier = 1;
+                    letterSprite.colorTransform.redMultiplier = color.redFloat;
+                    letterSprite.colorTransform.greenMultiplier = color.greenFloat;
+                    letterSprite.colorTransform.blueMultiplier = color.blueFloat;
                     letterSprite.colorTransform.redOffset = 0;
                     letterSprite.colorTransform.greenOffset = 0;
                     letterSprite.colorTransform.blueOffset = 0;
@@ -246,15 +257,32 @@ class AlphabetOptimized extends FlxSpriteGroup {
                 letterSprite.updateHitbox();
                 letterSprite.alpha = alpha;
                 letterSprite.x = x + w;
-                letterSprite.y = y + ((70 * textSize) - letterSprite.height);
+                letterSprite.y = y + ((70 * textSize) - letterSprite.height) + (70 * textSize * line);
                 if (draw) letterSprite.draw();
                 w += letterSprite.width;
+                if (w > maxWidth && maxWidth > 0) {
+                    w = 0;
+                    line++;
+                }
                 if (letterSprite.animation.curAnim != null) w += letterSprite.frames.frames[letterSprite.animation.curAnim.frames[0]].offset.x;
             } else {
                 w += 48 * textSize;
             }
             
         }
-        __cacheWidth = letterSprite.x + letterSprite.width - x;
+
+        if (line > 0) {
+            if (maxWidth > 0) {
+                __cacheWidth = maxWidth;
+            } else {
+                var w:Float = 0;
+                for (wi in widths) {
+                    if (wi > w) w = wi;
+                }
+                __cacheWidth = w;
+            }
+        }
+        else
+            __cacheWidth = letterSprite.x + letterSprite.width - x;
     }
 }

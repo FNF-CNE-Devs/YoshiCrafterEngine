@@ -5,7 +5,7 @@ import flixel.FlxCamera;
 import lime.utils.Assets;
 import dev_toolbox.ToolboxHome;
 import dev_toolbox.stage_editor.StageEditor;
-import ControlsSettingsSubState.ControlsSettingsSub;
+import ControlsSettingsSubState;
 import EngineSettings.Settings;
 import Controls.Control;
 import flixel.FlxG;
@@ -96,8 +96,8 @@ class PauseSubState extends MusicBeatSubstate
 		levelDifficulty.alpha = 0;
 		levelInfo.alpha = 0;
 
-		levelInfo.x = Std.int(PlayState.current.guiSize.x) - (levelInfo.width + 20);
-		levelDifficulty.x = Std.int(PlayState.current.guiSize.x) - (levelDifficulty.width + 20);
+		levelInfo.x = Std.int(1280) - (levelInfo.width + 20);
+		levelDifficulty.x = Std.int(1280) - (levelDifficulty.width + 20);
 
 		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 		FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
@@ -136,6 +136,8 @@ class PauseSubState extends MusicBeatSubstate
 		cam.bgColor = FlxColor.fromRGBFloat(0, 0, 0, alpha);
 		script.executeFunc("preUpdate", [elapsed]);
 		cam.setSize(FlxG.width, FlxG.height);
+		cam.scroll.x = -(FlxG.width - 1280) / 2;
+		cam.scroll.y = -(FlxG.height - 720) / 2;
 		if (pauseMusic.volume < 0.5)
 			pauseMusic.volume += 0.01 * elapsed;
 
@@ -167,7 +169,7 @@ class PauseSubState extends MusicBeatSubstate
 						FlxG.resetState();
 					case "Change Keybinds":
 						// var oldZoom = PlayState.current.camHUD.zoom;
-						var s = new ControlsSettingsSub(PlayState.SONG.keyNumber, cam);
+						var s = new ControlsSettingsSubState(PlayState.SONG.keyNumber, cam);
 						// FlxTween.tween(PlayState.current.camHUD, {zoom : 1}, 0.2, {ease : FlxEase.smoothStepInOut});
 						// s.closeCallback = function() {
 						// 	FlxTween.tween(PlayState.current.camHUD, {zoom : oldZoom}, 0.2, {ease : FlxEase.smoothStepInOut});

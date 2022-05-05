@@ -14,8 +14,10 @@ class OptionSprite extends FlxSpriteGroup {
     public var _icon:FlxSprite;
     public var optionWidth:Int = FlxG.width - 200;
     public var onCreate:OptionSprite->Void = null;
-    public var onUpdate:Float->Void = null;
+    public var onUpdate:OptionSprite->Void = null;
     public var onSelect:OptionSprite->Void = null;
+    public var onEnter:OptionSprite->Void = null;
+    public var onLeft:OptionSprite->Void = null;
     public function new(option:FunkinOption) {
         super();
         name = option.name;
@@ -26,6 +28,7 @@ class OptionSprite extends FlxSpriteGroup {
         add(_nameAlphabet);
         _descAlphabet = new AlphabetOptimized(155, 60, option.desc, false);
         _descAlphabet.textSize = 1 / 3;
+        _descAlphabet.maxWidth = FlxG.width - 310;
         add(_descAlphabet);
         _icon = new FlxSprite(40, 0).loadGraphic(option.img);
         _icon.setGraphicSize(100, 100);
@@ -35,19 +38,23 @@ class OptionSprite extends FlxSpriteGroup {
         _valueAlphabet = new AlphabetOptimized(100, 20, option.value, false);
         _valueAlphabet.textSize = 0.6;
         add(_valueAlphabet);
+        onCreate = option.onCreate;
         onSelect = option.onSelect;
         onUpdate = option.onUpdate;
+        onEnter = option.onEnter;
+        onLeft = option.onLeft;
         if (onCreate != null) onCreate(this);
     }
 
     public function check(bool:Bool) {
         if (bool) {
-            value = "Enabled";
+            value = "On";
             _valueAlphabet.textColor = 0xFF44FF44;
         } else {
-            value = "Disabled";
+            value = "Off";
             _valueAlphabet.textColor = 0xFFFF4444;
         }
+        return bool;
     }
 
     public override function update(elapsed:Float) {
