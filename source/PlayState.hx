@@ -1019,7 +1019,7 @@ class PlayState extends MusicBeatState
 			add(hitCounter);
 		}
 
-		healthBarBG = new FlxSprite(0, guiSize.y * (engineSettings.downscroll ? 0.075 : 0.9)).loadGraphic(Paths.image('healthBar'));
+		healthBarBG = new FlxSprite(0, guiSize.y * (engineSettings.downscroll ? 0.075 : 0.9)).makeGraphic(600, 20, FlxColor.BLACK);
 		healthBarBG.cameras = [camHUD];
 		healthBarBG.cameraCenter(X);
 		healthBarBG.scrollFactor.set();
