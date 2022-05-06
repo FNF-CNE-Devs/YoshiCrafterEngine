@@ -1019,7 +1019,7 @@ class PlayState extends MusicBeatState
 			add(hitCounter);
 		}
 
-		healthBarBG = new FlxSprite(0, guiSize.y * (engineSettings.downscroll ? 0.075 : 0.9)).loadGraphic(Paths.image('healthBar'));
+		healthBarBG = new FlxSprite(0, guiSize.y * (engineSettings.downscroll ? 0.075 : 0.9)).makeGraphic(600, 20, FlxColor.BLACK);
 		healthBarBG.cameras = [camHUD];
 		healthBarBG.cameraCenter(X);
 		healthBarBG.scrollFactor.set();
@@ -2986,8 +2986,10 @@ class PlayState extends MusicBeatState
 				numScore.velocity.y -= FlxG.random.int(140, 160);
 				numScore.velocity.x = FlxG.random.float(-5, 5);
 	
-				if (combo >= 10 || combo == 0)
+				if (combo >= 10 || combo == 0) {
 					add(numScore);
+					add(comboSpr);
+				}
 	
 				tweens.push(FlxTween.tween(numScore, {alpha: 0}, 0.2, {
 					onComplete: function(tween:FlxTween)
