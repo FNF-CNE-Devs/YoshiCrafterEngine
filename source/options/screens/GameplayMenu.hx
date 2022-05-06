@@ -74,7 +74,7 @@ class GameplayMenu extends OptionScreen {
             },
             {
                 name: "Configure Note Offset",
-                desc: "If enabled, Strums will be centered, and opponent strums will be hidden.",
+                desc: "Sync your Notes to the Song Beat, Useful for preventing audio lag from wireless earphones.",
                 value: '${Std.int(Settings.engineSettings.data.noteOffset)}ms',
                 onSelect: function(e) {doFlickerAnim(curSelected, function() {FlxG.switchState(new OffsetConfigState());});}
             },
