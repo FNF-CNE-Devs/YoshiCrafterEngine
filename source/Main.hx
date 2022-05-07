@@ -34,6 +34,7 @@ class Main extends Sprite
 	var framerate:Int = 120; // How many frames per second the game should run at.
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
+	public static var logsOverlay:LogsOverlay;
 
 	public static function readLine(buff:Input, l:Int):String {
 		var line:Int = 0;
@@ -80,7 +81,7 @@ class Main extends Sprite
 		#end
 	}
 	// YOSHI ENGINE STUFF
-	public static var engineVer:Array<Int> = [1,9,0];
+	public static var engineVer:String = "1.9.1";
 	public static var buildVer:String = "";
 	public static var fps:GameStats;
 
@@ -159,8 +160,8 @@ class Main extends Sprite
 				m = '${err.text}';
 			}
 			m += '\r\n ${CallStack.toString(CallStack.exceptionStack())}';
-			trace('An error occured !\r\nYoshiCrafter Engine ver. ${engineVer.join(".")} $buildVer\r\n\r\n${m}\r\n\r\nThe engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !');
- 			Application.current.window.alert('An error occured !\r\nYoshiCrafter Engine ver. ${engineVer.join(".")} $buildVer\r\n\r\n${m}\r\n\r\nThe engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !', e.error);
+			trace('An error occured !\r\nYoshiCrafter Engine ver. ${engineVer} $buildVer\r\n\r\n${m}\r\n\r\nThe engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !');
+ 			Application.current.window.alert('An error occured !\r\nYoshiCrafter Engine ver. ${engineVer} $buildVer\r\n\r\n${m}\r\n\r\nThe engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !', e.error);
 			e.stopPropagation();
 			e.stopImmediatePropagation();
 		});
@@ -248,9 +249,12 @@ class Main extends Sprite
 		
 		#if !mobile
 		fps = new GameStats(10, 3, 0xFFFFFF);
+
+		logsOverlay = new LogsOverlay();
 		// fps.setTextFormat(new TextFormat(Assets.getFont(Paths.font("vcr.ttf")).fontName, 12, 0xFFFFFFFF, false, false, false, null, null, null, null, null, null, null));
 
 		addChild(fps);
+		addChild(logsOverlay);
 		#end
 	}
 }

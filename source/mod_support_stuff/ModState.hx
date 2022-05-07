@@ -57,15 +57,10 @@ class ModState extends MusicBeatState {
     }
 
     public override function update(elapsed:Float) {
-        if (Settings.engineSettings.data.developerMode) {
+        if (CoolUtil.isDevMode()) {
             if (FlxG.keys.justPressed.F5) {
                 // F5 to reload in dev mode
                 FlxG.switchState(new ModState(_scriptName, _mod));
-            } else if (FlxG.keys.justPressed.F6) {
-                // F6 to open logs
-                if (subState == null) {
-                    openSubState(new LogSubState());
-                }
             }
         }
         script.executeFunc("update", [elapsed]);

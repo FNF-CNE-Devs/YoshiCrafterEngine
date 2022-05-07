@@ -142,15 +142,8 @@ class FreeplayState extends MusicBeatState
 			var songText:AlphabetOptimized = new AlphabetOptimized(0, (70 * i) + 30, songName.replace("-", " "));
 			songText.isMenuItem = true;
 			songText.targetY = i;
-			if (_songs[i].disabled) for(c in songText.members) c.color = 0xFF888888;
-			if (songText.width > FlxG.width - 256) {
-				var ratio = (FlxG.width - 256) / songText.width;
-				for (m in songText.members) {
-					m.scale.x *= ratio;
-					m.updateHitbox();
-					m.x *= ratio;
-				}
-			}
+			if (_songs[i].disabled) songText.textColor = 0xFF888888;
+			songText.textSize = Math.min(1, (FlxG.width - 256) / (51 * songText.text.length));
 			grpSongs.add(songText);
 
 			var icon:HealthIcon = new HealthIcon(_songs[i].songCharacter, false, _songs[i].mod);
@@ -181,7 +174,7 @@ class FreeplayState extends MusicBeatState
 		reloadModsState = true;
 		// Assets.loadLibrary("songs");
 		
-		if (songs == null || Settings.engineSettings.data.developerMode) loadFreeplaySongs();
+		if (songs == null || CoolUtil.isDevMode()) loadFreeplaySongs();
 		freeplayScript = Script.create('${Paths.getModsPath()}/${Settings.engineSettings.data.selectedMod}/ui/FreeplayState');
 		var validated = true;
 		if (freeplayScript == null) {
@@ -480,9 +473,7 @@ class FreeplayState extends MusicBeatState
 		
 
 		if (!(ModSupport.modConfig[Settings.engineSettings.data.selectedMod] != null && ModSupport.modConfig[Settings.engineSettings.data.selectedMod].locked)) {
-			if (Settings.engineSettings.data.developerMode) {
-				if (FlxControls.justPressed.F6) openSubState(new LogSubState());
-			}
+			
 			if (FlxControls.justPressed.F5) FlxG.resetState();
 		}
 		if (FlxControls.justPressed.TAB) openSubState(new SwitchModSubstate());

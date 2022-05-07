@@ -158,6 +158,7 @@
 	<haxelib name="discord_rpc" if="desktop"/>
 	<haxedef name="enable_updates"/> <!-- DISABLE IF DOING EXE MOD !-->
 	<haxelib name="hxp"/>
+	<haxelib name="flixel-textureatlas-yoshiengine"/> <!-- haxelib git flixel-textureatlas-yoshiengine https://github.com/YoshiCrafter29/Flixel-TextureAtlas-YoshiCrafterEngine !-->
 
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 

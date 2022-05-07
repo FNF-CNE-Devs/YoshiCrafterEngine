@@ -101,11 +101,9 @@ class PauseSubState extends MusicBeatSubstate
 
 		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 		FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
-		if (Settings.engineSettings.data.developerMode == true) {
-			if (!(ModSupport.modConfig[PlayState.songMod] != null && ModSupport.modConfig[PlayState.songMod].locked == true)) {
-				for (d in devMenuItems) menuItems.push(d);
-				if (PlayState.current.devStage == null) menuItems.remove("Edit Stage");
-			}
+		if (CoolUtil.isDevMode()) {
+			for (d in devMenuItems) menuItems.push(d);
+			if (PlayState.current.devStage == null) menuItems.remove("Edit Stage");
 		}
 		menuItems.push("Exit to menu");
 		
@@ -131,6 +129,10 @@ class PauseSubState extends MusicBeatSubstate
 
 	override function update(elapsed:Float)
 	{
+		
+		levelInfo.x = FlxG.width - (levelInfo.width + 20);
+		levelDifficulty.x = FlxG.width - (levelDifficulty.width + 20);
+
 		alpha = FlxMath.lerp(alpha, 0.6, 0.125 * elapsed * 60);
 
 		cam.bgColor = FlxColor.fromRGBFloat(0, 0, 0, alpha);
@@ -176,8 +178,7 @@ class PauseSubState extends MusicBeatSubstate
 						// };
 						openSubState(s);
 					case "Logs":
-						var s = new LogSubState();
-						openSubState(s);
+						Main.logsOverlay.visible = !Main.logsOverlay.visible;
 					case "Edit Player":
 						var split = PlayState.SONG.player1.split(":");
 						dev_toolbox.character_editor.CharacterEditor.fromFreeplay = true;

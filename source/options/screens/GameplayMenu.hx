@@ -73,6 +73,13 @@ class GameplayMenu extends OptionScreen {
                 }
             },
             {
+                name: "Ghost Tapping",
+                desc: "If enabled, you won't get misses from pressing keys while there are no notes able to be hit.",
+                value: "",
+                onCreate: function(e) {e.check(Settings.engineSettings.data.ghostTapping);},
+                onSelect: function(e) {e.check(Settings.engineSettings.data.ghostTapping = !Settings.engineSettings.data.ghostTapping);}
+            },
+            {
                 name: "Configure Note Offset",
                 desc: "Sync your Notes to the Song Beat, Useful for preventing audio lag from wireless earphones.",
                 value: '${Std.int(Settings.engineSettings.data.noteOffset)}ms',

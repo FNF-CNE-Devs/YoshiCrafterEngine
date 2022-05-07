@@ -23,6 +23,9 @@ class CoolUtil
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 
 	
+	public static function isDevMode() {
+		return Settings.engineSettings != null && Settings.engineSettings.data.developerMode && ModSupport.modConfig[Settings.engineSettings.data.selectedMod] != null && !ModSupport.modConfig[Settings.engineSettings.data.selectedMod].locked;
+	}
 	public static function getSizeLabel(num:UInt):String{
         var size:Float = num;
         var data = 0;

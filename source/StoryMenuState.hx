@@ -233,7 +233,7 @@ class StoryMenuState extends MusicBeatState
 			}
 		}
 		*/
-		if (weekData == null || Settings.engineSettings.data.developerMode || invalid) { // If it never was loaded before OR if in developer mode
+		if (weekData == null || CoolUtil.isDevMode() || invalid) { // If it never was loaded before OR if in developer mode
 			loadWeeks();
 		}
 
@@ -456,10 +456,6 @@ class StoryMenuState extends MusicBeatState
 	{
 		menuScript.executeFunc("preUpdate", [elapsed]);
 		
-		if (Settings.engineSettings.data.developerMode && FlxControls.justPressed.F6) {
-			persistentUpdate = false;
-			openSubState(new LogSubState());
-		}
 		if (FlxControls.justPressed.F5) FlxG.resetState();
 		if (FlxControls.justPressed.TAB) {
 			persistentUpdate = false;
