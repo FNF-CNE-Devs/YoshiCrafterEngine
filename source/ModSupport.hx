@@ -1,3 +1,4 @@
+import animateatlas.AtlasFrameMaker;
 import Script.HScript;
 import haxe.EnumTools;
 import mod_support_stuff.ModState;
@@ -475,6 +476,7 @@ class ModSupport {
 		script.setVariable("FlxControls", FlxControls);
 		script.setVariable("save", modSaves[mod]);
 		script.setVariable("ModState", ModState);
+		script.setVariable("AtlasFrameMaker", AtlasFrameMaker);
 		// script.setVariable("FlxKey", FlxKey);
 
         script.mod = mod;

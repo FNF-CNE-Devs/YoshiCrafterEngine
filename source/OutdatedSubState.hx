@@ -52,7 +52,7 @@ class OutdatedSubState extends MusicBeatState
 		}
 
 
-		var localVer = Main.engineVer.join(".");
+		var localVer = Main.engineVer;
 		var latestVer = ver;
 
 		var txt:FlxText = new FlxText(0, 10, FlxG.width,

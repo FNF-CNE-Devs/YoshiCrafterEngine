@@ -8,7 +8,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.FlxSprite;
 import lime.graphics.Image;
 import lime.utils.Assets;
-import openfl.display.Application;
+import lime.app.Application;
 import flixel.system.scaleModes.RatioScaleMode;
 import flixel.addons.transition.TransitionData;
 import EngineSettings.Settings;
@@ -43,10 +43,9 @@ class MusicBeatState extends FlxUIState
 			if (Settings.engineSettings.data.alwaysCheckForMods) if (ModSupport.reloadModsConfig(false, false)) FlxG.resetState();	
 		}
 	}
-
 	public function new(?transIn:TransitionData, ?transOut:TransitionData) {
 		
-		if (Settings.engineSettings != null && Settings.engineSettings.data.developerMode) {
+		if (CoolUtil.isDevMode()) {
 			try {
 				Paths.clearCache();
 			} catch(e) {

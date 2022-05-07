@@ -1,5 +1,8 @@
 package dev_toolbox.toolbox_tabs;
 
+import openfl.utils.Assets;
+import lime.app.Application;
+import flixel.group.FlxSpriteGroup;
 import openfl.geom.Rectangle;
 import openfl.display.PNGEncoderOptions;
 import lime.ui.FileDialogType;
@@ -24,7 +27,13 @@ import sys.FileSystem;
 
 class InfoTab extends ToolboxTab {
     public var card:ModCard;
-    
+    var mod_name:FlxUIInputText;
+    var mod_description:FlxUIInputText;
+    var titlebarName:FlxUIInputText;
+    var winButtons:FlxSprite;
+    var titlebarIcon:FlxSprite;
+    var titleBarText:FlxText;
+
     public function new(x:Float, y:Float, home:ToolboxHome) {
         super(x, y, "info", home);
         var name = ModSupport.modConfig[ToolboxHome.selectedMod].name;
@@ -47,15 +56,16 @@ class InfoTab extends ToolboxTab {
         var OHMYFUCKINGGODITSTHELABELARMY:Array<FlxUIText> = [];
         var label = new FlxUIText(10, 10, 300, "Mod name");
         OHMYFUCKINGGODITSTHELABELARMY.push(label);
-        var mod_name = new FlxUIInputText(10, label.y + label.height, 300, name);
+        mod_name = new FlxUIInputText(10, label.y + label.height, 300, name);
 
 		var label = new FlxUIText(10, mod_name.y + mod_name.height + 10, 300, "Mod description");
         OHMYFUCKINGGODITSTHELABELARMY.push(label);
-        var mod_description = new FlxUIInputText(10, label.y + label.height, 300, desc.replace("\r", "").replace("\n", "/n"));
-
+        mod_description = new FlxUIInputText(10, label.y + label.height, 300, desc.replace("\r", "").replace("\n", "/n"));
+        mod_description.lines = -1;
 		var label = new FlxUIText(10, mod_description.y + mod_description.height + 10, 300, "Titlebar Name");
         OHMYFUCKINGGODITSTHELABELARMY.push(label);
-        var titlebarName = new FlxUIInputText(10, label.y + label.height, 300, title);
+        titlebarName = new FlxUIInputText(10, label.y + label.height, 300, title);
+
 
         // var icon = new FlxUISprite(520, titlebarName.y).loadGraphic(Paths.image("defaultTitlebarIcon", "preload"));
         // icon.antialiasing = true;
@@ -117,7 +127,53 @@ class InfoTab extends ToolboxTab {
         add(modIcon);
         add(chooseIconButton);
         add(saveButton);
+        var win10window = new FlxSpriteGroup();
 
+        var windowSprite = new FlxSprite().makeGraphic(Std.int(card.width + 60), Std.int(card.height + 91), 0xFFFFFFFF, true);
+        windowSprite.pixels.lock();
+        windowSprite.pixels.fillRect(new Rectangle(0, 0, windowSprite.pixels.width, 1), 0xFF888888);
+        windowSprite.pixels.fillRect(new Rectangle(0, 0, 1, windowSprite.pixels.height), 0xFF888888);
+        windowSprite.pixels.fillRect(new Rectangle(0, windowSprite.pixels.height - 1, windowSprite.pixels.width, 1), 0xFF888888);
+        windowSprite.pixels.fillRect(new Rectangle(windowSprite.pixels.width - 1, 0, 1, windowSprite.pixels.height), 0xFF888888);
+        windowSprite.pixels.unlock();
+
+        winButtons = new FlxSprite().loadGraphic(Paths.image('ui/win10titlebar', 'shared'));
+        winButtons.antialiasing = true;
+        winButtons.setPosition(Std.int(windowSprite.x + windowSprite.width - 1 - winButtons.width), 1);
+
+        titlebarIcon = new FlxSprite(9, 7);
+        titlebarIcon.antialiasing = true;
+
+        if (Assets.exists(Paths.file('icon.png', 'mods/${ToolboxHome.selectedMod}'))) {
+            titlebarIcon.loadGraphic(Paths.file('icon.png', 'mods/${ToolboxHome.selectedMod}'));
+        } else {
+            titlebarIcon.loadGraphic(Paths.image('ui/icon16', 'shared'));
+        }
+        titlebarIcon.setGraphicSize(16, 16);
+        titlebarIcon.updateHitbox();
+
+        titleBarText = new FlxText(31, 11, winButtons.x - 41, "Test Window");
+        titleBarText.setFormat("C:\\Windows\\Fonts\\segoeui.ttf", 13);
+        titleBarText.color = 0xFF000000;
+        titleBarText.y = Std.int(1 + ((30 - titleBarText.height) / 2));
+        
+        win10window.add(windowSprite);
+        win10window.add(winButtons);
+        win10window.add(titlebarIcon);
+        win10window.add(titleBarText);
+        win10window.screenCenter();
+        win10window.x -= win10window.x % 1;
+        win10window.y -= win10window.y % 1;
+        win10window.x += 150;
+        add(win10window);
         add(card);
+
+    }
+
+    public override function update(elapsed:Float) {
+        super.update(elapsed);
+        titlebarIcon.antialiasing = ((titleBarText.antialiasing = winButtons.antialiasing = (FlxG.width != Application.current.window.width) && (FlxG.height != Application.current.window.height)) && (titlebarIcon.scale.x != 0 || titlebarIcon.scale.y != 0));
+        titleBarText.text = titlebarName.text;
+        
     }
 }

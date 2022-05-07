@@ -207,7 +207,7 @@ class MainMenuState extends MusicBeatState
 		FlxG.camera.follow(camFollow, null, 0.06);
 
 		var fnfVer = Application.current.meta.get('version');
-		var yoshiCrafterEngineVer = Main.engineVer.join(".");
+		var yoshiCrafterEngineVer = Main.engineVer;
 		var buildVer = Main.buildVer;
 		if (buildVer.trim() != "") buildVer = " " + buildVer.trim();
 		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, 'YoshiCrafter Engine v$yoshiCrafterEngineVer$buildVer - FNF v$fnfVer - Selected Mod: ${ModSupport.getModName(Settings.engineSettings.data.selectedMod)} (Press TAB to switch)', 12);
@@ -254,9 +254,6 @@ class MainMenuState extends MusicBeatState
 		super.update(elapsed);
 		// if (subState != null) return;
 
-		if (Settings.engineSettings.data.developerMode) {
-			if (FlxControls.justPressed.F6) openSubState(new LogSubState());
-		}
 		if (FlxControls.justPressed.F5) FlxG.resetState();
 		if (FlxControls.justPressed.TAB) openSubState(new SwitchModSubstate());
 

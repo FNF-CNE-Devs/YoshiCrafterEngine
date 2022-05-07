@@ -1,5 +1,6 @@
 package dev_toolbox.character_editor;
 
+import flixel.math.FlxMath;
 import EngineSettings.Settings;
 import flixel.animation.FlxAnimation;
 import flixel.graphics.frames.FlxFrame;
@@ -21,6 +22,8 @@ using StringTools;
 
 class CharacterEditor extends MusicBeatState {
     var camHUD:FlxCamera;
+
+    var characterSettingsTabs:FlxUITabMenu;
     public var character:Character;
     var animSelection:FlxUIDropDownMenu;
     var anim:FlxUITabMenu;
@@ -63,6 +66,8 @@ class CharacterEditor extends MusicBeatState {
     var usePlayerArrowColors:Bool = false;
 
     var currentAnim(default, set):String = "";
+
+    var camGame:FlxCamera;
 
     public static var fromFreeplay:Bool = false;
 
@@ -220,7 +225,24 @@ class CharacterEditor extends MusicBeatState {
         current = this;
         this.c = char;
 
+        
+    }
+
+    public override function create() {
+        super.create();
+        camGame = new FlxCamera(0, 0, FlxG.width, FlxG.height, 1);
+        var dummyHUD = new FlxCamera(0, 0, FlxG.width, FlxG.height);
+        dummyHUD.bgColor = 0;
+        dummyHUD.visible = false;
+        FlxG.cameras.reset(dummyHUD);
+        FlxG.cameras.add(camGame, true);
+        var char = c;
         var conf = ModSupport.modConfig[ToolboxHome.selectedMod];
+        
+        camHUD = new FlxCamera(0, 0, FlxG.width, FlxG.height, 1);
+        camHUD.bgColor = 0;
+        FlxG.cameras.add(camHUD, false);
+
         if (conf.BFskins == null) conf.BFskins = [];
         if (conf.GFskins == null) conf.GFskins = [];
         if (conf.skinnableGFs == null) conf.skinnableGFs = [];
@@ -300,17 +322,18 @@ class CharacterEditor extends MusicBeatState {
         animSelection = new FlxUIDropDownMenu(10, 10, [new StrNameLabel("idle", "idle")], function(id) {
             currentAnim = id;
         });
-        animSelection.cameras = [camHUD];
 
         addAnimButton = new FlxUIButton(animSelection.x + animSelection.width + 10, 10, "Add", function() {
-            openSubState(new NewAnimDialogue());
+            var d = new NewAnimDialogue();
+            d.cameras = [dummyHUD, camHUD];
+            openSubState(d);
         });
         addAnimButton.resize(50, 20);
 
         removeAnimButton = new FlxUIButton(addAnimButton.x + addAnimButton.width + 10, 10, "Remove", function() {
             if (character.animation.curAnim == null) return;
             if (character.animation.curAnim.name == "") return;
-            openSubState(new ToolboxMessage("Remove Animation", 'Are you sure you want to remove the ${character.animation.curAnim.name} animation ?', [
+            var e = new ToolboxMessage("Remove Animation", 'Are you sure you want to remove the ${character.animation.curAnim.name} animation ?', [
                 {
                     label : "Yes",
                     onClick : function(e) {
@@ -321,7 +344,9 @@ class CharacterEditor extends MusicBeatState {
                     label : "No",
                     onClick : function(e) {}
                 }
-            ]));
+            ]);
+            e.cameras = [dummyHUD, camHUD];
+            openSubState(e);
         });
 
         setShadowRef = new FlxUIButton(removeAnimButton.x + removeAnimButton.width + 10, 10, "Set as shadow reference", function() {
@@ -357,9 +382,11 @@ class CharacterEditor extends MusicBeatState {
         saveButton = new FlxUIButton(1167, 3, "Save", function() {
             save();
             if (character.json != null) {
-                openSubState(ToolboxMessage.showMessage("Success", "Character successfully saved."));
+                var e = ToolboxMessage.showMessage("Success", "Character successfully saved.");
+                e.cameras = [dummyHUD, camHUD];
+                openSubState(e);
             } else {
-                openSubState(new ToolboxMessage("Success", "Your character have been successfully saved. However, your character don't seems to load any JSON file, so that means these modifications won't have effects. Do you want the engine to fix the problem ? A backup of your Character.hx will be created.", [
+                var e = new ToolboxMessage("Success", "Your character have been successfully saved. However, your character don't seems to load any JSON file, so that means these modifications won't have effects. Do you want the engine to fix the problem ? A backup of your Character.hx will be created.", [
                     {
                         label : "Yes",
                         onClick : function(e) {
@@ -373,7 +400,9 @@ class CharacterEditor extends MusicBeatState {
                         label : "No",
                         onClick : function(e) {}
                     }
-                ]));
+                ]);
+                e.cameras = [dummyHUD, camHUD];
+                openSubState(e);
             }
             
         });
@@ -431,7 +460,7 @@ class CharacterEditor extends MusicBeatState {
         showCharacterReferences.checked = Settings.engineSettings.data.charEditor_showDadAndBF;
         add(showCharacterReferences);
 
-        var characterSettingsTabs = new FlxUITabMenu(null, [
+        characterSettingsTabs = new FlxUITabMenu(null, [
             {
                 name: "char",
                 label: "Char. Settings"
@@ -551,9 +580,11 @@ class CharacterEditor extends MusicBeatState {
         healthSettings.add(icon);
 
         var changeHealthColorButton = new FlxUIButton(135, healthBar.y + healthBar.height + 20, "Edit", function() {
-            openSubState(new ColorPicker(healthBar.color, function(newColor) {
+            var e = new ColorPicker(healthBar.color, function(newColor) {
                 healthBar.color = newColor;
-            }));
+            });
+            e.cameras = [dummyHUD, camHUD];
+            openSubState(e);
         });
         changeHealthColorButton.resize(30, 20);
         healthSettings.add(changeHealthColorButton);
@@ -570,7 +601,7 @@ class CharacterEditor extends MusicBeatState {
         autoGenerateHealthColor2.resize(280, 20);
 
         var autoGenerateHealthColor4 = new FlxUIButton(10, autoGenerateHealthColor2.y + autoGenerateHealthColor2.height, "Use Most Present Color", function() {
-            healthBar.color = CoolUtil.getMostPresentColor2(icon.pixels);
+            healthBar.color = CoolUtil.getMostPresentColor(icon.pixels);
         });
         autoGenerateHealthColor4.resize(280, 20);
 
@@ -595,12 +626,14 @@ class CharacterEditor extends MusicBeatState {
             note = new FlxClickableSprite(150 + (50 * (i - 2)), 10);
             note.onClick = function() {
                 var shader = cast(note.shader, ColoredNoteShader);
-                openSubState(new ColorPicker(FlxColor.fromRGBFloat(shader.r.value[0], shader.g.value[0], shader.b.value[0]), function(col) {
+                var e = new ColorPicker(FlxColor.fromRGBFloat(shader.r.value[0], shader.g.value[0], shader.b.value[0]), function(col) {
                     shader.r.value = [col.redFloat];
                     shader.g.value = [col.greenFloat];
                     shader.b.value = [col.blueFloat];
                     usePlayerColors.checked = false;
-                }));
+                });
+                e.cameras = [dummyHUD, camHUD];
+                openSubState(e);
             };
             note.hoverColor = 0xFFFFFFFF;
             note.frames = Paths.getSparrowAtlas("NOTE_assets_colored", "shared");
@@ -624,6 +657,10 @@ class CharacterEditor extends MusicBeatState {
         if (character.json != null) usePlayerColors.checked = character.json.arrowColors == null;
         arrowSettings.add(usePlayerColors);
         characterSettingsTabs.addGroup(arrowSettings);
+
+        for(e in [characterSettingsTabs, animSettingsTabs, anim, usePlayerColors, showCharacterReferences, saveButton, closeButton, editAsPlayer]) {
+            e.cameras = [camHUD, dummyHUD];
+        }
     }
 
     public function addAnim(name:String, anim:String):Bool {
@@ -675,7 +712,68 @@ class CharacterEditor extends MusicBeatState {
         }
     }
 
+    var movingCam:Bool = false;
+    var movingCamDefaultPos:FlxPoint = null;
+    var movingCamDefaultPosCam:FlxPoint = null;
+
+    var movingOffset:Bool = false;
+    var movingOffsetDefaultPos:FlxPoint = null;
+    var movingOffsetDefaultPosOffset:FlxPoint = null;
     public override function update(elapsed:Float) {
+        
+        camHUD.alpha = FlxMath.lerp(camHUD.alpha, (movingCam || movingOffset) ? 0.5 : 1, 0.25 * elapsed * 60);
+        if (movingOffset) {
+            var pos = FlxG.mouse.getScreenPosition();
+            offsetX.value = movingOffsetDefaultPosOffset.x + ((movingOffsetDefaultPos.x - pos.x) / camGame.zoom);
+            offsetY.value = movingOffsetDefaultPosOffset.y + ((movingOffsetDefaultPos.y - pos.y) / camGame.zoom);
+            if (!FlxG.mouse.pressed) {
+                movingOffset = false;
+                for(e in [characterSettingsTabs, animSettingsTabs, anim, usePlayerColors, showCharacterReferences, saveButton, closeButton, editAsPlayer]) {
+                    e.active = true;
+                }
+            }
+        } else if (movingCam) {
+            var pos = FlxG.mouse.getScreenPosition();
+            camGame.scroll.set(movingCamDefaultPosCam.x + ((movingCamDefaultPos.x - pos.x) / camGame.zoom), movingCamDefaultPosCam.y + ((movingCamDefaultPos.y - pos.y) / camGame.zoom));
+            if (!FlxG.mouse.pressedMiddle) {
+                movingCam = false;
+                for(e in [characterSettingsTabs, animSettingsTabs, anim, usePlayerColors, showCharacterReferences, saveButton, closeButton, editAsPlayer]) {
+                    e.active = true;
+                }
+            }
+        } else {
+            if (!movingCam && FlxG.mouse.pressedMiddle) {
+                movingCam = true;
+                movingCamDefaultPos = FlxG.mouse.getScreenPosition();
+                movingCamDefaultPosCam = new FlxPoint(camGame.scroll.x, camGame.scroll.y);
+                for(e in [characterSettingsTabs, animSettingsTabs, anim, usePlayerColors, showCharacterReferences, saveButton, closeButton, editAsPlayer]) {
+                    e.active = false;
+                }
+                camHUD.alpha = 0.5;
+            } else if (!movingOffset && FlxG.mouse.pressed && mouseOverlapsChar() && !overlapsUI()) {
+                movingOffset = true;
+                movingOffsetDefaultPos = FlxG.mouse.getScreenPosition();
+                movingOffsetDefaultPosOffset = new FlxPoint(offsetX.value, offsetY.value);
+            
+                for(e in [characterSettingsTabs, animSettingsTabs, anim, usePlayerColors, showCharacterReferences, saveButton, closeButton, editAsPlayer]) {
+                    e.active = false;
+                }
+            }
+        }
+        
+        if (FlxG.mouse.wheel != 0) {
+            var newZoom = camGame.zoom;
+            if (FlxG.mouse.wheel < 0) {
+                for(i in 0...-(FlxG.mouse.wheel)) {
+                    newZoom *= 0.75;
+                }
+            } else {
+                for(i in 0...FlxG.mouse.wheel) {
+                    newZoom *= 4 / 3;
+                }
+            }
+            camGame.zoom = FlxMath.bound(newZoom, 0.1, 10);
+        }
         offsetX.stepSize = (FlxControls.pressed.SHIFT ? 1 : 10);
         offsetY.stepSize = (FlxControls.pressed.SHIFT ? 1 : 10);
         globalOffsetX.stepSize = (FlxControls.pressed.SHIFT ? 1 : 10);
@@ -691,8 +789,8 @@ class CharacterEditor extends MusicBeatState {
         if (FlxControls.pressed.UP) move.y -= 1;
         if (FlxControls.pressed.LEFT) move.x -= 1;
         if (FlxControls.pressed.DOWN) move.y += 1;
-        FlxG.camera.scroll.x += move.x * 400 * elapsed * (FlxControls.pressed.SHIFT ? 2.5 : 1);
-        FlxG.camera.scroll.y += move.y * 400 * elapsed * (FlxControls.pressed.SHIFT ? 2.5 : 1);
+        camGame.scroll.x += move.x * 400 * elapsed * (FlxControls.pressed.SHIFT ? 2.5 : 1);
+        camGame.scroll.y += move.y * 400 * elapsed * (FlxControls.pressed.SHIFT ? 2.5 : 1);
         character.x = (isPlayer ? 770 : 100) + globalOffsetX.value;
         character.y = 100 + globalOffsetY.value;
         shadowCharacter.setPosition(character.x, character.y);
@@ -731,6 +829,26 @@ class CharacterEditor extends MusicBeatState {
         }
         // FlxG.camera.scroll.x = midpoint.x + character.camOffset.x + 150 - 640;
         // FlxG.camera.scroll.y = midpoint.y + character.camOffset.y - 100 - 360;
+    }
+
+    public function mouseOverlapsChar() {
+        var mousePos = FlxG.mouse.getWorldPosition(camGame);
+        return (character.x - (character.offset.x) < mousePos.x
+             && character.x - (character.offset.x) + (character.frameWidth * character.scale.y) > mousePos.x
+             && character.y - (character.offset.y) < mousePos.y
+             && character.y - (character.offset.y) + (character.frameHeight * character.scale.y) > mousePos.y);
+    }
+
+    public function overlapsUI() {
+        for(m in members) {
+            if (Std.isOfType(m, FlxSprite)) {
+                if (m.cameras.contains(camHUD)) {
+                    if (FlxG.mouse.overlaps(m))
+                        return true;
+                }
+            }
+        }
+        return false;
     }
 }
 

@@ -551,9 +551,7 @@ class PlayState extends MusicBeatState
 		PlayState.current = this;
 		engineSettings = Reflect.copy(Settings.engineSettings.data);
 
-		if (ModSupport.modConfig == null) {
-			ModSupport.reloadModsConfig();
-		} else if (ModSupport.modConfig[songMod] == null || Settings.engineSettings.data.developerMode) {
+		if (CoolUtil.isDevMode()) {
 			ModSupport.reloadModsConfig();
 		}
 		actualModConfig = ModSupport.modConfig[songMod];
@@ -1049,7 +1047,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.visible = false;
 
 		if (engineSettings.watermark) {
-			watermark = new FlxText(0, 0, guiSize.x, '${ModSupport.getModName(songMod)}\n${CoolUtil.prettySong(SONG.song)}\nYoshiCrafter Engine v${Main.engineVer.join(".")}');
+			watermark = new FlxText(0, 0, guiSize.x, '${ModSupport.getModName(songMod)}\n${CoolUtil.prettySong(SONG.song)}\nYoshiCrafter Engine v${Main.engineVer}');
 			watermark.setFormat(Paths.font("vcr.ttf"), Std.int(16), FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			watermark.antialiasing = true;
 			watermark.cameras = [camHUD];
@@ -2503,63 +2501,11 @@ class PlayState extends MusicBeatState
 					daNote.angle = daNote.isSustainNote ? strum.getAngle() : strum.angle;
 
 
-					if (engineSettings.downscroll) {
-						
-						var strumPos = strum.y + (Note.swagWidth / 2);
-						var idk = daNote.isSustainNote
-						&& (daNote.y - daNote.offset.y + daNote.height >= strum.y + Note.swagWidth / 2);
-						if (daNote.prevNote != null) {
-							idk = idk && (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit)));
-						} else {
-							idk = idk && (!daNote.mustPress || daNote.wasGoodHit);
-						}
-						if (idk)
-						{
-							
-							// var swagRect = new FlxRect(0, 0, daNote.frameWidth, daNote.frameHeight);
-							// swagRect.height *= (strumPos - daNote.y) / daNote.frameHeight;
-							// swagRect.y = 0;
-							// swagRect.y = daNote.frameHeight - swagRect.height;
-							// daNote.clipRect = swagRect;
+					if ((!daNote.mustPress || daNote.wasGoodHit) && Conductor.songPosition > daNote.strumTime - (Note.swagWidth / (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2)) / 2)) {
+						var t = FlxMath.bound((Conductor.songPosition - daNote.strumTime) / (daNote.height / (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2))), 0, 1);
+						var swagRect = new FlxRect(0, t * daNote.frameHeight, daNote.frameWidth, daNote.frameHeight);
 
-							// daNote.alpha = Math.min(Math.max(0, (Math.abs(Conductor.songPosition - daNote.strumTime) / Conductor.stepCrochet)), 1);
-							// swagRect.height /= daNote.scale.y;
-							// swagRect.y -= swagRect.height;
-							// swagRect.height *= 2;
-							// trace(swagRect);
-
-							var h = (strumPos - (daNote.y - daNote.offset.y + (daNote.isLongSustain ? (-Conductor.stepCrochet * (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2)) / 2) : 0))) / daNote.scale.y;
-							var swagRect = new FlxRect(0, daNote.frameHeight - h, daNote.width * 2, daNote.frameHeight + h);
-							daNote.clipRect = swagRect;
-						}
-						
-					} else {
-						
-						/*
-						// i am so fucking sorry for this if condition
-						var idk = daNote.isSustainNote
-						&& (daNote.y + daNote.offset.y <= strum.y + Note.swagWidth / 2);
-						if (daNote.prevNote != null) {
-							idk = idk && (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit)));
-						} else {
-							idk = idk && (!daNote.mustPress || daNote.wasGoodHit);
-						}
-						if (idk) 
-						{
-							
-							var swagRect = new FlxRect(0, strum.y + Note.swagWidth / 2 - daNote.y, daNote.width * 2, daNote.height * 2);
-							swagRect.y /= daNote.scale.y;
-							swagRect.height -= swagRect.y;
-
-							daNote.clipRect = swagRect;
-						}
-						*/
-						if ((!daNote.mustPress || daNote.wasGoodHit) && Conductor.songPosition > daNote.strumTime - (Note.swagWidth / (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2)) / 2)) {
-							var t = FlxMath.bound((Conductor.songPosition - daNote.strumTime) / (daNote.height / (0.45 * FlxMath.roundDecimal(strum.getScrollSpeed(), 2))), 0, 1);
-							var swagRect = new FlxRect(0, t * daNote.frameHeight, daNote.frameWidth, daNote.frameHeight);
-
-							daNote.clipRect = swagRect;
-						}
+						daNote.clipRect = swagRect;
 					}
 					
 					if (!daNote.mustPress && daNote.wasGoodHit && (!daNote.isSustainNote || (daNote.isSustainNote && daNote.strumTime + Conductor.stepCrochet < Conductor.songPosition)))
@@ -2932,19 +2878,11 @@ class PlayState extends MusicBeatState
 
 		comboSpr.velocity.x += FlxG.random.int(1, 10);
 		add(rating);
+		if (combo >= 10) add(comboSpr);
 
-		// if (!curStage.startsWith('school'))
-		// {
-		// 	rating.setGraphicSize(Std.int(rating.width * 0.7));
-		// 	rating.antialiasing = true;
-		// 	comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
-		// 	comboSpr.antialiasing = true;
-		// }
-		// else
-		// {
-		// 	rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.7));
-		// 	comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.7));
-		// }
+		
+		comboSpr.scale.set(0.7, 0.7);
+		comboSpr.antialiasing = true;
 		rating.scale.x = rating.scale.y = daRating.scale * 0.7;
 
 		comboSpr.updateHitbox();

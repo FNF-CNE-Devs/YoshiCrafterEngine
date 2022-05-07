@@ -561,7 +561,7 @@ class TitleState extends MusicBeatState
 
 	function onUpdateData(data:String) {
 		var versions = [for(e in data.split("\n")) if (e.trim() != "") e];
-		var currentVerPos = versions.indexOf(Main.engineVer.join("."));
+		var currentVerPos = versions.indexOf(Main.engineVer);
 		var files:Array<String> = [];
 		for(i in currentVerPos+1...versions.length) {
 			var data:String = "";

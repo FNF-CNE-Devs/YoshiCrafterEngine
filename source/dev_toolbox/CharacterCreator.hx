@@ -143,23 +143,7 @@ class CharacterCreator extends MusicBeatSubstate {
                 return;
             }
             FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$charName');
-            var averageColor:FlxColor;
-            {
-                var cR:Float = 0;
-                var cG:Float = 0;
-                var cB:Float = 0;
-                var cT:Float = 0;
-                for(x in 0...char_icon.width) {
-                    for(y in 0...char_icon.height) {
-                        var c:FlxColor = char_icon.getPixel32(x, y);
-                        cR += c.redFloat * c.alphaFloat;
-                        cG += c.greenFloat * c.alphaFloat;
-                        cB += c.blueFloat * c.alphaFloat;
-                        cT += c.alphaFloat;
-                    }
-                }
-                averageColor = FlxColor.fromRGBFloat(cR / cT, cG / cT, cB / cT);
-            }
+            var averageColor:FlxColor = CoolUtil.getMostPresentColor(char_icon);
             var json:CharacterJSON = {
                 anims: [],
                 globalOffset: {

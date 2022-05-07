@@ -28,6 +28,9 @@ class CharTab extends ToolboxTab {
     public var anims:Array<String> = [];
     public var selectedAnim:Int = 0;
 
+    public var selectedCharIndex:Int = 0;
+    public var chars:Array<String> = [];
+
     public override function new(x:Float, y:Float, home:ToolboxHome) {
         super(x, y, "chars", home);
 
@@ -45,17 +48,41 @@ class CharTab extends ToolboxTab {
                 if (FileSystem.isDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$folder'))
                     folder
         ];
-        var radios = new FlxUIRadioGroup(10, 10, chars, chars, function(char) {
-            
-        }, 25, 300, 640);
+        var buttons:Array<FlxUIButton> = [];
+        
+        for(k=>c in chars) {
+            var b:FlxUIButton = null;
+            b = new FlxUIButton(10, 10 + (k * 50), c, function() {
+                selectedCharIndex = k;
+                for(e in buttons)
+                    if (e.label.text.startsWith("> "))
+                        e.label.text = e.label.text.substr(2, e.label.text.length - 4);
+                b.label.text = '> $c <';
+            });
+            b.resize(290, 50);
+            b.label.alignment = LEFT;
+            b.label.offset.x -= 50;
+
+
+            buttons.push(b);
+
+            var healthIcon:HealthIcon = new HealthIcon('${ToolboxHome.selectedMod}:$c');
+            healthIcon.scale.set(40 / 150, 40 / 150);
+            healthIcon.updateHitbox();
+            healthIcon.health = 0.5;
+            healthIcon.x = b.x + 25 - (healthIcon.width / 2);
+            healthIcon.y = b.y + 25 - (healthIcon.height / 2);
+            add(b);
+            add(healthIcon);
+        }
         var charLayer = 0;
         var previewButton = new FlxUIButton(10, 670, "Preview", function() {
-            if (radios.selectedIndex < 0) return;
+            if (selectedCharIndex < 0) return;
             if (character != null) {
                 remove(character);
                 character.destroy();
             }
-            character = new Character(0, 0, CoolUtil.getCharacterFullString(radios.selectedLabel, ToolboxHome.selectedMod));
+            character = new Character(0, 0, CoolUtil.getCharacterFullString(chars[selectedCharIndex], ToolboxHome.selectedMod));
             insert(charLayer, character);
             character.screenCenter(Y);
             character.x = 320 + ((1280 - 320) / 2) - (character.width / 2);
@@ -76,7 +103,7 @@ class CharTab extends ToolboxTab {
         });
         createButton.resize(67, 20);
         var editButton = new FlxUIButton(createButton.x + createButton.width + 10, 670, "Edit", function() {
-            if (radios.selectedId == null || radios.selectedId == "") {
+            if (selectedCharIndex < 0) {
                 state.openSubState(ToolboxMessage.showMessage("Error", "No character was selected."));
                 return;
             }
@@ -85,21 +112,21 @@ class CharTab extends ToolboxTab {
             //     return;
             // }
             dev_toolbox.character_editor.CharacterEditor.fromFreeplay = false;
-            FlxG.switchState(new dev_toolbox.character_editor.CharacterEditor(radios.selectedId));
+            FlxG.switchState(new dev_toolbox.character_editor.CharacterEditor(chars[selectedCharIndex]));
         });
         editButton.resize(67, 20);
         var deleteButton = new FlxUIButton(editButton.x + editButton.width + 10, 670, "Delete", function() {
-            if (radios.selectedId == null || radios.selectedId == "") {
+            if (selectedCharIndex < 0) {
                 state.openSubState(ToolboxMessage.showMessage("Error", "No character was selected."));
                 return;
             }
-            state.openSubState(new ToolboxMessage("Delete Character", 'Are you sure you want to delete ${radios.selectedId} ? This operation is irreversible.', [
+            state.openSubState(new ToolboxMessage("Delete Character", 'Are you sure you want to delete ${chars[selectedCharIndex]} ? This operation is irreversible.', [
                 {
                     label: "Yes",
                     onClick: function(t) {
-                        CoolUtil.deleteFolder('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/${radios.selectedId}/');
-                        FileSystem.deleteDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/${radios.selectedId}/');
-                        state.openSubState(ToolboxMessage.showMessage("Success", '${radios.selectedId} was successfully deleted.', function() {
+                        CoolUtil.deleteFolder('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/${chars[selectedCharIndex]}/');
+                        FileSystem.deleteDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/${chars[selectedCharIndex]}/');
+                        state.openSubState(ToolboxMessage.showMessage("Success", '${chars[selectedCharIndex]} was successfully deleted.', function() {
                             FlxTransitionableState.skipNextTransIn = true;
                             FlxTransitionableState.skipNextTransOut = true;
                             FlxG.resetState();
@@ -116,7 +143,6 @@ class CharTab extends ToolboxTab {
         add(createButton);
         add(editButton);
         add(deleteButton);
-        add(radios);
         legend = new FlxUIText(330, 666, FlxG.width - 330, "[Up/Down] Change animation | [Space] Play Animation | [Enter] Flip");
         legend.size = 20;
         legend.color = FlxColor.BLACK;
