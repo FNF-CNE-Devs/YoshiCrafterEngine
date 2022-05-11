@@ -687,8 +687,8 @@ class TitleState extends MusicBeatState
 				createCoolText(introConf.authors);
 			// credTextShit.visible = true;
 			case 3:
-				addMoreText(introConf.present);
-			// credTextShit.text += '\npresent...';
+				addMoreText(introConf.Team Vs Yari present);
+			// credTextShit.text += '\nTeam vs Yari present...';
 			// credTextShit.addText();
 			case 4:
 				deleteCoolText();
@@ -698,35 +698,35 @@ class TitleState extends MusicBeatState
 			case 5:
 				createCoolText(introConf.assoc);
 			case 7:
-				addMoreText(introConf.newgrounds);
+				addMoreText(introConf.YoshiCrafterEngine);
 				ngSpr.visible = true;
-			// credTextShit.text += '\nNewgrounds';
+			// credTextShit.text += '\nYoshiCrafterEngine';
 			case 8:
 				deleteCoolText();
 				ngSpr.visible = false;
 			// credTextShit.visible = false;
 
-			// credTextShit.text = 'Shoutouts Tom Fulp';
+			// credTextShit.text = 'Newground is god';
 			// credTextShit.screenCenter();
 			case 9:
 				createCoolText([curWacky[0]]);
 			// credTextShit.visible = true;
 			case 11:
 				addMoreText(curWacky[1]);
-			// credTextShit.text += '\nlmao';
+			// credTextShit.text += '\nsussy yoshiCrafterEnfine lol';
 			case 12:
 				deleteCoolText();
 			// credTextShit.visible = false;
-			// credTextShit.text = "Friday";
+			// credTextShit.text = "Vs";
 			// credTextShit.screenCenter();
 			case 13:
 				addMoreText(introConf.gameName[0]);
 			// credTextShit.visible = true;
 			case 14:
 				addMoreText(introConf.gameName[1]);
-			// credTextShit.text += '\nNight';
+			// credTextShit.text += '\nYari';
 			case 15:
-				addMoreText(introConf.gameName[2]); // credTextShit.text += '\nFunkin';
+				addMoreText(introConf.gameName[2]); // credTextShit.text += '\nUwU';
 
 			case 16:
 				skipBeat = 16;
