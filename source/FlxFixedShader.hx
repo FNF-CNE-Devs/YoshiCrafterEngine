@@ -10,33 +10,11 @@ class FlxFixedShader extends FlxShader {
         if (save != null) this.save = save;
         super();
     }
-    @:noCompletion private override function __initGL():Void
-    {
-        if (__glSourceDirty || __paramBool == null)
-        {
-            __glSourceDirty = false;
-            program = null;
 
-            __inputBitmapData = new Array();
-            __paramBool = new Array();
-            __paramFloat = new Array();
-            __paramInt = new Array();
-
-            __processGLData(glVertexSource, "attribute");
-            __processGLData(glVertexSource, "uniform");
-            __processGLData(glFragmentSource, "uniform");
-        }
-
-        if (__context != null && program == null)
-        {
-            initGLforce();
-        }
+    public function initGood() {
+        if (!custom) initGLforce(glFragmentSource, glVertexSource);
     }
-
-    public function initGLforce() {
-        if (!custom) initGood(glFragmentSource, glVertexSource);
-    }
-    public function initGood(glFragmentSource:String, glVertexSource:String) {
+    public function initGLforce(glFragmentSource:String, glVertexSource:String) {
         // try {
 
         // } catch(e:Exception) {
