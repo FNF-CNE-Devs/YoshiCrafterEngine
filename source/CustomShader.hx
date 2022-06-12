@@ -18,7 +18,7 @@ using StringTools;
 
 
 class CustomShader extends FlxFixedShader {
-    public var shaderData:Dynamic = {};
+     var shaderData:Dynamic;
 	
     // public var bitmap(get, null):Any;
     // public function get_bitmap():Any {
