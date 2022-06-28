@@ -12,7 +12,7 @@ class CharterStrum extends FlxSprite {
         if (scheme == null) scheme = Note.noteNumberSchemes[4];
         switch(scheme[data % YoshiCrafterCharter._song.keyNumber]) {
             case Left:
-                animation.addByPrefix('static', 'arrowLEFT');
+                animation.addByPrefix('static', 'arrowLEFT0');
                 animation.addByPrefix('pressed', 'left press', 24, false);
                 animation.addByPrefix('confirm', 'left confirm', 24, false);
             case Down:
@@ -24,7 +24,7 @@ class CharterStrum extends FlxSprite {
                 animation.addByPrefix('pressed', 'up press', 24, false);
                 animation.addByPrefix('confirm', 'up confirm', 24, false);
             case Right:
-                animation.addByPrefix('static', 'arrowRIGHT');
+                animation.addByPrefix('static', 'arrowRIGHT0');
                 animation.addByPrefix('pressed', 'right press', 24, false);
                 animation.addByPrefix('confirm', 'right confirm', 24, false);
         }

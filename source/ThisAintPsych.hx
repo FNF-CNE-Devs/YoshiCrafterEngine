@@ -1,4 +1,3 @@
-import EngineSettings.Settings;
 import flixel.input.keyboard.FlxKey;
 import flixel.text.FlxText;
 import flixel.FlxSprite;
@@ -9,11 +8,11 @@ import flixel.util.FlxColor;
 class ThisAintPsych extends MusicBeatSubstate {
     public override function new() {
         super();
-        var bg1 = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xAA000000);
+        var bg1 = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xAA000000, true);
         bg1.scrollFactor.set(0, 0);
         add(bg1);
 
-        var bg = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width / 2 + 20), FlxG.height - 20, 0x88000000);
+        var bg = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width / 2 + 20), FlxG.height - 20, 0x88000000, true);
         bg.scrollFactor.set(0, 0);
         bg.screenCenter();
         add(bg);

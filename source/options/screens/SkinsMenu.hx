@@ -1,6 +1,5 @@
 package options.screens;
 
-import EngineSettings.Settings;
 import sys.FileSystem;
 
 using StringTools;

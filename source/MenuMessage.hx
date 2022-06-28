@@ -1,37 +1,70 @@
+import flixel.math.FlxMath;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.FlxG;
 
+typedef Button = {
+    var label:String;
+    var callback:Void->Void;
+}
 class MenuMessage extends MusicBeatSubstate {
     var wasUnpressed = false;
-    var callback:Void->Void = null;
-    public override function new(message:String, ?callback:Void->Void) {
+    var buttons:Array<Button> = [{
+        label: "OK",
+        callback: null
+    }];
+    var alphabets:Array<AlphabetOptimized> = [];
+    var curSelected:Int = 0;
+    var wasAccepted:Bool = false;
+    public override function new(message:String, ?buttons:Array<Button>, defaultSelected:Int = 0) {
         super();
-        add(new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000));
-        add(new FlxSprite(1280 / 4, 720 / 4).makeGraphic(640, 360, 0x88000000));
+        add(new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000, true));
+        add(new FlxSprite(1280 / 8, 720 / 8).makeGraphic(960, 540, 0x88000000, true));
 
-        var message = new FlxText(1280 / 4 + 10, 720 / 4 + 10, 620, message);
+        var message = new FlxText(1280 / 8 + 10, 720 / 8 + 10, 940, message);
 		message.setFormat(Paths.font("vcr.ttf"), Std.int(16), 0xFFFFFFFF, LEFT, FlxTextBorderStyle.OUTLINE, 0xFF000000);
         add(message);
 
+        if (buttons != null && buttons.length > 0) {
+            this.buttons = buttons;
+        }
+        curSelected = defaultSelected;
+        for(k=>b in this.buttons) {
+            var ler = ((k + 0.5) / this.buttons.length);
+            var alphabet = new AlphabetOptimized(FlxMath.lerp(1280 / 8, (1280 / 8) + (1280 * 0.75), ler), (720 / 8) + (720 * 0.75) - 10 - 45, b.label, false);
+            alphabet.textSize = 0.5;
+            alphabet.x -= alphabet.width / 4; // since shit aint calculated so i gotta divide by 2 again manually
+            add(alphabet);
+            alphabets.push(alphabet);
+        }
+        /*
         var okButton = new FlxSprite(0, 0);
         okButton.loadGraphic(Paths.image("enterToClose", "preload"));
         okButton.scale.x = okButton.scale.y = 0.6;
         okButton.updateHitbox();
         okButton.setPosition(1280 * 0.75 - 10 - okButton.width, 720 * 0.75 - 10 - okButton.height);
         add(okButton);
-
-        this.callback = callback;
+        */
+        changeSelection(0);
+        wasAccepted = controls.ACCEPT;
     }
 
     public override function update(elapsed:Float) {
         super.update(elapsed);
-        if (!FlxControls.pressed.BACKSPACE) {
-            wasUnpressed = true;
-        }
-        if (FlxControls.justPressed.BACKSPACE && wasUnpressed) {
-            if (callback != null) callback();
+        if (controls.RIGHT_P || controls.DOWN_P) changeSelection(1);
+        if (controls.LEFT_P || controls.UP_P) changeSelection(-1);
+        if (!(wasAccepted = wasAccepted && controls.ACCEPT) && controls.ACCEPT) {
+            CoolUtil.playMenuSFX(1);
+            if (buttons[curSelected].callback != null) buttons[curSelected].callback();
             close();
+        }
+    }
+
+    public function changeSelection(am:Int = 0) {
+        if (am != 0 && buttons.length > 1) CoolUtil.playMenuSFX(0);
+        curSelected = CoolUtil.wrapInt(curSelected + am, 0, alphabets.length);
+        for(k=>a in alphabets) {
+            a.alpha = k == curSelected ? 1 : 0.5;
         }
     }
 }

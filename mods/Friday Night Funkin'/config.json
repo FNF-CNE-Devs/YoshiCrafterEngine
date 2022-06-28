@@ -1,6 +1,6 @@
 {
     "name": "Friday Night Funkin'",
-    "description": "What would Friday Night Funkin' be... Without Friday Night Funkin' ?\r\nCrafter Engine \"port\" of the original game.\r\nWarning : Do not remove, engine depends on it.",
+    "description": "What would Friday Night Funkin' be... Without Friday Night Funkin' ?\r\nYoshiCrafter Engine \"port\" of the original game.\r\nWarning : Do not remove, engine depends on it.",
     "titleBarName": "Friday Night Funkin'",
     "skinnableBFs": ["bf", "bf-car", "bf-christmas", "bf-dead"],
     "skinnableGFs": ["gf", "gf-car", "gf-christmas"],
@@ -24,5 +24,5 @@
             "value": "bool"
         }
     ],
-    "locked": true
+    "locked": false
 }

@@ -5,21 +5,17 @@ import Song.SwagSong;
 import FreeplayState.FreeplaySongList;
 import FreeplayState.FreeplaySong;
 import dev_toolbox.file_explorer.FileExplorer;
-import dev_toolbox.week_editor.WeekCharacterSettings;
 import openfl.display.BitmapData;
 import flixel.tweens.FlxTween;
 using StringTools;
 
 import flixel.util.FlxColor;
 import flixel.FlxG;
-import dev_toolbox.week_editor.CreateWeekWizard;
 import flixel.addons.ui.*;
 import haxe.Json;
 import sys.io.File;
 import flixel.text.FlxText;
 import flixel.FlxSprite;
-import StoryMenuState.FNFWeek;
-import StoryMenuState.WeeksJson;
 import sys.FileSystem;
 
 class SongTab extends ToolboxTab {
@@ -130,7 +126,7 @@ class SongTab extends ToolboxTab {
 			};
             for(d in diffs) {
                 var diff = d.trim().toLowerCase().replace(" ", "-");
-                var path = '${Paths.modsPath}/${ToolboxHome.selectedMod}/data/${fpSongToEdit.name}/${fpSongToEdit.name}-${d.trim().toLowerCase()}.json';
+                var path = '${Paths.modsPath}/${ToolboxHome.selectedMod}/data/${fpSongToEdit.name}/${fpSongToEdit.name}-${d.trim().toLowerCase().replace(" ", "-")}.json';
                 if (diff == "normal") {
                     path = '${Paths.modsPath}/${ToolboxHome.selectedMod}/data/${fpSongToEdit.name}/${fpSongToEdit.name}.json';
                 }

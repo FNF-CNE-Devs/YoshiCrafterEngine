@@ -1,5 +1,8 @@
 package;
 
+import flixel.input.keyboard.FlxKey;
+import haxe.Json;
+import haxe.Http;
 import haxe.io.Input;
 import haxe.io.Eof;
 import haxe.io.BytesBuffer;
@@ -25,6 +28,12 @@ import openfl.display.Sprite;
 import openfl.display.FPS;
 import openfl.events.Event;
 
+using StringTools;
+
+// *makes a fnf engine*
+// Why is it taking so long?
+// I should have been famous a minute ago.
+
 class Main extends Sprite
 {
 	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
@@ -34,19 +43,23 @@ class Main extends Sprite
 	var framerate:Int = 120; // How many frames per second the game should run at.
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
+
+	public static var lastHit:Map<FlxKey, Float> = [];
 	public static var logsOverlay:LogsOverlay;
 
 	public static function readLine(buff:Input, l:Int):String {
 		var line:Int = 0;
-		while(true) {
+		var fuck = 0;
+		while(fuck < l + 1) {
 			var buf = new BytesBuffer();
 			var last:Int = 0;
 			var s = "";
 
 			trace(line);
 			// try {
-				while ((last = buff.readByte()) != 10)
+				while ((last = buff.readByte()) != 10) {
 					buf.addByte(last);
+				}
 				s = buf.getBytes().toString();
 				if (s.charCodeAt(s.length - 1) == 13)
 					s = s.substr(0, -1);
@@ -62,6 +75,7 @@ class Main extends Sprite
 			// 	break;
 			// }
 		}
+		return "";
 	}
 
 	public static function getMemoryAmount():Float {
@@ -81,8 +95,9 @@ class Main extends Sprite
 		#end
 	}
 	// YOSHI ENGINE STUFF
-	public static var engineVer:String = "1.9.1";
-	public static var buildVer:String = "";
+	public static var engineVer:String = "2.0.0";
+	// public static var buildVer:String = #if official "" #else "Custom Build" #end;
+	public static var buildVer:String = #if ycebeta "BETA" #elseif official "" #else "Custom Build" #end;
 	public static var fps:GameStats;
 
 	public static var supportedFileTypes = [
@@ -97,7 +112,13 @@ class Main extends Sprite
 
 	public static function main():Void
 	{
-		var args = Sys.args();
+		var args = [for (arg in Sys.args()) if (arg.startsWith("/")) '-${arg.substr(1)}' else arg];
+		
+		if (!parseArgs(args)) {
+			System.exit(0);
+			return;
+		};
+
 		if (args.contains('update')) {
 			// copy
 			var copyFolder:String->String->Void = null;
@@ -143,13 +164,43 @@ class Main extends Sprite
 			#end
 		}
 
-		getMemoryAmount();
+		
+		//getMemoryAmount(); // not necessery anymore ig
+	}
+
+	public static final commandPromptArgs:Array<String> = [
+		"",
+		"YoshiCrafter Engine - Command Prompt arguments",
+		"",
+		"-help / -? - Show this help",
+		"-mod <mod> - Start the engine with a specific mod",
+		"-forcedevmode - Forces developer mode, even if the mod is locked"
+	];
+
+	public static function parseArgs(args:Array<String>) {
+		var i:Int = 0;
+		while(i < args.length) {
+			var a = args[i].toLowerCase();
+			switch(a) {
+				case "-mod":
+					i++;
+					TitleState.startMod = args[i];
+				case "-?" | "-help":
+					trace(commandPromptArgs.join("\n"));
+					return false;
+				case "-forcedevmode":
+					ModSupport.forceDevMode = true;
+			}
+			i++;
+		}
+		return true;
 	}
 
 	public function new()
 	{
 		super();
 
+		#if !noHandler
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, function(e:UncaughtErrorEvent) {
 			var m:String = e.error;
 			if (Std.isOfType(e.error, Error)) {
@@ -160,11 +211,27 @@ class Main extends Sprite
 				m = '${err.text}';
 			}
 			m += '\r\n ${CallStack.toString(CallStack.exceptionStack())}';
-			trace('An error occured !\r\nYoshiCrafter Engine ver. ${engineVer} $buildVer\r\n\r\n${m}\r\n\r\nThe engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !');
- 			Application.current.window.alert('An error occured !\r\nYoshiCrafter Engine ver. ${engineVer} $buildVer\r\n\r\n${m}\r\n\r\nThe engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !', e.error);
+			var text = "";
+			try {
+				text = (
+					'An error occured !\r\nYoshiCrafter Engine ver. ${engineVer} $buildVer\r\n\r\n${m}\r\n\r\n${Settings.engineSettings.data.autoSendCrashes ? "The error message has automatically been sent to the developers. You can disable this option in settings.\n\n" : ""}The engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !');
+				Application.current.window.alert(text, e.error == null ? Std.string(e) : Std.string(e.error));
+			} catch(e) {
+
+			}
+			trace(text);
+				
+			
+ 			
+			e.preventDefault();
 			e.stopPropagation();
 			e.stopImmediatePropagation();
+
+			File.saveContent('crash.txt', text);
+			 
+			System.exit(1);
 		});
+		#end
 
 		if (stage != null)
 		{

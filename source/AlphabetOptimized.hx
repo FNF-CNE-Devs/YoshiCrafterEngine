@@ -1,3 +1,4 @@
+import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.FlxG;
 import flixel.math.FlxMath;
@@ -12,7 +13,10 @@ class AlphabetOptimized extends FlxSpriteGroup {
     public var textColor:FlxColor = 0xFFFFFFFF;
     public var textColorSequences:Map<Int, FlxColor> = null;
 
-    public static var nonBoldLetters:Map<String, String> = [
+    public static final showOnTopAnims = [
+        "'", "*", "apostraphie"
+    ];
+    public static final nonBoldLetters:Map<String, String> = [
         "_" => "_",
         "#" => "hashtag ",
         "$" => "dollarsign ",
@@ -131,14 +135,17 @@ class AlphabetOptimized extends FlxSpriteGroup {
     public var textSize:Float = 1;
 
     public var bold:Bool = false;
+    public var correctWrap:Bool = true;
 
     public var __cacheWidth:Float = 0;
 
     public var maxWidth:Float = 0;
+    public var cutPoint:Int = -1;
 	/**
 	 * If false, the Alphabet will go to the target Y without any lerp and set this to true.
 	**/
 	public var wentToTargetY:Bool = false;
+    public var letterPos:Array<FlxPoint> = [];
 
     public override function get_width():Float {
         return __cacheWidth;
@@ -151,7 +158,7 @@ class AlphabetOptimized extends FlxSpriteGroup {
         this.bold = bold;
 
         letterSprite = new FlxSprite(0, 0);
-        letterSprite.frames = Paths.getCustomizableSparrowAtlas('alphabet');
+        letterSprite.frames = Paths.getSparrowAtlas('alphabet');
         letterSprite.antialiasing = true;
 
         for(i in 0...letters.length) {
@@ -199,6 +206,7 @@ class AlphabetOptimized extends FlxSpriteGroup {
     }
 
     public function calculateShit(draw:Bool) {
+        letterPos = [];
         if (text == null || text.length <= 0) {
             __cacheWidth = 0;
             return;
@@ -207,9 +215,47 @@ class AlphabetOptimized extends FlxSpriteGroup {
         var w:Float = 0;
         var line:Int = 0;
         var widths:Array<Float> = [];
+
         for(i in 0...t.length) {
+            if (cutPoint > -1 && i >= cutPoint) continue;
             var char = t.charAt(i);
             var animName:String = null;
+
+            if (correctWrap && char == " " && maxWidth > 0) {
+                if (w == 0) continue;
+                var word = "";
+                var i2 = i + 1;
+                while(i2 < t.length && t.charAt(i2) != " ") {
+                    word += t.charAt(i2);
+                    i2++;
+                }
+
+                var wordWidth:Float = 0;
+                
+
+                for(i2 in 0...word.length) {
+                    var char = word.charAt(i2);
+                    animName = null;
+                    if (bold) {
+                        char = char.toUpperCase();
+                        if (letters.indexOf(char) > -1) animName = '$char bold';
+                    }
+                    if (animName == null) animName = nonBoldLetters[char];
+                    if (animName != null) {
+                        letterSprite.animation.play(animName);
+                        letterSprite.scale.set(textSize, textSize);
+                        letterSprite.updateHitbox();
+                        wordWidth += letterSprite.width;
+                    } else {
+                        wordWidth += 48 * textSize;
+                    }
+                }
+                if (w + wordWidth + (32 * textSize) >= maxWidth) {
+                    w = 0;
+                    line++;
+                    continue;
+                }
+            }
 
             var color = textColor;
             if (textColorSequences != null) {
@@ -257,10 +303,11 @@ class AlphabetOptimized extends FlxSpriteGroup {
                 letterSprite.updateHitbox();
                 letterSprite.alpha = alpha;
                 letterSprite.x = x + w;
-                letterSprite.y = y + ((70 * textSize) - letterSprite.height) + (70 * textSize * line);
+                letterSprite.y = y + (!showOnTopAnims.contains(animName) ? ((70 * textSize) - letterSprite.height) : 0) + (70 * textSize * line);
+                letterPos[i] = new FlxPoint(letterSprite.x, letterSprite.y);
                 if (draw) letterSprite.draw();
                 w += letterSprite.width;
-                if (w > maxWidth && maxWidth > 0) {
+                if (w >= maxWidth && maxWidth > 0) {
                     w = 0;
                     line++;
                 }

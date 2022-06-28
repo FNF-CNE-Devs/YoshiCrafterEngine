@@ -1,35 +1,39 @@
 package dev_toolbox.toolbox_tabs;
 
+import flixel.FlxBasic;
+import flixel.math.FlxRect;
+import openfl.geom.Rectangle;
+import flixel.math.FlxMath;
 import flixel.addons.transition.FlxTransitionableState;
 import dev_toolbox.file_explorer.FileExplorer;
-import dev_toolbox.week_editor.WeekCharacterSettings;
 import openfl.display.BitmapData;
 import flixel.tweens.FlxTween;
 using StringTools;
 
 import flixel.util.FlxColor;
 import flixel.FlxG;
-import dev_toolbox.week_editor.CreateWeekWizard;
 import flixel.addons.ui.*;
 import haxe.Json;
 import sys.io.File;
 import flixel.text.FlxText;
 import flixel.FlxSprite;
-import StoryMenuState.FNFWeek;
-import StoryMenuState.WeeksJson;
 import sys.FileSystem;
+import flixel.group.FlxSpriteGroup;
 
 class CharTab extends ToolboxTab {
     public var character:Character = null;
     public var danceTime:Float = 0;
     public var legend:FlxUIText;
     public var anims_text:FlxUIText;
+    public var previewButton:FlxUIButton;
 
     public var anims:Array<String> = [];
     public var selectedAnim:Int = 0;
 
     public var selectedCharIndex:Int = 0;
     public var chars:Array<String> = [];
+
+    public var charSprites:FlxSpriteGroup = new FlxSpriteGroup();
 
     public override function new(x:Float, y:Float, home:ToolboxHome) {
         super(x, y, "chars", home);
@@ -52,7 +56,7 @@ class CharTab extends ToolboxTab {
         
         for(k=>c in chars) {
             var b:FlxUIButton = null;
-            b = new FlxUIButton(10, 10 + (k * 50), c, function() {
+            b = new FlxUIButton(10, (k * 50), c, function() {
                 selectedCharIndex = k;
                 for(e in buttons)
                     if (e.label.text.startsWith("> "))
@@ -72,11 +76,13 @@ class CharTab extends ToolboxTab {
             healthIcon.health = 0.5;
             healthIcon.x = b.x + 25 - (healthIcon.width / 2);
             healthIcon.y = b.y + 25 - (healthIcon.height / 2);
-            add(b);
-            add(healthIcon);
+            charSprites.add(b);
+            charSprites.add(healthIcon);
         }
+        
+        add(charSprites);
         var charLayer = 0;
-        var previewButton = new FlxUIButton(10, 670, "Preview", function() {
+        previewButton = new FlxUIButton(10, 670, "Preview", function() {
             if (selectedCharIndex < 0) return;
             if (character != null) {
                 remove(character);
@@ -154,9 +160,33 @@ class CharTab extends ToolboxTab {
         add(anims_text);
 
         charLayer = 1;
+
+        scrollY += y;
     }
 
-    public override function tabUpdate(elapsed) {
+    var scrollY:Float = 50;
+
+    public override function tabUpdate(elapsed:Float) {
+        scrollY += FlxG.mouse.wheel * 50;
+        scrollY = FlxMath.bound(scrollY, Math.min(-(charSprites.height - 645), 0), 50);
+        charSprites.y = FlxMath.lerp(charSprites.y, scrollY, 0.25 * elapsed * 60);
+        var clip:FlxSprite->Void;
+        clip = function(m) {
+            // 690 - this.y;
+            // 32
+            var y = FlxMath.bound(m.y + ((m.height - m.frameHeight) / 3 * m.scale.y), 0, m.height);
+            var y2 = FlxMath.bound(m.y + ((m.height - m.frameHeight) / 3 * m.scale.y - 615), 0, m.height);
+            m.clipRect = new FlxRect(
+                0,
+                (m.height - y) / m.height * m.frameHeight, 
+                m.frameWidth, 
+                (m.height - y2) / m.height * m.frameHeight);
+            if (Std.isOfType(m, FlxUIButton)) {
+                var butt = cast(m, FlxUIButton);
+                butt.active = butt.label.visible = (butt.clipRect.y < 0.5 * m.frameHeight) && (butt.clipRect.height > 0.5 * m.frameHeight);
+            }
+        }
+        charSprites.forEach(clip, false);
         if (character == null) {
             anims_text.text = "Select a character...";
             return;

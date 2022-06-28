@@ -9,7 +9,6 @@ import flixel.util.FlxColor;
 import flixel.text.FlxText;
 import Note.NoteDirection;
 import flixel.input.keyboard.FlxKey;
-import EngineSettings.Settings;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.FlxG;
@@ -34,7 +33,7 @@ class ControlsSettingsSub extends MusicBeatSubstate {
     public var keybindSettingCancel:FlxSprite;
     public var keybindSettingKey:Int = 0;
 
-    public static var customKeybindsNameOverride:Map<String, String> = [
+    public static final customKeybindsNameOverride:Map<String, String> = [
         "numpadone" => "Numpad 1",
         "numpadtwo" => "Numpad 2",
         "numpadthree" => "Numpad 3",
@@ -59,7 +58,7 @@ class ControlsSettingsSub extends MusicBeatSubstate {
         "numpadminus" => "Numpad -",
         "numpadmultiply" => "Numpad *"
     ];
-    public static var customKeybindsNameOverrideSimple:Map<String, String> = [
+    public static final customKeybindsNameOverrideSimple:Map<String, String> = [
         "numpadone" => "#1",
         "numpadtwo" => "#2",
         "numpadthree" => "#3",
@@ -247,8 +246,8 @@ class ControlsSettingsSub extends MusicBeatSubstate {
 					
             babyArrow.animation.addByPrefix('up', 'arrowUP');
             babyArrow.animation.addByPrefix('down', 'arrowDOWN');
-            babyArrow.animation.addByPrefix('left', 'arrowLEFT');
-            babyArrow.animation.addByPrefix('right', 'arrowRIGHT');
+            babyArrow.animation.addByPrefix('left', 'arrowLEFT0');
+            babyArrow.animation.addByPrefix('right', 'arrowRIGHT0');
             var color = [
                 new FlxColor(Settings.engineSettings.data.arrowColor0),
                 new FlxColor(Settings.engineSettings.data.arrowColor1),
@@ -263,7 +262,7 @@ class ControlsSettingsSub extends MusicBeatSubstate {
             switch (noteNumberScheme[i % noteNumberScheme.length])
             {
                 case Left:
-                    babyArrow.animation.addByPrefix('static', 'arrowLEFT');
+                    babyArrow.animation.addByPrefix('static', 'arrowLEFT0');
                     babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
                     babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
                 case Down:
@@ -275,7 +274,7 @@ class ControlsSettingsSub extends MusicBeatSubstate {
                     babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
                     babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
                 case Right:
-                    babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
+                    babyArrow.animation.addByPrefix('static', 'arrowRIGHT0');
                     babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
                     babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
             }

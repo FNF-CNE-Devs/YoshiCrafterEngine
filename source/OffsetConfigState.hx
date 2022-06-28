@@ -2,7 +2,6 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.addons.ui.*;
 import flixel.tweens.FlxEase;
-import EngineSettings.Settings;
 import flixel.*;
 import flixel.math.FlxMath;
 
@@ -75,7 +74,7 @@ class OffsetConfigState extends MusicBeatState {
         title.screenCenter(X);
         title.cameras = [hud];
 
-        var thing = new FlxSprite(0, 0).makeGraphic(FlxG.width, Std.int(title.height) + 30, 0x88000000);
+        var thing = new FlxSprite(0, 0).makeGraphic(FlxG.width, Std.int(title.height) + 30, 0x88000000, true);
         thing.cameras = [hud];
         add(thing);
         add(title);

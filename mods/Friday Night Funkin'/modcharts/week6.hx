@@ -7,11 +7,7 @@ var go:FlxSound = null;
 
 var shader = null;
 function create() {
-    var filters:Array<BitmapFilter> = [];
-    shader = new CustomShader(mod + ":mosaic");
-    var filter = new ShaderFilter(shader);
-    filters.push(filter);
-    FlxG.camera.setFilters(filters);
+    FlxG.camera.addShader(shader = new CustomShader(mod + ":mosaic"));
     FlxG.camera.filtersEnabled = true;
     PlayState.isWidescreen = false;
     

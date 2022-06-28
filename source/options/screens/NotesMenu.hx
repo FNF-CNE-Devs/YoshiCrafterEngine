@@ -2,7 +2,6 @@ package options.screens;
 
 import flixel.FlxG;
 import flixel.math.FlxMath;
-import EngineSettings.Settings;
 
 class NotesMenu extends OptionScreen {
     public override function create() {
@@ -33,7 +32,7 @@ class NotesMenu extends OptionScreen {
             },
             {
                 name: "Enable Note Motion Blur",
-                desc: "If enabled, a blur effect will be applied to scrolling notes, making them seem smoother, at\ncost of performance.",
+                desc: "If enabled, a blur effect will be applied to scrolling notes, making them seem smoother, at cost of performance.",
                 value: "",
                 onCreate: function(e) {e.check(Settings.engineSettings.data.noteMotionBlurEnabled);},
                 onSelect: function(e) {e.check(Settings.engineSettings.data.noteMotionBlurEnabled = !Settings.engineSettings.data.noteMotionBlurEnabled);}
@@ -52,13 +51,6 @@ class NotesMenu extends OptionScreen {
                 }
             },
             {
-                name: "Transparent sustains",
-                desc: "If enabled, will make note sustains (tails) semi transparent, like in the original game.",
-                value: "",
-                onCreate: function(e) {e.check(Settings.engineSettings.data.transparentSubstains);},
-                onSelect: function(e) {e.check(Settings.engineSettings.data.transparentSubstains = !Settings.engineSettings.data.transparentSubstains);}
-            },
-            {
                 name: "Enable Splashes",
                 desc: "If enabled, will show splashes everytime you hit a Sick! rating, like in Week 7.",
                 value: "",
@@ -67,7 +59,7 @@ class NotesMenu extends OptionScreen {
             },
             {
                 name: "Splashes Opacity",
-                desc: "How opaque the splashes should be. 0% means invisible and 100% means fully opaque. Defaults\nto 80%",
+                desc: "How opaque the splashes should be. 0% means invisible and 100% means fully opaque. Defaults to 80%",
                 value: "",
                 onCreate: function(e) {e.value = '${Settings.engineSettings.data.splashesAlpha * 100}%';},
                 onLeft: function(e) {e.value = '${Settings.engineSettings.data.splashesAlpha * 100}%';},

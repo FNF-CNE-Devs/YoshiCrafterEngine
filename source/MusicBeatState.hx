@@ -1,5 +1,6 @@
 package;
 
+import flixel.graphics.FlxGraphic;
 import flixel.addons.transition.Transition;
 import flixel.FlxSubState;
 import dev_toolbox.ToolboxMessage;
@@ -11,22 +12,25 @@ import lime.utils.Assets;
 import lime.app.Application;
 import flixel.system.scaleModes.RatioScaleMode;
 import flixel.addons.transition.TransitionData;
-import EngineSettings.Settings;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
 import flixel.math.FlxRect;
 import openfl.utils.Assets;
+import lime.utils.Assets as LimeAssets;
 
 typedef FlxSpriteTypedGroup = FlxTypedGroup<FlxSprite>;
 typedef FlxSpriteArray = Array<FlxSprite>;
 
 
+@:allow(mod_support_stuff.SwitchModSubstate)
 class MusicBeatState extends FlxUIState
 {
+	public static var medalOverlay:Array<MedalsOverlay> = [];
 	private var reloadModsState:Bool = false;
 
+	private static var doCachingShitNextTime:Bool = true;
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
 
@@ -37,30 +41,45 @@ class MusicBeatState extends FlxUIState
 	public static var defaultIcon:Image = null;
 
 	public var lastElapsed:Float = 0;
+
 	public override function onFocus() {
 		if (reloadModsState) {
 			super.onFocus();
 			if (Settings.engineSettings.data.alwaysCheckForMods) if (ModSupport.reloadModsConfig(false, false)) FlxG.resetState();	
 		}
 	}
+
+	public override function destroy() {
+		// remove(medalOverlay);
+		super.destroy();
+	}
+
+	var oldPersistStuff:Map<FlxGraphic, Bool> = [];
 	public function new(?transIn:TransitionData, ?transOut:TransitionData) {
-		
-		if (CoolUtil.isDevMode()) {
-			try {
-				Paths.clearCache();
-			} catch(e) {
+		ModSupport.updateTitleBar();
+		ModSupport.refreshDiscordRpc();
+		ModSupport.reloadModsConfig(CoolUtil.isDevMode());
+		Settings.engineSettings.flush();
 
-			}
-			ModSupport.reloadModsConfig(true);
-			Settings.engineSettings.flush();
+		LimeAssets.loggedRequests = [];
+
+		if (doCachingShitNextTime) {
+			LimeAssets.logRequests = true;
+
+			@:privateAccess
+			if (FlxG.bitmap._cache != null)
+				for(e in FlxG.bitmap._cache) {
+					// old opti be like "lets cache non assets shit like texts" no you fucking idiot
+					if (e.assetsKey != null) {
+						oldPersistStuff[e] = e.persist;
+						e.persist = true;
+					} else {
+						// e._useCount = 0;
+					}
+				}
 		} else {
-			ModSupport.reloadModsConfig(false);
+			doCachingShitNextTime = true;
 		}
-		if (FlxG.save.data != null)
-			FlxG.save.flush();
-		if (Settings.engineSettings != null)
-			Settings.engineSettings.flush();
-
 		#if !android
 			@:privateAccess
 			FlxG.width = 1280;
@@ -70,16 +89,28 @@ class MusicBeatState extends FlxUIState
 		
 		FlxG.scaleMode = new RatioScaleMode();
 		super(transIn, transOut);
+	}
 
-		//if (defaultIcon == null) defaultIcon = Assets.getBitmapData(Paths.file('icon.png', IMAGE, 'mods/));
-		if (defaultIcon == null) defaultIcon = lime.utils.Assets.getImage(Paths.image("icon", "preload"));
-		lime.app.Application.current.window.title = "Friday Night Funkin' - YoshiCrafter Engine";
-		if (PlayState.iconChanged) {
-			lime.app.Application.current.window.setIcon(defaultIcon);
-			PlayState.iconChanged = false;
+	override function createPost() {
+		super.createPost();
+		if (LimeAssets.logRequests) {
+			try {
+				Assets.cache.clearExceptArray(LimeAssets.loggedRequests);
+			} catch(e) {
+				trace(e);
+			}
+			
+			LimeAssets.logRequests = false;
+
+			for(k=>e in oldPersistStuff) {
+				k.persist = e;
+			}
+			oldPersistStuff = [];
+			
+			FlxG.bitmap.clearCache();
+
+			LimeAssets.loggedRequests = [];
 		}
-		
-    	FlxG.game.stage.quality = Settings.engineSettings.data.stageQuality;
 	}
 
 	inline function get_controls():Controls
@@ -87,13 +118,24 @@ class MusicBeatState extends FlxUIState
 
 	override function create()
 	{
-		if (transIn != null)
-			trace('reg ' + transIn.region);
+		// if (transIn != null)
+		// 	trace('reg ' + transIn.region);
 
 		super.create();
-		if (EngineSettings.Settings.engineSettings != null) {
-			FlxG.drawFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
-			FlxG.updateFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
+		if (Settings.engineSettings != null) {
+			FlxG.drawFramerate = Settings.engineSettings.data.fpsCap;
+			FlxG.updateFramerate = Settings.engineSettings.data.fpsCap;
+		}
+	}
+	
+	override function draw() {
+		super.draw();
+		if (!Std.isOfType(subState, MusicBeatSubstate)) {
+			for(k=>m in MusicBeatState.medalOverlay) {
+				m.y = 110 * k;
+				m.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+				m.draw();
+			}
 		}
 	}
 
@@ -111,36 +153,14 @@ class MusicBeatState extends FlxUIState
 		// if (oldStep < curStep)
 
 		super.update(elapsed);
-
-		/*
-		if (Settings.engineSettings != null)
-			if (!Settings.engineSettings.data.antialiasing)
-				for(e in members)
-					if (Std.isOfType(e, FlxSprite))
-						cast(e, FlxSprite).antialiasing = false;
-		*/
-		if (Settings.engineSettings != null) {
-			if (!Settings.engineSettings.data.antialiasing) {
-				for(e in members) {
-					if (Std.isOfType(e, FlxSprite)) {
-						cast(e, FlxSprite).antialiasing = false;
-					} else if (Std.isOfType(e, FlxSpriteGroup)) {
-						var grp:FlxSpriteGroup = cast e;
-						for (m in grp.members) {
-							m.antialiasing = false;
-						}
-					} else if (Std.isOfType(e, FlxSpriteTypedGroup)) {
-						var grp:FlxTypedGroup<FlxSprite> = cast e;
-						for (m in grp.members) {
-							m.antialiasing = false;
-						}
-					}
-				}
+		
+		if (MusicBeatState.medalOverlay != null) {
+			for(k=>m in MusicBeatState.medalOverlay) {
+				m.y = 110 * k;
+				m.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+				m.update(elapsed);
 			}
 		}
-			
-				
-					
 	}
 
 	private function updateBeat():Void

@@ -15,7 +15,6 @@ import openfl.utils.Assets;
 import MusicBeatState.FlxSpriteTypedGroup;
 import flixel.util.FlxColor;
 import flixel.math.FlxMath;
-import EngineSettings.Settings;
 import flixel.text.FlxText;
 import Section.SwagSection;
 import openfl.geom.Rectangle;

@@ -1,14 +1,37 @@
 import openfl.text.TextField;
 import openfl.text.TextFormat;
-import EngineSettings.Settings;
 import flixel.FlxG;
 import openfl.display.Sprite;
+
+using StringTools;
 
 class LogsOverlay extends Sprite {
     var logsText:TextField;
     var titleText:TextField;
     var legend:TextField;
-
+    
+    public static var lastPos:Int = 0;
+    public static var errors:Int = 0;
+    public static var lastErrors:Int = 0;
+    public static var log:Array<String> = [];
+    public static function error(thing:Dynamic) {
+        LogsOverlay.trace(thing);
+        errors++;
+    }
+	public static function trace(thing2:Dynamic) {
+        var thing = "";
+        if (Std.isOfType(thing2, String)) {
+            thing = thing2;
+        } else {
+            thing = Std.string(thing2);
+        }
+        thing = thing.replace("\r", "");
+		for (e in thing.split("\n")) log.push(e);
+		trace(thing);
+		var limit = 256;
+		if (Settings.engineSettings != null) limit = Settings.engineSettings.data.logLimit;
+		while(log.length > limit) log.shift();
+	}
     public function new() {
         super();
         x = 0;
@@ -55,6 +78,8 @@ class LogsOverlay extends Sprite {
             } else
                 wasPressed = FlxG.keys.pressed.F6;
             if (visible && FlxG.keys.justPressed.ESCAPE) visible = false;
+        } else {
+            visible = false;
         }
 
         if (visible) {
@@ -66,13 +91,18 @@ class LogsOverlay extends Sprite {
             legend.y = 22;
 
             var oldMaxScroll = logsText.maxScrollV;
-            if (logsText.text != (logsText.text = PlayState.log.join("\n"))) {
+            if (logsText.text != (logsText.text = log.join("\n"))) {
                 logsText.scrollV = logsText.scrollV - oldMaxScroll + logsText.maxScrollV;
             };
 
             if (FlxG.keys.pressed.F7) {
-                while(PlayState.log.length > 0) PlayState.log.pop();
+                while(log.length > 0) log.pop();
+                lastPos = errors = lastErrors = 0;
             }
+            lastPos = log.length;
+            lastErrors = errors;
+        } else {
+            logsText.text = "";
         }
     }
 }

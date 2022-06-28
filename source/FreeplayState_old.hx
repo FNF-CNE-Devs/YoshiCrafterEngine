@@ -13,7 +13,6 @@ import haxe.Json;
 import sys.io.File;
 import sys.FileSystem;
 import openfl.geom.ColorTransform;
-import EngineSettings.Settings;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import flixel.system.FlxSound;
 #if desktop
@@ -241,7 +240,7 @@ class FreeplayState extends MusicBeatState
 		scoreText.antialiasing = true;
 		// scoreText.alignment = RIGHT;
 
-		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 126, 0xFF000000);
+		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 126, 0xFF000000, true);
 		scoreBG.alpha = 0.6;
 
 		diffText = new FlxText(scoreText.x, scoreText.y + 36, 0, "", 24);
@@ -256,10 +255,10 @@ class FreeplayState extends MusicBeatState
 		moreInfoText.font = scoreText.font;
 		moreInfoText.antialiasing = true;
 
-		advancedBG = new FlxSprite(scoreText.x - 6, 126).makeGraphic(Std.int(FlxG.width * 0.35), 720 - 126 - 30, 0xFF000000);
+		advancedBG = new FlxSprite(scoreText.x - 6, 126).makeGraphic(Std.int(FlxG.width * 0.35), 720 - 126 - 30, 0xFF000000, true);
 		advancedBG.alpha = 0.4;
 
-		var bottomBG = new FlxSprite(0, FlxG.height - 30).makeGraphic(FlxG.width, 30, 0xFF000000);
+		var bottomBG = new FlxSprite(0, FlxG.height - 30).makeGraphic(FlxG.width, 30, 0xFF000000, true);
 		bottomBG.alpha = 0.4;
 
 		accuracyText = new FlxText(scoreText.x, moreInfoText.y + 32, 0, "Accuracy : ???% (N/A)", 24);
@@ -270,7 +269,7 @@ class FreeplayState extends MusicBeatState
 		missesText.font = scoreText.font;
 		missesText.antialiasing = true;
 
-		graph = new FlxSprite(scoreText.x, missesText.y + 27 - 40).makeGraphic(350, 175, FlxColor.TRANSPARENT);
+		graph = new FlxSprite(scoreText.x, missesText.y + 27 - 40).makeGraphic(350, 175, FlxColor.TRANSPARENT, true);
 		graph.antialiasing = true;
 		graph.x = advancedBG.x + 20;
 		graph.flipX = true;

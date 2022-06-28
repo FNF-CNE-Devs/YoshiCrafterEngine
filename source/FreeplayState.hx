@@ -13,7 +13,6 @@ import haxe.Json;
 import sys.io.File;
 import sys.FileSystem;
 import openfl.geom.ColorTransform;
-import EngineSettings.Settings;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import flixel.system.FlxSound;
 #if desktop
@@ -49,31 +48,28 @@ typedef FreeplaySong = {
 }
 class FreeplayState extends MusicBeatState
 {
-	public static var songs:Array<SongMetadata> = null;
+	public var songs:Array<SongMetadata> = null;
 	public var _songs:Array<SongMetadata> = [];
 
-	var selector:FlxText;
-	var curSelected:Int = 0;
-	var curDifficulty:Int = 1;
+	public var selector:FlxText;
+	public var curSelected:Int = 0;
+	public var curDifficulty:Int = 1;
 
-	var scoreText:FlxText;
-	var diffText:FlxText;
-	var modSourceText:FlxText;
-	var lerpScore:Int = 0;
-	var intendedScore:Int = 0;
-	var songPlaying:FlxSound = null;
+	public var scoreText:FlxText;
+	public var diffText:FlxText;
+	public var lerpScore:Int = 0;
+	public var intendedScore:Int = 0;
+	public var songPlaying:FlxSound = null;
 
 	
-	var advancedBG:FlxSprite;
-	var moreInfoText:FlxText;
-	var accuracyText:FlxText;
-	var missesText:FlxText;
-	var graph:FlxSprite;
-	var ratingTexts:Array<FlxText> = [];
+	public var advancedBG:FlxSprite;
+	public var moreInfoText:FlxText;
+	public var accuracyText:FlxText;
+	public var missesText:FlxText;
+	public var graph:FlxSprite;
+	public var ratingTexts:Array<FlxText> = [];
 
-	var showAllSongs = Settings.engineSettings.data.freeplayShowAll;
-
-	var bg:FlxSprite = null;
+	public var bg:FlxSprite = null;
 
 	private var grpSongs:FlxTypedGroup<AlphabetOptimized>;
 	private var curPlaying:Bool = false;
@@ -81,33 +77,27 @@ class FreeplayState extends MusicBeatState
 
 	private var iconArray:Array<HealthIcon> = [];
 	
-	var currentInstPath:String = "";
-	var instCooldown:Float = 0;
+	public var currentInstPath:String = "";
+	public var instCooldown:Float = 0;
 
-	var freeplayScript:Script;
+	public var freeplayScript:Script;
 
-	public static function loadFreeplaySongs() {
-		var mPath = Paths.modsPath;
-		
+	public function loadFreeplaySongs() {
 		songs = [];
-		var fnfSongs = [];
-		for(mod=>modConf in ModSupport.modConfig) {
-			var path = Paths.json('freeplaySonglist', 'mods/$mod');
-			if (Assets.exists(path)) {
-				var jsonContent:FreeplaySongList = null;
-				try {
-					jsonContent = Json.parse(Assets.getText(path));
-				} catch(e) {
-					trace('Freeplay song list for $mod is invalid.\r\n$e');
-				}
-				if (jsonContent.songs != null) {
-					for(song in jsonContent.songs) {
-						(mod == "Friday Night Funkin'" ? fnfSongs : songs).push(SongMetadata.fromFreeplaySong(song, mod));
-					}
+		var p = Paths.json('freeplaySonglist', 'mods/${Settings.engineSettings.data.selectedMod}');
+		if (Assets.exists(p)) {
+			var jsonContent:FreeplaySongList = null;
+			try {
+				jsonContent = Json.parse(Assets.getText(p));
+			} catch(e) {
+				LogsOverlay.error('Freeplay song list for ${Settings.engineSettings.data.selectedMod} is invalid.\r\n$e');
+			}
+			if (jsonContent.songs != null) {
+				for(song in jsonContent.songs) {
+					songs.push(SongMetadata.fromFreeplaySong(song, Settings.engineSettings.data.selectedMod));
 				}
 			}
 		}
-		if (!(Settings.engineSettings.data.hideOriginalGame && songs.length > 0)) for (s in fnfSongs) songs.push(s);
 	}
 	
 
@@ -174,7 +164,7 @@ class FreeplayState extends MusicBeatState
 		reloadModsState = true;
 		// Assets.loadLibrary("songs");
 		
-		if (songs == null || CoolUtil.isDevMode()) loadFreeplaySongs();
+		loadFreeplaySongs();
 		freeplayScript = Script.create('${Paths.getModsPath()}/${Settings.engineSettings.data.selectedMod}/ui/FreeplayState');
 		var validated = true;
 		if (freeplayScript == null) {
@@ -186,10 +176,9 @@ class FreeplayState extends MusicBeatState
 		freeplayScript.setVariable("addSong", addSong);
 		ModSupport.setScriptDefaultVars(freeplayScript, '${Settings.engineSettings.data.selectedMod}', {});
 		if (validated) {
-			showAllSongs = false;
 			freeplayScript.loadFile('${Paths.getModsPath()}/${Settings.engineSettings.data.selectedMod}/ui/FreeplayState');
 		}
-		freeplayScript.executeFunc("create", []);
+		// freeplayScript.executeFunc("create", []);
 
 		// var initSonglist = ModSupport.getFreeplaySongs();
 
@@ -222,7 +211,7 @@ class FreeplayState extends MusicBeatState
 		grpSongs = new FlxTypedGroup<AlphabetOptimized>();
 		add(grpSongs);
 
-		for (s in songs) if (showAllSongs || (s.mod.toLowerCase() == Settings.engineSettings.data.selectedMod.toLowerCase())) _songs.push(s);
+		for (s in songs) _songs.push(s);
 		freeplayScript.executeFunc("createSongs", []);
 
 		scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
@@ -231,25 +220,22 @@ class FreeplayState extends MusicBeatState
 		scoreText.antialiasing = true;
 		// scoreText.alignment = RIGHT;
 
-		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 126, 0xFF000000);
+		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 99, 0xFF000000, true);
 		scoreBG.alpha = 0.6;
 
-		diffText = new FlxText(scoreText.x, scoreText.y + 36, 0, "", 24);
+		diffText = new FlxText(scoreText.x, scoreText.y + 36, FlxG.width - scoreText.x, "", 24);
 		diffText.font = scoreText.font;
+		diffText.alignment = CENTER;
 		diffText.antialiasing = true;
 
-		modSourceText = new FlxText(scoreText.x, diffText.y + 27, 0, "", 24);
-		modSourceText.font = scoreText.font;
-		modSourceText.antialiasing = true;
-
-		moreInfoText = new FlxText(scoreText.x, modSourceText.y + 27, 0, "[Ctrl] for more info", 24);
+		moreInfoText = new FlxText(scoreText.x, diffText.y + 27, 0, "[Ctrl] for more info", 24);
 		moreInfoText.font = scoreText.font;
 		moreInfoText.antialiasing = true;
 
-		advancedBG = new FlxSprite(scoreText.x - 6, 126).makeGraphic(Std.int(FlxG.width * 0.35), 720 - 126 - 30, 0xFF000000);
+		advancedBG = new FlxSprite(scoreText.x - 6, 99).makeGraphic(Std.int(FlxG.width * 0.35), 720 - 99 - 30, 0xFF000000, true);
 		advancedBG.alpha = 0.4;
 
-		var bottomBG = new FlxSprite(0, FlxG.height - 30).makeGraphic(FlxG.width, 30, 0xFF000000);
+		var bottomBG = new FlxSprite(0, FlxG.height - 30).makeGraphic(FlxG.width, 30, 0xFF000000, true);
 		bottomBG.alpha = 0.4;
 
 		accuracyText = new FlxText(scoreText.x, moreInfoText.y + 32, 0, "Accuracy : ???% (N/A)", 24);
@@ -260,7 +246,7 @@ class FreeplayState extends MusicBeatState
 		missesText.font = scoreText.font;
 		missesText.antialiasing = true;
 
-		graph = new FlxSprite(scoreText.x, missesText.y + 27 - 40).makeGraphic(350, 175, FlxColor.TRANSPARENT);
+		graph = new FlxSprite(scoreText.x, missesText.y + 27 - 40).makeGraphic(350, 175, FlxColor.TRANSPARENT, true);
 		graph.antialiasing = true;
 		graph.x = advancedBG.x + 20;
 		graph.flipX = true;
@@ -272,7 +258,6 @@ class FreeplayState extends MusicBeatState
 		add(advancedBG);
 		add(scoreBG);
 		add(diffText);
-		add(modSourceText);
 		add(moreInfoText);
 		add(bottomBG);
 		add(accuracyText);
@@ -369,6 +354,7 @@ class FreeplayState extends MusicBeatState
 	// }
 
 	function updateAdvancedData() {
+		freeplayScript.executeFunc("onAdvancedDataUpdate");
 		var mod = ModSupport.getModName(_songs[curSelected].mod);
 		var song = _songs[curSelected].songName;
 		var diff = _songs[curSelected].difficulties[curDifficulty];
@@ -418,9 +404,10 @@ class FreeplayState extends MusicBeatState
 		// var acc = 
 		accuracyText.text = 'Accuracy: $acc% ($rating)';
 		missesText.text = '$misses Misses';
+		freeplayScript.executeFunc("onAdvancedDataUpdatePost");
 	}
 
-	var shiftCooldown:Float = 0;
+	public var shiftCooldown:Float = 0;
 
 	function playSelectedSong() {
 		if (freeplayScript.executeFunc("onSongPlay", [_songs[curSelected]]) != false) {
@@ -451,20 +438,17 @@ class FreeplayState extends MusicBeatState
 		
 	}
 
-	var iconBumping = true;
+	public var iconBumping = true;
 
 	public override function beatHit() {
 		super.beatHit();
-		// trace(selectedSongInstPath);
-		// trace(currentInstPath);
-		// trace(iconBumping);
 		if ((selectedSongInstPath == currentInstPath) && iconBumping) {
 			var i = iconArray[curSelected];
 			i.scale.set(1.2, 1.2);
 		}
 		freeplayScript.executeFunc("beatHit", [curBeat]);
 	}
-	var selectedSongInstPath = "";
+	public var selectedSongInstPath = "";
 	override function update(elapsed:Float)
 	{
 		freeplayScript.executeFunc("update", [elapsed]);
@@ -612,12 +596,11 @@ class FreeplayState extends MusicBeatState
 			Settings.engineSettings.data.lastSelectedSong = '${_songs[curSelected].mod}:${_songs[curSelected].songName.toLowerCase()}';
 			Settings.engineSettings.data.lastSelectedSongDifficulty = curDifficulty;
 	
-			var e:haxe.Exception;
-			if ((e = CoolUtil.loadSong(_songs[curSelected].mod, _songs[curSelected].songName.toLowerCase(), _songs[curSelected].difficulties[curDifficulty])) != null) {
-				trace("TODO!!");
-			} else {
-				// trace('CUR WEEK' + PlayState.storyWeek);
+			var code:FunkinCodes;
+			if ((code = CoolUtil.loadSong(_songs[curSelected].mod, _songs[curSelected].songName.toLowerCase(), _songs[curSelected].difficulties[curDifficulty])) == OK) {
 				LoadingState.loadAndSwitchState(new PlayState());
+			} else {
+				openSubState(new MenuMessage('Chart for ${_songs[curSelected].songName} - ${_songs[curSelected].difficulties[curDifficulty]} does not exist.'));
 			}
 		} else {
 			CoolUtil.playMenuSFX(3);
@@ -662,7 +645,7 @@ class FreeplayState extends MusicBeatState
 		updateSongInstPath();
 	}
 
-	var colorTween:ColorTween;
+	public var colorTween:ColorTween;
 
 	function changeSelection(change:Int = 0)
 	{
@@ -716,7 +699,6 @@ class FreeplayState extends MusicBeatState
 			instPlaying = false;
 			instCooldown = 0;
 
-			modSourceText.text = ModSupport.getModName(_songs[curSelected].mod);
 			var bullShit:Int = 0;
 
 			for (i in 0...iconArray.length)

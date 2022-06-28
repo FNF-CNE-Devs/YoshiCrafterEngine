@@ -5,6 +5,7 @@ import flixel.FlxG;
 
 class OptionMain extends OptionScreen {
     public static var fromFreeplay:Bool = false;
+    public var skipKeybinds:Bool = false;
 
     public function new(x:Float, y:Float) {
         super();
@@ -21,6 +22,7 @@ class OptionMain extends OptionScreen {
             }
             label += Std.string(i);
         }
+        skipKeybinds = keys.length <= 1;
         options = [
             {
                 name: "Keybinds",
@@ -82,9 +84,13 @@ class OptionMain extends OptionScreen {
     }
 
     public override function onExit() {
+        if (fromFreeplay && FlxG.sound.music != null)
+            FlxG.sound.music.fadeOut(OptionScreen.speedMultiplier);
+        
         doFlickerAnim(-2, function() {
-            if (fromFreeplay)
+            if (fromFreeplay) {
                 FlxG.switchState(new PlayState());
+            }
             else
                 FlxG.switchState(new MainMenuState());
         });
@@ -93,7 +99,12 @@ class OptionMain extends OptionScreen {
     public override function onSelect(id:Int) {
         switch(id) {
             case 0:
-                doFlickerAnim(id, function() {FlxG.switchState(new KeybindsMenu());});
+                if (skipKeybinds) {
+                    persistentUpdate = false;
+                    openSubState(new ControlsSettingsSubState(4, FlxG.camera, function() {}));
+                } else {
+                    doFlickerAnim(id, function() {FlxG.switchState(new KeybindsMenu());});
+                }
             case 1:
                 doFlickerAnim(id, function() {FlxG.switchState(new GameplayMenu());});
             case 2:

@@ -2,6 +2,8 @@ var upperBoppers:FlxSprite = null;
 var bottomBoppers:FlxSprite = null;
 var santa:FlxSprite = null;
 
+var snowSprite:FlxSprite = null;
+
 gfVersion = "gf-christmas";
 
 function createAfterChars() {
@@ -60,6 +62,40 @@ function create() {
     santa.animation.addByPrefix('idle', 'santa idle in fear', 24, false);
     santa.antialiasing = true;
     PlayState.add(santa);
+
+    PlayState.boyfriend.camOffset.y -= 100;
+
+
+    snow = new FlxSprite();
+    snow.loadGraphic(Paths.image('christmas/snow'));
+    snow.antialiasing = true;
+    snow.scrollFactor.set();
+    snow.shader = new CustomShader(Paths.shader("snow"));
+    // snow.cameras = [PlayState.camHUD];
+}
+
+function createPost() {
+    PlayState.add(snow);
+}
+
+var t:Float = 0;
+function update(elapsed:Float) {
+    t += elapsed;
+    snow.shader.shaderData.uTime.value = [t];
+
+    if (PlayState.section != null && PlayState.section.duetCamera) {
+        PlayState.defaultCamZoom = 0.65;
+        PlayState.camFollow.y -= 100;
+    }
+    else {
+        PlayState.defaultCamZoom = 0.80;
+    }
+    
+    snow.setGraphicSize(FlxG.width / FlxG.camera.zoom, FlxG.height / FlxG.camera.zoom);
+    var m = Math.max(snow.scale.x, snow.scale.y);
+    snow.scale.set(m, m);
+    snow.updateHitbox();
+    snow.screenCenter();
 }
 
 function beatHit(curBeat) {

@@ -2,7 +2,6 @@ package charter;
 
 import charter.CharterNote;
 import flixel.addons.ui.BorderDef;
-import EngineSettings.Settings;
 import flixel.input.keyboard.FlxKey;
 import flixel.addons.ui.StrNameLabel;
 import haxe.io.Path;
@@ -13,7 +12,6 @@ import flixel.addons.ui.FlxUIButton;
 import sys.io.File;
 import flixel.addons.ui.FlxUIRadioGroup;
 import flixel.addons.ui.FlxUIText;
-import StoryMenuState.WeeksJson;
 import sys.FileSystem;
 import Conductor.BPMChangeEvent;
 import Section.SwagSection;

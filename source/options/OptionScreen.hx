@@ -18,7 +18,7 @@ class OptionScreen extends MusicBeatSubstate {
     public var canSelect:Bool = true;
     public var curSelected:Int = 0;
 
-    public static inline var speedMultiplier:Float = 0.75;
+    public static inline final speedMultiplier:Float = 0.75;
 
     var spawnedOptions:Array<OptionSprite> = [];
     var optionsPanel:FlxSpriteGroup = new FlxSpriteGroup();
@@ -57,7 +57,7 @@ class OptionScreen extends MusicBeatSubstate {
         super.update(elapsed);
         time += elapsed;
         FlxG.camera.y = FlxMath.lerp(-FlxG.height, 0, FlxEase.quartOut(FlxMath.bound(time / speedMultiplier, 0, 1)));
-        if (controls.BACK) onExit();
+        if (controls.BACK && canSelect) onExit();
         if (options.length <= 0) {
             var l = FlxEase.quintOut(FlxMath.bound(time, 0, 1));
             emptyTxt.offset.y = FlxMath.lerp(50, 0, l);

@@ -2,7 +2,6 @@ package charter;
 
 import Note.NoteDirection;
 import flixel.math.FlxPoint;
-import EngineSettings.Settings;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
@@ -171,7 +170,7 @@ class CharterNote extends FlxSprite
 		if (isSustainNote)
 		{
 			noteScore * 0.2;
-			alpha = Settings.engineSettings.data.transparentSubstains ? 0.6 : 1;
+			alpha = 0.6;
 
 			noteOffset.x += width / 2;
 
@@ -237,7 +236,7 @@ class CharterNote extends FlxSprite
 		this.sustainLength = sustainLength;
 		if (newCharter) {
 			state = cast(FlxG.state, YoshiCrafterCharter);
-			sustainSprite = new FlxSprite(0, 0).makeGraphic(10, YoshiCrafterCharter.GRID_SIZE, 0xFFFFFFFF);
+			sustainSprite = new FlxSprite(0, 0).makeGraphic(10, YoshiCrafterCharter.GRID_SIZE, 0xFFFFFFFF, true);
 			state.add(sustainSprite);
 
 			updateSustain();

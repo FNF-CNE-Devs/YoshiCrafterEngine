@@ -1,13 +1,17 @@
+import openfl.display3D.Program3D;
 import flixel.system.FlxAssets.FlxShader;
 
 using StringTools;
 
 // goddamn prefix
+
+@:access(openfl.display3D.Context3D)
+@:access(openfl.display3D.Program3D)
+@:access(openfl.display.ShaderInput)
+@:access(openfl.display.ShaderParameter)
 class FlxFixedShader extends FlxShader {
     public var custom:Bool = false;
-    public var save:Bool = true;
-    public override function new(?save:Bool) {
-        if (save != null) this.save = save;
+    public override function new() {
         super();
     }
     @:noCompletion private override function __initGL():Void
@@ -29,167 +33,93 @@ class FlxFixedShader extends FlxShader {
 
         if (__context != null && program == null)
         {
-            initGLforce();
-        }
-    }
+            var prefix = "#version 130\n";
 
-    public function initGLforce() {
-        if (!custom) initGood(glFragmentSource, glVertexSource);
-    }
-    public function initGood(glFragmentSource:String, glVertexSource:String) {
-        // try {
+            var gl = __context.gl;
 
-        // } catch(e:Exception) {
-        //     trace(e);
-        //     trace(e.message);
-        //     trace(e.stack);
-        //     trace(e.details());
-        // }
-		
-        @:privateAccess
-        var gl = __context.gl;
-		
-		
+			prefix += "#ifdef GL_ES
+				"
+				+ (precisionHint == FULL ? "#ifdef GL_FRAGMENT_PRECISION_HIGH
+				precision highp float;
+				#else
+				precision mediump float;
+				#endif" : "precision lowp float;")
+				+ "
+				#endif
+				";
 
-        #if android
-        var prefix = "#version 300 es\n";
-        #else
-        var prefix = "#version 120\n";
-        #end
+			var vertex = prefix + glVertexSource;
+			var fragment = prefix + glFragmentSource;
 
-        #if (js && html5)
-        prefix += (precisionHint == FULL ? "precision mediump float;\n" : "precision lowp float;\n");
-        #else
-        prefix += "#ifdef GL_ES\n"
-            + (precisionHint == FULL ? "#ifdef GL_FRAGMENT_PRECISION_HIGH\n"
-                + "precision highp float;\n"
-                + "#else\n"
-                + "precision mediump float;\n"
-                + "#endif\n" : "precision lowp float;\n")
-            + "#endif\n\n";
-        #end
+			var id = vertex + fragment;
 
+			if (__context.__programs.exists(id))
+			{
+				program = __context.__programs.get(id);
+			}
+			else
+			{
+				program = __context.createProgram(GLSL);
 
-        #if android
-        prefix += 'out vec4 output_FragColor;\n';
-        var vertex = prefix + glVertexSource.replace("attribute", "in").replace("varying", "out").replace("texture2D", "texture").replace("gl_FragColor", "output_FragColor");
-        var fragment = prefix + glFragmentSource.replace("varying", "in").replace("texture2D", "texture").replace("gl_FragColor", "output_FragColor");
-        #else
-        var vertex = prefix + glVertexSource;
-        var fragment = prefix + glFragmentSource;
-        #end
-        
-        var id = vertex + fragment;
-		
-		#if trace_everything trace('Should save: $save'); #end
+				// TODO
+				// program.uploadSources (vertex, fragment);
+				program.__glProgram = __createGLProgram(vertex, fragment);
 
-        @:privateAccess
-        if (__context.__programs.exists(id) && save)
-        {   
-            
-		    
-            @:privateAccess
-            program = __context.__programs.get(id);
-            
-        }
-        else
-        {
-            
-            program = __context.createProgram(GLSL);
-            
+				__context.__programs.set(id, program);
+			}
 
-            // TODO
-            // program.uploadSources (vertex, fragment);
-            
-            @:privateAccess
-            program.__glProgram = __createGLProgram(vertex, fragment);
-            
+			if (program != null)
+			{
+				glProgram = program.__glProgram;
 
-            @:privateAccess
-            if (save) __context.__programs.set(id, program);
-        }
-		
-		#if trace_everything
-			/*
-			@:privateAccess
-			trace(__context);
-			@:privateAccess
-			trace(__context.__programs);
-			@:privateAccess
-			trace(program.__glProgram);
-			*/
-		#end
-		
-        if (program != null)
-        {
-            
-            @:privateAccess
-            glProgram = program.__glProgram;
+				for (input in __inputBitmapData)
+				{
+					if (input.__isUniform)
+					{
+						input.index = gl.getUniformLocation(glProgram, input.name);
+					}
+					else
+					{
+						input.index = gl.getAttribLocation(glProgram, input.name);
+					}
+				}
 
-            
-            
-            for (input in __inputBitmapData)
-            {
-                @:privateAccess
-                if (input.__isUniform)
-                {
-                    @:privateAccess
-                    input.index = gl.getUniformLocation(glProgram, input.name);
-                }
-                else
-                {
-                    @:privateAccess
-                    input.index = gl.getAttribLocation(glProgram, input.name);
-                }
-            }
+				for (parameter in __paramBool)
+				{
+					if (parameter.__isUniform)
+					{
+						parameter.index = gl.getUniformLocation(glProgram, parameter.name);
+					}
+					else
+					{
+						parameter.index = gl.getAttribLocation(glProgram, parameter.name);
+					}
+				}
 
-            
-            for (parameter in __paramBool)
-            {
-                @:privateAccess
-                if (parameter.__isUniform)
-                {
-                    @:privateAccess
-                    parameter.index = gl.getUniformLocation(glProgram, parameter.name);
-                }
-                else
-                {
-                    @:privateAccess
-                    parameter.index = gl.getAttribLocation(glProgram, parameter.name);
-                }
-            }
+				for (parameter in __paramFloat)
+				{
+					if (parameter.__isUniform)
+					{
+						parameter.index = gl.getUniformLocation(glProgram, parameter.name);
+					}
+					else
+					{
+						parameter.index = gl.getAttribLocation(glProgram, parameter.name);
+					}
+				}
 
-            
-            for (parameter in __paramFloat)
-            {
-                @:privateAccess
-                if (parameter.__isUniform)
-                {
-                    @:privateAccess
-                    parameter.index = gl.getUniformLocation(glProgram, parameter.name);
-                }
-                else
-                {
-                    @:privateAccess
-                    parameter.index = gl.getAttribLocation(glProgram, parameter.name);
-                }
-            }
-
-            
-            for (parameter in __paramInt)
-            {
-                @:privateAccess
-                if (parameter.__isUniform)
-                {
-                    @:privateAccess
-                    parameter.index = gl.getUniformLocation(glProgram, parameter.name);
-                }
-                else
-                {
-                    @:privateAccess
-                    parameter.index = gl.getAttribLocation(glProgram, parameter.name);
-                }
-            }
+				for (parameter in __paramInt)
+				{
+					if (parameter.__isUniform)
+					{
+						parameter.index = gl.getUniformLocation(glProgram, parameter.name);
+					}
+					else
+					{
+						parameter.index = gl.getAttribLocation(glProgram, parameter.name);
+					}
+				}
+			}
         }
     }
 }

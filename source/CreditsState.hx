@@ -58,16 +58,15 @@ class CreditsState extends MusicBeatState {
         var mFolder = Paths.modsPath;
         var y = 0;
 
-        var mods = FileSystem.readDirectory(mFolder);
-        mods.insert(0, "\\");
+        var mods = [Settings.engineSettings.data.selectedMod, "\\", "Friday Night Funkin'"];
         for (mod in mods) {
-			var path:String = Paths.getPath('credits.json', TEXT, mod == "\\" ? "preload" : 'mods/$mod');
+			var path:String = Paths.getPath('credits.json', TEXT, mod == "\\" ? "preload" : 'mods/$mod', true);
             if (Assets.exists(path)) {
                 var json:JSONShit = null;
                 try {
-                    json = Json.parse(Assets.getText(Paths.getPath('credits.json', TEXT, mod == "\\" ? "preload" : 'mods/$mod')));
+                    json = Json.parse(Assets.getText(Paths.getPath('credits.json', TEXT, mod == "\\" ? "preload" : 'mods/$mod', true)));
                 } catch(e) {
-                    PlayState.trace('Failed to parse credits json for $mod.\n$e');
+                    LogsOverlay.trace('Failed to parse credits json for $mod.\n$e');
                 }
 
                 if (json != null) {
@@ -105,6 +104,8 @@ class CreditsState extends MusicBeatState {
                         // icon.scale.x = icon.scale.y = 100 / sLength;
                         icon.setGraphicSize(125, 125);
                         icon.updateHitbox();
+                        var sc = Math.min(icon.scale.x, icon.scale.y);
+                        icon.scale.set(sc, sc);
                         icon.antialiasing = true;
                         add(icon);
                         icon.x = modMakerAlphabet.x - 10 - icon.width;

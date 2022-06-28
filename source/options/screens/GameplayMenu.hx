@@ -2,7 +2,6 @@ package options.screens;
 
 import flixel.util.FlxColor;
 import flixel.math.FlxMath;
-import EngineSettings.Settings;
 import options.OptionScreen;
 import flixel.group.FlxSpriteGroup;
 import flixel.FlxSprite;
@@ -22,13 +21,6 @@ class GameplayMenu extends OptionScreen {
                 onCreate: function(e) {e.check(Settings.engineSettings.data.downscroll);},
                 onSelect: function(e) {e.check(Settings.engineSettings.data.downscroll = !Settings.engineSettings.data.downscroll);}
             },
-	    {
-		name: "Ghost Tapping",
-		desc: "If enabled, you won't get misses from pressing keys while there are no notes able to be hit.",
-		value: "",
-		onCreate: function(e) {e.check(Settings.engineSettings.data.ghostTapping);},
-		onSelect: function(e) {e.check(Settings.engineSettings.data.ghostTapping = !Settings.engineSettings.data.ghostTapping);}
-	    },
             {
                 name: "Middlescroll",
                 desc: "If enabled, Strums will be centered, and opponent strums will be hidden.",
@@ -101,7 +93,7 @@ class GameplayMenu extends OptionScreen {
             },
             {
                 name: "Accuracy mode",
-                desc: "Sets the accuracy mode. Simple means based on the rating, Complex means based on the\npress delay.",
+                desc: "Sets the accuracy mode. Simple means based on the rating, Complex means based on the press delay.",
                 value: "",
                 onCreate: function(e) {e.value = ScoreText.accuracyTypesText[Settings.engineSettings.data.accuracyMode];},
                 onUpdate: function(e) {
@@ -120,13 +112,13 @@ class GameplayMenu extends OptionScreen {
         for(i in 0...4) {
             var babyArrow = new FlxSprite(Note._swagWidth * i, 0);
             
-            babyArrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getCustomizableSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas(Settings.engineSettings.data.customArrowSkin.toLowerCase(), 'skins');
+            babyArrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas(Settings.engineSettings.data.customArrowSkin.toLowerCase(), 'skins');
 					
 					
             babyArrow.animation.addByPrefix('green', 'arrowUP');
             babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
-            babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
-            babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
+            babyArrow.animation.addByPrefix('purple', 'arrowLEFT0');
+            babyArrow.animation.addByPrefix('red', 'arrowRIGHT0');
             //babyArrow.colored = Settings.engineSettings.data.customArrowColors;
 
             babyArrow.antialiasing = true;
@@ -135,13 +127,13 @@ class GameplayMenu extends OptionScreen {
             switch (i)
             {
                 case 0:
-                    babyArrow.animation.addByPrefix('static', 'arrowLEFT');
+                    babyArrow.animation.addByPrefix('static', 'arrowLEFT0');
                 case 1:
                     babyArrow.animation.addByPrefix('static', 'arrowDOWN');
                 case 2:
                     babyArrow.animation.addByPrefix('static', 'arrowUP');
                 case 3:
-                    babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
+                    babyArrow.animation.addByPrefix('static', 'arrowRIGHT0');
             }
             babyArrow.animation.play('static');
             strums.add(babyArrow);
@@ -150,7 +142,7 @@ class GameplayMenu extends OptionScreen {
 
         arrow = new FlxSprite(0, 0);
             
-        arrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getCustomizableSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas(Settings.engineSettings.data.customArrowSkin.toLowerCase(), 'skins');
+        arrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas(Settings.engineSettings.data.customArrowSkin.toLowerCase(), 'skins');
         arrow.animation.addByPrefix('green', 'green0');
         arrow.antialiasing = true;
         arrow.setGraphicSize(Std.int(arrow.width * 0.7));

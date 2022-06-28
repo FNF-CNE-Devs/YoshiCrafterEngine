@@ -8,21 +8,17 @@ import openfl.display.PNGEncoderOptions;
 import lime.ui.FileDialogType;
 import flixel.addons.transition.FlxTransitionableState;
 import dev_toolbox.file_explorer.FileExplorer;
-import dev_toolbox.week_editor.WeekCharacterSettings;
 import openfl.display.BitmapData;
 import flixel.tweens.FlxTween;
 using StringTools;
 
 import flixel.util.FlxColor;
 import flixel.FlxG;
-import dev_toolbox.week_editor.CreateWeekWizard;
 import flixel.addons.ui.*;
 import haxe.Json;
 import sys.io.File;
 import flixel.text.FlxText;
 import flixel.FlxSprite;
-import StoryMenuState.FNFWeek;
-import StoryMenuState.WeeksJson;
 import sys.FileSystem;
 
 class InfoTab extends ToolboxTab {
@@ -95,14 +91,14 @@ class InfoTab extends ToolboxTab {
         );
         modIcon.setGraphicSize(150, 150);
         modIcon.updateHitbox();
+        modIcon.scale.set(Math.min(modIcon.scale.x, modIcon.scale.y), Math.min(modIcon.scale.x, modIcon.scale.y));
 
         var chooseIconButton = new FlxUIButton(85, modIcon.y + 160, "Choose a mod icon", function() {
             CoolUtil.openDialogue(FileDialogType.OPEN, "Select an mod icon.", function(path) {
-				var img = Paths.getBitmapOutsideAssets(path);
-                if (img == null) return;
-                modIcon.loadGraphic(img);
+                modIcon.loadGraphic(BitmapData.fromFile(path));
                 modIcon.setGraphicSize(150, 150);
                 modIcon.updateHitbox();
+                modIcon.scale.set(Math.min(modIcon.scale.x, modIcon.scale.y), Math.min(modIcon.scale.x, modIcon.scale.y));
             });
         });
         chooseIconButton.resize(150, 20);
@@ -114,7 +110,7 @@ class InfoTab extends ToolboxTab {
             e.titleBarName = titlebarName.text;
             File.saveBytes('${Paths.modsPath}/${ToolboxHome.selectedMod}/modIcon.png', modIcon.pixels.encode(modIcon.pixels.rect, new PNGEncoderOptions(true)));
             ModSupport.saveModData(ToolboxHome.selectedMod);
-            card.updateMod(e);
+            card.updateMod(ToolboxHome.selectedMod);
         });
         saveButton.resize(145, 20);
 

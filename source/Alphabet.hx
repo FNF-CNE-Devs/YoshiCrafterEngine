@@ -380,7 +380,7 @@ class AlphaCharacter extends FlxSprite
 	public function new(x:Float, y:Float, color:FlxColor)
 	{
 		super(x, y);
-		var tex = Paths.getCustomizableSparrowAtlas('alphabet');
+		var tex = Paths.getSparrowAtlas('alphabet');
 		frames = tex;
 
 		this.letterColor = color;
@@ -414,8 +414,6 @@ class AlphaCharacter extends FlxSprite
 		animation.addByPrefix(letter, letter + " " + letterCase, 24);
 		animation.play(letter);
 		updateHitbox();
-
-		FlxG.log.add('the row' + row);
 
 		y = (110 - height);
 		y += row * 60;

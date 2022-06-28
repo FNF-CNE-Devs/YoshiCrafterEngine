@@ -159,7 +159,7 @@ class FileExplorer extends MusicBeatSubstate {
     //     openSubState(m);
     // }
 
-    public override function new(mod:String, type:FileExplorerType, ?defaultFolder:String = "", callback:String->Void) {
+    public override function new(mod:String, type:FileExplorerType, ?defaultFolder:String = "", callback:String->Void, ?windowName:String) {
         super();
         path = defaultFolder;
         this.mod = mod;
@@ -217,7 +217,7 @@ class FileExplorer extends MusicBeatSubstate {
         }
         tabThingy = new FlxUITabMenu(null, [
             {
-                label: 'Select a $fileType.',
+                label: windowName != null ? windowName : 'Select a $fileType.',
                 name: 'explorer'
             }
         ], true);
@@ -260,13 +260,11 @@ class FileExplorer extends MusicBeatSubstate {
         buttons.push(new FlxUIButton(0, 0, "Cancel", function() {
             close();
         }));
-        #if windows
+        // #if windows
             buttons.push(new FlxUIButton(0, 0, "Open Folder", function() {
-                var p = ('explorer "${Paths.modsPath}/$mod/$path"').replace("/", "\\").replace("\\\\", "\\");
-                trace(p);
-                new Process(p);
+                CoolUtil.openFolder('${Paths.modsPath}/$mod/$path');
             }));
-        #end
+        // #end
 
         for(k=>b in buttons) {
             b.y = tabThingy.height - 50;

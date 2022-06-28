@@ -2,7 +2,6 @@ package options.screens;
 
 import flixel.FlxG;
 import flixel.input.keyboard.FlxKey;
-import EngineSettings.Settings;
 import options.*;
 
 class KeybindsMenu extends OptionScreen {

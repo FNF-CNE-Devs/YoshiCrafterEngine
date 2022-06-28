@@ -26,7 +26,7 @@ class ModMenuState extends MusicBeatState {
             add(card);
         }
 
-        var fancyHUDTopBar = new FlxSprite(0, 0).makeGraphic(FlxG.width, 75, 0x88000000);
+        var fancyHUDTopBar = new FlxSprite(0, 0).makeGraphic(FlxG.width, 75, 0x88000000, true);
         fancyHUDTopBar.scrollFactor.set(0, 0);
         add(fancyHUDTopBar);
         

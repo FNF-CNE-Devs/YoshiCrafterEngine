@@ -3,9 +3,7 @@ import("Date");
 
 // there's nothing here, its handled via source code
 var now = Date.now();
-trace(now.getMonth());
-trace(now.getDate());
-if (now.getMonth() == 3 && now.getDate() == 0 && PlayState.song.keyNumber == 4) {
+if (now.getMonth() == 3 && now.getDate() == 1 && PlayState.song.keyNumber == 4) {
     trace("April fools!");
     var oldGenerate = generateStaticArrow;
     var oldCreate = create;

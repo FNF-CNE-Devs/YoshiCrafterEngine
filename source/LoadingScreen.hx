@@ -2,7 +2,6 @@ import sys.thread.Thread;
 import sys.io.File;
 import sys.FileSystem;
 import lime.system.System;
-import EngineSettings.Settings;
 import flixel.addons.transition.TransitionData;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
@@ -40,7 +39,7 @@ class LoadingScreen extends FlxState {
 
         
 
-        var loadingThingy = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+        var loadingThingy = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK, true);
         loadingThingy.pixels.lock();
         var color1 = FlxColor.fromRGB(0, 66, 119);
         var color2 = FlxColor.fromRGB(86, 0, 151);
@@ -107,14 +106,10 @@ class LoadingScreen extends FlxState {
                 "name" : "Mod Config",
                 "func" : modConfig
             });
-        loadSections.push({
-                "name" : "Story Weeks",
-                "func" : storyModeShit
-            });
-        loadSections.push({
-                "name" : "Freeplay Songs",
-                "func" : freeplayShit
-            });
+        // loadSections.push({
+        //         "name" : "Freeplay Songs",
+        //         "func" : freeplayShit
+        //     });
 
         FlxG.autoPause = false;
 
@@ -122,12 +117,13 @@ class LoadingScreen extends FlxState {
         Thread.create(function() {
             for(k=>s in loadSections) {
                 loadingText.text = 'Loading ${s.name}... (${Std.string(Math.floor((k / loadSections.length) * 100))}%)';
+                trace(loadingText.text);
                 s.func();
             }
             switchin = true;
             // FlxG.autoPause = false;
-            var e = new TitleState();
-            trace(e);
+    
+            var e = new #if ycebeta BetaWarningState #else TitleState #end();
             FlxG.switchState(e);
         });
         #end
@@ -174,12 +170,12 @@ class LoadingScreen extends FlxState {
     public function modConfig() {
         ModSupport.reloadModsConfig();
     }
-    public function storyModeShit() {
-        StoryMenuState.loadWeeks();
-    }
-    public function freeplayShit() {
-        FreeplayState.loadFreeplaySongs();
-    }
+    // public function storyModeShit() {
+    //     StoryMenuState.loadWeeks();
+    // }
+    // public function freeplayShit() {
+    //     FreeplayState.loadFreeplaySongs();
+    // }
     public function saveData() {
 		// ╔═══════════════════════════════════════════════════╗
 		// ║ /!\ WARNING !                                     ║
@@ -204,6 +200,7 @@ class LoadingScreen extends FlxState {
         var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
         diamond.persist = true;
         diamond.destroyOnNoUse = false;
+        FlxG.bitmap.spareFromCache.push(diamond);
 
         trace("transitions");
         FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 0.5, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},

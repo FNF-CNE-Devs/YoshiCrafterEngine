@@ -106,9 +106,27 @@ class UpdateState extends MusicBeatState
 				trace('File not found: $f');
 				alright();
 			} else {
-				openSubState(new MenuMessage('Failed to download $f. Make sure you have a working internet connection, and try again.\n\nError ID: ${e.errorID}\n${e.text}', function() {
-					FlxG.switchState(new MainMenuState());
-				}));
+				openSubState(new MenuMessage('Failed to download $f. Make sure you have a working internet connection, and try again.\n\nError ID: ${e.errorID}\n${e.text}', [
+					{
+						label: "Retry",
+						callback: function() {
+							fileList.insert(0, f);
+							doFile();
+						}
+					},
+					{
+						label: "Skip",
+						callback: function() {
+							doFile();
+						}
+					},
+					{
+						label: "Cancel",
+						callback: function() {
+							FlxG.switchState(new MainMenuState());
+						}
+					}
+				]));
 				persistentUpdate = false;
 			}
 		});
@@ -128,7 +146,10 @@ class UpdateState extends MusicBeatState
 		});
 		downloadStream.addEventListener(ProgressEvent.PROGRESS, function(e) {
 			var label1 = '(${totalFiles - fileList.length}/${totalFiles})';
-			var label2 = '(${CoolUtil.getSizeLabel(Std.int(e.bytesLoaded))} / ${CoolUtil.getSizeLabel(Std.int(e.bytesTotal))}) (${CoolUtil.getSizeLabel(Std.int((e.bytesLoaded - oldBytesLoaded) / (t - oldTime)))}/s)';
+			var label2 = '(${CoolUtil.getSizeLabel(Std.int(e.bytesLoaded))} / ${CoolUtil.getSizeLabel(Std.int(e.bytesTotal))})';
+			
+			var ll = CoolUtil.getSizeLabel(Std.int((e.bytesLoaded - oldBytesLoaded) / (t - oldTime)));
+			percentLabel.text = '${[for(i in 0...ll.length) " "].join("")}     ${Math.floor(((downloadedFiles / totalFiles) + (e.bytesLoaded / e.bytesTotal / totalFiles)) * 100)}% (${ll}/s)';
 			var maxLength:Int = Std.int(Math.max(label1.length, label2.length));
 			while(label1.length < maxLength) label1 = " " + label1;
 			while(label2.length < maxLength) label2 += " ";
@@ -136,21 +157,6 @@ class UpdateState extends MusicBeatState
 			
 			oldTime = t;
 			oldBytesLoaded = e.bytesLoaded;
-			/*
-			// if (good) {
-				if (downloadStream.data == null) {
-					// trace("data is null");
-					return;
-				}
-				var data:ByteArray = new ByteArray();
-				downloadStream.data.readBytes(data, 0, downloadStream.data.length - downloadStream.data.position);
-				trace(data.length);
-				fileOutput.writeBytes(data, 0, data.length);
-				fileOutput.flush();
-			// } else {
-			// 	trace("Isn't good yet");
-			// }
-			*/
 		});
 
 
@@ -175,7 +181,7 @@ class UpdateState extends MusicBeatState
 
 		// CoolUtil.addUpdateBG(this);
 
-		var loadingThingy = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		var loadingThingy = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK, true);
         loadingThingy.pixels.lock();
         var color1 = FlxColor.fromRGB(0, 66, 119);
         var color2 = FlxColor.fromRGB(86, 0, 151);
@@ -236,67 +242,6 @@ class UpdateState extends MusicBeatState
 		add(currentFileLabel);
 	
 		doFile();
-		/*
-		//Thread.create(function() {
-			try {
-				// download stuff
-				for (k => f in fileList) {
-					var downloadStream = new URLStream();
-					var request = new URLRequest('$baseURL/$f');
-					//request.data.token = "";
-					downloadStream.load(request);
-					var array = [];
-					var dir = [for (k => e in (array = f.replace("\\", "/").split("/"))) if (k < array.length - 1) e].join("/");
-					FileSystem.createDirectory('./_cache/$dir');
-					var fileOutput:FileOutput = File.write('./_cache/$f', false);
-					var am = 0;
-					var done = false;
-					var progress = false;
-					//downloadStream.
-					downloadStream.addEventListener(Event.COMPLETE, function(e) {done = true;});
-					downloadStream.addEventListener(ProgressEvent.PROGRESS, function(e) {progress = true;});
-					@:privateAccess
-					while (!done) {
-						if (progress) {
-							progress = false;
-							trace('bytesAvailable: ${downloadStream.bytesAvailable} - am: $am');
-							var data = new ByteArray();
-							@:privateAccess
-							downloadStream.readBytes(data, 0, downloadStream.bytesAvailable);
-							fileOutput.writeBytes(data, 0, data.length);
-						}
-						
-						//fileOutput.
-					}
-					trace('disconnected');
-					fileOutput.close();
-					//downloadStream.readBytes(
-					downloadedFiles = k + 1;
-					
-					var request = new URLRequest('$baseURL/$f');
-					var loader = new URLLoader();
-					loader.dataFormat = URLLoaderDataFormat.BINARY;
-					var completed = false;
-					
-					loader.addEventListener(flash.events.Event.COMPLETE, function(e) {completed = true;});
-					loader.load(request);
-
-					/*
-					var array = [];
-					var dir = [for (k => e in (array = f.replace("\\", "/").split("/"))) if (k < array.length - 1) e].join("/");
-					FileSystem.createDirectory('./_cache/$dir');
-					var fileOutput:FileOutput = File.write('./_cache/$f', false);
-					
-					trace('$baseURL/$f');
-					fileOutput.writeString(Http.requestUrl('$baseURL/$f'));
-					fileOutput.flush();
-					fileOutput.close();
-				}
-			} catch (e) {
-				trace(e.details());
-			}
-		//});
-		*/
 	}
 
 	var t:Float = 0;

@@ -8,6 +8,10 @@ import flixel.util.FlxTimer;
 import openfl.events.Event;
 import vlc.VlcBitmap;
 
+/**
+ * YoshiCrafter29 here. If you want it to be removed, just dm me on twitter lol
+ * Also fixed some issues to support resolutions other than 1280x720 while still being fullscreen.
+ */
 // THIS IS FOR TESTING
 // DONT STEAL MY CODE >:(
 class MP4Handler
@@ -18,6 +22,9 @@ class MP4Handler
 	public var bitmap:VlcBitmap;
 
 	public var sprite:FlxSprite;
+	public var canvasWidth:Null<Int> = null;
+	public var canvasHeight:Null<Int> = null;
+	public var fillScreen:Bool;
 
 	public function new()
 	{
@@ -95,8 +102,16 @@ class MP4Handler
 	{
 		trace("video loaded!");
 
-		if (sprite != null)
+		if (sprite != null) {
 			sprite.loadGraphic(bitmap.bitmapData);
+			if (canvasWidth != null && canvasHeight != null) {
+				sprite.setGraphicSize(canvasWidth, canvasHeight);
+				sprite.updateHitbox();
+
+				var r = (fillScreen ? Math.max : Math.min)(sprite.scale.x, sprite.scale.y);
+				sprite.scale.set(r, r); // lol
+			}
+		}
 	}
 
 	public function onVLCComplete()

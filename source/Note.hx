@@ -2,7 +2,6 @@ package;
 
 import NoteShader.ColoredNoteShader;
 import flixel.math.FlxPoint;
-import EngineSettings.Settings;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
@@ -44,14 +43,14 @@ class Note extends FlxSprite
 
 	public var maxEarlyDiff:Float = 125; //ms
 	public var maxLateDiff:Float = 90; //ms
-	public var missDiff:Float = 100; //ms
+	public var missDiff:Float = 250; //ms
 
 	public var noteType:Int = 0;
 
 	public var colored:Bool = false;
 	public var prevSusNote:Note = null;
 
-	public var sustainHealth:Float = 0.012;
+	public var sustainHealth:Float = 0.008;
 
 	public var splash:String = Paths.splashes('splashes', "shared");
 	public var coloredSplash:Null<Bool> = null;
@@ -75,7 +74,6 @@ class Note extends FlxSprite
 		var nScale = 1;
 		var middlescroll = false;
 		if (PlayState.current != null) {
-			nScale = PlayState.current.engineSettings.noteScale;
 			middlescroll = PlayState.current.engineSettings.middleScroll;
 		}
 		return Math.min(1, (middlescroll ? 10 : 5) / ((PlayState.SONG.keyNumber == null ? (middlescroll ? 10 : 5) : PlayState.SONG.keyNumber) * nScale));
@@ -108,6 +106,16 @@ class Note extends FlxSprite
 	];
 
 	public static var noteNumberScheme(get, null):Array<NoteDirection>;
+
+	public var noteDirection(get, null):Int;
+	public function get_noteDirection():Int {
+		var e = noteNumberSchemes[PlayState.SONG.keyNumber];
+		if (e != null) {
+			return cast e[noteData % PlayState.SONG.keyNumber];
+		} else {
+			return noteData % 4;
+		}
+	}
 	public static function get_noteNumberScheme():Array<NoteDirection> {
 		var noteNumberScheme:Array<NoteDirection> = noteNumberSchemes[PlayState.SONG.keyNumber];
 		if (noteNumberScheme == null) noteNumberScheme = noteNumberSchemes[4];
@@ -216,9 +224,14 @@ class Note extends FlxSprite
 	public var splashColor:FlxColor = 0xFFFFFFFF;
 	public var isLongSustain:Bool = false;
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?mustHit = true, ?altAnim = false)
+	public var stepLength:Float = 0;
+
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?mustHit = true, ?altAnim = false, ?stepLength:Float)
 	{
 		super();
+		if (stepLength == null) stepLength = Conductor.stepCrochet;
+		this.stepLength = stepLength;
+		
 		this.altAnim = altAnim;
 		engineSettings = Settings.engineSettings.data;
 		if (PlayState.current != null) engineSettings = PlayState.current.engineSettings;
@@ -253,13 +266,14 @@ class Note extends FlxSprite
 		// createNote();
 		script.setVariable("note", this);
 		script.executeFunc("create");
-		animation.play("scroll");
 		if (isSustainNote) {
 			if (prevNote != null)
 				if (prevNote.animation.curAnim != null)
 					if (prevNote.animation.curAnim.name == "holdend")
 						prevNote.animation.play("holdpiece");
 			animation.play("holdend");
+		} else {
+			animation.play("scroll");
 		}
 
 		if (colored) {
@@ -315,7 +329,7 @@ class Note extends FlxSprite
 		if (isSustainNote)
 		{
 			noteScore * 0.2;
-			alpha = engineSettings.transparentSubstains ? 0.6 : 1;
+			alpha = 0.6;
 
 			noteOffset.x += width / 2;
 
@@ -365,7 +379,7 @@ class Note extends FlxSprite
 					// 		prevNote.animation.play('redhold');
 					// }
 
-					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * (engineSettings.customScrollSpeed ? engineSettings.scrollSpeed : PlayState.SONG.speed);
+					prevNote.scale.y *= stepLength / 100 * 1.5 * (engineSettings.customScrollSpeed ? engineSettings.scrollSpeed : PlayState.SONG.speed);
 					prevNote.updateHitbox();
 					prevNote.isLongSustain = true;
 			

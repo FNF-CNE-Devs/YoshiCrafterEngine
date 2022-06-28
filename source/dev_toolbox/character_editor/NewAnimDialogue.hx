@@ -53,21 +53,29 @@ class NewAnimDialogue extends MusicBeatSubstate {
 
         var addButton = new FlxUIButton(110, animSparrow.y + animSparrow.height + 10, "Add", function() {
             if (animName.text.trim() == "") {
-                openSubState(ToolboxMessage.showMessage("Error", "You must specify an animation name (ex : 'idle' or 'singUP')"));
+                var mes = ToolboxMessage.showMessage("Error", "You must specify an animation name (ex : 'idle' or 'singUP')");
+                mes.cameras = cameras;
+                openSubState(mes);
                 return;
             }
             if (animSparrow.text.trim() == "") {
-                openSubState(ToolboxMessage.showMessage("Error", "You must specify the Sparrow atlas animation name (the name of the animation in Adobe Animate)"));
+                var mes = ToolboxMessage.showMessage("Error", "You must specify the Sparrow atlas animation name (the name of the animation in Adobe Animate)");
+                mes.cameras = cameras;
+                openSubState(mes);
                 return;
             }
                 if (CharacterEditor.current.character.animation.getByName(animName.text) != null) {
-                    openSubState(ToolboxMessage.showMessage("Error", 'The ${animName.text} animation already exists.'));
+                    var mes = ToolboxMessage.showMessage("Error", 'The ${animName.text} animation already exists.');
+                    mes.cameras = cameras;
+                    openSubState(mes);
                     return;
                 }
             if (CharacterEditor.current.addAnim(animName.text, animSparrow.text)) {
                 close();
             } else {
-                openSubState(ToolboxMessage.showMessage("Error", '"${animName.text}" animation couldn\'t be added because "${animSparrow.text}"\'s animation doesn\'t exists.'));
+                var mes = ToolboxMessage.showMessage("Error", '"${animName.text}" animation couldn\'t be added because "${animSparrow.text}"\'s animation doesn\'t exists.');
+                mes.cameras = cameras;
+                openSubState(mes);
                 return;
             }
         });

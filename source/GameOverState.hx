@@ -1,6 +1,5 @@
 package;
 
-import EngineSettings.Settings;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionableState;

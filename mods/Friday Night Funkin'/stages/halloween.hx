@@ -16,6 +16,24 @@ function create()
     halloweenBG.antialiasing = true;
     PlayState.add(halloweenBG);
 }
+
+function update(elapsed:Float) {
+    
+    var lightningValue:Float = 0;
+    var frame = halloweenBG.animation.curAnim.curFrame;
+    switch(frame) {
+        case 0:
+            lightningValue = 0;
+        default:
+            var v = ((frame - 2) / (halloweenBG.animation.curAnim.frames.length - 2));
+            lightningValue = (1 - v) * (1 - v);
+    }
+    lightningValue *= 0.65;
+    for(e in [PlayState.boyfriend, PlayState.gf, PlayState.dad]) {
+        e.colorTransform.redMultiplier = e.colorTransform.greenMultiplier = e.colorTransform.blueMultiplier = 1 - lightningValue;
+        e.colorTransform.redOffset = e.colorTransform.greenOffset = e.colorTransform.blueOffset = (lightningValue) * 255;
+    }
+}
 function beatHit(curBeat)
 {
     if (FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)

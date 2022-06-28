@@ -76,7 +76,7 @@ class Stage {
 			}
 		}
 		if (splitPath.length < 2) {
-			PlayState.trace('Stage not found for $path in $mod');
+			LogsOverlay.error('Stage not found for $path in $mod');
 			return;
 		}
 		var json:StageJSON = null;
@@ -84,7 +84,7 @@ class Stage {
 			try {
 				json = Json.parse(Assets.getText(Paths.stage(Path.withoutExtension(splitPath[1]), 'mods/$mod')));
 			} catch(e) {
-				PlayState.trace('Failed to parse JSON data at $path in $mod : $e');
+				LogsOverlay.error('Failed to parse JSON data at $path in $mod : $e');
 			}
 		} else {
 			json = Unserializer.run(Assets.getText(Paths.stage(Path.withoutExtension(splitPath[1]), 'mods/$mod', 'stage')));

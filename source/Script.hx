@@ -16,7 +16,6 @@ using StringTools;
 import sys.FileSystem;
 import sys.io.File;
 import haxe.io.Path;
-import EngineSettings.Settings;
 import haxe.Exception;
 
 // HSCRIPT
@@ -33,6 +32,7 @@ import llua.Convert;
 class Script {
     public var fileName:String = "";
     public var mod:String = null;
+    public var metadata:Dynamic = {};
     public function new() {
 
     }
@@ -63,40 +63,44 @@ class Script {
         }
         switch(ext.toLowerCase()) {
             case 'hx' | 'hscript' | 'hsc':
-                trace("HScript");
                 return new HScript();
             #if ENABLE_LUA
             case 'lua':
-                trace("Lua");
                 return new LuaScript();
             #end
         }
         return null;
     }
 
+
     public function executeFunc(funcName:String, ?args:Array<Any>):Dynamic {
-        throw new Exception("NOT IMPLEMENTED !");
+        var ret = _executeFunc(funcName, args);
+        executeFuncPost();
+        return ret;
+    }
+
+    public function _executeFunc(funcName:String, ?args:Array<Any>):Dynamic {
+        Paths.curSelectedMod = 'mods/${mod}';
         return null;
     }
 
-    public function setVariable(name:String, val:Dynamic) {
-        throw new Exception("NOT IMPLEMENTED !");
+    public function executeFuncPost() {
+        Paths.curSelectedMod = null;
     }
 
-    public function getVariable(name:String):Dynamic {
-        throw new Exception("NOT IMPLEMENTED !");
-        return null;
-    }
+    public function setVariable(name:String, val:Dynamic) {}
 
-    public function trace(text:String) {
+    public function getVariable(name:String):Dynamic {return null;}
+
+    public function trace(text:String, error:Bool = false) {
         trace(text);
-        if (Settings.engineSettings.data.developerMode) {
-            for (t in text.split("\n")) PlayState.log.push(t);
+        if (CoolUtil.isDevMode()) {
+            LogsOverlay.trace(text);
         }
     }
 
     public function loadFile(path:String) {
-        throw new Exception("NOT IMPLEMENTED !");
+        Paths.curSelectedMod = 'mods/${mod}';
     }
 
     public function destroy() {
@@ -105,16 +109,30 @@ class Script {
 }
 
 class ScriptPack {
+    public var ogScripts:Array<Script> = [];
     public var scripts:Array<Script> = [];
     public var scriptModScripts:Array<ModScript> = [];
     public function new(scripts:Array<ModScript>) {
         for (s in scripts) {
-            var sc = Script.create('${Paths.modsPath}/${s.path}');
-            if (sc == null) continue;
-            ModSupport.setScriptDefaultVars(sc, s.mod, {});
-            this.scripts.push(sc);
+            addScript(s.path, s.mod);
             scriptModScripts.push(s);
         }
+        for(e in this.scripts) ogScripts.push(e);
+    }
+
+    public function addScript(path:String, ?mod:String) {
+        if (mod == null) mod = Settings.engineSettings.data.selectedMod;
+
+        var sc = Script.create('${Paths.modsPath}/${path}');
+        if (sc == null) return;
+        ModSupport.setScriptDefaultVars(sc, mod, {});
+        sc.setVariable("importScript", function(p:String) {
+            if (p == null) return;
+            var scriptPath = SongConf.getModScriptFromValue(sc.mod, p);
+            addScript(scriptPath.path, scriptPath.mod);
+            scriptModScripts.push(scriptPath);
+        });
+        this.scripts.push(sc);
     }
 
     public function loadFiles() {
@@ -125,16 +143,15 @@ class ScriptPack {
     }
 
     public function executeFunc(funcName:String, ?args:Array<Any>, ?defaultReturnVal:Any) {
-        
         var a = args;
         if (a == null) a = [];
         for (script in scripts) {
             var returnVal = script.executeFunc(funcName, a);
             if (returnVal != defaultReturnVal && defaultReturnVal != null) {
-                trace("found");
                 return returnVal;
             }
         }
+
         return defaultReturnVal;
     }
 
@@ -157,7 +174,7 @@ class ScriptPack {
     }
 
     public function getVariable(name:String, defaultReturnVal:Any) {
-        for (script in scripts) {
+        for (script in ogScripts) { // for gfVersion and shit like that
             var variable = script.getVariable(name);
             if (variable != defaultReturnVal) {
                 return variable;
@@ -176,11 +193,24 @@ class HScript extends Script {
     public var hscript:Interp;
     public function new() {
         hscript = new Interp();
+        hscript.errorHandler = function(e) {
+            this.trace('$e');
+            if (Settings.engineSettings != null && Settings.engineSettings.data.showErrorsInMessageBoxes && !FlxG.keys.pressed.SHIFT) {
+                var posInfo = hscript.posInfos();
+
+                // var fileName = posInfo.fileName;
+                var lineNumber = Std.string(posInfo.lineNumber);
+                var methodName = posInfo.methodName;
+                var className = posInfo.className;
+
+                Application.current.window.alert('Exception occured at line $lineNumber ${methodName == null ? "" : 'in $methodName'}\n\n${e}\n\nIf the message boxes blocks the engine, hold down SHIFT to bypass.', 'HScript error! - ${fileName}');
+            }
+        };
         super();
     }
 
-    public override function executeFunc(funcName:String, ?args:Array<Any>):Dynamic {
-        Paths.currentLibrary = 'mods/${mod}';
+    public override function _executeFunc(funcName:String, ?args:Array<Any>):Dynamic {
+        super._executeFunc(funcName, args);
         if (hscript == null) {
             this.trace("hscript is null");
             return null;
@@ -192,26 +222,26 @@ class HScript extends Script {
                 try {
                     result = f();
                 } catch(e) {
-                    this.trace('$e');
+                    this.trace('$e', true);
                 }
-                Paths.currentLibrary = null;
                 return result;
             } else {
                 var result = null;
                 try {
                     result = Reflect.callMethod(null, f, args);
                 } catch(e) {
-                    this.trace('$e');
+                    this.trace('$e', true);
                 }
-                Paths.currentLibrary = null;
                 return result;
             }
 			// f();
 		}
+        executeFuncPost();
         return null;
     }
 
     public override function loadFile(path:String) {
+        super.loadFile(path);
         if (path.trim() == "") return;
         fileName = Path.withoutDirectory(path);
         var p = path;
@@ -228,21 +258,22 @@ class HScript extends Script {
         try {
             hscript.execute(ModSupport.getExpressionFromPath(p, false));
         } catch(e) {
-            this.trace('${e.message}');
+            this.trace('${e.message}', true);
         }
     }
 
-    public override function trace(text:String) {
+    public override function trace(text:String, error:Bool = false) {
         var posInfo = hscript.posInfos();
 
         // var fileName = posInfo.fileName;
         var lineNumber = Std.string(posInfo.lineNumber);
         var methodName = posInfo.methodName;
         var className = posInfo.className;
-        trace('$fileName:$methodName:$lineNumber: $text');
+        // trace('$fileName:$methodName:$lineNumber: $text');
 
         if (!Settings.engineSettings.data.developerMode) return;
-        for (e in ('$fileName:$methodName:$lineNumber: $text').split("\n")) PlayState.log.push(e.trim());
+        
+        (error ? LogsOverlay.error : LogsOverlay.trace)(('$fileName:${methodName == null ? "" : '$methodName:'}$lineNumber: $text').trim());
     }
 
     public override function setVariable(name:String, val:Dynamic) {
@@ -250,7 +281,12 @@ class HScript extends Script {
     }
 
     public override function getVariable(name:String):Dynamic {
-        return hscript.variables.get(name);
+        var v = hscript.variables.get(name);
+        if (v == null) {
+            @:privateAccess
+            return hscript.locals.get(name);
+        }
+        return v;
     }
 }
 
@@ -267,6 +303,19 @@ class LuaScript extends Script {
     public var state:llua.State;
     public var variables:Map<String, Dynamic> = [];
 
+
+    function setLuaVar(name:String, value:Dynamic) {
+        switch(Type.typeof(value)) {
+            case Type.ValueType.TNull | Type.ValueType.TBool | Type.ValueType.TInt | Type.ValueType.TFloat | Type.ValueType.TClass(String) | Type.ValueType.TObject:
+                Convert.toLua(state, value);
+                Lua.setglobal(state, name);
+            case Type.ValueType.TFunction:
+                Lua_helper.add_callback(state, name, value);
+            case value:
+                throw new Exception('Variable of type $value is not supported.');
+        }
+    }
+    
     function getVar(v:String) {
         var splittedVar = v.split(".");
         if (splittedVar.length == 0) return null;
@@ -276,8 +325,13 @@ class LuaScript extends Script {
             if (property != null) {
                 currentObj = property;
             } else {
-                this.trace('Variable $v doesn\'t exist or is equal to null.');
-                return null;
+                try {
+                    // try running getter
+                    currentObj = Reflect.getProperty(currentObj, 'get_${splittedVar[i]}')();
+                } catch(e) {
+                    this.trace('Variable ${splittedVar[i]} in $v doesn\'t exist or is equal to null. Parent variable is of type ${Type.typeof(currentObj)}.', true);
+                    return null;
+                }
             }
         }
         return currentObj;
@@ -322,7 +376,7 @@ class LuaScript extends Script {
                 Reflect.setProperty(currentObj, splittedVar[splittedVar.length - 1], finalVal);
                 return true;
             } catch(e) {
-                this.trace('Variable $v doesn\'t exist.');
+                this.trace('Variable $v doesn\'t exist.', true);
                 return false;
             }
         });
@@ -461,7 +515,7 @@ class LuaScript extends Script {
                 try {
                     result = Reflect.callMethod(null, func, finalArgs);
                 } catch(e) {
-                    this.trace('$e');
+                    this.trace('$e', true);
                 }
                 if (resultName == null) {
                     return result;
@@ -494,8 +548,7 @@ class LuaScript extends Script {
     }
 
     public override function loadFile(path:String) {
-        // LuaL.loadfile(state, path);
-        // LuaL.dostring(state, Paths.getTextOutsideAssets(path));
+        super.loadFile(path);
         var p = path;
         if (Path.extension(p) == "") {
             p = p + ".lua";
@@ -528,7 +581,7 @@ class LuaScript extends Script {
                             if (Std.isOfType(v, cl)) {
                                 return Reflect.getProperty(v, e);
                             } else {
-                                trace('Variable $v is not a {$prefix}.');
+                                trace('Variable $v is not a {$prefix}.', true);
                                 return false;
                             }
                         }
@@ -541,7 +594,7 @@ class LuaScript extends Script {
                             if (Std.isOfType(v, cl)) {
                                 Reflect.setProperty(v, e, val);
                             } else {
-                                trace('Variable $v is not a {$prefix}.');
+                                trace('Variable $v is not a {$prefix}.', true);
                             }
                         }
                     });
@@ -551,7 +604,7 @@ class LuaScript extends Script {
                         if (Std.isOfType(v, cl)) {
                             return Reflect.getProperty(v, e);
                         } else {
-                            trace('Variable $v is not a {$prefix}.');
+                            trace('Variable $v is not a {$prefix}.', true);
                             return -1;
                         }
                     });
@@ -563,7 +616,7 @@ class LuaScript extends Script {
                             if (Std.isOfType(v, cl)) {
                                 Reflect.setProperty(v, e, val);
                             } else {
-                                trace('Variable $v is not a {$prefix}.');
+                                trace('Variable $v is not a {$prefix}.', true);
                             }
                         }
                     });
@@ -573,7 +626,7 @@ class LuaScript extends Script {
                         if (Std.isOfType(v, cl)) {
                             return Reflect.getProperty(v, e);
                         } else {
-                            trace('Variable $v is not a {$prefix}.');
+                            trace('Variable $v is not a {$prefix}.', true);
                             return -1.0;
                         }
                     });
@@ -585,7 +638,7 @@ class LuaScript extends Script {
                             if (Std.isOfType(v, cl)) {
                                 Reflect.setProperty(v, e, val);
                             } else {
-                                trace('Variable $v is not a {$prefix}.');
+                                trace('Variable $v is not a {$prefix}.', true);
                             }
                         }
                     });
@@ -595,7 +648,7 @@ class LuaScript extends Script {
                         if (Std.isOfType(v, cl)) {
                             return Reflect.getProperty(v, e);
                         } else {
-                            trace('Variable $v is not a {$prefix}.');
+                            trace('Variable $v is not a {$prefix}.', true);
                             return -1.0;
                         }
                     });
@@ -607,7 +660,7 @@ class LuaScript extends Script {
                             if (Std.isOfType(v, cl)) {
                                 Reflect.setProperty(v, e, val);
                             } else {
-                                trace('Variable $v is not a {$prefix}.');
+                                trace('Variable $v is not a {$prefix}.', true);
                             }
                         }
                     });
@@ -615,10 +668,8 @@ class LuaScript extends Script {
             }
         }
     }
-    public override function trace(text:String)
+    public override function trace(text:String, error:Bool = false)
     {
-        // LuaL.error(state, "%s");
-        
         var lua_debug:Lua_Debug = {
 
         }
@@ -637,9 +688,8 @@ class LuaScript extends Script {
             bText += 'at line ${lua_debug.currentline}: ';
         }
 
-        for(t in text.split("\n")) PlayState.log.push(bText + t);
+        (error ? LogsOverlay.error : LogsOverlay.trace)(bText + text);
         trace(bText + text);
-        // Lua.pop(state, 1);
     }
 
     public override function getVariable(name:String) {
@@ -647,7 +697,7 @@ class LuaScript extends Script {
         return variables[name];
     }
 
-    // public override function executeFunc(name:String) {
+    // public override function _executeFunc(name:String) {
     //     // Lua.getglobal()
     //     return variables[name];
     // }
@@ -657,9 +707,8 @@ class LuaScript extends Script {
         variables[name] = v;
     }
 
-    public override function executeFunc(funcName:String, ?args:Array<Any>) {
-        // Gets func
-        // Lua.
+    public override function _executeFunc(funcName:String, ?args:Array<Any>) {
+        super._executeFunc(funcName, args);
         
         Lua.settop(state, 0);
         if (args == null) args = [];
@@ -700,6 +749,10 @@ class LuaScript extends Script {
 
         var value = Convert.fromLua(state, Lua.gettop(state));
         return value;
+    }
+
+    public override function destroy() {
+        Lua.close(state);
     }
 }
 #end

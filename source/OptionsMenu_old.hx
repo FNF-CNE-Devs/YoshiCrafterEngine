@@ -19,7 +19,6 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.group.FlxSpriteGroup;
 import lime.utils.Assets;
-import EngineSettings.Settings;
 import Alphabet.AlphaCharacter;
 
 using StringTools;
@@ -925,12 +924,7 @@ class OptionsMenu extends MusicBeatState
 				if (controls.ACCEPT) {
 					var p = Paths.getSkinsPath().replace("/", "\\");
 					trace(p);
-					#if windows
-						Sys.command('explorer "$p"');	
-					#end
-					#if linux
-						Sys.command('nautilus', [p]);	
-					#end
+					CoolUtil.openFolder(p);
 				}
 				
 			},
@@ -1015,25 +1009,6 @@ class OptionsMenu extends MusicBeatState
 			},
 			checkbox: true,
 			checkboxChecked: function() {return Settings.engineSettings.data.antialiasing;},
-			value: function() {return "";}
-		});
-		
-		performance.options.push(
-		{
-			text : "Note antialiasing",
-			#if android
-			description : "If unchecked, will disable anti-aliasing for notes, to allow better performance on mobile devices. Does not affect strums. Disabled by default.",
-			#else
-			description : "If unchecked, will disable anti-aliasing for notes, to allow better performance on lower end PCs. Does not affect strums. Enabled by default.",
-			#end
-			updateOnSelected: function(elapsed:Float, o:FNFOption) {
-				if (controls.ACCEPT) {
-					Settings.engineSettings.data.noteAntialiasing = !Settings.engineSettings.data.noteAntialiasing;
-					o.check(Settings.engineSettings.data.noteAntialiasing);
-				}
-			},
-			checkbox: true,
-			checkboxChecked: function() {return Settings.engineSettings.data.noteAntialiasing;},
 			value: function() {return "";}
 		});
 		

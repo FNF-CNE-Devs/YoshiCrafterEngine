@@ -51,7 +51,8 @@ function beatHit(curBeat) {
         ]
     }
 
-    public static var entireFuckingCustomVertexHeader = " attribute float openfl_Alpha;
+    public static var entireFuckingCustomVertexHeader =
+  " attribute float openfl_Alpha;
     attribute vec4 openfl_ColorMultiplier;
     attribute vec4 openfl_ColorOffset;
     attribute vec4 openfl_Position;
@@ -67,7 +68,8 @@ function beatHit(curBeat) {
     uniform vec2 openfl_TextureSize;
     ";
 
-    public static var entireFuckingCustomVertexBody = "openfl_Alphav = openfl_Alpha;
+    public static var entireFuckingCustomVertexBody = 
+   "openfl_Alphav = openfl_Alpha;
     openfl_TextureCoordv = openfl_TextureCoord;
 
     if (openfl_HasColorTransform) {

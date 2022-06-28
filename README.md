@@ -1,9 +1,9 @@
-# Friday Night Funkin' - Yoshi Engine
+# Friday Night Funkin' - YoshiCrafter Engine
 ![Yoshi Engine's logo](art/banner_new.png)
 
 This is the repository of Yoshi Engine, a modification of Friday Night Funkin' which allows full modding without source code access.
 
-The documentation is [here](https://github.com/YoshiCrafter29/YoshiEngine/wiki) (in construction), feel free to download it for offline use !
+The documentation is [here](documentation/index.md) (in construction), feel free to download it for offline use !
 
 Thanks to PolybiusProxy for the [MP4 Cutscene Support](https://github.com/brightfyregit/Friday-Night-Funkin-Mp4-Video-Support) !
 
@@ -105,10 +105,10 @@ So for each of those type `haxelib install [library]` so shit like `haxelib inst
 You'll also need to install a couple things that involve Gits. To do this, you need to do a few things first.
 1. Download [git-scm](https://git-scm.com/downloads). Works for Windows, Mac, and Linux, just select your build.
 2. Follow instructions to install the application properly.
-3. Run `haxelib git polymod https://github.com/larsiusprime/polymod.git` to install Polymod.
 4. Run `haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc` to install Discord RPC.
 5. Run `haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit` to install hxvm-luajit.
 6. Run `haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit` to install linc_luajit.
+6. Run `haxelib git flixel-textureatlas-yoshiengine https://github.com/YoshiCrafter29/Flixel-TextureAtlas-YoshiCrafterEngine` to install texture atlas support.
 
 You should have everything ready for compiling the game! Follow the guide below to continue!
 

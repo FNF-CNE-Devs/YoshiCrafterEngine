@@ -2,27 +2,14 @@ package options.screens;
 
 import flixel.FlxG;
 import flixel.math.FlxMath;
-import EngineSettings.Settings;
 
 class OptiMenu extends OptionScreen {
     var stageQualities = ["Best", "High", "Low", "Medium"];
     var cacheModes = ["All", "Mods", "This Mod"];
+    var aaModes = ["16x Anisotropic Filtering", "2x Anisotropic Filtering", "4x Anisotropic Filtering", "8x Anisotropic Filtering", "On", "Off"];
 
     public override function create() {
         options = [
-            {
-                name: "Cache Clearing Mode",
-                desc: "Sets the cache clearing mode when you change state. Defaults to All. Selecting Mods or\nThis Mod will result in higher memory usage.",
-                value: '${cacheModes[Settings.engineSettings.data.optimizationType]}',
-                onLeft: function(e) {e.value = '${cacheModes[Settings.engineSettings.data.optimizationType]}';},
-                onUpdate: function(e) {
-                    if (controls.LEFT_P) Settings.engineSettings.data.optimizationType--;
-                    if (controls.RIGHT_P) Settings.engineSettings.data.optimizationType++;
-                    Settings.engineSettings.data.optimizationType %= cacheModes.length;
-                    if (Settings.engineSettings.data.optimizationType < 0) Settings.engineSettings.data.optimizationType = cacheModes.length + Settings.engineSettings.data.optimizationType;
-                    e.value = '< ${cacheModes[Settings.engineSettings.data.optimizationType]} >';
-                }
-            },
             {
                 name: "Stage Quality",
                 desc: "Sets the Flash Stage Quality",
@@ -38,17 +25,31 @@ class OptiMenu extends OptionScreen {
             },
             {
                 name: "Antialiasing",
-                desc: "If unchecked, will disable antialiasing on every sprite, netherless of the script enabling it or\nnot.",
+                desc: "If unchecked, will disable antialiasing on every sprite, netherless of the script enabling it or not.",
                 value: '',
-                onCreate: function(e) {e.check(Settings.engineSettings.data.antialiasing);},
-                onSelect: function(e) {e.check(Settings.engineSettings.data.antialiasing = !Settings.engineSettings.data.antialiasing);}
-            },
-            {
-                name: "Note Aliasing",
-                desc: "If unchecked, will disable antialiasing on scrolling notes.",
-                value: '',
-                onCreate: function(e) {e.check(Settings.engineSettings.data.noteAntialiasing);},
-                onSelect: function(e) {e.check(Settings.engineSettings.data.noteAntialiasing = !Settings.engineSettings.data.noteAntialiasing);}
+                onCreate: function(e) {
+                    e.check(Settings.engineSettings.data.antialiasing != 5);
+                    e.value = aaModes[Settings.engineSettings.data.antialiasing];
+                },
+                onLeft: function(e) {
+                    e.check(Settings.engineSettings.data.antialiasing != 5);
+                    e.value = aaModes[Settings.engineSettings.data.antialiasing];
+                },
+                onUpdate: function(e) {
+                    if (controls.LEFT_P)
+                        Settings.engineSettings.data.antialiasing--;
+                    if (controls.RIGHT_P)
+                        Settings.engineSettings.data.antialiasing++;
+                    Settings.engineSettings.data.antialiasing = FlxMath.wrap(Settings.engineSettings.data.antialiasing, 0, 5);
+                    e.check(Settings.engineSettings.data.antialiasing != 5);
+                    e.value = '< ${aaModes[Settings.engineSettings.data.antialiasing]} >';
+                },
+                onSelect: function(e) {
+                    if (Settings.engineSettings.data.antialiasing != 5)
+                        Settings.engineSettings.data.antialiasing = 5;
+                    else
+                        Settings.engineSettings.data.antialiasing = 4;
+                }
             },
             {
                 name: "Antialiasing on videos",
@@ -59,10 +60,17 @@ class OptiMenu extends OptionScreen {
             },
             {
                 name: "Use MP4 for Stress",
-                desc: "If enabled, will use the MP4 cutscene for Stress instead of the new animations.\nEnabled by default on PCs with lower than 6GB of RAM.",
+                desc: "If enabled, will use the MP4 cutscene for Stress instead of the new animations. Enabled by default on PCs with lower than 6GB of RAM.",
                 value: '',
                 onCreate: function(e) {e.check(Settings.engineSettings.data.useStressMP4);},
                 onSelect: function(e) {e.check(Settings.engineSettings.data.useStressMP4 = !Settings.engineSettings.data.useStressMP4);}
+            },
+            {
+                name: "Auto resync vocals",
+                desc: "If enabled, will automatically resync vocals if they're not synchronized.",
+                value: '',
+                onCreate: function(e) {e.check(Settings.engineSettings.data.autoResyncVocals);},
+                onSelect: function(e) {e.check(Settings.engineSettings.data.autoResyncVocals = !Settings.engineSettings.data.autoResyncVocals);}
             },
             {
                 name: "Maximum FPS",

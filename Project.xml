@@ -143,7 +143,8 @@
 
 	<!--In case you want to use the addons package-->
 	<haxelib name="flixel-addons" />
-	<haxelib name="hscript" />
+	<!-- <haxelib name="hscript" /> -->
+	<haxelib name="hscript-yoshiengine" />
 	<!-- <haxelib name="profiler" if="profiler"/> -->
 
 	<!--In case you want to use the ui package-->
@@ -158,9 +159,9 @@
 	<haxelib name="discord_rpc" if="desktop"/>
 	<haxedef name="enable_updates"/> <!-- DISABLE IF DOING EXE MOD !-->
 	<haxelib name="hxp"/>
+	<!-- <haxelib name="hxssl"/> -->
 	<haxelib name="flixel-textureatlas-yoshiengine"/> <!-- haxelib git flixel-textureatlas-yoshiengine https://github.com/YoshiCrafter29/Flixel-TextureAtlas-YoshiCrafterEngine !-->
 
-	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
 	<!-- <haxelib name="markdown" /> -->
 	<!-- <haxelib name="HtmlParser" /> -->
@@ -231,7 +232,14 @@
 	<android permission="android.permission.READ_EXTERNAL_STORAGE"/>
 	<haxedef name="MOBILE_UI" if="android"/>
 	
+	<!-- <haxeflag name="dce" value="no" /> -->
 	<haxeflag name="-dce" value="no" />
 	<haxeflag name="-xml" value="yoshicrafterengine/doc.xml" />
 
+	<haxedef name="official" />
+	<haxedef name="ycebeta"/>
+	
+	<haxelib name="hxcpp-debug-server" if="desktop debug"/>
+	
+	<!-- <haxedef name="noHandler" /> -->
 </project>

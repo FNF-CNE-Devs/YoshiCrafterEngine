@@ -138,6 +138,7 @@ class FlxTransitionableState extends FlxState
 	 */
 	public function transitionOut(?OnExit:Void->Void):Void
 	{
+		// closeSubState();
 		_onExit = OnExit;
 		if (hasTransOut)
 		{

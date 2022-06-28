@@ -1,3 +1,5 @@
+import flixel.util.FlxSort;
+
 var danced = false;
 var chart = null;
 
@@ -26,6 +28,12 @@ function create() {
     character.playAnim("shoot1");
 
     chart = Paths.parseJson("stress/picospeaker");
+
+    for(e in chart.song.notes) {
+        e.sectionNotes.sort(function(n1, n2) {
+            return FlxSort.byValues(FlxSort.ASCENDING, n1[0], n2[0]);
+        });
+    }
 }
 
 function update(elapsed) {
@@ -42,9 +50,11 @@ var e = -1;
 function doShoot() {
     var e = Math.floor(Conductor.songPosition / (Conductor.crochet * 4));
     if (e < 0) return;
+    if (chart == null) return;
+    if (chart.song == null) return;
     if (chart.song.notes[e] == null) return;
     for (note in chart.song.notes[e].sectionNotes) {
-        if (note[0] < Conductor.songPosition && !(note[0] <= h || note[1] == e)) {
+        if (note[0] <= Conductor.songPosition && !(note[0] <= h || note[1] == e)) {
             switch(note[1]) {
                 case 0:
                     var r = FlxG.random.int(1, 2);
@@ -66,6 +76,8 @@ function doSpawn() {
     if (global["spawnTankmen"] == null) return;
     var e = Math.floor((Conductor.songPosition + 1500) / (Conductor.crochet * 4));
     if (e < 0) return;
+    if (chart == null) return;
+    if (chart.song == null) return;
     if (chart.song.notes[e] == null) return;
     for (note in chart.song.notes[e].sectionNotes) {
         if (note[0] < Conductor.songPosition + 1500 && !(note[0] <= hSpawn || note[1] == eSpawn)) {

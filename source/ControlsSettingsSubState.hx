@@ -11,7 +11,6 @@ import flixel.util.FlxColor;
 import flixel.text.FlxText;
 import Note.NoteDirection;
 import flixel.input.keyboard.FlxKey;
-import EngineSettings.Settings;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.FlxG;
@@ -19,7 +18,7 @@ import flixel.group.FlxSpriteGroup;
 
 class ControlsSettingsSubState extends MusicBeatSubstate {
 
-    public static var customKeybindsNameOverride:Map<String, String> = [
+    public static final customKeybindsNameOverride:Map<String, String> = [
         "numpadone" => "Numpad 1",
         "numpadtwo" => "Numpad 2",
         "numpadthree" => "Numpad 3",
@@ -44,7 +43,7 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
         "numpadminus" => "Numpad -",
         "numpadmultiply" => "Numpad *"
     ];
-    public static var customKeybindsNameOverrideSimple:Map<String, String> = [
+    public static final customKeybindsNameOverrideSimple:Map<String, String> = [
         "numpadone" => "#1",
         "numpadtwo" => "#2",
         "numpadthree" => "#3",
@@ -69,7 +68,7 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
         "numpadminus" => "#-",
         "numpadmultiply" => "#*"
     ];
-    var bg = new FlxSprite(0, 0).makeGraphic(1280, 720, 0xFF000000);
+    var bg = new FlxSprite(0, 0).makeGraphic(1280, 720, 0xFF000000, true);
 
     public var strums:Array<FlxSprite> = [];
     public var labels:Array<AlphabetOptimized> = [];
@@ -83,6 +82,10 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
     public var callback:Void->Void = null;
 
     public function new(arrowNumber:Int, camera:FlxCamera, ?callback:Void->Void) {
+        var engineSettings = Settings.engineSettings.data;
+        if (PlayState.current != null)
+            engineSettings = PlayState.current.engineSettings;
+        
         super();
         this.cameras = [camera];
         this.arrowNumber = arrowNumber;
@@ -107,12 +110,12 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
         for(i in 0...arrowNumber) {
             var babyArrow = new FlxSprite(size * (i), 110);
             
-            babyArrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas_Custom("skins/notes/" + Settings.engineSettings.data.customArrowSkin.toLowerCase());
+            babyArrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas(engineSettings.customArrowSkin.toLowerCase(), 'skins');
 					
             babyArrow.animation.addByPrefix('up', 'arrowUP');
             babyArrow.animation.addByPrefix('down', 'arrowDOWN');
-            babyArrow.animation.addByPrefix('left', 'arrowLEFT');
-            babyArrow.animation.addByPrefix('right', 'arrowRIGHT');
+            babyArrow.animation.addByPrefix('left', 'arrowLEFT0');
+            babyArrow.animation.addByPrefix('right', 'arrowRIGHT0');
             var color = [
                 new FlxColor(Settings.engineSettings.data.arrowColor0),
                 new FlxColor(Settings.engineSettings.data.arrowColor1),
@@ -127,7 +130,7 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
             switch (noteNumberScheme[i % noteNumberScheme.length])
             {
                 case Left:
-                    babyArrow.animation.addByPrefix('static', 'arrowLEFT');
+                    babyArrow.animation.addByPrefix('static', 'arrowLEFT0');
                     babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
                     babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
                 case Down:
@@ -139,7 +142,7 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
                     babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
                     babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
                 case Right:
-                    babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
+                    babyArrow.animation.addByPrefix('static', 'arrowRIGHT0');
                     babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
                     babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
             }
@@ -172,7 +175,7 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
             strumsGrp.add(t);
         }
 
-        var bg = new FlxSprite(0, 0).makeGraphic(1280, 720, 0xFF000000);
+        var bg = new FlxSprite(0, 0).makeGraphic(1280, 720, 0xFF000000, true);
         bg.alpha = 0.5;
         changeThingGrp.add(bg);
 
@@ -233,6 +236,9 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
             if (controls.BACK) {
                 for(i=>k in currentKeys) {
                     Reflect.setField(Settings.engineSettings.data, 'control_' + arrowNumber + '_$i', k);
+                    if (PlayState.current != null && PlayState.current.engineSettings != null) {
+                        Reflect.setField(PlayState.current.engineSettings, 'control_' + arrowNumber + '_$i', k);
+                    }
                 }
                 CoolUtil.playMenuSFX(1);
                 close();

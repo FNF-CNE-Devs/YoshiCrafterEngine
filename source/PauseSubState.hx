@@ -6,7 +6,6 @@ import lime.utils.Assets;
 import dev_toolbox.ToolboxHome;
 import dev_toolbox.stage_editor.StageEditor;
 import ControlsSettingsSubState;
-import EngineSettings.Settings;
 import Controls.Control;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -38,6 +37,7 @@ class PauseSubState extends MusicBeatSubstate
 	public var pauseMenuScript:Script = null;
 	public var levelInfo:FlxText;
 	public var levelDifficulty:FlxText;
+	public var blueballAmount:FlxText;
 
 	public var cam:FlxCamera;
 
@@ -93,14 +93,22 @@ class PauseSubState extends MusicBeatSubstate
 		levelDifficulty.updateHitbox();
 		add(levelDifficulty);
 
-		levelDifficulty.alpha = 0;
-		levelInfo.alpha = 0;
+		blueballAmount = new FlxText(20, 15 + 64, 0, "", 32);
+		blueballAmount.text += 'Blueballed: ${PlayState.blueballAmount}';
+		blueballAmount.scrollFactor.set();
+		blueballAmount.setFormat(Paths.font('vcr.ttf'), 32);
+		blueballAmount.updateHitbox();
+		add(blueballAmount);
+
+		levelDifficulty.alpha = levelInfo.alpha = blueballAmount.alpha = 0;
 
 		levelInfo.x = Std.int(1280) - (levelInfo.width + 20);
 		levelDifficulty.x = Std.int(1280) - (levelDifficulty.width + 20);
+		blueballAmount.x = Std.int(1280) - (blueballAmount.width + 20);
 
 		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 		FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
+		FlxTween.tween(blueballAmount, {alpha: 1, y: blueballAmount.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
 		if (CoolUtil.isDevMode()) {
 			for (d in devMenuItems) menuItems.push(d);
 			if (PlayState.current.devStage == null) menuItems.remove("Edit Stage");
@@ -132,6 +140,7 @@ class PauseSubState extends MusicBeatSubstate
 		
 		levelInfo.x = FlxG.width - (levelInfo.width + 20);
 		levelDifficulty.x = FlxG.width - (levelDifficulty.width + 20);
+		blueballAmount.x = FlxG.width - (blueballAmount.width + 20);
 
 		alpha = FlxMath.lerp(alpha, 0.6, 0.125 * elapsed * 60);
 
@@ -198,7 +207,26 @@ class PauseSubState extends MusicBeatSubstate
 						OptionsMenu.fromFreeplay = true;
 						FlxG.switchState(new OptionsMenu(0, 0));
 					case "Exit to menu":
-						FlxG.switchState(new MainMenuState());
+						if (PlayState.fromCharter) {
+							var m = new MenuMessage("Are you sure you want to exit back to the main menu? Any unsaved progress will be lost.", [
+								{
+									label: "No",
+									callback: function() {}
+								},
+								{
+									label: "Yes",
+									callback: function() {
+										FlxG.switchState(new MainMenuState());
+										PlayState._SONG = null;
+									}
+								}
+							]);
+							m.cameras = cameras;
+							openSubState(m);
+						} else {
+							FlxG.switchState(new MainMenuState());
+							PlayState._SONG = null;
+						}
 				}
 			}
 			

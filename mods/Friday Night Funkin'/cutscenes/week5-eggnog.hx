@@ -1,6 +1,6 @@
 function create() {
     var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
-        -FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
+        -FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, 0xFF000000);
     blackShit.scrollFactor.set();
     PlayState.add(blackShit);
     PlayState.camHUD.visible = false;

@@ -48,7 +48,7 @@ class FlxUISliderNew extends FlxUIGroup {
     public override function update(elapsed:Float) {
         super.update(elapsed);
 
-        sliderSprite.x = bar.x + ((bar.percent / 100) * bar.width) - (sliderSprite.width / 2);
+        
 
         if (FlxG.mouse.justPressed && (FlxG.mouse.overlaps(sliderSprite, camera) || FlxG.mouse.overlaps(bar, camera))) {
             __isBeingMoved = true;
@@ -62,7 +62,12 @@ class FlxUISliderNew extends FlxUIGroup {
                 } else {
                     Reflect.setProperty(object, variable, CoolUtil.wrapFloat(min + (max / bar.width * cursorX), min, max));
                 }
+            } else {
+                trace("object is null");
             }
         }
+
+        if (object != null && variable != null) bar.value = Reflect.getProperty(object, variable);
+        sliderSprite.x = bar.x + ((bar.percent / 100) * bar.width) - (sliderSprite.width / 2);
     }
 }

@@ -13,6 +13,7 @@ typedef ModConfig = {
     var GFskins:Array<CharacterSkin>;
     var keyNumbers:Array<Int>;
     var intro:ConfIntro;
+    @:optional var discordRpc:String;
 }
 
 typedef ConfIntro = {

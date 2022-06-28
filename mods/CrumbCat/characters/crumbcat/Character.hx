@@ -17,13 +17,3 @@ function dance() {
         character.playAnim("danceRight");
     danced = !danced;
 }
-
-function getColors(altAnim) {
-    return [
-        new FlxColor(0xFFA5004D),
-        new FlxColor(0xFFA5004D),
-        new FlxColor(0xFFA5004D),
-        new FlxColor(0xFFA5004D),
-        new FlxColor(0xFFA5004D)
-    ];
-}

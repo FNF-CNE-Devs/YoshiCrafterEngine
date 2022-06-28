@@ -1,8 +1,9 @@
 package mod_support_stuff;
 
+import flixel.addons.ui.FlxUITooltip;
+import flixel.addons.ui.interfaces.IFlxUIWidget;
 import flixel.FlxBasic;
 import flixel.FlxG;
-import EngineSettings.Settings;
 import Script.HScript;
 
 class ModState extends MusicBeatState {
@@ -33,12 +34,50 @@ class ModState extends MusicBeatState {
         script.setVariable("remove", function(obj:FlxBasic) {remove(obj);});
         script.setVariable("insert", function(i:Int, obj:FlxBasic) {insert(i, obj);});
 
+        script.setVariable("state", this);
+
         ModSupport.setScriptDefaultVars(script, _mod, {});
         script.loadFile(path);
 
         script.executeFunc("new", args);
 
         this.args = args;
+    }
+
+    public override function onCursorEvent(code:String, target:IFlxUIWidget) {
+        script.executeFunc("onCursorEvent", [code, target]);
+        super.onCursorEvent(code, target);
+    }
+
+    public override function onDropFile(path:String) {
+        script.executeFunc("onDropFile");
+        super.onDropFile(path);
+    }
+
+    public override function onFocus() {
+        script.executeFunc("onFocus");
+        super.onFocus();
+    }
+
+    public override function onFocusLost() {
+        script.executeFunc("onFocusLost");
+        super.onFocusLost();
+    }
+
+    public override function onResize(width:Int, height:Int) {
+        script.executeFunc("onResize", [width, height]);
+        super.onResize(width, height);
+    }
+
+    public override function onShowTooltip(t:FlxUITooltip) {
+        script.executeFunc("onShowTooltip");
+        super.onShowTooltip(t);
+    }
+
+    public override function draw() {
+        script.executeFunc("draw");
+        super.draw();
+        script.executeFunc("drawPost");
     }
 
     public override function create() {
@@ -60,7 +99,7 @@ class ModState extends MusicBeatState {
         if (CoolUtil.isDevMode()) {
             if (FlxG.keys.justPressed.F5) {
                 // F5 to reload in dev mode
-                FlxG.switchState(new ModState(_scriptName, _mod));
+                FlxG.switchState(new ModState(_scriptName, _mod, args));
             }
         }
         script.executeFunc("update", [elapsed]);

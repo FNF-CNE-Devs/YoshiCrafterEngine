@@ -27,6 +27,7 @@ function create() {
     note.setGraphicSize(Std.int(note.width * 0.7));
     note.updateHitbox();
     note.antialiasing = true;
+    note.splashColor = 0xFF000000;
 
     note.animation.play("scroll");
     if (note.isSustainNote) {
@@ -34,15 +35,5 @@ function create() {
             if (note.prevNote.animation.curAnim.name == "holdend")
                 note.prevNote.animation.play("holdpiece");
         note.animation.play("holdend");
-    }
-}
-
-function update(elapsed) {
-    calculateNote();
-    if (global["light"] != null) {
-        if (EngineSettings.customArrowSkin == "default") {
-            note.color = global["light"].color;
-            note.splashColor = global["light"].color;
-        }
     }
 }

@@ -11,7 +11,6 @@ import sys.FileSystem;
 import sys.FileSystem;
 import haxe.io.Path;
 import flixel.text.FlxText.FlxTextBorderStyle;
-import EngineSettings.Settings;
 import flixel.input.mouse.FlxMouse;
 import lime.ui.MouseCursor;
 import openfl.ui.Mouse;
@@ -108,6 +107,7 @@ class StageEditor extends MusicBeatState {
             bumpOffsetEaseType.visible = id != "";
             
             scaleNum.value = (selectedObj.scale.x + selectedObj.scale.y) / 2;
+            opacityNum.value = selectedObj.alpha;
             antialiasingCheckbox.checked = selectedObj.antialiasing;
             shaderNameInput.text = selectedObj.shaderName == null ? "" : selectedObj.shaderName;
 
@@ -457,20 +457,10 @@ class StageEditor extends MusicBeatState {
         switch(fileExt) {
             case "png":
                 if (FileSystem.exists('$pathWithoutExt.xml')) {
-                    // Creates a directory where to put all of the bitmaps
-                    // if (FileSystem.exists('/${fileName}.png') ||
-                    //     FileSystem.exists('$stagePath/${fileName}.xml')) {
-                    //     showMessage("Error", "A Sparrow Atlas with the same name already exists.");
-                    //     return;
-                    // }
-                    // File.copy('$pathWithoutExt.png', '$stagePath/${fileName}.png');
-                    // File.copy('$pathWithoutExt.xml', '$stagePath/${fileName}.xml');
-                    // trace("TODO");
-
                     doSparrow();
                 } else {
                     if (FileSystem.exists('$stagePath/${fileName}.png')) {
-                        doSparrow();
+                        // doSparrow();
                     } else {
                         File.copy('$pathWithoutExt.png', '$stagePath/${fileName}.png');
 						ModSupport.loadMod(ToolboxHome.selectedMod);
@@ -546,7 +536,7 @@ class StageEditor extends MusicBeatState {
         scaleNum.x = 290 - scaleNum.width;
 
         opacityLabel = new FlxUIText(10, scaleLabel.y + scaleNum.height + 5, 280, "Opacity");
-        opacityNum = new FlxUINumericStepper(10, opacityLabel.y + (opacityLabel.height / 2), 0.1, 0, 0, 1, 2);
+        opacityNum = new FlxUINumericStepper(10, opacityLabel.y + (opacityLabel.height / 2), 0.1, 1, 0, 1, 2);
         opacityNum.y -= opacityNum.height / 2;
         opacityNum.x = 290 - opacityNum.width;
 
@@ -976,20 +966,20 @@ class StageEditor extends MusicBeatState {
                     type: sprite.type,
                     src: sprite.spritePath,
                     scrollFactor: [sprite.scrollFactor.x, sprite.scrollFactor.y],
-                    scale: ((sprite.scale.x + sprite.scale.y) / 2),
-                    pos: [sprite.x, sprite.y],
+                    scale: FlxMath.roundDecimal((sprite.scale.x + sprite.scale.y) / 2, 2),
+                    pos: [FlxMath.roundDecimal(sprite.x, 2), FlxMath.roundDecimal(sprite.y, 2)],
                     name: sprite.name,
                     antialiasing: sprite.antialiasing,
                     animation: sprite.anim,
                     shader: sprite.shaderName,
                     beatTween: sprite.onBeatOffset,
-                    alpha: sprite.alpha
+                    alpha: FlxMath.roundDecimal(sprite.alpha, 2)
                 });
             }
         }
-        stage.bfOffset = [bf.x - bfDefPos.x - bf.charGlobalOffset.x, bf.y - bfDefPos.y - bf.charGlobalOffset.y];
-        stage.gfOffset = [gf.x - gfDefPos.x - gf.charGlobalOffset.x, gf.y - gfDefPos.y - gf.charGlobalOffset.y];
-        stage.dadOffset = [dad.x - dadDefPos.x - dad.charGlobalOffset.x, dad.y - dadDefPos.y - dad.charGlobalOffset.y];
+        stage.bfOffset = [FlxMath.roundDecimal(bf.x - bfDefPos.x - bf.charGlobalOffset.x, 2), FlxMath.roundDecimal(bf.y - bfDefPos.y - bf.charGlobalOffset.y, 2)];
+        stage.gfOffset = [FlxMath.roundDecimal(gf.x - gfDefPos.x - gf.charGlobalOffset.x, 2), FlxMath.roundDecimal(gf.y - gfDefPos.y - gf.charGlobalOffset.y, 2)];
+        stage.dadOffset = [FlxMath.roundDecimal(dad.x - dadDefPos.x - dad.charGlobalOffset.x, 2), FlxMath.roundDecimal(dad.y - dadDefPos.y - dad.charGlobalOffset.y, 2)];
         
         // stage.defaultCamZoom = 
         unsaved = true;
@@ -1141,7 +1131,7 @@ class StageEditor extends MusicBeatState {
                     scrFacX.value = selectedObj.scrollFactor.x;
                     scrFacY.value = selectedObj.scrollFactor.y;
                     scaleNum.value = (selectedObj.scale.x + selectedObj.scale.y) / 2;
-                    opacityNum.value = (selectedObj.alpha) / 2;
+                    opacityNum.value = selectedObj.alpha;
                 }
 
                 // if (FlxG.mouse.getScreenPosition(camHUD).x >= 315 && !closed) {

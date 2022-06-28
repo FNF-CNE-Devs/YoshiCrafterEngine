@@ -47,7 +47,9 @@ class NewModWizard extends MusicBeatState {
         closeButton.resize(20, 20);
         add(closeButton);
 
-        
+        var hasGameIconChanged:Bool = false;
+        var hasTitleIconChanged:Bool = false;
+
 		var tab = new FlxUI(null, UI_Main);
 		tab.name = "main";
         
@@ -75,11 +77,10 @@ class NewModWizard extends MusicBeatState {
         var chooseIconButton = new FlxUIButton(icon.x + 30, icon.y, "Choose game icon", function() {
             var fDial = new FileDialog();
 			fDial.onSelect.add(function(path) {
-				var img = Paths.getBitmapOutsideAssets(path);
-                if (img == null) return;
-                icon.loadGraphic(img);
+                icon.loadGraphic(BitmapData.fromFile(path));
                 icon.setGraphicSize(20, 20);
                 icon.updateHitbox();
+                hasGameIconChanged = true;
 			});
 			fDial.browse(FileDialogType.OPEN, null, null, "Select an icon.");
         });
@@ -89,16 +90,17 @@ class NewModWizard extends MusicBeatState {
         var modIcon = new FlxUISprite(10, titlebarName.y + titlebarName.height + 10).loadGraphic(Paths.image("modEmptyIcon", "preload"));
         modIcon.setGraphicSize(150, 150);
         modIcon.updateHitbox();
+        modIcon.scale.set(Math.min(modIcon.scale.x, modIcon.scale.y), Math.min(modIcon.scale.x, modIcon.scale.y));
         tab.add(modIcon);
 
         var chooseIconButton = new FlxUIButton(modIcon.x + modIcon.width + 10, modIcon.y, "Choose a mod icon", function() {
             var fDial = new FileDialog();
 			fDial.onSelect.add(function(path) {
-				var img = Paths.getBitmapOutsideAssets(path);
-                if (img == null) return;
-                modIcon.loadGraphic(img);
+                modIcon.loadGraphic(BitmapData.fromFile(path));
                 modIcon.setGraphicSize(150, 150);
                 modIcon.updateHitbox();
+                modIcon.scale.set(Math.min(modIcon.scale.x, modIcon.scale.y), Math.min(modIcon.scale.x, modIcon.scale.y));
+                hasTitleIconChanged = true;
 			});
 			fDial.browse(FileDialogType.OPEN, null, null, "Select an mod icon.");
         });
@@ -133,9 +135,10 @@ class NewModWizard extends MusicBeatState {
                 }
             }
 
-            Toolbox.createMod(json, folderName, modIcon.pixels, icon.pixels);
+            Toolbox.createMod(json, folderName, hasGameIconChanged ? modIcon.pixels : null, hasTitleIconChanged ? icon.pixels : null);
             openSubState(ToolboxMessage.showMessage("Success", 'Your mod has been created.', function() {
-                FlxG.switchState(new ToolboxMain(folderName));
+                Settings.engineSettings.data.selectedMod = folderName;
+                FlxG.switchState(new ToolboxMain());
                 
             }));
         });

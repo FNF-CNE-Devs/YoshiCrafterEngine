@@ -1,6 +1,5 @@
 package;
 
-import EngineSettings.Settings;
 import lime.app.Promise;
 import lime.app.Future;
 import flixel.FlxG;
@@ -145,14 +144,6 @@ class LoadingState extends MusicBeatState
 	{
 		return Paths.voices(PlayState._SONG.song);
 	}
-
-	public static function switchState(state:FlxState) {
-		if (Settings.engineSettings != null) {
-			if (Settings.engineSettings.data.developerMode) {
-
-			}
-		}
-	}
 	
 	inline static public function loadAndSwitchState(target:FlxState, stopMusic = false)
 	{
@@ -161,7 +152,7 @@ class LoadingState extends MusicBeatState
 	
 	static function getNextState(target:FlxState, stopMusic = false):FlxState
 	{
-		Paths.setCurrentLevel("week" + PlayState.storyWeek);
+		Paths.setCurrentLevel("shared");
 		#if NO_PRELOAD_ALL
 		var loaded = isSoundLoaded(getSongPath())
 			&& (!PlayState._SONG.needsVoices || isSoundLoaded(getVocalPath()))

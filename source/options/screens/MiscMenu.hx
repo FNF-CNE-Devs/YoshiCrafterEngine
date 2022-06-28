@@ -1,14 +1,13 @@
 package options.screens;
 
 import flixel.FlxG;
-import EngineSettings.Settings;
 
 class MiscMenu extends OptionScreen {
     public override function create() {
         options = [
             {
                 name: "Auto Check for Updates",
-                desc: "If enabled, will automatically look for updates, and prompt you if one is available.\nDisable if the antivirus blocks the engine.",
+                desc: "If enabled, will automatically look for updates, and prompt you if one is available. Disable if the antivirus blocks the engine.",
                 value: "",
                 onCreate: function(e) {e.check(Settings.engineSettings.data.checkForUpdates);},
                 onSelect: function(e) {e.check(Settings.engineSettings.data.checkForUpdates = !Settings.engineSettings.data.checkForUpdates);},
@@ -21,25 +20,11 @@ class MiscMenu extends OptionScreen {
                 onSelect: function(e) {e.check(Settings.engineSettings.data.greenScreenMode = !Settings.engineSettings.data.greenScreenMode);},
             },
             {
-                name: "Hide OG songs",
-                desc: "If enabled, will hide the original songs from the freeplay menu.",
-                value: "",
-                onCreate: function(e) {e.check(Settings.engineSettings.data.hideOriginalGame);},
-                onSelect: function(e) {e.check(Settings.engineSettings.data.hideOriginalGame = !Settings.engineSettings.data.hideOriginalGame);},
-            },
-            {
                 name: "Auto Pause",
                 desc: "If disabled, the game will no longer pause when it loses focus.",
                 value: "",
                 onCreate: function(e) {e.check(Settings.engineSettings.data.autopause);},
                 onSelect: function(e) {FlxG.autoPause = e.check(Settings.engineSettings.data.autopause = !Settings.engineSettings.data.autopause);},
-            },
-            {
-                name: "Separate mods in freeplay",
-                desc: "If disabled, will only list the selected mod's songs.",
-                value: "",
-                onCreate: function(e) {e.check(!Settings.engineSettings.data.freeplayShowAll);},
-                onSelect: function(e) {e.check(!(Settings.engineSettings.data.freeplayShowAll = !Settings.engineSettings.data.freeplayShowAll));},
             },
             {
                 name: "Auto add new mods",

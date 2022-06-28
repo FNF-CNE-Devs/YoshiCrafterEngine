@@ -112,4 +112,20 @@ class FlxColor_Helper {
     public function new(color:Int) {
         fc = new FlxColor(color);
     }
+
+    public static inline final BLACK = 0xFF000000;
+    public static inline final BLUE = 0xFF0000FF;
+    public static inline final BROWN = 0xFF8B4513;
+    public static inline final CYAN = 0xFF00FFFF;
+    public static inline final GRAY = 0xFF808080; // GRAYANIMATES????
+    public static inline final GREEN = 0xFF008000;
+    public static inline final LIME = 0xFF00FF00;
+    public static inline final MAGENTA = 0xFFFF00FF;
+    public static inline final ORANGE = 0xFFFFA500;
+    public static inline final PINK = 0xFFFFC0CB;
+    public static inline final PURPLE = 0xFF800080;
+    public static inline final RED = 0xFFFF0000;
+    public static inline final TRANSPARENT = 0x00000000;
+    public static inline final WHITE = 0xFFFFFFFF;
+    public static inline final YELLOW = 0xFFFFFF00;
 }
