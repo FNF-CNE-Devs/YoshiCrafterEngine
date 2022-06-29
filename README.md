@@ -1,4 +1,4 @@
-# Friday Night Funkin' - Yoshi Engine
+# Friday Night Funkin' - YoshiCrafter Engine
 ![Yoshi Engine's logo](art/banner_new.png)
 
 This is the repository of Yoshi Engine, a modification of Friday Night Funkin' which allows full modding without source code access.
@@ -19,6 +19,7 @@ Also, if you're going to mod it, do NOT include the executable with it, only you
 	- Cutscenes
 	- Weeks
 	- Credits
+	- Medals
 - **Customization**
 	- Custom keybinds
 	- Downscroll
