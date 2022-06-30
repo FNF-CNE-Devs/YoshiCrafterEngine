@@ -59,7 +59,7 @@ class TitleState extends MusicBeatState
 	var ngSpr:FlxSprite;
 	
 	//BETA VERSIONS
-	var versionIsBeta:Bool = true;
+	var versionIsBeta:Bool = false;
 
 	var curWacky:Array<String> = [];
 
