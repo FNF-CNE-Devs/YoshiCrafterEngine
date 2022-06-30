@@ -46,6 +46,7 @@ typedef TitleScreen = {
 	var script:Script;
 	var grp:FlxSpriteGroup;
 }
+
 class TitleState extends MusicBeatState
 {
 	public static var skipOldSkinCheck = false;
@@ -56,6 +57,9 @@ class TitleState extends MusicBeatState
 	var credTextShit:Alphabet;
 	var textGroup:FlxGroup;
 	var ngSpr:FlxSprite;
+	
+	//BETA VERSIONS
+	var versionIsBeta:Bool = true;
 
 	var curWacky:Array<String> = [];
 
@@ -611,6 +615,11 @@ class TitleState extends MusicBeatState
 		
 		if (currentVerPos+1 < versions.length)
 		{
+			if(versionIsBeta == true)
+			{
+                             FlxG.switchState(new MainMenuState());
+                        }
+			else{
 			trace("OLD VER!!!");
 			FlxG.switchState(new OutdatedSubState(files, versions[versions.length - 1], changeLog));
 			// trace('OLD VERSION!');
@@ -618,6 +627,7 @@ class TitleState extends MusicBeatState
 			// trace(version.trim());
 			// trace('cur ver');
 			//trace( NGio .GAME_VER_NUMS.trim());
+}
 		}
 		else
 		{
