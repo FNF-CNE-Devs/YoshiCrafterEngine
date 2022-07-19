@@ -135,8 +135,10 @@ function update(elapsed) {
     //updates the background tank
     tankAngle += elapsed * tankSpeed;
     tankRolling.angle = tankAngle - 90 + 15;
-    tankRolling.x = 400 + (1000 * Math.cos(Math.PI / 180 * (1 * tankAngle + 180)));
-    tankRolling.y = 700 + (500 * Math.sin(Math.PI / 180 * (1 * tankAngle + 180)));
+    // tankRolling.x = 400 + (1000 * Math.cos(Math.PI / 180 * (1 * tankAngle + 180)));
+    // tankRolling.y = 700 + (500 * Math.sin(Math.PI / 180 * (1 * tankAngle + 180)));
+    tankRolling.x = 400 + 1500 * Math.cos(Math.PI / 180 * (1 * tankAngle + 180));
+    tankRolling.y = 1300 + 1100 * Math.sin(Math.PI / 180 * (1 * tankAngle + 180));
 }
 function createInFront() {
     var tank0Tex = Paths.getSparrowAtlas('tank/tank0');

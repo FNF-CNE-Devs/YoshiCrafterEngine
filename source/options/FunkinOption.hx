@@ -14,4 +14,5 @@ typedef FunkinOption = {
     @:optional var onLeft:OptionSprite->Void;
 
     @:optional var img:String;
+    @:optional var additional:Bool;
 }

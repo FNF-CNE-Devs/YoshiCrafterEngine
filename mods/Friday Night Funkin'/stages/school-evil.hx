@@ -1,3 +1,5 @@
+import flixel.addons.effects.FlxTrail;
+
 gfVersion = "gf-pixel";
 
 ratings[0].image = "Friday Night Funkin':weeb/pixelUI/sick-pixel";
@@ -24,4 +26,14 @@ function create() {
     bg.scrollFactor.set(5 / 6, 5 / 6);
     bg.scale.set(6, 6);
     PlayState.add(bg);
+
+    
+    var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
+    // evilTrail.changeValuesEnabled(false, false, false, false);
+    // evilTrail.changeGraphic();
+    add(evilTrail);
+    // evilTrail.scrollFactor.set(1.1, 1.1);
+}
+
+function createPost() {
 }

@@ -11,9 +11,6 @@ import openfl.utils.AssetLibrary;
 import openfl.utils.AssetManifest;
 import haxe.io.Path;
 import haxe.io.Bytes;
-// import zip.Zip;
-// import zip.ZipEntry;
-// import zip.ZipReader;
 import Shaders.ColorShader;
 #if desktop
 import cpp.Lib;
@@ -42,6 +39,7 @@ import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 import sys.io.File;
 import lime.utils.Assets;
+import openfl.utils.Assets as DeezNutsAssets;
 import flixel.system.FlxAssets;
 import flixel.FlxSprite;
 import openfl.display.BitmapData;
@@ -64,36 +62,6 @@ typedef CacheExpr = {
 	var time:Null<Float>;
 }
 
-class ExceptionState extends FlxState {
-    var text:String;
-    var resumeTo = 0;
-    public function new<T>(text:String, resumeTo:Int) {
-        super();
-        this.text = text;
-        this.resumeTo = resumeTo;
-    }
-    public override function create() {
-        super.create();
-        var exceptionText = new FlxText(0,0,FlxG.width,text +"\r\n\r\nPress enter to retry.",8);
-        exceptionText.setFormat(Paths.font("vcr.ttf"), Std.int(16), FlxColor.WHITE, LEFT);
-        add(exceptionText);
-    }
-
-    public override function update(elapsed:Float) {
-        super.update(elapsed);
-        if (FlxControls.pressed.ENTER) {
-            switch(resumeTo) {
-                case 0:
-                    FlxG.switchState(new PlayState());
-            }
-        }
-    }
-}
-
-// typedef ZipProgress = {
-//     var progress:Float;
-//     var zipReader:ZipReader;
-// }
 @:allow(CoolUtil)
 @:allow(Main)
 class ModSupport {
@@ -211,7 +179,7 @@ class ModSupport {
 
         lastTitlebarMod = mod;
     }
-    public static function reloadModsConfig(reloadAll:Bool = false, reloadSkins:Bool = true, clearCache:Bool = false):Bool {
+    public static function reloadModsConfig(reloadAll:Bool = false, reloadSkins:Bool = true, clearCache:Bool = false, reloadCurrent:Bool = false):Bool {
         if (clearCache) {
             Assets.cache.clear();
             openfl.utils.Assets.cache.clear();
@@ -228,8 +196,6 @@ class ModSupport {
             PlayState.blueballAmount = 0;
             PlayState.fromCharter = false;
             PlayState.songMod = "Friday Night Funkin'";
-
-            // modConfig = [];
         }
 
         if (reloadSkins) {
@@ -240,7 +206,6 @@ class ModSupport {
             assets.libraryType = null;
             assets.version = 2;
             assets.libraryArgs = [];
-            // assets.rootPath = '${Paths.getSkinsPath()}';
             assets.assets = [];
             FileSystem.createDirectory('${Paths.getSkinsPath()}/bf/');
             FileSystem.createDirectory('${Paths.getSkinsPath()}/gf/');
@@ -267,8 +232,6 @@ class ModSupport {
             } catch(e) {
                 trace(e.details());
             }
-            // trace(assets.assets);
-            // getAssetFiles(assets.assets, '${Paths.modsPath}/$mod/', '', libName);
 
             if (openfl.utils.Assets.hasLibrary("skins"))
                 openfl.utils.Assets.unloadLibrary("skins");
@@ -277,7 +240,7 @@ class ModSupport {
         var mods = getMods();
         var newMod = false;
         for(mod in mods)
-            if (reloadAll || modConfig[mod] == null)
+            if (reloadAll || modConfig[mod] == null || (reloadCurrent && mod == Settings.engineSettings.data.selectedMod))
                 newMod = loadMod(mod) || newMod;
         Settings.engineSettings.data.lastInstalledMods = mods;
         return newMod;
@@ -285,6 +248,19 @@ class ModSupport {
 
     public static var assetEditTimes:Map<String, Float> = [];
 
+    public static var lastCursorMod:String = null;
+    public static function updateCursor() {
+        if (Settings.engineSettings == null) return;
+        var mod = Settings.engineSettings.data.selectedMod;
+        var path = null;
+        if (lastCursorMod != (lastCursorMod = mod)) {
+            if (Assets.exists(path = Paths.image('cursor', 'mods/$mod')))
+                FlxG.mouse.load(DeezNutsAssets.getBitmapData(path));
+            else
+                FlxG.mouse.unload();
+        }
+        
+    }
     public static function getEditedTime(asset:String) {
         return assetEditTimes.exists(asset) ? assetEditTimes.get(asset) : 0;
     }
@@ -308,7 +284,6 @@ class ModSupport {
             var s = new FlxSave();
             s.bind(mod.replace(" ", "_").replace("'", "_"));
             s.data.mod = mod;
-            // s.flush();
             modSaves[mod] = s;
         } catch(e) {
             trace(e.details());
@@ -406,9 +381,6 @@ class ModSupport {
             var exThingy = Std.string(ex);
             var line = parser.line;
             if (!openfl.Lib.application.window.fullscreen) openfl.Lib.application.window.alert('Failed to parse the file located at "$path".\r\n$exThingy at $line');
-            // if (critical) {
-            //     FlxG.switchState(new ExceptionState('Failed to parse the file located at "$path".\r\n$exThingy at $line', 0));
-            // }
             trace('Failed to parse the file located at "$path".\r\n$exThingy at $line');
 		}
         return ast;
@@ -478,16 +450,6 @@ class ModSupport {
                 }
             }
         });
-        // script.setVariable("include", function(path:String) {
-        //     var splittedPath = path.split(":");
-        //     if (splittedPath.length < 2) splittedPath.insert(0, mod);
-        //     var joinedPath = splittedPath.join("/");
-        //     var mFolder = Paths.modsPath;
-        //     var expr = getExpressionFromPath('$mFolder/$joinedPath.hx');
-        //     if (expr != null) {
-        //         hscript.execute(expr);
-        //     }
-        // });
 
         if (PlayState.current != null) {
             script.setVariable("EngineSettings", PlayState.current.engineSettings);
@@ -554,6 +516,7 @@ class ModSupport {
 		script.setVariable("CustomShader", CustomShader_Helper);
 		script.setVariable("FlxControls", FlxControls);
 		script.setVariable("save", modSaves[mod]);
+        script.setVariable("flashingLights", Settings.engineSettings.data.flashingLights == true);
 
 		script.setVariable("ModState", ModState);
 		script.setVariable("ModSubState", ModSubState);
@@ -578,7 +541,6 @@ class ModSupport {
             SHADER: BlendMode.SHADER,
             SUBTRACT: BlendMode.SUBTRACT
         });
-		// script.setVariable("FlxKey", FlxKey);
 
         script.mod = mod;
     }
@@ -617,41 +579,4 @@ class ModSupport {
         }
         return songs;
     }
-
-    /*
-    public static function installModFromZip(zipPath:String, callback:Void->Void):ZipProgress {
-        var fileContent = File.getBytes(zipPath);
-        var zip = new ZipReader(fileContent);
-
-        var thingy:ZipProgress = {
-            progress: 0,
-            zipReader: zip
-        };
-        #if (target.threaded)
-        sys.thread.Thread.create(function() {
-        #end
-            var entries:Map<String, ZipEntry> = [];
-            while(true) {
-                var entry = zip.getNextEntry();
-                if (entry == null) break;
-                entries[entry.fileName] = entry;
-                thingy.progress = zip.progress() / 2;
-            }
-            var p = 0;
-            var keys = entries.keys();
-            var am = [while (keys.hasNext()) keys.next()];
-            for(k=>e in entries) {
-                // wtf
-                var bytes:Bytes = cast(Zip.getBytes(entries.get(k)), Bytes);
-                File.saveBytes('${Paths.modsPath}/$k', bytes);
-                p++;
-                thingy.progress = 0.5 + (p / am.length / 2);
-            }
-            callback();
-        #if (target.threaded)
-        });
-        #end
-        return thingy;
-    }
-    */
 }

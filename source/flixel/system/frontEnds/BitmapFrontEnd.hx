@@ -353,19 +353,9 @@ class BitmapFrontEnd
 	var deleted = 0;
 	public function clearCache():Void
 	{
-		if (lime.utils.Assets.logRequests) {
-			total = 0;
-			deleted = 0;
-			for(key=>obj in _cache) {
-				total++;
-				if ((!obj.hasJustBeenAdded && obj.assetsKey == null) || (obj.bitmap == null || !obj.bitmap.readable || obj.shader == null)) {
-					deleted++;
-					removeKey(key); // get the fuck out of my CACHE
-					obj.destroy();
-				}
-			}
-			return;
-		}
+		if (lime.utils.Assets.logRequests) return;
+		total = 0;
+		deleted = 0;
         isClearingCache = true;
 		if (_cache == null)
 		{
@@ -384,12 +374,10 @@ class BitmapFrontEnd
 					removeKey(key);
 					obj.destroy();
 				}
-				obj.persist = false;
 			}
 			obj.hasJustBeenAdded = false;
 		}
 		trace('${deleted}/${total} removed (${total - deleted} motherfuckers remaining)');
-		// doNotRemove = [];
         isClearingCache = false;
 	}
 

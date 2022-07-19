@@ -22,12 +22,13 @@ function create() {
     note.updateHitbox();
     note.maxEarlyDiff *= 0.5;
     note.maxLateDiff *= 0.5;
+    note.cpuIgnore = true;
 }
 
 function onMiss() {}
 
 function onPlayerHit(direction:Int) {
-    for(e in PlayState.boyfriends) e.playAnim("hit", true);
+    playBFsAnim("hit", true);
     if (note.isSustainNote) {
         PlayState.currentSustains.push({
             time: note.strumTime,

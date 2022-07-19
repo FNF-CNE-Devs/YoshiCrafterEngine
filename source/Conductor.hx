@@ -62,7 +62,6 @@ class Conductor
 	 * "is calculated in create() is safeFrames in milliseconds"
 	 */
 	public static var safeZoneOffset:Float = (safeFrames / 60) * 1000; // is calculated in create(), is safeFrames in milliseconds
-	// public static var safeZoneOffset:Float = 200; // is calculated in create(), is safeFrames in milliseconds
 
 	
 

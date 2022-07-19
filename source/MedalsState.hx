@@ -34,7 +34,7 @@ class MedalsState extends MusicBeatState {
         if (medals.medals == null) medals.medals = [];
         for(k=>e in medals.medals) {
             var mSprite = new MedalSprite(Settings.engineSettings.data.selectedMod, e);
-            mSprite.x = (k % multiple) * ((1280 - 120) / multiple) + 120 + (Math.floor(k / multiple) * 20);
+            mSprite.x = (k % multiple) * ((FlxG.width - 120) / multiple) + 120 + (Math.floor(k / multiple) * 20);
             mSprite.y = ((Math.floor(k / multiple)) * 125) + 25;
             sprites.add(mSprite);
             if (!mSprite.locked) unlockedMedals++;
@@ -44,15 +44,11 @@ class MedalsState extends MusicBeatState {
         var bg = new FlxSprite(0, 0).makeGraphic(FlxG.width, 80, 0x88000000, true);
         add(bg);
         
-        var title = new AlphabetOptimized(FlxG.width / 2, 17.5, "Medals", true);
-        title.textSize = 0.75;
-        title.calculateShit(false);
+        var title = new AlphabetOptimized(FlxG.width / 2, 17.5, "Medals", true, 0.75);
         title.x -= title.width / 2;
         add(title);
 
-        var unlockedCaption = new AlphabetOptimized(FlxG.width - 10, 20, '$unlockedMedals/${medals.medals.length}', false);
-        unlockedCaption.textSize = 0.5;
-        unlockedCaption.calculateShit(false);
+        var unlockedCaption = new AlphabetOptimized(FlxG.width - 10, 20, '$unlockedMedals/${medals.medals.length}', false, 0.5);
         unlockedCaption.x -= unlockedCaption.width;
         add(unlockedCaption);
 

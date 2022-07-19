@@ -12,6 +12,11 @@ import NoteShader.ColoredNoteShader;
 class GameplayMenu extends OptionScreen {
     var strums:FlxSpriteGroup = new FlxSpriteGroup();
     var arrow:FlxSprite;
+    
+    public function new() {
+        super("Options > Gameplay");
+    }
+
     public override function create() {
         options = [
             {
@@ -85,16 +90,10 @@ class GameplayMenu extends OptionScreen {
                 onSelect: function(e) {e.check(Settings.engineSettings.data.botplay = !Settings.engineSettings.data.botplay);}
             },
             {
-                name: "Reset Button",
-                desc: "If enabled, pressing [R] will blue ball yourself.",
-                value: "",
-                onCreate: function(e) {e.check(Settings.engineSettings.data.resetButton);},
-                onSelect: function(e) {e.check(Settings.engineSettings.data.resetButton = !Settings.engineSettings.data.resetButton);}
-            },
-            {
                 name: "Accuracy mode",
                 desc: "Sets the accuracy mode. Simple means based on the rating, Complex means based on the press delay.",
                 value: "",
+                additional: true,
                 onCreate: function(e) {e.value = ScoreText.accuracyTypesText[Settings.engineSettings.data.accuracyMode];},
                 onUpdate: function(e) {
                     if (controls.ACCEPT || controls.RIGHT_P) Settings.engineSettings.data.accuracyMode++;
@@ -106,6 +105,13 @@ class GameplayMenu extends OptionScreen {
                 onLeft: function(e) {
                     e.value = ScoreText.accuracyTypesText[Settings.engineSettings.data.accuracyMode];
                 }
+            },
+            {
+                name: "Flashing Lights",
+                desc: "If unchecked, will disable every flashing lights on supported mods. Disable this if you're sensible to flashing.",
+                value: "",
+                onCreate: function(e) {e.check(Settings.engineSettings.data.flashingLights);},
+                onSelect: function(e) {e.check(Settings.engineSettings.data.flashingLights = !Settings.engineSettings.data.flashingLights);}
             }
         ];
         super.create();

@@ -37,6 +37,7 @@ class ModSubState extends MusicBeatSubstate {
         script.setVariable("state", this);
 
         ModSupport.setScriptDefaultVars(script, _mod, {});
+        script.setScriptObject(this);
         script.loadFile(path);
 
         script.executeFunc("new", args);
@@ -86,12 +87,6 @@ class ModSubState extends MusicBeatSubstate {
     }
 
     public override function update(elapsed:Float) {
-        if (CoolUtil.isDevMode()) {
-            if (FlxG.keys.justPressed.F5) {
-                // F5 to reload in dev mode
-                FlxG.switchState(new ModState(_scriptName, _mod, args));
-            }
-        }
         script.executeFunc("update", [elapsed]);
         super.update(elapsed);
     }

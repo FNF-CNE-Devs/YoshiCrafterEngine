@@ -74,7 +74,6 @@ class ToolboxHome extends MusicBeatState {
         FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/songs/');
         FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/sounds/');
         FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/music/');
-        // FlxG.sound.playMusic(Paths.music("characterEditor", "preload"));
         #if desktop
             DiscordClient.changePresence("In the Toolbox", null, "Toolbox Icon");
         #end
@@ -115,15 +114,14 @@ class ToolboxHome extends MusicBeatState {
         UI_Tabs = new FlxUITabMenu(null, tabs, true);
         UI_Tabs.x = 0;
         UI_Tabs.resize(FlxG.width - 220, 22);
-        // UI_Tabs.screenCenter(Y);
         UI_Tabs.scrollFactor.set();
         add(UI_Tabs);
-        var coolTabFadeout = new FlxSprite(0, 20).makeGraphic(1280, 10, 0x00000000);
+        var coolTabFadeout = new FlxSprite(0, 20).makeGraphic(FlxG.width, 10, 0x00000000);
         coolTabFadeout.pixels.lock();
         for(y in 0...coolTabFadeout.pixels.height) {
             var c:FlxColor = 0xFF8C8C8C;
             c.alphaFloat = 1 - (y / coolTabFadeout.pixels.height);
-            coolTabFadeout.pixels.fillRect(new openfl.geom.Rectangle(0, y, 1280, 1), c);
+            coolTabFadeout.pixels.fillRect(new openfl.geom.Rectangle(0, y, FlxG.width, 1), c);
         }
         coolTabFadeout.pixels.unlock();
         add(coolTabFadeout);
@@ -159,16 +157,6 @@ class ToolboxHome extends MusicBeatState {
         helpButton.resize(100, 20);
         helpButton.label.color = FlxColor.WHITE;
         add(helpButton);
-
-        // folderButton = new FlxUIButton(FlxG.width - 40, 0, "?", function() {
-        //     FlxG.switchState(new ToolboxMain());
-        // });
-        // folderButton.color = 0xFF4444FF;
-        // folderButton.resize(20, 20);
-        // folderButton.label.color = FlxColor.WHITE;
-        // add(folderButton);
-       
-		// tab.add(modDropDown);
     }
 
     public function onChangeTab(tab:String) {

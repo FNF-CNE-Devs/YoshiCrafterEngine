@@ -102,11 +102,5 @@ class MedalsTab extends ToolboxTab {
         }
     }
     public override function onTabExit() {}
-    public override function tabUpdate(elapsed:Float) {
-        // var screenPos = FlxG.mouse.getScreenPosition();
-        // if (screenPos.x > FlxG.width / 2) {
-            
-        // }
-    }
     public override function onTabEnter() {}
 }

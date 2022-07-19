@@ -1,3 +1,4 @@
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.system.scaleModes.BaseScaleMode;
 import flixel.FlxG;
 
@@ -71,6 +72,8 @@ class WideScreenScale extends BaseScaleMode
             updatePlayStateHUD(width, height);
         }
         
+        FlxTransitionableState.defaultTransOut.region.width = FlxTransitionableState.defaultTransIn.region.width = FlxG.width;
+        FlxTransitionableState.defaultTransOut.region.height = FlxTransitionableState.defaultTransIn.region.height = FlxG.height;
     }
 
     public static function updatePlayStateHUD(width:Int = 1280, height:Int = 720) {
@@ -83,7 +86,6 @@ class WideScreenScale extends BaseScaleMode
                 PlayState.current.camHUD.width = Std.int(FlxG.width);
                 PlayState.current.camHUD.height = Std.int(FlxG.height);
                 PlayState.current.camHUD.x = PlayState.current.camHUD.y = 0;
-                // PlayState.current.camHUD.scroll.set(-(1280 - PlayState.current.camHUD.width) / 2, -(720 - PlayState.current.camHUD.height) / 2);
                 PlayState.current.camHUD.follow(PlayState.current.camFollowHud, LOCKON, 1);
             }
             if (PlayState.current.camGame != null) {

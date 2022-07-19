@@ -99,7 +99,6 @@ class UpdateState extends MusicBeatState
 		while(label2.length < maxLength) label2 += " ";
 		currentFileLabel.text = 'Downloading File: $f\n$label1 | $label2';
 		
-		// downloadStream.addEventListener(Event.OPEN, function(e) {trace("Opened");good = true;});
 		downloadStream.addEventListener(IOErrorEvent.IO_ERROR, function(e) {
 			if (e.text.contains("404")) {
 				
@@ -179,8 +178,6 @@ class UpdateState extends MusicBeatState
 		super.create();
 		FlxG.autoPause = false;
 
-		// CoolUtil.addUpdateBG(this);
-
 		var loadingThingy = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK, true);
         loadingThingy.pixels.lock();
         var color1 = FlxColor.fromRGB(0, 66, 119);
@@ -255,10 +252,7 @@ class UpdateState extends MusicBeatState
         super.update(elapsed);
 
 		bf.angle = Math.sin(t / 10) * 10;
-
-		// if (currentFile != null && currentLoadedStream != null) {
-		// 	currentFileLabel.text = 'Downloading File: $currentFile';
-		// }
+		
 		super.update(elapsed);
 	}
 }

@@ -61,8 +61,7 @@ class SwitchModSubstate extends MusicBeatSubstate {
         medalsBG.scrollFactor.set();
         add(medalsBG);
 
-        medalsText = new AlphabetOptimized(5, FlxG.height - 40, "No medals? *megamind*", false);
-        medalsText.textSize = 0.5;
+        medalsText = new AlphabetOptimized(5, FlxG.height - 40, "No medals? *megamind*", false, 0.5);
         medalsText.scrollFactor.set();
         add(medalsText);
 
@@ -93,6 +92,9 @@ class SwitchModSubstate extends MusicBeatSubstate {
         } else {
             medalsPercentageLerp = 0;
             medalsText.text = 'No medals';
+        }
+        if (Settings.engineSettings.data.developerMode) {
+            medalsText.text += ' | Folder name: ${mods[selected].modDataName}';
         }
     }
 

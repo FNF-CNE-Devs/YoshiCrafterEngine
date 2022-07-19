@@ -130,6 +130,18 @@ function beatHit(curBeat) {
         }
         return vec4(0.0, 0.0, 0.0, 0.0);
     }
+
+    uniform vec4 _camSize;
+
+    vec2 getCamPos(vec2 pos) {
+        return (pos * openfl_TextureSize / vec2(_camSize.z, _camSize.w)) + vec2(_camSize.x / _camSize.z, _camSize.y / _camSize.z);
+    }
+    vec2 camToOg(vec2 pos) {
+        return ((pos - vec2(_camSize.x / _camSize.z, _camSize.y / _camSize.z)) * vec2(_camSize.z, _camSize.w) / openfl_TextureSize);
+    }
+    vec4 textureCam(sampler2D bitmap, vec2 pos) {
+        return texture2D(bitmap, camToOg(pos));
+    }
     ";
 
     public static var entireFuckingCustomFragmentBody = "vec4 color = texture2D (bitmap, openfl_TextureCoordv);
@@ -146,7 +158,7 @@ function beatHit(curBeat) {
         colorMultiplier[0][0] = openfl_ColorMultiplierv.x;
         colorMultiplier[1][1] = openfl_ColorMultiplierv.y;
         colorMultiplier[2][2] = openfl_ColorMultiplierv.z;
-        colorMultiplier[3][3] = 1.0; // openfl_ColorMultiplierv.w;
+        colorMultiplier[3][3] = 1.0;
 
         color = clamp (openfl_ColorOffsetv + (color * colorMultiplier), 0.0, 1.0);
 

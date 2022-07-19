@@ -37,6 +37,7 @@ class ModState extends MusicBeatState {
         script.setVariable("state", this);
 
         ModSupport.setScriptDefaultVars(script, _mod, {});
+        script.setScriptObject(this);
         script.loadFile(path);
 
         script.executeFunc("new", args);

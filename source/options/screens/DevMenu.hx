@@ -6,6 +6,9 @@ import options.OptionScreen;
 import flixel.FlxG;
 
 class DevMenu extends OptionScreen {
+    public function new() {
+        super("Options > Developer Settings");
+    }
     public override function create() {
         options = [
             {

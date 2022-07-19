@@ -67,7 +67,6 @@ class CharacterEditor extends MusicBeatState {
     var shadowCharacter:Character;
     var usePlayerColors:FlxUICheckBox = null;
 
-    // var isPlayer:Bool = false;
     var usePlayerArrowColors:Bool = false;
     var editedAs:Shrex = DAD;
 
@@ -91,14 +90,12 @@ class CharacterEditor extends MusicBeatState {
         if (framerate != null) framerate.value = anim.frameRate;
         if (loopCheckBox != null) loopCheckBox.checked = anim.looped;
         character.playAnim(currentAnim);
-        // shadowCharacter.playAnim(currentAnim);
 
         if (offsetX == null || offsetY == null) return;
         var offsets = character.animOffsets[currentAnim];
         if (offsets == null) offsets = [0, 0];
         offsetX.value = offsets[0];
         offsetY.value = offsets[1];
-        // shadowCharacter.offset.set(offsetX.value, offsetY.value);
     }
 
     public function save() {
@@ -188,29 +185,6 @@ class CharacterEditor extends MusicBeatState {
         var folder = '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$c';
         if (ToolboxHome.selectedMod == "~") folder = '${Paths.getSkinsPath()}/$c';
         File.saveContent('$folder/Character.json', Json.stringify(json, "\t"));
-        // if (isBFskin.checked) {
-        //     if (ModSupport.modConfig[ToolboxHome.selectedMod].BFskins == null) ModSupport.modConfig[ToolboxHome.selectedMod].BFskins = [];
-        //     var exists = false;
-        //     for (e in ModSupport.modConfig[ToolboxHome.selectedMod].BFskins) {
-        //         if (e.char == c) {
-        //             exists = true;
-        //             break;
-        //         }
-        //     }
-        //     if (!exists) {
-        //         ModSupport.modConfig[ToolboxHome.selectedMod].BFskins.push({
-                    
-        //         });
-        //     }
-        //     if (!ModSupport.modConfig[ToolboxHome.selectedMod].BFskins.contains(c)) {
-        //         ModSupport.saveModData(ToolboxHome.selectedMod);
-        //     }
-        // } else {
-        //     if (ModSupport.modConfig[ToolboxHome.selectedMod].BFskins.contains(c)) {
-        //         ModSupport.modConfig[ToolboxHome.selectedMod].BFskins.remove(c);
-        //         ModSupport.saveModData(ToolboxHome.selectedMod);
-        //     }
-        // }
         if (canBeBFSkinned.checked) {
             if (!ModSupport.modConfig[ToolboxHome.selectedMod].skinnableBFs.contains(c)) {
                 ModSupport.modConfig[ToolboxHome.selectedMod].skinnableBFs.push(c);
@@ -317,9 +291,6 @@ class CharacterEditor extends MusicBeatState {
 
 
         character = new Character(100, 100, '${ToolboxHome.selectedMod}:$char');
-        // character.curCharacter = '${ToolboxHome.selectedMod}:$char';
-        // character.frames = Paths.getModCharacter();
-        // character.loadJSON(true);
         character.setPosition(100 + character.charGlobalOffset.x, 100 + character.charGlobalOffset.y);
         shadowCharacter.setPosition(100 + character.charGlobalOffset.x, 100 + character.charGlobalOffset.y);
         
@@ -458,12 +429,6 @@ class CharacterEditor extends MusicBeatState {
         });
         animSettings.add(loopCheckBox);
 
-        // var label:FlxUIText = new FlxUIText(10, loopCheckBox.y + loopCheckBox.height + 10, 280, "Indices (separate by \",\", leave blank for no indices)");
-        // animSettings.add(label);
-        // indices = new FlxUIInputText(10, label.y + label.height, 280, "");
-        // animSettings.add(indices);
-
-
         animSettingsTabs.addGroup(animSettings);
         animSettingsTabs.resize(300, 200);
         animSettingsTabs.setPosition(1280 - animSettingsTabs.width - 10, 10);
@@ -523,16 +488,14 @@ class CharacterEditor extends MusicBeatState {
             shadowCharacter.flipX = character.flipX;
         });
         flipCheckbox.checked = character.flipX;
-        // add(flipCheckbox);
 
         antialiasing = new FlxUICheckBox(flipCheckbox.x + 145, 10, null, null, "Anti-Aliasing", 120, null, function() {
             character.antialiasing = antialiasing.checked;
             shadowCharacter.antialiasing = antialiasing.checked;
         });
         antialiasing.checked = character.antialiasing;
-        // add(antialiasing);
         characterSettingsTabs.addGroup(charSettings);
-        characterSettingsTabs.x = 1280 - characterSettingsTabs.width - 10;
+        characterSettingsTabs.x = FlxG.width - characterSettingsTabs.width - 10;
         characterSettingsTabs.y = animSettingsTabs.y + animSettingsTabs.height + 10;
         globalOffsetX = new FlxUINumericStepper(10, 36, 10, 0, -999, 999, 0);
         globalOffsetY = new FlxUINumericStepper(globalOffsetX.x + globalOffsetX.width + 5, 36, 10, 0, -999, 999, 0);
@@ -547,7 +510,7 @@ class CharacterEditor extends MusicBeatState {
         
         var label:FlxUIText = new FlxUIText(globalOffsetY.x + globalOffsetY.width + 10, globalOffsetY.y + (globalOffsetY.height / 2), 32, "Scale:");
         label.y -= (label.height / 2);
-        scale = new FlxUINumericStepper(10 + label.x + label.width, globalOffsetY.y, 0.1, 1, 0.1, 10, 1);
+        scale = new FlxUINumericStepper(10 + label.x + label.width, globalOffsetY.y, 0.05, 1, 0.1, 10, 1);
 
         
         var label2:FlxUIText = new FlxUIText(10, canBeGFSkinned.y + canBeGFSkinned.height + 10, 280, "Camera Offset");
@@ -564,9 +527,7 @@ class CharacterEditor extends MusicBeatState {
         charSettings.add(globalOffsetX);
         charSettings.add(globalOffsetY);
         charSettings.add(canBeGFSkinned);
-        // charSettings.add(isGFskin);
         charSettings.add(canBeBFSkinned);
-        // charSettings.add(isBFskin);
         charSettings.add(label2);
         charSettings.add(camOffsetX);
         charSettings.add(camOffsetY);
@@ -836,7 +797,6 @@ class CharacterEditor extends MusicBeatState {
 
         super.update(elapsed);
 
-        // isPlayer = editAsPlayer.checked;
         var move:FlxPoint = new FlxPoint(0, 0);
         if (FlxControls.pressed.RIGHT) move.x += 1;
         if (FlxControls.pressed.UP) move.y -= 1;
@@ -869,10 +829,6 @@ class CharacterEditor extends MusicBeatState {
 
         if (character.animation.curAnim != null) {
             if (character.animation.curAnim.name != "") {
-                // YOU CANT STOP ME HAXEFLIXEL
-
-                // WTF LOL
-                // var anim = character.animation.getByName(character.animation.curAnim.name);
                 var anim = character.animation.curAnim;
                 @:privateAccess
                 anim.looped = loopCheckBox.checked;

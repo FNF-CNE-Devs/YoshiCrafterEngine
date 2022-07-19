@@ -19,7 +19,11 @@ using StringTools;
 
 
 class Shader extends FlxFixedShader {
-    public var shaderData:Dynamic = {};
+    public var shaderData(get, null):Dynamic;
+    private function get_shaderData() {
+        return __data;
+    }
+
     public function new(fragCode:String, vertCode:String) {
         this.glFragmentSource = fragCode.replace("#pragma body", Templates.entireFuckingCustomFragmentBody).replace("#pragma header", Templates.entireFuckingCustomFragmentHeader).replace(" attribute ", " uniform ");
         this.glVertexSource = vertCode.replace("#pragma body", Templates.entireFuckingCustomVertexBody).replace("#pragma header", Templates.entireFuckingCustomVertexHeader);
@@ -102,7 +106,6 @@ class Shader extends FlxFixedShader {
                 Reflect.setField(__data, name, input);
                 if (__isGenerated) {
                     try {Reflect.setField(this, name, input);} catch(e) {}
-                    Reflect.setField(shaderData, name, input);
                 }
             }
             else if (!Reflect.hasField(__data, name) || Reflect.field(__data, name) == null)
@@ -177,7 +180,6 @@ class Shader extends FlxFixedShader {
                         Reflect.setField(__data, name, parameter);
                         if (__isGenerated) {
                             try {Reflect.setField(this, name, parameter);} catch(e) {}
-                            Reflect.setField(shaderData, name, parameter);
                         }
 
                     case INT, INT2, INT3, INT4:
@@ -198,7 +200,6 @@ class Shader extends FlxFixedShader {
                         Reflect.setField(__data, name, parameter);
                         if (__isGenerated) {
                             try {Reflect.setField(this, name, parameter);} catch(e) {}
-                            Reflect.setField(shaderData, name, parameter);
                         }
 
                     default:
@@ -239,7 +240,6 @@ class Shader extends FlxFixedShader {
                         Reflect.setField(__data, name, parameter);
                         if (__isGenerated) {
                             try {Reflect.setField(this, name, parameter);} catch(e) {}
-                            Reflect.setField(shaderData, name, parameter);
                         }
 
                         
@@ -253,10 +253,9 @@ class Shader extends FlxFixedShader {
 }
 class CustomShader extends Shader {
 	
-    // public var bitmap(get, null):Any;
-    // public function get_bitmap():Any {
-    //     return bitm
-    // }
+    public function setCamSize(x:Float, y:Float, width:Float, height:Float) {
+        data._camSize.value = [x, y, width, height];
+    }
 
     public function init(fragCode:String, vertCode:String) {
 

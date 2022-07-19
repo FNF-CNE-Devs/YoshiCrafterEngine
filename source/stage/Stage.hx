@@ -186,11 +186,6 @@ class Stage {
 		char.scrollFactor.set(scrollFactor[0], scrollFactor[1]);
 		char.updateHitbox();
 
-		// if (s.scale == null) s.scale = 1;
-
-		// char.scale.set(s.scale, s.scale);
-		// char.x += (char.charGlobalOffset.x * (s.scale - 1));
-		// char.y += (char.charGlobalOffset.y * (s.scale - 1));
 		doTheCharShader(char, s, mod);
 	}
 	public static function doTheCharShader(char:FlxSprite, s:StageSprite, mod:String) {
@@ -237,7 +232,6 @@ class Stage {
 		sprite.spritePath = s.src;
 		if (s.src != null) {
 			var sparrowAtlas = Paths.getSparrowAtlas(s.src, 'mods/$mod');
-			// var sparrowAtlas = Paths.getSparrowAtlas_Custom('${Paths.modsPath}/${mod}/images/${s.src}');
 			if (sparrowAtlas != null) {
 				sprite.frames = sparrowAtlas;
 
@@ -256,8 +250,6 @@ class Stage {
 				}
 			}
 		}
-
-		// if (s.name != null) sprites[s.name] = sprite;
 		doTheRest(sprite, s, mod);
 		return sprite;
 	}
@@ -283,7 +275,6 @@ class Stage {
 		sprite.spritePath = s.src;
 		if (s.src != null) {
 			var bitmap = Paths.image(s.src, 'mods/$mod');
-			// var bitmap = Paths.getBitmapOutsideAssets('${Paths.modsPath}/${mod}/images/${s.src}.png');
 			if (Assets.exists(bitmap)) sprite.loadGraphic(bitmap);
 		}
 		doTheRest(sprite, s, mod);

@@ -195,23 +195,16 @@ class ChartingState_New extends MusicBeatState
 
 		p1.setPosition(0, -100);
 		p2.setPosition(gridBG.width / 2, -100);
-
-		// var gridBlackLine:FlxSprite = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
-		// add(gridBlackLine);
-
 		curRenderedNotes = new FlxTypedGroup<CharterNote>();
 		curRenderedEvents = new FlxTypedGroup<CharterNote>();
 		curRenderedEventsNames = [];
 		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
 
 		FlxG.mouse.visible = true;
-		// FlxG.save.bind('funkin', 'ninjamuffin99');
 
 		tempBpm = _song.bpm;
 
 		addSection();
-
-		// sections = _song.notes;
 
 
 		loadSong(_song.song, PlayState.storyDifficulty.toLowerCase().replace(" ", "-"));
@@ -219,7 +212,6 @@ class ChartingState_New extends MusicBeatState
 		Conductor.changeBPM(_song.bpm);
 		Conductor.mapBPMChanges(_song);
 
-		// ITS NOT REMOVED JEEZ
 		bpmTxt = new FlxText(0, 50, 0, "", 16);
 		bpmTxt.scrollFactor.set();
 		bpmTxt.setBorderStyle(FlxTextBorderStyle.OUTLINE, 0xFF000000, 1, 1);
@@ -242,7 +234,6 @@ class ChartingState_New extends MusicBeatState
 		UI_box = new FlxUITabMenu(null, tabs, true);
 
 		UI_box.resize(300, FlxG.height - 40);
-		// UI_box.x = 0;
 		UI_box.x = FlxG.width - 310;
 		UI_box.y = 20;
 		add(UI_box);
@@ -430,7 +421,6 @@ class ChartingState_New extends MusicBeatState
 		stepperBPM.name = 'song_bpm';
 		var stepperBPMLabel = new FlxUIText(10, stepperBPM.y + (stepperBPM.height / 2), 0, "Beats per minute (BPM)");
 		stepperBPMLabel.y -= stepperBPM.height / 2;
-		// _song.needsVoices = check_voices.checked;
 		
 
 		
@@ -457,56 +447,7 @@ class ChartingState_New extends MusicBeatState
 
 		var loadAutosaveBtn:FlxButton = new FlxButton(refresh.x + refresh.width + 10, refresh.y, 'Load Autosave', loadAutosave);
 
-		
-
-		// var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
-
-		
-
 		var tab_group_song = new FlxUI(null, UI_box);
-
-
-		
-
-
-		// BROKEN, NEED FIX
-		// var fixChartButton = new FlxButton(10, 654, "Fix Chart", function() {
-		// 	for (s in _song.notes) {
-		// 		for (n in s.sectionNotes) {
-		// 			s.sectionNotes.remove(n);
-		// 			var newSection = Math.floor(Math.max(0, n[0] / (Conductor.crochet * 4)));
-		// 			if (_song.notes[newSection] == null) _song.notes[newSection] = {
-		// 				typeOfSection: 0,
-		// 				mustHitSection: true,
-		// 				sectionNotes: [],
-		// 				bpm: _song.bpm,
-		// 				changeBPM: false,
-		// 				lengthInSteps: 16,
-		// 				altAnim: false
-		// 			}; 
-		// 			var mustHit = (n[1] % (_song.keyNumber * 2)) < _song.keyNumber;
-		// 			if (s.mustHitSection) mustHit != mustHit;
-		// 			// Gets note type
-		// 			var noteType = Math.floor(n[1] / (_song.keyNumber * 2));
-		// 			// Gets strum ID
-		// 			var no = n[1] % _song.keyNumber;
-		// 			var id = 0;
-
-		// 			if ((_song.notes[newSection].mustHitSection && mustHit) || (!_song.notes[newSection].mustHitSection && !mustHit)) {
-		// 				id = Std.int(no + (noteType * _song.keyNumber * 2));
-		// 			} else {
-		// 				id = Std.int((no + _song.keyNumber) % (_song.keyNumber * 2) + (noteType * _song.keyNumber * 2));
-		// 			}
-		// 			n[1] = id;
-					
-		// 			_song.notes[newSection].sectionNotes.push(n);
-		// 		}
-		// 	}
-		// });
-		// fixChartButton.y -= fixChartButton.height;
-		// var fixChartLabel = new FlxUIText(10, fixChartButton.y - 10, 280, "Pressing this button will fix chart's note section problem, where notes are in the wrong section and off the grid. This operation may take a while depending on the size on the chart. Continue at your own risk.");
-		// fixChartLabel.y -= fixChartLabel.height;
-
 
 
 		tab_group_song.name = "Song";
@@ -536,9 +477,6 @@ class ChartingState_New extends MusicBeatState
 		tab_group_song.add(p1label);
 		tab_group_song.add(player1CharDropDown);
 		tab_group_song.add(player1ModDropDown);
-
-		// tab_group_song.add(fixChartLabel);
-		// tab_group_song.add(fixChartButton);
 
 		UI_box.addGroup(tab_group_song);
 		UI_box.scrollFactor.set();
@@ -573,7 +511,6 @@ class ChartingState_New extends MusicBeatState
 
 
 			tab_group_section.add(title);
-			// tab_group_section.add(check_mustHitSection);
 			tab_group_section.add(stepperSectionBPM);
 			tab_group_section.add(check_changeBPM);
 		}
@@ -613,8 +550,6 @@ class ChartingState_New extends MusicBeatState
 			
 			var clearSectionButton:FlxButton = new FlxButton(10, swapSection.y, "Clear", clearSection);
 			clearSectionButton.x = swapSection.x + swapSection.width + 10;
-
-			// swapSection.x = copyButton.x + copyButton.width + 10;
 			var copyButton:FlxButton = new FlxButton(10, swapSection.y, "Copy Section", function()
 			{
 				copySection(Std.int(stepperCopy.value));
@@ -1673,30 +1608,7 @@ class ChartingState_New extends MusicBeatState
 	{
 		return FlxMath.remapToRange(strumTime, 0, 16 * Conductor.stepCrochet, gridBG.y, gridBG.y + gridBG.height);
 	}
-
-	/*
-		function calculateSectionLengths(?sec:SwagSection):Int
-		{
-			var daLength:Int = 0;
-
-			for (i in _song.notes)
-			{
-				var swagLength = i.lengthInSteps;
-
-				if (i.typeOfSection == Section.COPYCAT)
-					swagLength * 2;
-
-				daLength += swagLength;
-
-				if (sec != null && sec == i)
-				{
-					trace('swag loop??');
-					break;
-				}
-			}
-
-			return daLength;
-	}*/
+	
 	private var daSpacing:Float = 0.3;
 
 	function loadLevel():Void

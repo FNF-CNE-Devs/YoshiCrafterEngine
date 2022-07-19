@@ -15,7 +15,7 @@ using StringTools;
 class NewAnimDialogue extends MusicBeatSubstate {
     public override function new() {
         super();
-        var bg = new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000);
+        var bg = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0x88000000);
         bg.scrollFactor.set();
         add(bg);
         var UI_Tabs = new FlxUITabMenu(null, 

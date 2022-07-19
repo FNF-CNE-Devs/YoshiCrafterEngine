@@ -35,9 +35,11 @@ class ModSprite extends FlxSprite {
         if (script != null) script = new HScript();
         ModSupport.setScriptDefaultVars(script, mod, {});
         script.setVariable("sprite", this);
-        script.executeFunc("new", [x, y]);
-        script.executeFunc("create", [x, y]);
         script.loadFile(path);
+        var a = [x, y];
+        for(e in args) a.push(e);
+        script.executeFunc("new", a);
+        script.executeFunc("create", a);
     }
 
     public override function draw() {

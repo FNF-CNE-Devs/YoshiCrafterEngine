@@ -18,13 +18,10 @@ class ModCard extends FlxSpriteGroup {
     public override function new(modFolder:String, mod:ModConfig) {
         super();
         this.mod = modFolder;
-        // this.resize(640, 222);
 
         var bg = new FlxSprite(0, 0).loadGraphic(Paths.image('modcardbg', 'preload'));
 
-        mod_name = new AlphabetOptimized(10, 10, "Mod Name", false);
-        mod_name.textSize = 0.5;
-        mod_name.calculateShit(false);
+        mod_name = new AlphabetOptimized(10, 10, "Mod Name", false, 0.5);
 
         mod_desc = new FlxUIText(170, mod_name.y + 50, 460, "Mod Description");
         mod_icon = new FlxUISprite(10, mod_name.y + 50);
@@ -47,7 +44,6 @@ class ModCard extends FlxSpriteGroup {
         
         mod_name.text = mod.name != null ? mod.name : this.mod;
         mod_desc.text = mod.description != null ? mod.description : "(No description)";
-        // var iconPath = '${Paths.modsPath}/${this.mod}/modIcon.png';
 		var asset = Paths.getPath('modIcon.png', IMAGE, 'mods/${this.mod}');
         mod_icon.loadGraphic(Assets.exists(asset) ? asset : Paths.image("modEmptyIcon", "preload"));
         mod_icon.setGraphicSize(150, 150);

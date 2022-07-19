@@ -16,7 +16,7 @@ class SongCreator extends MusicBeatSubstate {
     public override function new(home:SongTab) {
         super();
 
-        add(new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000));
+        add(new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0x88000000));
 
         var tabMenu = new FlxUITabMenu(null, [
             {
@@ -24,7 +24,7 @@ class SongCreator extends MusicBeatSubstate {
                 label: "Add a song"
             }
         ], true);
-        tabMenu.resize(500, 720);
+        tabMenu.resize(500, FlxG.height);
         var tab = new FlxUI(null, tabMenu);
         tab.name = "add";
         

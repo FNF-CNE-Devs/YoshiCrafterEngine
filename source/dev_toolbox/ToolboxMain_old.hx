@@ -39,7 +39,7 @@ class ToolboxMain extends MusicBeatState {
 			{name: "main", label: 'Select a mod...'}
 		];
         var UI_Main = new FlxUITabMenu(null, tabs, true);
-        UI_Main.resize(640, 282);
+        UI_Main.resize((FlxG.width / 2), 282);
         UI_Main.screenCenter();
         add(UI_Main);
 
@@ -106,7 +106,6 @@ class ToolboxMain extends MusicBeatState {
         deleteMod.label.color = FlxColor.WHITE;
 
         modName = new FlxUIText(10, label.y + label.height + 10, 620);
-        // modName.alignment = FlxTextAlign.CENTER;
         modName.size *= 2;
         modName.text = "Select a mod...";
 
@@ -147,7 +146,6 @@ class ToolboxMain extends MusicBeatState {
                 selectedMod = label;
                 updateModData();
             }, new FlxUIDropDownHeader(250));
-            // modDropDown.selectedId = "Friday Night Funkin'";
             modDropDown.x -= modDropDown.width;
             tab.add(modDropDown);
             updateModData();

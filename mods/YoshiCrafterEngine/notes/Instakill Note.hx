@@ -23,10 +23,12 @@ function create() {
     note.noteOffset.set(-10, 10);
     note.maxEarlyDiff *= 0.5;
     note.maxLateDiff *= 0.5;
+    note.cpuIgnore = true;
 }
 
 function onMiss() {}
 
 function onPlayerHit(direction:Int) {
+    playBFsAnim("hit", true);
     PlayState.health = -2;
 }

@@ -1,5 +1,6 @@
 package dev_toolbox.file_explorer;
 
+import flixel.FlxG;
 import openfl.utils.Assets;
 import sys.io.Process;
 import haxe.io.Path;
@@ -67,11 +68,6 @@ class FileExplorer extends MusicBeatSubstate {
         this.path = path;
         var p = '${Paths.modsPath}/$mod/$path';
         #if trace_everything trace(p); #end
-
-
-        // 256 + 20 = 276
-        // TOTAL WIDTH = 276
-        // MAX ITEMS PER COLUMN = 27
         
         var maxLength = 0;
         var dirs = [];
@@ -153,12 +149,6 @@ class FileExplorer extends MusicBeatSubstate {
 
     }
 
-    // function showMessage(title:String, text:String) {
-    //     var m = ToolboxMessage.showMessage(title, text);
-    //     m.cameras = cameras;
-    //     openSubState(m);
-    // }
-
     public override function new(mod:String, type:FileExplorerType, ?defaultFolder:String = "", callback:String->Void, ?windowName:String) {
         super();
         path = defaultFolder;
@@ -166,7 +156,7 @@ class FileExplorer extends MusicBeatSubstate {
         this.callback = callback;
 
         var bg:FlxSprite;
-        add(bg = new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000));
+        add(bg = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0x88000000));
         bg.scrollFactor.set();
 
         this.type = type;
@@ -222,7 +212,7 @@ class FileExplorer extends MusicBeatSubstate {
             }
         ], true);
         tabThingy.scrollFactor.set();
-        tabThingy.resize(1280 * 0.75, 720 * 0.75);
+        tabThingy.resize(FlxG.width * 0.75, FlxG.height * 0.75);
 
         tab = new FlxUI(null, tabThingy);
         tab.name = "explorer";
@@ -260,15 +250,13 @@ class FileExplorer extends MusicBeatSubstate {
         buttons.push(new FlxUIButton(0, 0, "Cancel", function() {
             close();
         }));
-        // #if windows
-            buttons.push(new FlxUIButton(0, 0, "Open Folder", function() {
-                CoolUtil.openFolder('${Paths.modsPath}/$mod/$path');
-            }));
-        // #end
+        buttons.push(new FlxUIButton(0, 0, "Open Folder", function() {
+            CoolUtil.openFolder('${Paths.modsPath}/$mod/$path');
+        }));
 
         for(k=>b in buttons) {
             b.y = tabThingy.height - 50;
-            b.x = (1280 * 0.325) + ((k - (buttons.length / 2) + 1) * 90);
+            b.x = (FlxG.width * 0.325) + ((k - (buttons.length / 2) + 1) * 90);
             tab.add(b);
         }
 

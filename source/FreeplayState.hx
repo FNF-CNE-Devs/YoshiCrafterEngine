@@ -1,5 +1,6 @@
 package;
 
+import mod_support_stuff.FullyModState;
 import Script.HScript;
 import mod_support_stuff.SwitchModSubstate;
 import flixel.input.keyboard.FlxKey;
@@ -46,7 +47,7 @@ typedef FreeplaySong = {
 	public var bpm:Null<Int>;
 	@:optional public var disabled:Bool;
 }
-class FreeplayState extends MusicBeatState
+class FreeplayState extends FullyModState
 {
 	public var songs:Array<SongMetadata> = null;
 	public var _songs:Array<SongMetadata> = [];
@@ -129,24 +130,18 @@ class FreeplayState extends MusicBeatState
 		{
 			var songName = _songs[i].songName;
 			if (_songs[i].displayName != null) songName = _songs[i].displayName;
-			var songText:AlphabetOptimized = new AlphabetOptimized(0, (70 * i) + 30, songName.replace("-", " "));
+			var t = songName.replace("-", " ");
+			var songText:AlphabetOptimized = new AlphabetOptimized(0, (70 * i) + 30, t, Math.min(1, (FlxG.width - 256) / (51 * t.length)));
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			if (_songs[i].disabled) songText.textColor = 0xFF888888;
-			songText.textSize = Math.min(1, (FlxG.width - 256) / (51 * songText.text.length));
 			grpSongs.add(songText);
 
 			var icon:HealthIcon = new HealthIcon(_songs[i].songCharacter, false, _songs[i].mod);
 			icon.sprTracker = songText;
 
-			// using a FlxGroup is too much fuss!
 			iconArray.push(icon);
 			add(icon);
-			
-
-			// songText.x += 40;
-			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-			// songText.screenCenter(X);
 		}
 		for (k=>s in _songs) {
 			if ('${s.mod}:${s.songName.toLowerCase()}' == Settings.engineSettings.data.lastSelectedSong) {
@@ -159,10 +154,11 @@ class FreeplayState extends MusicBeatState
 		changeSelection();
 		changeDiff();
 	}
-	override function create()
+	override function normalCreate()
 	{
+		super.normalCreate();
+
 		reloadModsState = true;
-		// Assets.loadLibrary("songs");
 		
 		loadFreeplaySongs();
 		freeplayScript = Script.create('${Paths.getModsPath()}/${Settings.engineSettings.data.selectedMod}/ui/FreeplayState');
@@ -176,17 +172,9 @@ class FreeplayState extends MusicBeatState
 		freeplayScript.setVariable("addSong", addSong);
 		ModSupport.setScriptDefaultVars(freeplayScript, '${Settings.engineSettings.data.selectedMod}', {});
 		if (validated) {
+			freeplayScript.setScriptObject(this);
 			freeplayScript.loadFile('${Paths.getModsPath()}/${Settings.engineSettings.data.selectedMod}/ui/FreeplayState');
 		}
-		// freeplayScript.executeFunc("create", []);
-
-		// var initSonglist = ModSupport.getFreeplaySongs();
-
-		// for (i in 0...initSonglist.length)
-		// {
-		// 	var splittedThingy:Array<String> = initSonglist[i].trim().split(":");
-		// 	songs.push(new SongMetadata(splittedThingy[1], splittedThingy[0], splittedThingy[2]));
-		// }
 
 		CoolUtil.playMenuMusic();
 
@@ -200,11 +188,6 @@ class FreeplayState extends MusicBeatState
 		#if debug
 		isDebug = true;
 		#end
-
-
-		// var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
-		// bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		// bg.color = FlxColor.fromRGB(129, 99, 223);
 		bg = CoolUtil.addWhiteBG(this);
 		bg.color = 0xFF8163DF;
 
@@ -215,10 +198,8 @@ class FreeplayState extends MusicBeatState
 		freeplayScript.executeFunc("createSongs", []);
 
 		scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
-		// scoreText.autoSize = false;
 		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
 		scoreText.antialiasing = true;
-		// scoreText.alignment = RIGHT;
 
 		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 99, 0xFF000000, true);
 		scoreBG.alpha = 0.6;
@@ -232,7 +213,7 @@ class FreeplayState extends MusicBeatState
 		moreInfoText.font = scoreText.font;
 		moreInfoText.antialiasing = true;
 
-		advancedBG = new FlxSprite(scoreText.x - 6, 99).makeGraphic(Std.int(FlxG.width * 0.35), 720 - 99 - 30, 0xFF000000, true);
+		advancedBG = new FlxSprite(scoreText.x - 6, 99).makeGraphic(Std.int(FlxG.width * 0.35), FlxG.height - 99 - 30, 0xFF000000, true);
 		advancedBG.alpha = 0.4;
 
 		var bottomBG = new FlxSprite(0, FlxG.height - 30).makeGraphic(FlxG.width, 30, 0xFF000000, true);
@@ -267,7 +248,7 @@ class FreeplayState extends MusicBeatState
 		if (!Settings.engineSettings.data.autoplayInFreeplay) {
 			var t = new FlxText(0, 0, FlxG.width, '[Space] Listen to selected song | Selected Mod: ${ModSupport.getModName(Settings.engineSettings.data.selectedMod)} - Press [Tab] to switch.');
 			t.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-			t.y = 715 - t.height;
+			t.y = FlxG.height - 5 - t.height;
 			add(t);
 		}
 
@@ -275,8 +256,6 @@ class FreeplayState extends MusicBeatState
 
 		
 
-		// FlxG.sound.playMusic(Paths.music('title'), 0);
-		// FlxG.sound.music.fadeIn(2, 0, 0.8);
 		selector = new FlxText();
 
 		selector.size = 40;
@@ -284,24 +263,6 @@ class FreeplayState extends MusicBeatState
 		// add(selector);
 
 		var swag:Alphabet = new Alphabet(1, 0, "swag");
-
-		// JUST DOIN THIS SHIT FOR TESTING!!!
-		/* 
-			var md:String = Markdown.markdownToHtml(Assets.getText('CHANGELOG.md'));
-
-			var texFel:TextField = new TextField();
-			texFel.width = FlxG.width;
-			texFel.height = FlxG.height;
-			// texFel.
-			texFel.htmlText = md;
-
-			FlxG.stage.addChild(texFel);
-
-			// scoreText.textField.htmlText = md;
-
-			trace(md);
-		 */
-
 		 
 		advancedBG.visible = false;
 		accuracyText.visible = false;
@@ -319,16 +280,9 @@ class FreeplayState extends MusicBeatState
 			closeButton.key = FlxKey.BACKSPACE;
 			add(closeButton);
 		#end
-
-		super.create();
 		freeplayScript.executeFunc("createPost", []);
 		freeplayScript.executeFunc("postCreate", []);
 	}
-
-	// public function addSong(songName:String, modName:String, songCharacter:String)
-	// {
-	// 	songs.push(new SongMetadata(songName, modName, songCharacter));
-	// }
 
 	public function addSong(songName:String, modName:String, songCharacter:String, disabled:Bool = false, bpm:Int = 120) {
 		var mData = new SongMetadata(songName, modName, songCharacter);
@@ -337,21 +291,6 @@ class FreeplayState extends MusicBeatState
 		_songs.push(mData);
 		return mData;
 	}
-
-	// public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>)
-	// {
-	// 	if (songCharacters == null)
-	// 		songCharacters = ['bf'];
-
-	// 	var num:Int = 0;
-	// 	for (song in songs)
-	// 	{
-	// 		addSong(song, weekNum, songCharacters[num]);
-
-	// 		if (songCharacters.length != 1)
-	// 			num++;
-	// 	}
-	// }
 
 	function updateAdvancedData() {
 		freeplayScript.executeFunc("onAdvancedDataUpdate");
@@ -401,7 +340,6 @@ class FreeplayState extends MusicBeatState
 		} else {
 			graph.alpha = 0;
 		}
-		// var acc = 
 		accuracyText.text = 'Accuracy: $acc% ($rating)';
 		missesText.text = '$misses Misses';
 		freeplayScript.executeFunc("onAdvancedDataUpdatePost");
@@ -421,7 +359,6 @@ class FreeplayState extends MusicBeatState
 				FlxG.sound.playMusic(ost, 0);
 				FlxG.sound.music.persist = true;
 			}
-			trace(_songs[curSelected].bpm);
 			if (_songs[curSelected].bpm == null) {
 				iconBumping = false;
 			} else {
@@ -440,20 +377,16 @@ class FreeplayState extends MusicBeatState
 
 	public var iconBumping = true;
 
-	public override function beatHit() {
-		super.beatHit();
-		if ((selectedSongInstPath == currentInstPath) && iconBumping) {
-			var i = iconArray[curSelected];
-			i.scale.set(1.2, 1.2);
-		}
+	public override function normalBeatHit() {
+		super.normalBeatHit();
 		freeplayScript.executeFunc("beatHit", [curBeat]);
 	}
 	public var selectedSongInstPath = "";
-	override function update(elapsed:Float)
+	override function normalUpdate(elapsed:Float)
 	{
 		freeplayScript.executeFunc("update", [elapsed]);
 		Conductor.songPosition = FlxG.sound.music == null ? 0 : FlxG.sound.music.time;
-		super.update(elapsed);
+		super.normalUpdate(elapsed);
 		
 
 		if (!(ModSupport.modConfig[Settings.engineSettings.data.selectedMod] != null && ModSupport.modConfig[Settings.engineSettings.data.selectedMod].locked)) {
@@ -463,8 +396,13 @@ class FreeplayState extends MusicBeatState
 		if (FlxControls.justPressed.TAB) openSubState(new SwitchModSubstate());
 
 		shiftCooldown += elapsed;
-		for (i in iconArray) {
-			i.scale.x = i.scale.y = FlxMath.lerp(i.scale.x, 1, 0.50 * 60 * elapsed);
+		for (k=>i in iconArray) {
+			if ((k == curSelected) && iconBumping && (selectedSongInstPath == currentInstPath)) {
+				var lerp = FlxMath.lerp(1.15, 1, FlxEase.cubeOut(curDecBeat % 1));
+				i.scale.set(lerp, lerp);
+			}
+			else
+				i.scale.set(1, 1);
 		}
 
 		if (!instPlaying && Settings.engineSettings.data.autoplayInFreeplay) {
@@ -492,11 +430,12 @@ class FreeplayState extends MusicBeatState
 		var downP = controls.DOWN_P;
 		var accepted = controls.ACCEPT;
 		var cursorAccept = false;
-		if (FlxG.mouse.justPressed) {
+		
+		if (Settings.engineSettings.data.menuMouse && FlxG.mouse.justPressed) {
 			var posY = FlxG.mouse.getScreenPosition().y;
 			var posX = FlxG.mouse.getScreenPosition().x;
 			if (posX < advancedBG.x) {
-				var i = Math.floor(posY / 720 * 5) - 2;
+				var i = Math.floor(posY / FlxG.height * 5) - 2;
 				if (i == 0) {
 					accepted = true;
 					cursorAccept = true;
@@ -518,7 +457,7 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 
-		if (FlxG.mouse.wheel != 0) changeSelection(-FlxG.mouse.wheel);
+		if (Settings.engineSettings.data.menuMouse && FlxG.mouse.wheel != 0) changeSelection(-FlxG.mouse.wheel);
 		if (upP || (controls.UP && FlxControls.pressed.SHIFT && shiftCooldown > 0.05))
 		{
 			changeSelection(-1);
@@ -592,12 +531,11 @@ class FreeplayState extends MusicBeatState
 				return;
 			}
 	
-			// PlayState._SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 			Settings.engineSettings.data.lastSelectedSong = '${_songs[curSelected].mod}:${_songs[curSelected].songName.toLowerCase()}';
 			Settings.engineSettings.data.lastSelectedSongDifficulty = curDifficulty;
 	
 			var code:FunkinCodes;
-			if ((code = CoolUtil.loadSong(_songs[curSelected].mod, _songs[curSelected].songName.toLowerCase(), _songs[curSelected].difficulties[curDifficulty])) == OK) {
+			if ((code = CoolUtil.loadSong(_songs[curSelected].mod, _songs[curSelected].songName.toLowerCase(), _songs[curSelected].difficulties[curDifficulty], _songs[curSelected].difficulties)) == OK) {
 				LoadingState.loadAndSwitchState(new PlayState());
 			} else {
 				openSubState(new MenuMessage('Chart for ${_songs[curSelected].songName} - ${_songs[curSelected].difficulties[curDifficulty]} does not exist.'));
@@ -625,16 +563,6 @@ class FreeplayState extends MusicBeatState
 		intendedScore = Highscore.getModScore(_songs[curSelected].mod, _songs[curSelected].songName, _songs[curSelected].difficulties[curDifficulty]);
 		#end
 		
-
-		// switch (curDifficulty)
-		// {
-		// 	case 0:
-		// 		diffText.text = "EASY";
-		// 	case 1:
-		// 		diffText.text = 'NORMAL';
-		// 	case 2:
-		// 		diffText.text = "HARD";
-		// }
 		var dText = _songs[curSelected].difficulties[curDifficulty].toUpperCase();
 		if (_songs[curSelected].difficulties.length > 1) dText = '< $dText >';
 		diffText.text = dText;
@@ -661,7 +589,6 @@ class FreeplayState extends MusicBeatState
 
 		if (freeplayScript.executeFunc("onChangeSelection", [curSelected]) != false) {
 
-			// // NGio .logEvent('Fresh');
 			CoolUtil.playMenuSFX(0);
 
 
@@ -683,16 +610,11 @@ class FreeplayState extends MusicBeatState
 			}
 			changeDiff(0);
 
-			// selector.y = (70 * curSelected) + 30;
-
 			#if !switch
 			intendedScore = Highscore.getModScore(_songs[curSelected].mod, _songs[curSelected].songName, _songs[curSelected].difficulties[curDifficulty]);
-			// lerpScore = 0;
 			#end
 
 			
-			
-			// FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
 			if (Settings.engineSettings.data.autoplayInFreeplay)
 				if (FlxG.sound.music != null)
 					FlxG.sound.music.stop();
@@ -714,12 +636,10 @@ class FreeplayState extends MusicBeatState
 				bullShit++;
 
 				item.alpha = 0.6;
-				// item.setGraphicSize(Std.int(item.width * 0.8));
 
 				if (item.targetY == 0)
 				{
 					item.alpha = 1;
-					// item.setGraphicSize(Std.int(item.width));
 				}
 			}
 

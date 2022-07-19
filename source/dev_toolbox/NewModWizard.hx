@@ -35,7 +35,7 @@ class NewModWizard extends MusicBeatState {
 			{name: "main", label: 'New mod wizard'}
 		];
         var UI_Main = new FlxUITabMenu(null, tabs, true);
-        UI_Main.resize(640, 308);
+        UI_Main.resize((FlxG.width / 2), 308);
         UI_Main.screenCenter();
         add(UI_Main);
 
@@ -107,7 +107,7 @@ class NewModWizard extends MusicBeatState {
         chooseIconButton.resize(150, 20);
         tab.add(chooseIconButton);
 
-        var createButton = new FlxUIButton(640 - 110, 308 - 50, "Create your mod", function() {
+        var createButton = new FlxUIButton((FlxG.width / 2) - 110, 308 - 50, "Create your mod", function() {
             var folderName = Toolbox.generateModFolderName(mod_name.text);
             trace(folderName);
             if (FileSystem.exists('${Paths.modsPath}/$folderName')) {
@@ -145,7 +145,7 @@ class NewModWizard extends MusicBeatState {
         createButton.resize(100, 20);
         tab.add(createButton);
 
-        var testTitlebarButton = new FlxUIButton(640 - 230, 308 - 50, "Test your titlebar", function() {
+        var testTitlebarButton = new FlxUIButton((FlxG.width / 2) - 230, 308 - 50, "Test your titlebar", function() {
             Application.current.window.title = titlebarName.text;
             Application.current.window.setIcon(icon.pixels.image);
 

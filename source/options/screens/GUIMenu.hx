@@ -16,6 +16,10 @@ class GUIMenu extends OptionScreen {
     var strums:FlxSpriteGroup = new FlxSpriteGroup();
     var msScoreLabel:FlxText;
 
+    public function new() {
+        super("Options > Customization > Customize HUD");
+    }
+
     public override function create() {
         options = [
             {
@@ -36,6 +40,7 @@ class GUIMenu extends OptionScreen {
                 name: "Bump press delay",
                 desc: "If enabled, will show the delay above the strums everytime a note is hit.",
                 value: "",
+                additional: true,
                 onCreate: function(e) {e.check(Settings.engineSettings.data.animateMsLabel);},
                 onEnter: function(e) {if (e.check(Settings.engineSettings.data.animateMsLabel)) msScoreLabel.offset.y = msScoreLabel.height / 3;},
                 onSelect: function(e) {
@@ -56,6 +61,7 @@ class GUIMenu extends OptionScreen {
                 name: "Show accuracy mode",
                 desc: "If enabled, will show the accuracy mode you're using (Simple or Complex).",
                 value: "",
+                additional: true,
                 onCreate: function(e) {e.check(Settings.engineSettings.data.showAccuracyMode);},
                 onSelect: function(e) {e.check(Settings.engineSettings.data.showAccuracyMode = !Settings.engineSettings.data.showAccuracyMode);}
             },
@@ -70,6 +76,7 @@ class GUIMenu extends OptionScreen {
                 name: "Show ratings amount",
                 desc: "If enabled, will show the number of hits for each rating at the right of the screen.",
                 value: "",
+                additional: true,
                 onCreate: function(e) {e.check(Settings.engineSettings.data.showRatingTotal);},
                 onSelect: function(e) {e.check(Settings.engineSettings.data.showRatingTotal = !Settings.engineSettings.data.showRatingTotal);}
             },
@@ -91,6 +98,7 @@ class GUIMenu extends OptionScreen {
                 name: "Animate the Score Bar",
                 desc: "If enabled, the Score bar will do a pop animation every time you hit a note.",
                 value: "",
+                additional: true,
                 onCreate: function(e) {e.check(Settings.engineSettings.data.animateInfoBar);},
                 onSelect: function(e) {e.check(Settings.engineSettings.data.animateInfoBar = !Settings.engineSettings.data.animateInfoBar);}
             },
@@ -98,6 +106,7 @@ class GUIMenu extends OptionScreen {
                 name: "Show watermark",
                 desc: "If enabled, will show a watermark with the engine's name, the mod's name and the song name.",
                 value: "",
+                additional: true,
                 onCreate: function(e) {e.check(Settings.engineSettings.data.watermark);},
                 onSelect: function(e) {e.check(Settings.engineSettings.data.watermark = !Settings.engineSettings.data.watermark);}
             },
@@ -105,20 +114,15 @@ class GUIMenu extends OptionScreen {
                 name: "Minimal mode",
                 desc: "When checked, will minimize the Score Text width.",
                 value: "",
+                additional: true,
                 onCreate: function(e) {e.check(Settings.engineSettings.data.minimizedMode);},
                 onSelect: function(e) {e.check(Settings.engineSettings.data.minimizedMode = !Settings.engineSettings.data.minimizedMode);}
-            },
-            {
-                name: "Classic healthbar",
-                desc: "When checked, will use the classic healthbar colors (Red & Green).",
-                value: "",
-                onCreate: function(e) {e.check(Settings.engineSettings.data.classicHealthbar);},
-                onSelect: function(e) {e.check(Settings.engineSettings.data.classicHealthbar = !Settings.engineSettings.data.classicHealthbar);}
             },
             {
                 name: "Score Text Size",
                 desc: "Sets the score text size. 16 is base game size, 20 is Psych size. Defaults to 18.",
                 value: '${Settings.engineSettings.data.scoreTextSize}',
+                additional: true,
                 onUpdate: function(v) {
                     if (controls.LEFT_P) Settings.engineSettings.data.scoreTextSize -= 1;
                     if (controls.RIGHT_P) Settings.engineSettings.data.scoreTextSize += 1;
@@ -127,6 +131,21 @@ class GUIMenu extends OptionScreen {
                 onLeft: function(v) {
                     v.value = '${Settings.engineSettings.data.scoreTextSize}';
                 }
+            },
+            {
+                name: "Classic healthbar",
+                desc: "When checked, will use the classic healthbar colors (Red & Green).",
+                value: "",
+                additional: true,
+                onCreate: function(e) {e.check(Settings.engineSettings.data.classicHealthbar);},
+                onSelect: function(e) {e.check(Settings.engineSettings.data.classicHealthbar = !Settings.engineSettings.data.classicHealthbar);}
+            },
+            {
+                name: "Show song name on timer",
+                desc: "When checked, will show the song name on the timer.",
+                value: "",
+                onCreate: function(e) {e.check(Settings.engineSettings.data.timerSongName);},
+                onSelect: function(e) {e.check(Settings.engineSettings.data.timerSongName = !Settings.engineSettings.data.timerSongName);}
             }
         ];
 
@@ -245,5 +264,11 @@ class GUIMenu extends OptionScreen {
         strums.alpha = FlxMath.lerp(strums.alpha, showStrums.contains(curSelected) ? 1 : 0, l * 2);
         msScoreLabel.alpha = FlxMath.lerp(msScoreLabel.alpha, showScoreLabel.contains(curSelected) ? 1 : 0, l * 2);
         // 13
+    }
+
+    public override function onExit() {
+        doFlickerAnim(-2, function() {
+            FlxG.switchState(new NotesMenu());
+        });
     }
 }

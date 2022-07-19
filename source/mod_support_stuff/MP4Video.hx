@@ -3,15 +3,6 @@ package mod_support_stuff;
 import flixel.FlxSprite;
 
 class MP4Video {
-    // public var video:MP4Handler = new MP4Handler();
-    // public var sprite:FlxSprite;
-    // public var finishCallback:Void->Void = function() {
-    //     PlayState.current.startCountdown();
-    // };
-    // public function new() {
-    //     sprite = new FlxSprite(0, 0);
-    // }
-
     public static function playMP4(path:String, callback:Void->Void, repeat:Bool = false, ?canvasWidth:Int, ?canvasHeight:Int, fillScreen:Bool = false):FlxSprite {
         
 		#if X64_BITS

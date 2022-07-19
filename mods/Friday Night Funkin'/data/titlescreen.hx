@@ -4,6 +4,7 @@ var crafterEngineLogo:FlxSprite = null;
 var gfDancing:FlxSprite = null;
 
 function create() {
+    var a:Array<Character> = [];
     gfDancing = new FlxSprite(FlxG.width * 0.4, FlxG.height * 0.07);
     gfDancing.frames = Paths.getSparrowAtlas('titlescreen/gfDanceTitle');
     gfDancing.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);

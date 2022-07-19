@@ -51,7 +51,6 @@ class ScriptPicker extends MusicBeatSubstate {
         tab.add(new FlxSprite(10, buttonY).loadGraphic(FlxGridOverlay.createGrid(380, 20, 380, 480, true, 0xFFA0A0A0, 0xFF7A7A7A)));
 
         var addScriptButton = new FlxUIButton(10, FlxG.height - 150, "Add Script", function() {
-            // todo
             openSubState(new FileExplorer(PlayState.songMod, FileExplorerType.Script, "", function(path) {
                 this.scripts.push('${PlayState.songMod}:${Path.withoutExtension(path)}');
                 refreshElements();

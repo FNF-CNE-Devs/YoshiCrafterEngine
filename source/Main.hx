@@ -56,24 +56,17 @@ class Main extends Sprite
 			var s = "";
 
 			trace(line);
-			// try {
-				while ((last = buff.readByte()) != 10) {
-					buf.addByte(last);
-				}
-				s = buf.getBytes().toString();
-				if (s.charCodeAt(s.length - 1) == 13)
-					s = s.substr(0, -1);
-				if (line >= l) {
-					return s;
-				} else {
-					line++;
-				}
-			// } catch (e:Eof) {
-			// 	s = buf.getBytes().toString();
-			// 	if (s.length == 0)
-			// 		#if neko neko.Lib.rethrow #else throw #end (e);
-			// 	break;
-			// }
+			while ((last = buff.readByte()) != 10) {
+				buf.addByte(last);
+			}
+			s = buf.getBytes().toString();
+			if (s.charCodeAt(s.length - 1) == 13)
+				s = s.substr(0, -1);
+			if (line >= l) {
+				return s;
+			} else {
+				line++;
+			}
 		}
 		return "";
 	}
@@ -96,7 +89,6 @@ class Main extends Sprite
 	}
 	// YOSHI ENGINE STUFF
 	public static var engineVer:String = "2.0.0";
-	// public static var buildVer:String = #if official "" #else "Custom Build" #end;
 	public static var buildVer:String = #if ycebeta "BETA" #elseif official "" #else "Custom Build" #end;
 	public static var fps:GameStats;
 
@@ -163,9 +155,6 @@ class Main extends Sprite
 			Lib.current.addChild(new Main());
 			#end
 		}
-
-		
-		//getMemoryAmount(); // not necessery anymore ig
 	}
 
 	public static final commandPromptArgs:Array<String> = [
@@ -318,7 +307,6 @@ class Main extends Sprite
 		fps = new GameStats(10, 3, 0xFFFFFF);
 
 		logsOverlay = new LogsOverlay();
-		// fps.setTextFormat(new TextFormat(Assets.getFont(Paths.font("vcr.ttf")).fontName, 12, 0xFFFFFFFF, false, false, false, null, null, null, null, null, null, null));
 
 		addChild(fps);
 		addChild(logsOverlay);

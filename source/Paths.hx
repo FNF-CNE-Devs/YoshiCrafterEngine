@@ -55,6 +55,7 @@ class Paths
 				var p = "";
 				if (library == null
 				 && !library.toLowerCase().startsWith("mods")
+		         && library != "mods/~"
 		         && library != "~"
 				 && library != "skins"
 				 && Settings.engineSettings != null
@@ -75,6 +76,7 @@ class Paths
 		}
 		while(file.startsWith("/")) file = file.substr(1);
 		if (library == "~") library = "skins";
+		if (library == "mods/~") library = "skins";
 		if (library != null)
 			return getLibraryPath(file, library);
 
@@ -214,11 +216,6 @@ class Paths
 		return getPath('images/$key.png', IMAGE, library);
 	}
 
-	// inline static public function stageImage(key:String)
-	// {
-	// 	var p = ModSupport.song_stage_path;
-	// 	return getBitmapOutsideAssets('$p/$key');
-	// }
 
 	inline static public function font(key:String, ?library:String)
 	{
@@ -253,13 +250,21 @@ class Paths
 			mod = split[0];
 
 		var jsonPath = file('characters/${split[split.length - 1]}/spritesheet.json', TEXT, 'mods/$mod');
-		if (Assets.exists(jsonPath)) {
+		var txtPath = file('characters/${split[split.length - 1]}/spritesheet.txt', TEXT, 'mods/$mod');
+		if (Assets.exists(txtPath)) {
+			// json (packer)
+			return FlxAtlasFrames.fromSpriteSheetPacker(getPath('characters/${split[split.length - 1]}/spritesheet.png', IMAGE, 'mods/$mod'), txtPath);
+		} else if (Assets.exists(jsonPath)) {
 			// json (packer)
 			return FlxAtlasFrames.fromTexturePackerJson(getPath('characters/${split[split.length - 1]}/spritesheet.png', IMAGE, 'mods/$mod'), jsonPath);
 		} else {
 			// xml (sparrow)
 			return FlxAtlasFrames.fromSparrow(getPath('characters/${split[split.length - 1]}/spritesheet.png', IMAGE, 'mods/$mod'), file('characters/${split[split.length - 1]}/spritesheet.xml', TEXT, 'mods/$mod'));
 		}
+	}
+
+	inline static public function getCharacterPacker(char:String) {
+		return getCharacter(char);
 	}
 
 	inline static public function video(key:String, ?library:String)

@@ -91,7 +91,7 @@ class CharTab extends ToolboxTab {
             character = new Character(0, 0, CoolUtil.getCharacterFullString(chars[selectedCharIndex], ToolboxHome.selectedMod));
             insert(charLayer, character);
             character.screenCenter(Y);
-            character.x = 320 + ((1280 - 320) / 2) - (character.width / 2);
+            character.x = 320 + ((FlxG.width - 320) / 2) - (character.width / 2);
             character.setPosition(character.x - character.camOffset.x, character.y - character.camOffset.y);
             anims = [];
             @:privateAccess
@@ -113,10 +113,6 @@ class CharTab extends ToolboxTab {
                 state.openSubState(ToolboxMessage.showMessage("Error", "No character was selected."));
                 return;
             }
-            // if (!FileSystem.exists('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/${radios.selectedId}/Character.json')) {
-            //     state.openSubState(ToolboxMessage.showMessage("Error", "Character editor currently only works with characters with JSON files."));
-            //     return;
-            // }
             dev_toolbox.character_editor.CharacterEditor.fromFreeplay = false;
             FlxG.switchState(new dev_toolbox.character_editor.CharacterEditor(chars[selectedCharIndex]));
         });
@@ -172,8 +168,6 @@ class CharTab extends ToolboxTab {
         charSprites.y = FlxMath.lerp(charSprites.y, scrollY, 0.25 * elapsed * 60);
         var clip:FlxSprite->Void;
         clip = function(m) {
-            // 690 - this.y;
-            // 32
             var y = FlxMath.bound(m.y + ((m.height - m.frameHeight) / 3 * m.scale.y), 0, m.height);
             var y2 = FlxMath.bound(m.y + ((m.height - m.frameHeight) / 3 * m.scale.y - 615), 0, m.height);
             m.clipRect = new FlxRect(

@@ -19,9 +19,7 @@ class MedalsOverlay extends FlxSpriteGroup {
         // prevents asset override
         var oldMod = Settings.engineSettings.data.selectedMod;
 
-        var medalUnlockedText:AlphabetOptimized = new AlphabetOptimized(10, 10, "Medal Unlocked", false);
-        medalUnlockedText.textSize = 18 / 60;
-        medalUnlockedText.calculateShit(false);
+        var medalUnlockedText:AlphabetOptimized = new AlphabetOptimized(10, 10, "Medal Unlocked", false, 18 / 60);
         medalUnlockedText.x = ((FlxG.width * 0.3) - medalUnlockedText.width) / 2;
         medalUnlockedText.scrollFactor.set();
         add(medalUnlockedText);
@@ -31,7 +29,7 @@ class MedalsOverlay extends FlxSpriteGroup {
         archivementSprite.scrollFactor.set();
         add(archivementSprite);
         
-        bg.scale.set(130 + archivementSprite.title.width, 100);
+        bg.scale.set(130 + Math.max(archivementSprite.title.width, medalUnlockedText.width), 100);
         bg.updateHitbox();
         scrollFactor.set();
     }

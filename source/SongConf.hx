@@ -106,7 +106,6 @@ class SongConf {
 
         if (cutscene == null) {
             if (Assets.exists(Paths.video('${song}-cutscene', 'mods/${mod}'))) {
-                // auto mp4 cutscene detection
                 cutscene = getModScriptFromValue("YoshiCrafterEngine", "MP4-Cutscene");
             } else if (Assets.exists(Paths.json('${PlayState.SONG.song}/dialogue-yce'))) {
                 cutscene = getModScriptFromValue("YoshiCrafterEngine", "Dialogue");
@@ -114,7 +113,6 @@ class SongConf {
         }
 
         if (end_cutscene == null && Assets.exists(Paths.video('${song}-end-cutscene', 'mods/${mod}'))) {
-            // auto mp4 cutscene detection
             end_cutscene = getModScriptFromValue("YoshiCrafterEngine", "MP4-End-Cutscene");
         }
 
@@ -132,15 +130,6 @@ class SongConf {
                 }
             ];
         }
-        // if (cutscene != "")
-        //     ModSupport.song_cutscene = getModScriptFromValue(cutscene);
-        // else
-        //     ModSupport.song_cutscene = null;
-        
-        // if (end_cutscene != "")
-        //     ModSupport.song_end_cutscene = getModScriptFromValue(end_cutscene);
-        // else
-        //     ModSupport.song_end_cutscene = null;
 
         return {
             scripts: scripts,

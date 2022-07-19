@@ -32,13 +32,13 @@ import flixel.FlxG;
 	@:keep public static final showRating:Bool = true;
 
 	// If true, will show player's press delay above the strums.
-	@:keep public static final showPressDelay:Bool = true;
+	@:keep public static final showPressDelay:Bool = false;
 
 	// If true, will do the little bumping animation on the press delay label above the strums.
 	@:keep public static final animateMsLabel:Bool = true;
 
 	// If true, will show player's average delay in the info bar. (Average: 15ms)
-	@:keep public static final showAverageDelay:Bool = true;
+	@:keep public static final showAverageDelay:Bool = false;
 
 	// If true, will show player's accuracy in the info bar. (Accuracy: 100%)
 	@:keep public static final showAccuracy:Bool = true;
@@ -77,6 +77,12 @@ import flixel.FlxG;
 	
 	// If true, the classic healthbar colors are used.
 	@:keep public static final classicHealthbar:Bool = false;
+	
+	// If true, outlines will be generated on bold alphabets that are using non bold letters.
+	@:keep public static final alphabetOutline:Bool = true;
+	
+	// Whenever the song name should be shown on the timer. Setting it to false will show "/" instead.
+	@:keep public static final timerSongName:Bool = false;
 	
 	
 	// Current accuracy mode.
@@ -127,7 +133,7 @@ import flixel.FlxG;
 	@:keep public static final glowCPUStrums:Bool = true;
 	
 	// String that separates, for example, Accuracy: 100% from Misses: 0
-	@:keep public static final scoreJoinString:String = " | ";
+	@:keep public static final scoreJoinString:String = " • ";
 
 	// Score text size, use scoreTxt.size instead of this, since it only applies at start
 	@:keep public static final scoreTextSize:Int = 18; // ayyyy
@@ -202,6 +208,7 @@ import flixel.FlxG;
 	@:keep public static final logLimit:Int = 250;
 	@:keep public static final lastInstalledMods:Array<String> = ["Friday Night Funkin'", "YoshiCrafterEngine"];
 	@:keep public static final logStateChanges:Bool = true;
+	@:keep public static final menuMouse:Bool = true;
 	
 	@:keep public static final charter_showStrums:Bool = true;
 	@:keep public static final charter_hitsoundsEnabled:Bool = false;
@@ -215,14 +222,15 @@ import flixel.FlxG;
 	@:keep public static final charter_opponentHitsoundVolume:Float = 1 / 3;
 	@:keep public static final charter_playerHitsoundVolume:Float = 1 / 3;
 	@:keep public static final charter_separatorColor:FlxColor = 0xFFFFFFFF;
-	
-	// @:keep public static final moveCameraInStageEditor:Bool = true;
 
+	@:keep public static final flashingLights:Bool = true;
+	@:keep public static final approvedFlashingLightsMods:Array<String> = [];
+	@:keep public static final flashingLightsDoNotShow:Bool = false;
+	
 	// ========================================================
 	// PER KEY SET CONTROLS
 	// SYNTAX = control_(NUMBER OF KEYS)_(NOTE INDEX)
 	//
-	// IF YOU'RE ADDING NEW KEYS SHIT, ADD DEFAULT VALUES HERE, OR IN THE MODCHART, OR THE GAME ISNT GOING TO LIKE IT THAT MUCH.
 	// CHECK : https://api.haxeflixel.com/flixel/input/keyboard/FlxKey.html
 	//
 	@:keep public static final control_1_0:FlxKey = FlxKey.UP;
@@ -293,21 +301,6 @@ class Settings {
 	 */
 	@:keep public static var engineSettings:FlxSave;
 
-	
-
-
-	// public static function save(bind:Bool = true) {
-	// 	if (bind) FlxG.save.bind("Settings", "YoshiCrafter29/YoshiCrafter Engine");
-
-	// 	for(k in Type.getClassFields(Settings)) {
-	// 		if (k != "save_bind_name" && k != "save_bind_path") {
-	// 			std.Reflect.setField(config, k, std.Reflect.field(Settings, k));
-	// 		}
-	// 	}
-
-	// 	if (bind) FlxG.save.bind(save_bind_name, save_bind_path);
-	// }
-
 		/**
 	 * Load the engine's settings. Use `EngineSettings` in your modcharts to get access to values
 	 */
@@ -326,33 +319,7 @@ class Settings {
 				
 				
 			}
-			// var thingy:Dynamic = std.Reflect.field(engineSettings, k);
-			// if (thingy == null) {
-			// 	std.Reflect.setField(Settings, k, thingy);
-			// }
 		}
 		engineSettings.flush();
-		
-		// hscriptCache = new FlxSave();
-		// hscriptCache.bind("_hscriptCache");
-		
-		// hscriptCache.flush();
     }
-	
-	// public static var hscriptCache:FlxSave = null;
-
-    // public static function load(bind:Bool = true) {
-	// 	if (bind) FlxG.save.bind("Settings", "YoshiCrafter29/YoshiCrafter Engine");
-
-	// 	for(k in Type.getClassFields(Settings)) {
-	// 		if (k != "save_bind_name" && k != "save_bind_path") {
-	// 			var thingy:Dynamic = std.Reflect.field(config, k);
-	// 			if (thingy != null) {
-	// 				std.Reflect.setField(Settings, k, thingy);
-	// 			}
-	// 		}
-	// 	}
-		
-	// 	if (bind) FlxG.save.bind(save_bind_name, save_bind_path);
-    // }
 }

@@ -17,7 +17,7 @@ using StringTools;
 class CharacterCreator extends MusicBeatSubstate {
     public override function new() {
         super();
-        var bg:FlxSprite = new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000);
+        var bg:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0x88000000);
         add(bg);
 
         var tabs = [
@@ -25,7 +25,7 @@ class CharacterCreator extends MusicBeatSubstate {
 		];
         var UI_Tabs = new FlxUITabMenu(null, tabs, true);
         UI_Tabs.x = 0;
-        UI_Tabs.resize(420, 720);
+        UI_Tabs.resize(420, FlxG.height);
         UI_Tabs.scrollFactor.set();
         add(UI_Tabs);
 

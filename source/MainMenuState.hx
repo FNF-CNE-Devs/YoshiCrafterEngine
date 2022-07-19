@@ -1,5 +1,6 @@
 package;
 
+import mod_support_stuff.FullyModState;
 import mod_support_stuff.MainMenuJson;
 import haxe.Json;
 import mod_support_stuff.SwitchModSubstate;
@@ -42,9 +43,10 @@ using StringTools;
 	public var MIDDLE = "middle";
 	public var RIGHT = "right";
 }
-class MainMenuState extends MusicBeatState
-{
-	public var mainMenuScript:Script = null;
+class MainMenuState extends FullyModState {
+
+	public override function className() {return "MainMenuState";}
+	public var mainMenuScript:Script;
 	public var curSelected:Int = 0;
 	public var versionShit:FlxText;
 	public var menuItems:MainMenuOptions;
@@ -57,12 +59,6 @@ class MainMenuState extends MusicBeatState
 	public var autoCamPos:Bool = true;
 	private var _autoPos:Bool = true;
 
-	// imagine yoshicrafter engine on switch lmfao
-	#if !switch
-	// var optionShit:Array<String> = ['story mode', 'freeplay', 'mods', 'donate', 'credits', 'options'];
-	#else
-	// var optionShit:Array<String> = ['story mode', 'freeplay', 'options'];
-	#end
 	public var optionShit:MenuOptions = new MenuOptions();
 	public var options(get, set):MenuOptions;
 	function get_options() {return optionShit;};
@@ -73,21 +69,22 @@ class MainMenuState extends MusicBeatState
 	public var backButton:FlxClickableSprite;
 	public var fallBackBG:FlxSprite;
 	public var bg:FlxSprite;
-	public var mouseControls:Bool = true;
+	public var mouseControls:Bool = Settings.engineSettings.data.menuMouse;
 
 	public var factor(get, never):Float;
 
 	function get_factor() {
 		return Math.min(650 / optionShit.length, 100);
 	}
-	override function create()
+	override function normalCreate()
 	{
+		super.normalCreate();
+		
 		reloadModsState = true;
 		
 		var canJson = false;
 		var jsonPath = Paths.json("mainMenu", 'mods/${Settings.engineSettings.data.selectedMod}'); // load default main menu, copy from Friday Night Funkin' mod to create your own.
 		if (canJson = Assets.exists(jsonPath)) {
-			// trace("JSON found!");
 			var parsedJson:MainMenuJson = null;
 			try {
 				parsedJson = Json.parse(Assets.getText(jsonPath));
@@ -109,10 +106,13 @@ class MainMenuState extends MusicBeatState
 				if (parsedJson.defaultBehaviour != null) defaultBehaviour = parsedJson.defaultBehaviour;
 				if (parsedJson.autoCamPos != null) autoCamPos = parsedJson.autoCamPos;
 				if (parsedJson.autoPos != null) _autoPos = parsedJson.autoPos;
+				var isDevMode = CoolUtil.isDevMode();
 				for(o in parsedJson.options) {
-					optionShit.add(o.name.toLowerCase(), function() {
-						mainMenuScript.executeFunc(o.callback);
-					}, Paths.getSparrowAtlas(o.image), o.staticAnim, o.selectedAnim).direct = o.instant;
+					if (isDevMode || !o.devModeOnly) {
+						optionShit.add(o.name.toLowerCase(), function() {
+							mainMenuScript.executeFunc(o.callback);
+						}, Paths.getSparrowAtlas(o.image), o.staticAnim, o.selectedAnim).direct = o.instant;
+					}
 				}
 			}
 		}
@@ -144,7 +144,6 @@ class MainMenuState extends MusicBeatState
 				mainMenuScript.executeFunc("onOptions");
 			}, Paths.getSparrowAtlas('FNF_main_menu_assets'), 'options basic', 'options white');
 
-			// persistentUpdate = false;
 			if (Settings.engineSettings.data.developerMode) {
 				optionShit.insert(4, 'toolbox', function() {
 					mainMenuScript.executeFunc("onToolbox");
@@ -205,7 +204,10 @@ class MainMenuState extends MusicBeatState
 
 
 		ModSupport.setScriptDefaultVars(mainMenuScript, Settings.engineSettings.data.selectedMod, {});
-		if (valid) mainMenuScript.loadFile('${Paths.modsPath}/${Settings.engineSettings.data.selectedMod}/ui/MainMenuState');
+		if (valid) {
+			mainMenuScript.setScriptObject(this);
+			mainMenuScript.loadFile('${Paths.modsPath}/${Settings.engineSettings.data.selectedMod}/ui/MainMenuState');
+		}
 		mainMenuScript.executeFunc("create");
 
 		#if desktop
@@ -217,18 +219,6 @@ class MainMenuState extends MusicBeatState
 		transOut = FlxTransitionableState.defaultTransOut;
 
 		CoolUtil.playMenuMusic();
-
-		// if (FlxG.sound.music != null)
-		// {
-		// 	if (!FlxG.sound.music.playing)
-		// 	{
-		// 		FlxG.sound.playMusic(daFunkyMusicPath);
-		// 	}
-		// } else {
-		// 	FlxG.sound.playMusic(daFunkyMusicPath);
-		// }
-
-		// persistentUpdate = persistentDraw = true;
 
 		fallBackBG = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xFFFFFFFF, true);
 		fallBackBG.color = 0xFFFDE871;
@@ -275,7 +265,6 @@ class MainMenuState extends MusicBeatState
 		// troll
 		for (i=>option in optionShit.members)
 		{
-			// var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
 			var menuItem:MainMenuItem = new MainMenuItem(0, (FlxG.height / optionShit.length * i) + (FlxG.height / (optionShit.length * 2)));
 			menuItem.frames = option.frames;
 			menuItem.animation.addByPrefix('idle', option.idle, option.idleFPS == null ? 24 : option.idleFPS);
@@ -286,9 +275,6 @@ class MainMenuState extends MusicBeatState
 			menuItem.autoPos = _autoPos;
 			menuItem.screenCenter(X);
 			menuItem.scrollFactor.set(0, 1 / (optionShit.length));
-			// menuItem.setGraphicSize(Std.int(factor / menuItem.height * menuItem.width), Std.int(factor));
-			// var scale = Math.min(1, (FlxG.height / optionShit.length) / menuItem.height);
-			// menuItem.scale.set(scale, scale);
 			menuItem.scale.set(factor / menuItem.height, factor / menuItem.height);
 			menuItem.y -= menuItem.height / 2;
 			menuItem.antialiasing = true;
@@ -307,8 +293,6 @@ class MainMenuState extends MusicBeatState
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
 
-		// NG.core.calls.event.logEvent('swag').send();
-
 		changeItem();
 
 		#if MOBILE_UI
@@ -318,7 +302,6 @@ class MainMenuState extends MusicBeatState
 		backButton.frames = Paths.getSparrowAtlas("ui_buttons", "preload");
 		backButton.animation.addByPrefix("button", "exit button");
 		backButton.animation.play("button");
-		// backButton.scale.x = backButton.scale.y = 0.7;
 		backButton.updateHitbox();
 		backButton.y -= 10 + backButton.height;
 		backButton.scrollFactor.set(0, 0);
@@ -327,39 +310,29 @@ class MainMenuState extends MusicBeatState
 		add(backButton);
 		#end
 
-		super.create();
 		mainMenuScript.executeFunc("postCreate");
 		mainMenuScript.executeFunc("createPost");
-
-		// closeSubState();
 		
 		Medals.unlock("Friday Night Funkin'", "Friday Night Funker");
 	}
 
 	public var selectedSomethin:Bool = false;
 	public var oldPos = FlxG.mouse.getScreenPosition();
-	// static function calculatePos() {
-	// 	return new FlxPoint(FlxG.game.mouseX / FlxG.scaleMode.gameSize.x * 1280, FlxG.game.mouseY / FlxG.scaleMode.gameSize.y * 720);
-	// }
 
-	override function beatHit() {
-		super.beatHit();
+	override function normalBeatHit() {
+		super.normalBeatHit();
 		mainMenuScript.executeFunc("beatHit", [curBeat]);
 	}
 
-	override function stepHit() {
-		super.stepHit();
+	override function normalStepHit() {
+		super.normalStepHit();
 		mainMenuScript.executeFunc("stepHit", [curStep]);
 	}
-	override function update(elapsed:Float)
+	override function normalUpdate(elapsed:Float)
 	{
 		
 		mainMenuScript.executeFunc("update", [elapsed]);
-		super.update(elapsed);
-		// if (subState != null) return;
-
-		if (FlxControls.justPressed.F5) FlxG.resetState();
-		if (FlxControls.justPressed.TAB) openSubState(new SwitchModSubstate());
+		super.normalUpdate(elapsed);
 
 		if (FlxControls.justPressed.SEVEN) {
 			persistentUpdate = false;
@@ -375,7 +348,6 @@ class MainMenuState extends MusicBeatState
 				if ((FlxG.mouse.getScreenPosition().x != oldPos.x || FlxG.mouse.getScreenPosition().y != oldPos.y) && !selectedSomethin){
 					oldPos = FlxG.mouse.getScreenPosition();
 					for (i in 0...menuItems.length) {
-						// if (FlxG.mouse.overlaps(menuItems.members[i])) {
 						var pos = oldPos;
 						if (pos.y > i / menuItems.length * FlxG.height && pos.y < (i + 1) / menuItems.length * FlxG.height && curSelected != i) {
 							curSelected = i;
@@ -495,7 +467,6 @@ class MainMenuState extends MusicBeatState
 
 			if (spr.ID == curSelected)
 			{
-				// spr.offset.set(0,-(Math.max(0, spr.height - spr.frames.getByIndex(spr.animation.getByName("idle").frames[0]).sourceSize.y)) / FlxG.height * spr.y);
 				spr.animation.play('selected');
 				if (autoCamPos) camFollow.setPosition(spr.getGraphicMidpoint().x, spr.getGraphicMidpoint().y);
 			}

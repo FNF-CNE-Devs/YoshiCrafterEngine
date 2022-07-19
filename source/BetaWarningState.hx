@@ -13,11 +13,8 @@ class BetaWarningState extends FlxState {
         super();
     }
     public override function create() {
-        // FlxTransitionableState.skipNextTransIn = true;
         super.create();
-        // WARNING THINGIE
-        var warningAlphabet = new AlphabetOptimized(0, 200, "WARNING", true);
-        warningAlphabet.calculateShit(false);
+        var warningAlphabet = new AlphabetOptimized(0, 200, "WARNING!", true);
         warningAlphabet.screenCenter(X);
         add(warningAlphabet);
 
@@ -27,7 +24,6 @@ class BetaWarningState extends FlxState {
         text.antialiasing = true;
         add(text);
         CoolUtil.playMenuSFX(5);
-        // FlxG.camera.flash(0xFF000000, 1 / 3);
         FlxG.camera.zoom = 0.1;
         FlxTween.tween(FlxG.camera, {zoom: 1}, 0.75, {ease: FlxEase.elasticOut});
     }

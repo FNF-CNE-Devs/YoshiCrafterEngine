@@ -18,11 +18,11 @@ class MenuMessage extends MusicBeatSubstate {
     var wasAccepted:Bool = false;
     public override function new(message:String, ?buttons:Array<Button>, defaultSelected:Int = 0) {
         super();
-        add(new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000, true));
-        add(new FlxSprite(1280 / 8, 720 / 8).makeGraphic(960, 540, 0x88000000, true));
-
-        var message = new FlxText(1280 / 8 + 10, 720 / 8 + 10, 940, message);
-		message.setFormat(Paths.font("vcr.ttf"), Std.int(16), 0xFFFFFFFF, LEFT, FlxTextBorderStyle.OUTLINE, 0xFF000000);
+        add(new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0x88000000, true));
+        add(new FlxSprite(FlxG.width / 8, FlxG.height / 8).makeGraphic(960, 540, 0x88000000, true));
+        
+        var message = new AlphabetOptimized(FlxG.width / 8 + 10, FlxG.height / 8 + 10, message, false, 1 / 3);
+        message.maxWidth = 940;
         add(message);
 
         if (buttons != null && buttons.length > 0) {
@@ -31,20 +31,11 @@ class MenuMessage extends MusicBeatSubstate {
         curSelected = defaultSelected;
         for(k=>b in this.buttons) {
             var ler = ((k + 0.5) / this.buttons.length);
-            var alphabet = new AlphabetOptimized(FlxMath.lerp(1280 / 8, (1280 / 8) + (1280 * 0.75), ler), (720 / 8) + (720 * 0.75) - 10 - 45, b.label, false);
-            alphabet.textSize = 0.5;
-            alphabet.x -= alphabet.width / 4; // since shit aint calculated so i gotta divide by 2 again manually
+            var alphabet = new AlphabetOptimized(FlxMath.lerp(FlxG.width / 8, (FlxG.width / 8) + (FlxG.width * 0.75), ler), (FlxG.height / 8) + (FlxG.height * 0.75) - 10 - 45, b.label, true, 0.5);
+            alphabet.x -= alphabet.width / 2;
             add(alphabet);
             alphabets.push(alphabet);
         }
-        /*
-        var okButton = new FlxSprite(0, 0);
-        okButton.loadGraphic(Paths.image("enterToClose", "preload"));
-        okButton.scale.x = okButton.scale.y = 0.6;
-        okButton.updateHitbox();
-        okButton.setPosition(1280 * 0.75 - 10 - okButton.width, 720 * 0.75 - 10 - okButton.height);
-        add(okButton);
-        */
         changeSelection(0);
         wasAccepted = controls.ACCEPT;
     }

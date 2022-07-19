@@ -119,10 +119,6 @@ class ToolboxMain extends MusicBeatState {
             if (selectedMod.trim() == "") return;
             var mName = ModSupport.modConfig[selectedMod].name;
             if (mName == null || mName == "") mName = selectedMod;
-            // if (nonEditableMods.contains(selectedMod)) {
-            //     openSubState(ToolboxMessage.showMessage("Error", '$mName is an essential mod since the engine relies on it. It can\'t be deleted.\r\nAnd if you\'re curious, deleting it would result in an engine crash.'));
-            //     return;
-            // }
             openSubState(new ToolboxMessage("Delete a mod", 'Are you sure you want to delete $mName ? This operation cannot be cancelled.', 
             [
                 {

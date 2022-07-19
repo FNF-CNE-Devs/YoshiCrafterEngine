@@ -13,7 +13,10 @@ typedef ModConfig = {
     var GFskins:Array<CharacterSkin>;
     var keyNumbers:Array<Int>;
     var intro:ConfIntro;
+    @:optional var gameWidth:Null<Int>;
+    @:optional var gameHeight:Null<Int>;
     @:optional var discordRpc:String;
+    @:optional var hasFlashingLights:Null<Bool>;
 }
 
 typedef ConfIntro = {

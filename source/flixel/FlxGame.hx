@@ -292,7 +292,7 @@ class FlxGame extends Sprite
 	}
 
 	public function addShader(shader:FlxShader) {
-		filters.push(new ShaderFilter(shader));
+		_filters.push(new ShaderFilter(shader));
 	}
 	/**
 	 * Sets the filter array to be applied to the game.

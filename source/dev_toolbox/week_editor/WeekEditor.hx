@@ -249,17 +249,13 @@ class WeekEditor extends MusicBeatState {
 		txtTracklist.color = 0xFFe55777;
 		add(txtTracklist);
 
-        changeColorLabel = new AlphabetOptimized(0, 61, "Click here to change color", false);
-        changeColorLabel.textSize = 0.5;
-        changeColorLabel.calculateShit(false);
+        changeColorLabel = new AlphabetOptimized(0, 61, "Click here to change color", false, 0.5);
         changeColorLabel.x = FlxG.width - changeColorLabel.width - 5;
         changeColorLabel.alpha = 0.5;
         changeColorLabel.textColor = 0xFF000000;
         add(changeColorLabel);
 
-        helpLabel = new AlphabetOptimized(0, FlxG.height - (40), "Click on any visual element to edit it.", false);
-        helpLabel.textSize = 1 / 3;
-        helpLabel.calculateShit(false);
+        helpLabel = new AlphabetOptimized(0, FlxG.height - (40), "Click on any visual element to edit it.", false, 1 / 3);
         helpLabel.x = 0;
         helpLabel.alpha = 0.5;
         helpLabel.textColor = 0xFFFFFFFF;
@@ -473,8 +469,6 @@ class WeekEditor extends MusicBeatState {
         var playIcon:FlxSprite;
         weeks.add(playIcon = CoolUtil.createUISprite("play"));
         playIcon.setPosition(playButton.x + 2, playButton.y + 2);
-        // playButton.addIcon(playIcon.createUISprite("play"), 2, 2, true);
-
         var browseButton:FlxUIButton;
         weeks.add(browseButton = new FlxUIButton(sfxBox.x + sfxBox.width + 40, sfxBox.y, "", function() {
             persistentUpdate = false;
@@ -821,6 +815,9 @@ class WeekEditor extends MusicBeatState {
         
         week.bg = bgInput.text;
         week.bgAnim = bgAnimInput.text;
+        
+        var color:FlxColor = yellowBG.color;
+        week.color = color.toHexString(true);
 
         
         var text = Json.stringify(weeks);

@@ -39,7 +39,6 @@ class Medals {
                 if (m == null) return;
                 CoolUtil.playMenuSFX(4);
                 var popup = new MedalsOverlay(mod, m);
-                // state.add(popup);
                 MusicBeatState.medalOverlay.push(popup);
             }
             

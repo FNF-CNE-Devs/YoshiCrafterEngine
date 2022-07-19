@@ -33,20 +33,10 @@ class CharterNote extends FlxSprite
 
 	public var noteType:Int = 0;
 	public var newCharter:Bool = false;
-	// #if secret
-	// 	var c:FlxColor = new FlxColor(0xFFFF0000);
-	// 	c.hue = (strumTime / 100) % 359;
-	// 	this.color = c;
-	// #else
-	// 	color = colors[(noteData % 4) + 1];
-	// #end
-
-	// public static var skinBitmap:FlxAtlasFrames = null;
 
 	public static var swagWidth(get, null):Float;
 	public static function get_swagWidth():Float {
 		return _swagWidth * widthRatio;
-		// return _swagWidth * (4 / (ChartingState_New._song.keyNumber == null ? 4 : ChartingState_New._song.keyNumber));
 	}
 	public static var widthRatio(get, null):Float;
 	static function get_widthRatio():Float {
@@ -59,7 +49,6 @@ class CharterNote extends FlxSprite
 	public static var RED_NOTE:Int = 3;
 
 	public static var noteTypes:Array<hscript.Expr> = [];
-	// public var script:hscript.Interp;
 	public var script(get, null):Script;
 	public var sustainSprite:FlxSprite;
 
@@ -122,16 +111,10 @@ class CharterNote extends FlxSprite
 		var noteNumberScheme:Array<NoteDirection> = Note.noteNumberSchemes[ChartingState_New._song.keyNumber];
 		if (noteNumberScheme == null) noteNumberScheme = Note.noteNumberSchemes[4];
 
-		
-
-		// if (prevNote == null)
-		// 	prevNote = this;
-
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 
 		newCharter = Std.isOfType(FlxG.state, YoshiCrafterCharter);
-		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
 		this.strumTime = strumTime;
 
@@ -165,27 +148,12 @@ class CharterNote extends FlxSprite
 			}
 		}
 
-		// trace(prevNote);
-
 		if (isSustainNote)
 		{
 			noteScore * 0.2;
 			alpha = 0.6;
 
 			noteOffset.x += width / 2;
-
-			// flipY = Settings.engineSettings.data.downscroll;
-			// switch (noteData)
-			// {
-			// 	case 2:
-			// 		animation.play('greenholdend');
-			// 	case 3:
-			// 		animation.play('redholdend');
-			// 	case 1:
-			// 		animation.play('blueholdend');
-			// 	case 0:
-			// 		animation.play('purpleholdend');
-			// }
 			switch (noteNumberScheme[noteData % noteNumberScheme.length])
 			{
 				case Left:
@@ -227,7 +195,6 @@ class CharterNote extends FlxSprite
 					if (Settings.engineSettings.data.downscroll) {
 						prevNote.offset.y = prevNote.height / 2;
 					}
-					// prevNote.setGraphicSize();
 				}
 			}
 			offset.y = height / 2;

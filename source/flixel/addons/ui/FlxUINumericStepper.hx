@@ -183,6 +183,20 @@ class FlxUINumericStepper extends FlxUIGroup implements IFlxUIWidget implements 
 		return Std.string(Math.round(f * tens) / tens);
 	}
 
+	public override function update(elapsed:Float) {
+		super.update(elapsed);
+		var field = cast(text_field, FlxUIInputText);
+
+		if (field.text != Std.string(value)) {
+			var v = Std.parseFloat(field.text);
+			if (Math.isNaN(v)) {
+				return;
+			}
+			trace(value = v);
+		}
+		
+	}
+
 	/**
 	 * This creates a new dropdown menu.
 	 *
@@ -262,32 +276,35 @@ class FlxUINumericStepper extends FlxUIGroup implements IFlxUIWidget implements 
 		stack = Stack;
 	}
 
+	var __textBoxValueChanged:Bool = false;
 	private function _onInputTextEvent(text:String, action:String):Void
 	{
-		if (text == "")
-		{
-			text = Std.string(min);
-		}
+		// if(cast(text_field, FlxUIInputText).hasFocus)
+			__textBoxValueChanged = true;
+		// if (text == "")
+		// {
+		// 	text = Std.string(min);
+		// }
 
-		var numDecimals:Int = 0;
-		for (i in 0...text.length)
-		{
-			var char = text.charAt(i);
-			if (char == ".")
-			{
-				numDecimals++;
-			}
-		}
+		// var numDecimals:Int = 0;
+		// for (i in 0...text.length)
+		// {
+		// 	var char = text.charAt(i);
+		// 	if (char == ".")
+		// 	{
+		// 		numDecimals++;
+		// 	}
+		// }
 
-		var justAddedDecimal = (numDecimals == 1 && text.indexOf(".") == text.length - 1);
+		// var justAddedDecimal = (numDecimals == 1 && text.indexOf(".") == text.length - 1);
 
 		// if I just added a decimal don't treat that as having changed the value just yet
-		if (!justAddedDecimal)
-		{
-			value = Std.parseFloat(text);
-			_doCallback(EDIT_EVENT);
-			_doCallback(CHANGE_EVENT);
-		}
+		// if (!justAddedDecimal)
+		// {
+		// 	value = Std.parseFloat(text);
+		// 	_doCallback(EDIT_EVENT);
+		// 	_doCallback(CHANGE_EVENT);
+		// }
 	}
 
 	private function _onPlus():Void

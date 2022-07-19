@@ -1,3 +1,6 @@
+import haxe.io.Path;
+import sys.io.File;
+import sys.FileSystem;
 import flixel.util.FlxColor;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
@@ -43,6 +46,25 @@ class ModMenuState extends MusicBeatState {
         add(titleBarAlphabet);
     }
 
+    public override function onDropFile(path:String) {
+        super.onDropFile(path);
+        trace(path);
+        if (FileSystem.exists(path) && FileSystem.isDirectory(path)) {
+            if (FileSystem.exists('$path/config.json')) {
+                if (FileSystem.exists('./mods/${Path.withoutDirectory(path)}/')) {
+                    trace("mod already exists");    
+                    return;
+                }
+                CoolUtil.copyFolder(path, './mods/${Path.withoutDirectory(path)}/');
+                FlxG.resetState();
+            } else {
+                trace("not a yoshi engine mod");
+            }
+        } else {
+            trace("not a folder or doesnt exists");
+        }
+    }
+
     public override function update(elapsed) {
         super.update(elapsed);
 
@@ -61,13 +83,26 @@ class ModMenuState extends MusicBeatState {
                 c.card.active = true;
             }
         }
+        if (subState != null) return;
         if (controls.UP_P) {
             changeSelection(-1);
         }
         if (controls.DOWN_P) {
             changeSelection(1);
         }
-        if (FlxG.mouse.wheel != 0) {
+        if (controls.ACCEPT) {
+            openSubState(new RightPane('Mod Settings', [
+                {
+                    label: "Delete Save Data",
+                    callback: function(t) {
+                        var mod = cards[selectedIndex].folderName;
+                        if (ModSupport.modSaves[mod] != null)
+                            ModSupport.modSaves[mod].erase();
+                    }
+                }
+            ]));
+        }
+        if (Settings.engineSettings.data.menuMouse && FlxG.mouse.wheel != 0) {
             changeSelection(-FlxG.mouse.wheel);
         }
         if (controls.BACK) {

@@ -59,14 +59,9 @@ class GameOverSubstate extends MusicBeatSubstate
 		var file = sfx[1];
 		var mFolder = Paths.modsPath;
 
-		// FlxG.sound.play(Sound.fromFile('$mFolder/$mod/sounds/$file' + #if web '.mp3' #else '.ogg' #end));
 		FlxG.sound.play(Paths.sound(file, 'mods/$mod'));
 		
 		Conductor.changeBPM(gameOverMusicBPM);
-
-		// FlxG.camera.followLerp = 1;
-		// FlxG.camera.focusOn(FlxPoint.get(FlxG.width / 2, FlxG.height / 2));
-		// FlxG.camera.scroll.set();
 		FlxG.camera.target = null;
 
 		bf.playAnim('firstDeath');
@@ -103,8 +98,10 @@ class GameOverSubstate extends MusicBeatSubstate
 			});
 		});
 
-		if (path != null) 
+		if (path != null)  {
+			script.setScriptObject(this);
 			script.loadFile(path);
+		}
 		script.executeFunc("create");
 	}
 
@@ -144,7 +141,6 @@ class GameOverSubstate extends MusicBeatSubstate
 			var mod = sfx[0];
 			var file = sfx[1];
 			var mFolder = Paths.modsPath;
-			// FlxG.sound.playMusic(Sound.fromFile('$mFolder/$mod/music/$file' + #if web '.mp3' #else '.ogg' #end));
 			FlxG.sound.playMusic(Paths.music(file, 'mods/$mod'));
 			bf.playAnim('deathLoop');
 		}

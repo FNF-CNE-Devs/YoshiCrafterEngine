@@ -20,13 +20,13 @@ class HealthIcon extends FlxSprite
 	public var isAnimated:Bool = false;
 	public var frameIndexes(default, set):Array<Array<Int>> = [[20, 0], [0, 1]];
 	public var frameIndexesAnimated:Array<Array<Dynamic>> = [[80, "winning"], [20, "normal"], [0, "losing"]];
-	// public var health:Float = 0.5;
 	public var curCharacter:String = "";
 	public var isPlayer:Bool = false;
 	/**
 		Whenever the icon should be automatically managed by PlayState.
 	**/
 	public var auto:Bool = true;
+
 	private function set_frameIndexes(f:Array<Array<Int>>):Array<Array<Int>> {
 		frameIndexes = f;
 		animation.curAnim.reset();
@@ -91,16 +91,16 @@ class HealthIcon extends FlxSprite
 	}
 
 	public function changeCharacter(char:String, mod:String) {
-		// if (mod == null) {
-		// 	if (Paths.curSelectedMod != null)
-		// 		mod = Paths.curSelectedMod;
-		// 	else
-		// 		mod = Settings.engineSettings.data.selectedMod;
-		// }
-		if (mod != null && char.indexOf(":") == -1) char = '$mod:$char';
-		var split = CoolUtil.getCharacterFullIcon(char, mod);
+		var split = char.split(":");
 		var charName = CoolUtil.getLastOfArray(split);
-		var lib = split.length > 1 ? 'mods/${split[0]}' : null;
+		var lib = null;
+		if (split.length > 1) {
+			lib = 'mods/${split[0]}';
+		} else if (mod != null) {
+			lib = 'mods/$mod';
+		}
+		trace(charName);
+		trace(lib);
 
 		var tex = Paths.getCharacterIcon(charName, lib);
 		var altTex = Paths.image('icons/icon-${charName}', lib);

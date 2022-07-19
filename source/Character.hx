@@ -158,6 +158,7 @@ class Character extends FlxStageSprite
 			var sName = curCharacter.split(":");
 			ModSupport.setScriptDefaultVars(characterScript, sName.length > 1 ? sName[0] : "Friday Night Funkin'", {"cloneBitmap" : cloneBitmap});
 			try {
+				characterScript.setScriptObject(this);
 				characterScript.loadFile(p);
 			} catch(e) {
 				return;
@@ -414,12 +415,6 @@ class Character extends FlxStageSprite
 			}
 		}
 
-		// for (i in 1...c.length) {
-		// 	if (c[i] == 0) {
-		// 		c[i] = defNoteColors[(i - 1) % defNoteColors.length];
-		// 	}
-		// }
-
 		return c;
 	}
 
@@ -428,8 +423,6 @@ class Character extends FlxStageSprite
 	override function update(elapsed:Float)
 	{
 		if (!debugMode && animation.curAnim != null) {
-			// if (isPlayer && (lastHit <= Conductor.songPosition - 500 || lastHit == 0) && animation.curAnim.name != "idle" && !isPlayer)
-			// 	dance();
 			if (!isPlayer)
 			{
 					if (animation.curAnim.name.startsWith('sing'))
@@ -486,40 +479,9 @@ class Character extends FlxStageSprite
 	{
 		if (lastNoteHitTime + 250 > Conductor.songPosition) return; // 250 ms until dad dances
 		var dontDance = ["firstDeath", "deathLoop", "deathConfirm"];
-		// if (animation.curAnim != null) if (dontDance.contains(animation.curAnim.name) || (longAnims.contains(animation.curAnim.name) && !animation.curAnim.finished)) return;
 		if (animation.curAnim != null && !force) if (!animation.curAnim.name.startsWith("sing") &&!animation.curAnim.name.startsWith("dance") && !animation.curAnim.finished) return;
 		if (!debugMode)
-		{
-			characterScript.executeFunc("dance");
-			// switch (curCharacter)
-			// {
-			// 	case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel' | 'gfTankmen':
-			// 		if (animation.curAnim != null)
-			// 		{
-			// 			if (!animation.curAnim.name.startsWith('hair'))
-			// 			{
-			// 				playAnim(danced ? 'danceRight' : 'danceLeft');
-			// 			}
-			// 		}
-
-			// 	case 'spooky':
-			// 		playAnim(danced ? 'danceRight' : 'danceLeft');
-			// 	case 'tankman':
-			// 		if (danced)
-			// 			playAnim('idle');
-			// 	default:
-			// 		if (isPlayer)
-			// 		{
-			// 			if (lastHit <= Conductor.songPosition - 500 || lastHit == 0)
-			// 				playAnim('idle');
-			// 		}
-			// 		else
-			// 		{
-			// 			playAnim('idle');
-			// 		}
-			// }
-			// danced = !danced;
-		}
+			characterScript.executeFunc("dance");		
 	}
 
 	public var lastHit:Float = -60000;

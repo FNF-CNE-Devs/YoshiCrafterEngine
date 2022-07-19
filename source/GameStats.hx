@@ -60,10 +60,6 @@ class GameStats extends TextField
 
 
 		filters = [new ShaderFilter(textShader)];
-		// shader = textShader;
-
-
-		// filters = [new ShaderFilter(new TextBorderShader())];
 		currentFPS = 0;
 		selectable = false;
 		mouseEnabled = false;
@@ -125,8 +121,8 @@ class GameStats extends TextField
 						text += "Mem Peak: " + CoolUtil.getSizeLabel(peak) + "\n";
 					if (Settings.engineSettings.data.fps_showYoshiCrafterEngineVer)
 						text += 'YoshiCrafter Engine v${Main.engineVer}\n';
-					if (CoolUtil.isDevMode() && LogsOverlay.log.length > LogsOverlay.lastPos) {
-						var traced = LogsOverlay.log.length - LogsOverlay.lastPos;
+					if (CoolUtil.isDevMode() && LogsOverlay.tracedShit > LogsOverlay.lastPos) {
+						var traced = LogsOverlay.tracedShit - LogsOverlay.lastPos;
 						text += '${traced} traced line${traced > 0 ? "s" : ""}';
 						if (LogsOverlay.errors > LogsOverlay.lastErrors) {
 							var errors = LogsOverlay.errors - LogsOverlay.lastErrors;

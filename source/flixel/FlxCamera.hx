@@ -53,6 +53,7 @@ class FlxCamera extends FlxBasic
 {
 	public function addShader(shader:FlxShader) {
 		var filter:ShaderFilter = null;
+		if (_filters == null) _filters = [];
 		_filters.push(filter = new ShaderFilter(shader));
 		return filter;
 	}
@@ -1078,6 +1079,18 @@ class FlxCamera extends FlxBasic
 
 		updateFlashSpritePosition();
 		updateShake(elapsed);
+
+		if (filtersEnabled && flashSprite.filters != null) {
+			for(f in flashSprite.filters) {
+				if (Std.isOfType(f, ShaderFilter)) {
+					var f2 = cast(f, ShaderFilter);
+					if (Std.isOfType(f2.shader, CustomShader)) {
+						var shader = cast(f2.shader, CustomShader);
+						shader.setCamSize(_scrollRect.scrollRect.x, _scrollRect.scrollRect.y, _scrollRect.scrollRect.width, _scrollRect.scrollRect.height);
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -1185,8 +1198,6 @@ class FlxCamera extends FlxBasic
 			{
                 scroll.x = FlxMath.lerp(scroll.x, _scrollTarget.x, CoolUtil.wrapFloat(followLerp * 60 * elapsed, 0, 1));
                 scroll.y = FlxMath.lerp(scroll.y, _scrollTarget.y, CoolUtil.wrapFloat(followLerp * 60 * elapsed, 0, 1));
-				// scroll.x += (_scrollTarget.x - scroll.x) * followLerp * FlxG.updateFramerate / 60;
-				// scroll.y += (_scrollTarget.y - scroll.y) * followLerp * FlxG.updateFramerate / 60;
 			}
 		}
 	}

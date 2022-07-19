@@ -61,7 +61,7 @@ class SongConfTab extends ToolboxTab {
             for(e in songConfJson.songs) if (e.name.toLowerCase() == id.toLowerCase()) conf = e;
             if (conf == null) return;
             switchSong(conf);
-        }, 25, 300, 640);
+        }, 25, 300, Std.int(FlxG.width / 2));
         add(songsRadioList);
 
         refreshSongs();
@@ -74,7 +74,7 @@ class SongConfTab extends ToolboxTab {
             }
         ], true);
         confTabs.resize(500, 680);
-        confTabs.x = 320 + ((1280 - 320) / 2) - 250;
+        confTabs.x = 320 + ((FlxG.width - 320) / 2) - 250;
 
         confSettings = new FlxUI(null, confTabs);
         confSettings.name = "settings";
@@ -202,7 +202,6 @@ class SongConfTab extends ToolboxTab {
     }
     public function save() {
         File.saveContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/song_conf.json', Json.stringify(songConfJson, "\t"));
-        // clears the cache for immediate action
         Assets.cache.clear(Paths.file('song_conf.json', TEXT, 'mods/${ToolboxHome.selectedMod}'));
     }
     public override function onTabEnter() {

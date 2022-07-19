@@ -93,15 +93,11 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
         bg.alpha = 0.5;
         add(bg);
 
-        var title = new AlphabetOptimized(0, 20, "Change Keybinds", true);
-        title.textSize = 0.75;
-        title.calculateShit(false);
+        var title = new AlphabetOptimized(0, 20, "Change Keybinds", true, 0.75);
         title.screenCenter(X);
         add(title);
 
-        var statusThing = new AlphabetOptimized(10, FlxG.height - 70, "[Enter] Change Selected Keybind | [Esc] Save & Exit", false);
-        statusThing.textSize = 0.5;
-        statusThing.calculateShit(false);
+        var statusThing = new AlphabetOptimized(10, FlxG.height - 70, "[Enter] Change Selected Keybind | [Esc] Save & Exit", false, 0.5);
         statusThing.screenCenter(X);
         add(statusThing);
 
@@ -150,9 +146,6 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
             babyArrow.animation.play("static");
             babyArrow.antialiasing = true;
             babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
-
-            // babyArrow.scale.x *= Math.min(1, 10 / arrowNumber);
-			// babyArrow.scale.y *= Math.min(1, 10 / arrowNumber);
             babyArrow.camera = camera;
 
             
@@ -166,10 +159,8 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
             var key:FlxKey = cast(Reflect.field(Settings.engineSettings.data, 'control_' + arrowNumber + '_$i'), FlxKey);
             currentKeys.push(key);
 
-            var t = new AlphabetOptimized(babyArrow.x + (babyArrow.width / 2), babyArrow.y + size + 20, getKeyName(key, true), false);
+            var t = new AlphabetOptimized(babyArrow.x + (babyArrow.width / 2), babyArrow.y + size + 20, getKeyName(key, true), false, 0.5);
             t.textColor = 0xFFFFFFFF;
-            t.textSize = 0.5;
-            t.calculateShit(false);
             t.x -= t.width / 2;
             labels.push(t);
             strumsGrp.add(t);
@@ -179,9 +170,7 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
         bg.alpha = 0.5;
         changeThingGrp.add(bg);
 
-        var instructions = new AlphabetOptimized(30, 30, "Press any key to change the keybind\n     or press [Esc] to cancel.", false);
-        instructions.textSize = 0.75;
-        instructions.calculateShit(false);
+        var instructions = new AlphabetOptimized(30, 30, "Press any key to change the keybind\n     or press [Esc] to cancel.", false, 0.75);
         instructions.screenCenter();
         instructions.y -= 60;
 
@@ -203,7 +192,6 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
             var strum = strums[i];
 
             label.text = getKeyName(k, true);
-            label.calculateShit(false);
             label.x = strum.x + ((strum.width - label.width) / 2);
         }
     }
@@ -231,7 +219,7 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
             if (strumsGrp.width >= FlxG.width - size) {
                 strumsGrp.x = FlxMath.lerp(strumsGrp.x, FlxMath.bound(-curSelected * size + (FlxG.width / 2) - (size * 0.5), -(strumsGrp.width - FlxG.width) - 100, 100), 0.125 * 60 * elapsed); 
             } else {
-                strumsGrp.x = 640 - (size * 0.5 * arrowNumber);
+                strumsGrp.x = (FlxG.width / 2) - (size * 0.5 * arrowNumber);
             }
             if (controls.BACK) {
                 for(i=>k in currentKeys) {

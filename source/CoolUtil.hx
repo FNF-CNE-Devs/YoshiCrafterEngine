@@ -27,6 +27,20 @@ class CoolUtil
 	*/
 	public static final difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 
+	public static function fixPsychNoteType(noteType:String) {
+		return switch(noteType) {
+			case "Alt Animation":
+				"Alt Anim Note";
+			case "Hurt Note":
+				"Hurt Note"; // lol
+			case "GF Sing":
+				"GF Note";
+			case "No Animation":
+				"No Anim Note";
+			case _:
+				noteType;
+		}
+	}
 	public static function getCleanupImagesPath(p:String) {
 		p = CoolUtil.getLastOfArray(p.split(":"));
 		while(p.startsWith("/")) p = p.substr(1);
@@ -86,17 +100,18 @@ class CoolUtil
 		if (anim != null) sprite.animation.play(anim);
 	}
 
-	public static function loadSong(mod:String, song:String, ?difficulty:String):FunkinCodes {
+	public static function loadSong(mod:String, song:String, ?difficulty:String, ?alternativeDifficulties:Array<String>):FunkinCodes {
 		if (difficulty == null) difficulty = "normal";
 
-
-		// 
-		// 
 		try {
 			PlayState._SONG = Song.loadModFromJson(Highscore.formatSong(song, difficulty), mod, song);
 		} catch(e) {
-			trace("Chart not found, aborting");
-			return CHART_NOT_FOUND;
+			try {
+				PlayState._SONG = Song.loadModFromJson(Highscore.formatSong(song, "normal"), mod, song);
+			} catch(e) {
+				trace("Chart not found, aborting");
+				return CHART_NOT_FOUND;
+			}
 		}
 		PlayState._SONG.validScore = true;
 		PlayState.isStoryMode = false;
@@ -106,6 +121,7 @@ class CoolUtil
 		PlayState.storyDifficulty = difficulty;
 		PlayState.fromCharter = false;
 		PlayState.blueballAmount = 0;
+		PlayState.alternativeDifficulties = alternativeDifficulties;
 		return OK;
 	}
 
@@ -344,7 +360,6 @@ class CoolUtil
 	*/
 	public static function difficultyString():String
 	{
-		// return difficultyArray[PlayState.storyDifficulty];
 		return PlayState.storyDifficulty.toUpperCase();
 	}
 
@@ -426,6 +441,10 @@ class CoolUtil
 				soundId = 'medalUnlocked';
 			case 5:
 				soundId = 'warningMenu';
+			case 6:
+				soundId = 'checkboxChecked';
+			case 7:
+				soundId = 'checkboxUnchecked';
 		}
 		FlxG.sound.play(Paths.sound(soundId), 1);
 	}

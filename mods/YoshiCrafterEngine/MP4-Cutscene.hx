@@ -1,40 +1,32 @@
-// TO USE, ADD :
-// cutscene = "CrafterEngine:MP4-Cutscene";
-// In your song_conf.hx file for the song you want and
-// go to your mod folder, create a "videos" folder and
-// add a video with this title "(your song) cutscene.mp4"
-// for example : "philly cutscene.mp4" or "satin-panties cutscene.mp4"
-// PLEASE RESPECT THE CASE FOR LINUX USERS.
-// THE VIDEO MUST BE 1280x720
+// TO USE, ADD A "yoursong-cutscene.mp4" FILE IN YOUR VIDEOS FOLDER. IT WILL BE HANDLED AUTOMATICALLY
 
 function create() {
     var mFolder = Paths_.modsPath;
     
-    // To get video path in your custom cutscene, type Paths.video("(video file name)");
-    var path = mFolder + "\\" + PlayState_.songMod + "\\videos\\" + PlayState.song.song.toLowerCase() + " cutscene.mp4";
+    var path = Paths.video(PlayState.song.song + "-cutscene", 'mods/' + PlayState_.songMod);
+    trace(path);
+    if (!Assets.exists(path)) {
+        trace("Video not found.");
+        startCountdown();
+        return;
+    }
 
     var wasWidescreen = PlayState.isWidescreen;
-    // Video sprite to be added in game.
     var videoSprite:FlxSprite = null;
-    // Assigns the video sprite
-    videoSprite = MP4Video.playMP4(path,
-        // WILL TRIGGER ONCE THE VIDEO ENDS
+    
+    PlayState.isWidescreen = false;
+    PlayState.camHUD.bgColor = 0xFF000000;
+    videoSprite = MP4Video.playMP4(Assets.getPath(path),
         function() {
-            // Removes the video sprite from the PlayState
             PlayState.remove(videoSprite);
-            // Enables widescreen back (or disable it if it was disabled)
             PlayState.isWidescreen = wasWidescreen;
-            // Starts the countdown and ends the cutscene.
+            PlayState.camHUD.bgColor = 0x00000000;
             startCountdown();
         },
         // If midsong.
-        false);
-    // Sets the video sprite camera to camHUD, putting it above the HUD.
+        false, FlxG.width, FlxG.height);
+
     videoSprite.cameras = [PlayState.camHUD];
-    // Sets the scroll factor to 0
     videoSprite.scrollFactor.set();
-    // Disables widescreen
-    PlayState.isWidescreen = false;
-    // Adds the video sprite.
     PlayState.add(videoSprite);
 }

@@ -51,8 +51,8 @@ class StrumNote extends FlxSprite {
     }
 
     public function doCpuStuff(elapsed:Float) {
-        var animName = getAnimName();
         if (isCpu) {
+            var animName = getAnimName();
             cpuRemainingGlowTime -= elapsed;
             if (cpuRemainingGlowTime <= 0 && animName != "static") {
                 animation.play("static");

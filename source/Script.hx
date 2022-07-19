@@ -106,6 +106,8 @@ class Script {
     public function destroy() {
 
     }
+
+    public function setScriptObject(obj:Dynamic) {}
 }
 
 class ScriptPack {
@@ -198,7 +200,6 @@ class HScript extends Script {
             if (Settings.engineSettings != null && Settings.engineSettings.data.showErrorsInMessageBoxes && !FlxG.keys.pressed.SHIFT) {
                 var posInfo = hscript.posInfos();
 
-                // var fileName = posInfo.fileName;
                 var lineNumber = Std.string(posInfo.lineNumber);
                 var methodName = posInfo.methodName;
                 var className = posInfo.className;
@@ -207,6 +208,9 @@ class HScript extends Script {
             }
         };
         super();
+    }
+    public override function setScriptObject(obj:Dynamic) {
+        hscript.scriptObject = obj;
     }
 
     public override function _executeFunc(funcName:String, ?args:Array<Any>):Dynamic {
@@ -234,7 +238,6 @@ class HScript extends Script {
                 }
                 return result;
             }
-			// f();
 		}
         executeFuncPost();
         return null;
@@ -265,11 +268,9 @@ class HScript extends Script {
     public override function trace(text:String, error:Bool = false) {
         var posInfo = hscript.posInfos();
 
-        // var fileName = posInfo.fileName;
         var lineNumber = Std.string(posInfo.lineNumber);
         var methodName = posInfo.methodName;
         var className = posInfo.className;
-        // trace('$fileName:$methodName:$lineNumber: $text');
 
         if (!Settings.engineSettings.data.developerMode) return;
         
@@ -281,12 +282,8 @@ class HScript extends Script {
     }
 
     public override function getVariable(name:String):Dynamic {
-        var v = hscript.variables.get(name);
-        if (v == null) {
-            @:privateAccess
-            return hscript.locals.get(name);
-        }
-        return v;
+        @:privateAccess
+        return hscript.variables.get(name);
     }
 }
 
@@ -295,7 +292,6 @@ typedef LuaObject = {
     var varPath:String;
     var set:(String,String)->Void;
     var get:(String)->LuaObject;
-    // var toLua
 }
 
 
@@ -360,8 +356,6 @@ class LuaScript extends Script {
                     return false;
                 }
             }
-            // var property = Reflect.getProperty(currentObj, splittedVar[splittedVar.length - 1]);
-            // if (property != null) {
             var finalVal = value;
             if (Std.isOfType(finalVal, String)) {
                 var str = cast(finalVal, String);
@@ -542,9 +536,6 @@ class LuaScript extends Script {
         Lua_helper.add_callback(state, "print", function(toPtr:Dynamic) {
             this.trace(Std.string(toPtr));
         });
-        // Lua_helper.add_callback(state, "trace", function(text:String) {
-        //     trace(text);
-        // });
     }
 
     public override function loadFile(path:String) {
@@ -693,17 +684,10 @@ class LuaScript extends Script {
     }
 
     public override function getVariable(name:String) {
-        // Lua.getglobal()
         return variables[name];
     }
 
-    // public override function _executeFunc(name:String) {
-    //     // Lua.getglobal()
-    //     return variables[name];
-    // }
-
     public override function setVariable(name:String, v:Dynamic) {
-        // Lua.getglobal()
         variables[name] = v;
     }
 
@@ -740,8 +724,6 @@ class LuaScript extends Script {
         if (Lua.pcall(state, args.length, 1, 0) != 0) {
             var err = Lua.tostring(state, -1);
             if (err != "attempt to call a nil value") {
-
-                // Lua.getinfo
                 this.trace('$err');
             }
             return null;

@@ -1,5 +1,5 @@
 function create() {
-    character.frames = Paths.getCharacter(mod + ":bf");
+    character.frames = Paths.getCharacter(character.curCharacter);
 
     character.longAnims = ["dodge"];
 

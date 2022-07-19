@@ -23,6 +23,8 @@ var trainCooldown:Int = 0;
 var startedMoving:Bool = false;
 var triggeredAlready:Bool = false;
 
+gfVersion = "gf-philly";
+
 function musicstart() {
     beatHit(0);
 }

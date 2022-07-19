@@ -15,7 +15,6 @@ import flixel.addons.ui.FlxUIButton;
 import flixel.addons.ui.FlxUIInputText;
 import NoteShader.ColoredNoteShader;
 import Controls.Control;
-import Options;
 import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -38,8 +37,7 @@ class OptionsNotesColors extends MusicBeatState {
 	var labels:Array<Alphabet> = [];
 
 	var selectedChannel:Int = 0;
-
-	// var selectedColor:FlxColor = 0xFFFF0000;
+	
 	var arrowSelectorThingy:FlxSprite;
 
 	var colors:Array<FlxColor> = [
@@ -99,10 +97,12 @@ class OptionsNotesColors extends MusicBeatState {
 				var number = new FlxSprite((FlxG.width / 2) + (40 * channel), 265 + (75 * i) + 2);
 				number.frames = Paths.getSparrowAtlas("alphabet", "preload");
 				for (num in 0...10) {
-					number.animation.addByPrefix(Std.string(num), Std.string(num) + "-", 24, true);
+					number.animation.addByPrefix(Std.string(num), Std.string(num), 24, true);
 				}
 				number.animation.play("0");
 				number.antialiasing = true;
+				number.colorTransform.redMultiplier = number.colorTransform.greenMultiplier = number.colorTransform.blueMultiplier = 0;
+				number.colorTransform.redOffset = number.colorTransform.greenOffset = number.colorTransform.blueOffset = 255;
 				add(number);
 				obj.push(number);
 				offset = number.x - (FlxG.width / 2);

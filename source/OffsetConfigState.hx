@@ -26,7 +26,6 @@ class OffsetConfigState extends MusicBeatState {
         stageFront.antialiasing = true;
         stageFront.scrollFactor.set(0.9, 0.9);
         stageFront.active = false;
-        // stageFront.shader = new CustomShader(mod + ':3D Floor');
         add(stageFront);
     
         var stageCurtains = new FlxSprite(-500, -300).loadGraphic(Paths.image('default_stage/stagecurtains', 'mods/Friday Night Funkin\''));
@@ -39,7 +38,8 @@ class OffsetConfigState extends MusicBeatState {
         add(stageCurtains);
     }
     public override function create() {
-
+        super.create();
+        
         generateStage();
 
         var gf = new Character(100, 100, "Friday Night Funkin':gf");
@@ -56,7 +56,6 @@ class OffsetConfigState extends MusicBeatState {
         Conductor.songPositionOld = -5000;
 
         FlxG.camera.scroll.set(gf.getMidpoint().x - (FlxG.width / 2), gf.getMidpoint().y - (FlxG.height / 2));
-        super.create();
 
         var hud = new FlxCamera(0, 0, FlxG.width, FlxG.height);
         FlxG.cameras.add(hud, false);
@@ -104,7 +103,6 @@ class OffsetConfigState extends MusicBeatState {
 
         offsetLabel = new FlxUIText(100, bar2.y + bar2.height + 10, FlxG.width - 200, "0ms");
         offsetLabel.setFormat(null, 24, 0xFFFFFFFF, CENTER, OUTLINE, 0xFF000000);
-        // offsetLabel.x -= offsetLabel.width / 2;
         offsetLabel.cameras = [hud];
         add(offsetLabel);
 

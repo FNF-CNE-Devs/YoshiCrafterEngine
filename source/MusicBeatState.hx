@@ -1,5 +1,6 @@
 package;
 
+import charter.YoshiCrafterCharter;
 import flixel.graphics.FlxGraphic;
 import flixel.addons.transition.Transition;
 import flixel.FlxSubState;
@@ -35,7 +36,9 @@ class MusicBeatState extends FlxUIState
 	private var lastStep:Float = 0;
 
 	private var curStep:Int = 0;
+	private var curDecStep:Float = 0;
 	private var curBeat:Int = 0;
+	private var curDecBeat:Float = 0;
 	private var controls(get, never):Controls;
 
 	public static var defaultIcon:Image = null;
@@ -50,7 +53,6 @@ class MusicBeatState extends FlxUIState
 	}
 
 	public override function destroy() {
-		// remove(medalOverlay);
 		super.destroy();
 	}
 
@@ -58,25 +60,19 @@ class MusicBeatState extends FlxUIState
 	public function new(?transIn:TransitionData, ?transOut:TransitionData) {
 		ModSupport.updateTitleBar();
 		ModSupport.refreshDiscordRpc();
-		ModSupport.reloadModsConfig(CoolUtil.isDevMode());
+		ModSupport.updateCursor();
+		ModSupport.reloadModsConfig(false, true, false, CoolUtil.isDevMode());
 		Settings.engineSettings.flush();
 
 		LimeAssets.loggedRequests = [];
 
 		if (doCachingShitNextTime) {
 			LimeAssets.logRequests = true;
-
 			@:privateAccess
-			if (FlxG.bitmap._cache != null)
-				for(e in FlxG.bitmap._cache) {
-					// old opti be like "lets cache non assets shit like texts" no you fucking idiot
-					if (e.assetsKey != null) {
-						oldPersistStuff[e] = e.persist;
-						e.persist = true;
-					} else {
-						// e._useCount = 0;
-					}
-				}
+			for(e in FlxG.bitmap._cache) {
+				oldPersistStuff[e] = e.persist;
+				e.persist = true;
+			}
 		} else {
 			doCachingShitNextTime = true;
 		}
@@ -87,27 +83,29 @@ class MusicBeatState extends FlxUIState
 			FlxG.height = 720;
 		#end
 		
-		FlxG.scaleMode = new RatioScaleMode();
 		super(transIn, transOut);
 	}
 
 	override function createPost() {
 		super.createPost();
 		if (LimeAssets.logRequests) {
-			try {
-				Assets.cache.clearExceptArray(LimeAssets.loggedRequests);
-			} catch(e) {
-				trace(e);
-			}
 			
 			LimeAssets.logRequests = false;
 
 			for(k=>e in oldPersistStuff) {
 				k.persist = e;
 			}
-			oldPersistStuff = [];
 			
 			FlxG.bitmap.clearCache();
+
+			try {
+				Assets.cache.clearExceptArray(LimeAssets.loggedRequests);
+			} catch(e) {
+				trace(e);
+			}
+			
+
+			oldPersistStuff = [];
 
 			LimeAssets.loggedRequests = [];
 		}
@@ -116,16 +114,32 @@ class MusicBeatState extends FlxUIState
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
+	public function doResizeShit() {return true;}
+	
 	override function create()
 	{
-		// if (transIn != null)
-		// 	trace('reg ' + transIn.region);
+		if (!Std.isOfType(FlxG.scaleMode, WideScreenScale)) {
+			FlxG.scaleMode = new WideScreenScale();
+		}
+		var scl:WideScreenScale = cast FlxG.scaleMode;
+        scl.isWidescreen = false;
+
+		var width = 1280;
+		var height = 720;
+		var conf = ModSupport.modConfig[Settings.engineSettings.data.selectedMod];
+		if (conf != null) {
+			if (conf.gameWidth != null && conf.gameWidth > 0) width = conf.gameWidth;
+			if (conf.gameHeight != null && conf.gameHeight > 0) height = conf.gameHeight;
+		}
+        scl.width = width;
+		scl.height = height;
 
 		super.create();
 		if (Settings.engineSettings != null) {
 			FlxG.drawFramerate = Settings.engineSettings.data.fpsCap;
 			FlxG.updateFramerate = Settings.engineSettings.data.fpsCap;
 		}
+
 	}
 	
 	override function draw() {
@@ -150,8 +164,7 @@ class MusicBeatState extends FlxUIState
 		
 		if (oldStep < curStep && curStep > 0)
 			stepHit();
-		// if (oldStep < curStep)
-
+		
 		super.update(elapsed);
 		
 		if (MusicBeatState.medalOverlay != null) {
@@ -165,17 +178,28 @@ class MusicBeatState extends FlxUIState
 
 	private function updateBeat():Void
 	{
-		curBeat = Std.int(Math.floor(curStep / 4));
+		curDecBeat = curDecStep / 4;
+		curBeat = Std.int(curDecBeat);
 	}
 
 	private function updateCurStep():Void
 	{
-		var lastChange = getLastChange();
-
-		curStep = Std.int(lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet));
+		curStep = Std.int(curDecStep = getStepAtPos(Conductor.songPosition));
 	}
 
-	private function getLastChange() {
+	function getStepAtPos(t:Float) {
+		var lastChange = getLastChange(t);
+		var bpm = Conductor.bpm;
+		if (Std.isOfType(FlxG.state, PlayState) && PlayState.SONG != null) {
+			bpm = PlayState.SONG.bpm;
+		} else if (Std.isOfType(FlxG.state, YoshiCrafterCharter) && YoshiCrafterCharter._song != null) {
+			bpm = YoshiCrafterCharter._song.bpm;
+		}
+
+		return lastChange.stepTime + ((t - lastChange.songTime) / (lastChange.bpm == 0 ? (60 / bpm * 250) : ((60 / lastChange.bpm) * 250)));
+	}
+
+	private function getLastChange(t:Float) {
 		var lastChange:BPMChangeEvent = {
 			stepTime: 0,
 			songTime: 0,
@@ -183,7 +207,21 @@ class MusicBeatState extends FlxUIState
 		}
 		for (i in 0...Conductor.bpmChangeMap.length)
 		{
-			if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime)
+			if (t >= Conductor.bpmChangeMap[i].songTime)
+				lastChange = Conductor.bpmChangeMap[i];
+		}
+		return lastChange;
+	}
+
+	private function getLastChangeForStep(step:Float) {
+		var lastChange:BPMChangeEvent = {
+			stepTime: 0,
+			songTime: 0,
+			bpm: 0
+		}
+		for (i in 0...Conductor.bpmChangeMap.length)
+		{
+			if (step >= Conductor.bpmChangeMap[i].stepTime)
 				lastChange = Conductor.bpmChangeMap[i];
 		}
 		return lastChange;

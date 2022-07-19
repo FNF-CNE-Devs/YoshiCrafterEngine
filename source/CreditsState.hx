@@ -37,6 +37,8 @@ class CreditsState extends MusicBeatState {
     var socialThingy:FlxText;
 
     public override function create() {
+        super.create();
+
         var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuBGYoshiCrafter'));
 		bg.scrollFactor.x = 0;
 		bg.scrollFactor.y = 0;
@@ -72,36 +74,27 @@ class CreditsState extends MusicBeatState {
                 if (json != null) {
                     y++;
                     var modTitle:Alphabet = new Alphabet(0, 125 * y, (mod == "\\") ? "YoshiCrafter Engine" : ModSupport.getModName(mod), true, false);
-                    modTitle.x = 640 - (modTitle.width / 2);
+                    modTitle.x = (FlxG.width / 2) - (modTitle.width / 2);
                     add(modTitle);
                     y++;
                     for (modMaker in json.credits) {
                         var modMakerAlphabet:Alphabet = new Alphabet(0, 125 * y, modMaker.name);
-                        modMakerAlphabet.x = 100 - 160;
+                        modMakerAlphabet.x = -60;
                         y++;
                         add(modMakerAlphabet);
 
                         var icon:FlxSprite = new FlxSprite(modMakerAlphabet.x - 100, modMakerAlphabet.y + (modMakerAlphabet.height / 2) - (125 / 2));
                         var iconPath = modMaker.icon;
                         if (iconPath != null) {
-                            // var tex = Paths.getBitmapOutsideAssets('$mFolder/$mod/images/$iconPath.png');
                             var tex = Paths.image(iconPath, mod == "\\" ? 'preload' : 'mods/$mod');
-                            if (tex != null) {
+                            if (tex != null)
                                 icon.loadGraphic(tex);
-                                // icon.x -= 110;
-                            } else {
+                            else
                                 icon.loadGraphic(Paths.image('creditEmptyIcon', 'preload'));
-                                // icon.x -= 125 / 2;
-                                // icon.y += 125 / 2;
-                            }
-                        } else {
+                            
+                        } else
                             icon.loadGraphic(Paths.image('creditEmptyIcon', 'preload'));
-                            // icon.x -= 125 / 2;
-                            // icon.y += 125 / 2;
-                        }
-                        // var sLength = icon.pixels.width;
-                        // if (icon.pixels.height > sLength) sLength = icon.pixels.height;
-                        // icon.scale.x = icon.scale.y = 100 / sLength;
+                        
                         icon.setGraphicSize(125, 125);
                         icon.updateHitbox();
                         var sc = Math.min(icon.scale.x, icon.scale.y);
@@ -110,13 +103,10 @@ class CreditsState extends MusicBeatState {
                         add(icon);
                         icon.x = modMakerAlphabet.x - 10 - icon.width;
                         icon.y = (125 * y) - (125 / 2) - (icon.height / 2);
-                        // icon.x -= 125 / 2;
-                        // icon.y += 125 / 2;
-
-                        var role:FlxText = new FlxText(modMakerAlphabet.x, modMakerAlphabet.y + 110, 1780, modMaker.role);
+                        
+                        var role:FlxText = new FlxText(modMakerAlphabet.x, modMakerAlphabet.y + 110, Std.int(FlxG.width - modMakerAlphabet.x - 20), modMaker.role);
                         role.setFormat(Paths.font("vcr.ttf"), Std.int(22), FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
                         role.antialiasing = true;
-                        // role.scale.x = role.scale.y = 1 / 0.75;
                         add(role);
                         chars.push({
                             nameAlphabet: modMakerAlphabet,
@@ -130,8 +120,6 @@ class CreditsState extends MusicBeatState {
 
         }
         changeSelection();
-        
-        super.create();
     }
 
     

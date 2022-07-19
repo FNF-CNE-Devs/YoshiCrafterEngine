@@ -562,12 +562,13 @@ class FlxText extends FlxSprite
 
 	function set_text(Text:String):String
 	{
-		text = Text;
-		if (textField != null)
-		{
-			var ot:String = textField.text;
-			textField.text = Text;
-			_regen = (textField.text != ot) || _regen;
+		if (text != (text = Text)) {
+			if (textField != null)
+			{
+				var ot:String = textField.text;
+				textField.text = Text;
+				_regen = (textField.text != ot) || _regen;
+			}
 		}
 		return Text;
 	}
@@ -803,6 +804,9 @@ class FlxText extends FlxSprite
             // if (graphic != null) {
             //     FlxG.bitmap.
             // }
+			if (graphic != null) {
+				FlxG.bitmap.remove(graphic);
+			}
 			makeGraphic(Std.int(newWidth), Std.int(newHeight), FlxColor.TRANSPARENT, false, key);
 
 			if (_hasBorderAlpha)

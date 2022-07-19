@@ -41,7 +41,7 @@ class AddMedalDialogue extends MusicBeatSubstate {
     public override function create() {
         super.create();
 
-        var bg = new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000);
+        var bg = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0x88000000);
         bg.scrollFactor.set();
         add(bg);
         var UI_Tabs = new FlxUITabMenu(null, 
@@ -109,7 +109,7 @@ class AddMedalDialogue extends MusicBeatSubstate {
         UI_Tabs.screenCenter();
         add(UI_Tabs);
 
-        var closeButton = new FlxUIButton(UI_Tabs.x + UI_Tabs.width + 20, UI_Tabs.y, "X", function() {
+        var closeButton = new FlxUIButton(UI_Tabs.x + UI_Tabs.width - 20, UI_Tabs.y, "X", function() {
             close();
         });
         closeButton.color = 0xFFFF4444;

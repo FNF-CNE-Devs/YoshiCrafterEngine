@@ -47,7 +47,7 @@ class InfoTab extends ToolboxTab {
 
         card = new ModCard(ToolboxHome.selectedMod, ModSupport.modConfig[ToolboxHome.selectedMod]);
         card.screenCenter(Y);
-        card.x = 320 + ((1280 - 320) / 2) - (card.width / 2);
+        card.x = 320 + ((FlxG.width - 320) / 2) - (card.width / 2);
 
         var OHMYFUCKINGGODITSTHELABELARMY:Array<FlxUIText> = [];
         var label = new FlxUIText(10, 10, 300, "Mod name");
@@ -61,27 +61,6 @@ class InfoTab extends ToolboxTab {
 		var label = new FlxUIText(10, mod_description.y + mod_description.height + 10, 300, "Titlebar Name");
         OHMYFUCKINGGODITSTHELABELARMY.push(label);
         titlebarName = new FlxUIInputText(10, label.y + label.height, 300, title);
-
-
-        // var icon = new FlxUISprite(520, titlebarName.y).loadGraphic(Paths.image("defaultTitlebarIcon", "preload"));
-        // icon.antialiasing = true;
-        // icon.setGraphicSize(20, 20);
-        // icon.updateHitbox();
-        // add(icon);
-
-        // var chooseIconButton = new FlxUIButton(icon.x + 30, icon.y, "Choose game icon", function() {
-        //     var fDial = new FileDialog();
-		// 	fDial.onSelect.add(function(path) {
-		// 		var img = Paths.getBitmapOutsideAssets(path);
-        //         if (img == null) return;
-        //         icon.loadGraphic(img);
-        //         icon.setGraphicSize(20, 20);
-        //         icon.updateHitbox();
-		// 	});
-		// 	fDial.browse(FileDialogType.OPEN, null, null, "Select an icon.");
-        // });
-        // chooseIconButton.resize(620 - 546, 20);
-        // add(chooseIconButton);
 
         var modIcon = new FlxUISprite(85, titlebarName.y + titlebarName.height + 10)
         .loadGraphic(

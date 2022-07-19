@@ -1,12 +1,25 @@
+function onPlayerHit(noteData) {
+    switch(noteData) {
+        case 0:
+            playBFsAnim("singLEFT-alt", true);
+        case 1:
+            playBFsAnim("singDOWN-alt", true);
+        case 2:
+            playBFsAnim("singUP-alt", true);
+        case 3:
+            playBFsAnim("singRIGHT-alt", true);
+    }
+
+}
 function onDadHit(noteData) {
     switch(noteData) {
         case 0:
-            PlayState.dad.playAnim("singLEFT-alt");
+            playDadsAnim("singLEFT-alt", true);
         case 1:
-            PlayState.dad.playAnim("singDOWN-alt");
+            playDadsAnim("singDOWN-alt", true);
         case 2:
-            PlayState.dad.playAnim("singUP-alt");
+            playDadsAnim("singUP-alt", true);
         case 3:
-            PlayState.dad.playAnim("singRIGHT-alt");
+            playDadsAnim("singRIGHT-alt", true);
     }
 }

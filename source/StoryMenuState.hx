@@ -94,19 +94,10 @@ class StoryMenuState extends MusicBeatState
 					{"name" : "Normal", "sprite" : "storymenu/normal"},
 					{"name" : "Hard", "sprite" : "storymenu/hard"}
 				];
-				// var sprite = week.buttonSprite;
 				weekData.push(week);
-
-				// if (sprite.toLowerCase().startsWith("images/"))
-				// 	sprite = sprite.substr(7);
 				
 
 				var weekButton = Paths.image(CoolUtil.getCleanupImagesPath(week.buttonSprite), 'mods/$mod');
-				/*
-				if (!Assets.exists(weekButton)) {
-					weekButton = new BitmapData(443, 82, true, 0x00000000);
-				}
-				*/
 				weekButtons.push(weekButton);
 			}
 		}
@@ -131,8 +122,8 @@ class StoryMenuState extends MusicBeatState
 		}
 		ModSupport.setScriptDefaultVars(menuScript, '${Settings.engineSettings.data.selectedMod}', {});
 		menuScript.setVariable("state", this);
-		// menuScript.setVariable("addSong", addSong);
 		if (validated) {
+			menuScript.setScriptObject(this);
 			menuScript.loadFile('${Paths.getModsPath()}/${Settings.engineSettings.data.selectedMod}/ui/StoryMenuState');
 		}
 		
@@ -172,7 +163,6 @@ class StoryMenuState extends MusicBeatState
 		blackBG.color = 0xFFF9CF51;
 
 		grpWeekText = new FlxTypedGroup<MenuItem>();
-		// grpWeekText.antialiasing = true;
 		add(grpWeekText);
 
 		var blackBarThingie:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 56, FlxColor.BLACK, true);
@@ -238,10 +228,6 @@ class StoryMenuState extends MusicBeatState
 				lock.antialiasing = true;
 				grpLocks.add(lock);
 			}
-			
-			// weekThing.updateHitbox();
-
-			// Needs an offset thingie
 		}
 
 		trace("Line 266");
@@ -288,55 +274,59 @@ class StoryMenuState extends MusicBeatState
 					confirmAnim: "BF HEY!!"
 				}
 			}
-			var dadPath = CoolUtil.getCleanupImagesPath(week.dad.file);
-			if (dads[dadPath] == null) {
-				var menuCharacter = new FlxSprite((FlxG.width * 0.25) - 150, 70);
-				menuCharacter.frames = Paths.getSparrowAtlas(dadPath);
-				menuCharacter.antialiasing = true;
-				menuCharacter.visible = false;
-				grpWeekCharacters.add(menuCharacter);
-				dads[dadPath] = menuCharacter;
+			if (week.dad.file.trim() != "") {
+				var dadPath = CoolUtil.getCleanupImagesPath(week.dad.file);
+				if (dads[dadPath] == null) {
+					var menuCharacter = new FlxSprite((FlxG.width * 0.25) - 150, 70);
+					menuCharacter.frames = Paths.getSparrowAtlas(dadPath);
+					menuCharacter.antialiasing = true;
+					menuCharacter.visible = false;
+					grpWeekCharacters.add(menuCharacter);
+					dads[dadPath] = menuCharacter;
+				}
+				if (dadPath.trim() != "" && week.dad.confirmAnim != null && week.dad.confirmAnim.trim() != "")
+					dads[dadPath].animation.addByPrefix(week.dad.confirmAnim, week.dad.confirmAnim, 24, false);
+				dads[dadPath].animation.addByPrefix(week.dad.animation, week.dad.animation, 24);
+				dads[dadPath].animation.play(week.dad.animation);
 			}
-			if (week.dad.confirmAnim != null && week.dad.confirmAnim.trim() != "")
-				dads[dadPath].animation.addByPrefix(week.dad.confirmAnim, week.dad.confirmAnim, 24, false);
-			dads[dadPath].animation.addByPrefix(week.dad.animation, week.dad.animation, 24);
-			dads[dadPath].animation.play(week.dad.animation);
 
 
-			var bfPath = CoolUtil.getCleanupImagesPath(week.bf.file);
-			if (bfs[bfPath] == null) {
-				var menuCharacter = new FlxSprite((FlxG.width * 0.5) - 150, 70);
-				menuCharacter.frames = Paths.getSparrowAtlas(bfPath);
-				menuCharacter.antialiasing = true;
-				menuCharacter.visible = false;
-				grpWeekCharacters.add(menuCharacter);
-				bfs[bfPath] = menuCharacter;
+			if (week.bf.file.trim() != "") {
+				var bfPath = CoolUtil.getCleanupImagesPath(week.bf.file);
+				if (bfs[bfPath] == null) {
+					var menuCharacter = new FlxSprite((FlxG.width * 0.5) - 150, 70);
+					menuCharacter.frames = Paths.getSparrowAtlas(bfPath);
+					menuCharacter.antialiasing = true;
+					menuCharacter.visible = false;
+					grpWeekCharacters.add(menuCharacter);
+					bfs[bfPath] = menuCharacter;
+				}
+				if (week.bf.confirmAnim != null && week.bf.confirmAnim.trim() != "")
+					bfs[bfPath].animation.addByPrefix(week.bf.confirmAnim, week.bf.confirmAnim, 24, false);
+				bfs[bfPath].animation.addByPrefix(week.bf.animation, week.bf.animation, 24);
+				bfs[bfPath].animation.play(week.bf.animation);
 			}
-			if (week.bf.confirmAnim != null && week.bf.confirmAnim.trim() != "")
-				bfs[bfPath].animation.addByPrefix(week.bf.confirmAnim, week.bf.confirmAnim, 24, false);
-			bfs[bfPath].animation.addByPrefix(week.bf.animation, week.bf.animation, 24);
-			bfs[bfPath].animation.play(week.bf.animation);
 
 			
-			var gfPath = CoolUtil.getCleanupImagesPath(week.gf.file);
-			if (gfs[gfPath] == null) {
-				var menuCharacter = new FlxSprite((FlxG.width * 0.75) - 150, 70);
-				if (gfPath.trim() != "") {
-					menuCharacter.frames = Paths.getSparrowAtlas(gfPath);
-				} else {
-					menuCharacter.alpha = 0;
+			if (week.gf.file.trim() != "") {
+				var gfPath = CoolUtil.getCleanupImagesPath(week.gf.file);
+				if (gfs[gfPath] == null) {
+					var menuCharacter = new FlxSprite((FlxG.width * 0.75) - 150, 70);
+					if (gfPath.trim() != "") {
+						menuCharacter.frames = Paths.getSparrowAtlas(gfPath);
+					} else {
+						menuCharacter.alpha = 0;
+					}
+					menuCharacter.antialiasing = true;
+					grpWeekCharacters.add(menuCharacter);
+					gfs[gfPath] = menuCharacter;
 				}
-				menuCharacter.antialiasing = true;
-				// menuCharacter.visible = false;
-				grpWeekCharacters.add(menuCharacter);
-				gfs[gfPath] = menuCharacter;
+				if (week.gf.confirmAnim != null && week.gf.confirmAnim.trim() != "")
+					gfs[gfPath].animation.addByPrefix(week.gf.confirmAnim, week.gf.confirmAnim, 24, false);
+				gfs[gfPath].animation.addByPrefix(week.gf.animation, week.gf.animation, 24);
+				gfs[gfPath].animation.play(week.gf.animation);
 			}
-			if (week.gf.confirmAnim != null && week.gf.confirmAnim.trim() != "")
-				gfs[gfPath].animation.addByPrefix(week.gf.confirmAnim, week.gf.confirmAnim, 24, false);
-			gfs[gfPath].animation.addByPrefix(week.gf.animation, week.gf.animation, 24);
-			gfs[gfPath].animation.play(week.gf.animation);
 		}
-
 		difficultySelectors = new FlxGroup();
 		add(difficultySelectors);
 
@@ -377,8 +367,6 @@ class StoryMenuState extends MusicBeatState
 			}
 		}
 
-		// difficultySelectors.add(sprDifficulty);
-
 
 		switchMod = new FlxText(10, 10, 0, '${ModSupport.getModName(Settings.engineSettings.data.selectedMod)}\n[Tab] to switch\n', 24);
 		switchMod.alignment = CENTER;
@@ -394,7 +382,6 @@ class StoryMenuState extends MusicBeatState
 			add(yellowBG);
 			add(grpWeekCharacters);
 			add(txtTracklist);
-			// add(rankText);
 			add(scoreText);
 			add(txtWeekTitle);
 			
@@ -405,7 +392,7 @@ class StoryMenuState extends MusicBeatState
 			super.create();
 			return;
 		}
-		leftArrow = new FlxSprite(FlxG.width - (1280 - (1190 - 175 + 48)), grpWeekText.members[0].y + 10);
+		leftArrow = new FlxSprite(FlxG.width - (FlxG.width - (FlxG.width - 90 - 175 + 48)), grpWeekText.members[0].y + 10);
 		leftArrow.frames = ui_tex;
 		leftArrow.animation.addByPrefix('idle', "arrow left");
 		leftArrow.animation.addByPrefix('press', "arrow push left");
@@ -415,13 +402,11 @@ class StoryMenuState extends MusicBeatState
 		difficultySelectors.add(leftArrow);
 
 		rightArrow = new FlxSprite(FlxG.width - (1280 - 1222), leftArrow.y);
-		// rightArrow = new FlxSprite(leftArrow.x + 130 + 196 + 50, leftArrow.y);
 		rightArrow.frames = ui_tex;
 		rightArrow.animation.addByPrefix('idle', 'arrow right');
 		rightArrow.animation.addByPrefix('press', "arrow push right", 24, false);
 		rightArrow.animation.play('idle');
 		rightArrow.antialiasing = true;
-		// rightArrow.x = FlxG.width - 10 - rightArrow.width;
 		difficultySelectors.add(rightArrow);
 
 		changeDifficulty();
@@ -438,7 +423,6 @@ class StoryMenuState extends MusicBeatState
 		txtTracklist.font = rankText.font;
 		txtTracklist.color = 0xFFe55777;
 		add(txtTracklist);
-		// add(rankText);
 		add(scoreText);
 		add(txtWeekTitle);
 		updateText();
@@ -446,6 +430,13 @@ class StoryMenuState extends MusicBeatState
 		trace("Line 165");
 
 		super.create();
+
+		var co = 0xFFF9CF51;
+		if (weekData[0].color != null) {
+			var c = FlxColor.fromString(weekData[0].color);
+			if (c != null) co = c;
+		}
+		yellowBG.color = co;
 		menuScript.executeFunc("createPost");
 	}
 
@@ -464,17 +455,12 @@ class StoryMenuState extends MusicBeatState
 			super.update(elapsed);
 			return;
 		}
-		// scoreText.setFormat('VCR OSD Mono', 32);
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.5 * 60 * elapsed));
 
 		scoreText.text = "WEEK SCORE:" + lerpScore;
 
 		txtWeekTitle.text = weekData[curWeek].name;
 		txtWeekTitle.x = FlxG.width - (txtWeekTitle.width + 10);
-
-		// FlxG.watch.addQuick('font', scoreText.font);
-
-		// difficultySelectors.visible = weekUnlocked[curWeek];
 		
 		menuScript.executeFunc("update", [elapsed]);
 		if (!movedBack)
@@ -665,7 +651,6 @@ class StoryMenuState extends MusicBeatState
 		for (item in grpWeekText.members)
 		{
 			item.targetY = bullShit - curWeek;
-			// if (item.targetY == Std.int(0) && weekUnlocked[curWeek])
 			if (item.targetY == Std.int(0))
 				item.alpha = 1;
 			else
@@ -760,7 +745,6 @@ class StoryMenuState extends MusicBeatState
 
 		#if !switch
 		intendedScore = Highscore.getModWeekScore(week.mod, week.name, week.difficulties[curDifficulty].name);
-		// intendedScore = Highscore.getWeekScore(curWeek, curDifficulty);
 		#end
 	}
 }
