@@ -35,8 +35,6 @@ class Highscore
 
 		if (Reflect.hasField(FlxG.save.data, daSong))
 		{
-			// var score:AdvancedSaveData = Reflect.field(FlxG.save.data, 'advanced/$daSong');
-			// if (score.accuracy < data.accuracy)
 			if (songScores.exists(daSong)) {
 				if (songScores.get(daSong) < score)
 					Reflect.setField(FlxG.save.data, daSong, data);
@@ -56,11 +54,6 @@ class Highscore
 			trace(daSong);
 		#end
 
-		#if !switch
-		// // NGio .postScore(score, song);
-		#end
-
-
 		if (songScores.exists(daSong))
 		{
 			if (songScores.get(daSong) < score) {
@@ -78,12 +71,6 @@ class Highscore
 
 	public static function saveWeekScore(week:Int = 1, score:Int = 0, ?diff:String = "Normal"):Void
 	{
-
-		#if !switch
-		// // NGio .postScore(score, "Week " + week);
-		#end
-
-
 		var daWeek:String = formatSong('week' + week, diff);
 
 		if (songScores.exists(daWeek))
@@ -97,10 +84,6 @@ class Highscore
 
 	public static function saveModWeekScore(mod:String, week:String, score:Int = 0, ?diff:String = "Normal"):Void
 	{
-
-		#if !switch
-		// // NGio .postScore(score, "Week " + week);
-		#end
 
 
 		var daWeek:String = formatSong('$mod:$week', diff);

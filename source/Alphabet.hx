@@ -105,17 +105,12 @@ class Alphabet extends FlxSpriteGroup
 		var xPos:Float = 0;
 		for (character in splitWords)
 		{
-			// if (character.fastCodeAt() == " ")
-			// {
-			// }
-
 			if (character == " " || character == "-")
 			{
 				lastWasSpace = true;
 			}
 
 			if (AlphaCharacter.alphabet.indexOf(character.toLowerCase()) != -1 || AlphaCharacter.numbers.indexOf(character.toLowerCase()) != -1)
-				// if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
 			{
 				if (lastSprite != null)
 				{
@@ -143,28 +138,10 @@ class Alphabet extends FlxSpriteGroup
 						letter.createLetter(character);
 					}
 				}
-				// if (isBold && AlphaCharacter.numbers.indexOf(character) == -1) {
-				// 	letter.createBold(character);
-				// }
-				// else
-				// {
-				// 	if (isBold) {
-				// 		trace(character);
-				// 		var oldColor = letter.letterColor;
-				// 		letter.letterColor = FlxColor.WHITE;
-				// 		letter.createNumber(character);	
-				// 		letter.letterColor = oldColor;
-				// 	} else {
-				// 		letter.createLetter(character);
-				// 	}
-				// }
-
 				add(letter);
 
 				lastSprite = letter;
 			}
-
-			// loopNum += 1;
 		}
 	}
 
@@ -286,13 +263,7 @@ class Alphabet extends FlxSpriteGroup
 			var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
 
 			var h:Float = FlxG.height;
-			// if (Std.isOfType(FlxG.state, PlayState))
-			// 	if (isMenuItem)
-			// 		h = PlayState.current.guiSize.y;
 			var w:Float = FlxG.width;
-			// if (Std.isOfType(FlxG.state, PlayState))
-			// 	if (isMenuItem)
-			// 		w = PlayState.current.guiSize.x;
 
 			if (wentToTargetY) {
 				y = FlxMath.lerp(y, (scaledY * 120) + (h * 0.48), 0.16 * 60 * elapsed);
@@ -380,7 +351,7 @@ class AlphaCharacter extends FlxSprite
 	public function new(x:Float, y:Float, color:FlxColor)
 	{
 		super(x, y);
-		var tex = Paths.getCustomizableSparrowAtlas('alphabet');
+		var tex = Paths.getSparrowAtlas('alphabet');
 		frames = tex;
 
 		this.letterColor = color;
@@ -415,17 +386,23 @@ class AlphaCharacter extends FlxSprite
 		animation.play(letter);
 		updateHitbox();
 
-		FlxG.log.add('the row' + row);
-
 		y = (110 - height);
 		y += row * 60;
-		this.color = letterColor;
+		
+		
+		colorTransform.redMultiplier = 0;
+		colorTransform.greenMultiplier = 0;
+		colorTransform.blueMultiplier = 0;
+
+		colorTransform.redOffset = letterColor.red;
+		colorTransform.greenOffset = letterColor.green;
+		colorTransform.blueOffset = letterColor.blue;
 	}
 
 	public function createNumber(letter:String, autoPos:Bool = true):Void
 	{
-		animation.addByPrefix('$letter-', '$letter-', 24);
-		animation.play('$letter-');
+		animation.addByPrefix('$letter', '$letter', 24);
+		animation.play('$letter');
 		
 		updateHitbox();
 
@@ -434,6 +411,13 @@ class AlphaCharacter extends FlxSprite
 			y += row * 60;
 		}
 
+		colorTransform.redMultiplier = 0;
+		colorTransform.greenMultiplier = 0;
+		colorTransform.blueMultiplier = 0;
+
+		colorTransform.redOffset = letterColor.red;
+		colorTransform.greenOffset = letterColor.green;
+		colorTransform.blueOffset = letterColor.blue;
 
 		this.color = letterColor;
 	}
@@ -457,6 +441,14 @@ class AlphaCharacter extends FlxSprite
 				animation.addByPrefix(letter, 'exclamation point', 24);
 				animation.play(letter);
 		}
+
+		colorTransform.redMultiplier = 0;
+		colorTransform.greenMultiplier = 0;
+		colorTransform.blueMultiplier = 0;
+
+		colorTransform.redOffset = letterColor.red;
+		colorTransform.greenOffset = letterColor.green;
+		colorTransform.blueOffset = letterColor.blue;
 
 		updateHitbox();
 	}

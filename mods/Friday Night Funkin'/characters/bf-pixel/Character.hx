@@ -20,15 +20,15 @@ function create() {
     character.addOffset("singLEFTmiss");
     character.addOffset("singDOWNmiss");
 
-    character.setGraphicSize(Std.int(character.width * 6));
+    character.scale.set(6, 6);
     character.updateHitbox();
 
     character.width -= 100;
     character.height -= 100;
     character.charGlobalOffset.x = 150;
     character.charGlobalOffset.y = 550;
-    character.camOffset.x = -character.width / 2;
-    character.camOffset.y = -character.height / 2;
+    character.camOffset.x = -200;
+    character.camOffset.y = -200;
 
     character.antialiasing = false;
 

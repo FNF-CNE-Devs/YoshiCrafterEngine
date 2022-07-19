@@ -37,6 +37,8 @@ class Conductor
 	public static var songPosition:Float;
 	public static var songPositionOld:Float;
 
+	public static var lastKeyShitTimeStamp:Null<Float> = null;
+
 	/**
 	 * Last song position in milliseconds
 	 */
@@ -60,7 +62,6 @@ class Conductor
 	 * "is calculated in create() is safeFrames in milliseconds"
 	 */
 	public static var safeZoneOffset:Float = (safeFrames / 60) * 1000; // is calculated in create(), is safeFrames in milliseconds
-	// public static var safeZoneOffset:Float = 200; // is calculated in create(), is safeFrames in milliseconds
 
 	
 

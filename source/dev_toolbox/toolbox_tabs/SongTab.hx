@@ -5,21 +5,17 @@ import Song.SwagSong;
 import FreeplayState.FreeplaySongList;
 import FreeplayState.FreeplaySong;
 import dev_toolbox.file_explorer.FileExplorer;
-import dev_toolbox.week_editor.WeekCharacterSettings;
 import openfl.display.BitmapData;
 import flixel.tweens.FlxTween;
 using StringTools;
 
 import flixel.util.FlxColor;
 import flixel.FlxG;
-import dev_toolbox.week_editor.CreateWeekWizard;
 import flixel.addons.ui.*;
 import haxe.Json;
 import sys.io.File;
 import flixel.text.FlxText;
 import flixel.FlxSprite;
-import StoryMenuState.FNFWeek;
-import StoryMenuState.WeeksJson;
 import sys.FileSystem;
 
 class SongTab extends ToolboxTab {
@@ -27,7 +23,6 @@ class SongTab extends ToolboxTab {
     public var songsRadioList:FlxUIRadioGroup;
     public var displayHealthIcon:HealthIcon;
     public var displayAlphabet:Alphabet;
-    // var songName:FlxUIInputText;
     public var songDisplayName:FlxUIInputText;
     public var difficulties:FlxUIInputText;
     public var fpIcon:FlxUIInputText;
@@ -56,16 +51,12 @@ class SongTab extends ToolboxTab {
             }
         ], true);
         songTabThingy.resize(500, 350);
-        songTabThingy.x = 320 + ((1280 - 320) / 2) - 250;
+        songTabThingy.x = 320 + ((FlxG.width - 320) / 2) - 250;
 
         var songSettings = new FlxUI(null, songTabThingy);
         songSettings.name = "settings";
 
         var labels:Array<FlxUIText> = [];
-
-        // var label = new FlxUIText(10, 10, 480, "Song Name");
-        // labels.push(label);
-        // songName = new FlxUIInputText(10, label.y + label.height, 480, "");
 
         var label = new FlxUIText(10, 10, 480, "Song Display Name (leave blank for none)");
         labels.push(label);
@@ -130,7 +121,7 @@ class SongTab extends ToolboxTab {
 			};
             for(d in diffs) {
                 var diff = d.trim().toLowerCase().replace(" ", "-");
-                var path = '${Paths.modsPath}/${ToolboxHome.selectedMod}/data/${fpSongToEdit.name}/${fpSongToEdit.name}-${d.trim().toLowerCase()}.json';
+                var path = '${Paths.modsPath}/${ToolboxHome.selectedMod}/data/${fpSongToEdit.name}/${fpSongToEdit.name}-${d.trim().toLowerCase().replace(" ", "-")}.json';
                 if (diff == "normal") {
                     path = '${Paths.modsPath}/${ToolboxHome.selectedMod}/data/${fpSongToEdit.name}/${fpSongToEdit.name}.json';
                 }
@@ -170,7 +161,7 @@ class SongTab extends ToolboxTab {
             for(so in freeplaySonglist.songs) if (so.name == id) s = so;
             updateSongTab(s);
             if (!members.contains(songTabThingy)) add(songTabThingy);
-        }, 25, 300, 640);
+        }, 25, 300, Std.int(FlxG.width / 2));
         add(songsRadioList);
         refreshSongs();
 
@@ -244,7 +235,6 @@ class SongTab extends ToolboxTab {
             };
             File.saveContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/data/freeplaySonglist.json', Json.stringify(json));
         }
-        // var songs = [for (s in FileSystem.readDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/songs/')) if (FileSystem.isDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/songs/$s/')) s];
         var displayNames = [];
         freeplaySonglist = try {Json.parse(File.getContent('${Paths.modsPath}/${ToolboxHome.selectedMod}/data/freeplaySonglist.json'));} catch(e) {null;};
         if (freeplaySonglist == null) freeplaySonglist = {songs : []};

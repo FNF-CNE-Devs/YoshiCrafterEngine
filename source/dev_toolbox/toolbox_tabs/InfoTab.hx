@@ -8,21 +8,17 @@ import openfl.display.PNGEncoderOptions;
 import lime.ui.FileDialogType;
 import flixel.addons.transition.FlxTransitionableState;
 import dev_toolbox.file_explorer.FileExplorer;
-import dev_toolbox.week_editor.WeekCharacterSettings;
 import openfl.display.BitmapData;
 import flixel.tweens.FlxTween;
 using StringTools;
 
 import flixel.util.FlxColor;
 import flixel.FlxG;
-import dev_toolbox.week_editor.CreateWeekWizard;
 import flixel.addons.ui.*;
 import haxe.Json;
 import sys.io.File;
 import flixel.text.FlxText;
 import flixel.FlxSprite;
-import StoryMenuState.FNFWeek;
-import StoryMenuState.WeeksJson;
 import sys.FileSystem;
 
 class InfoTab extends ToolboxTab {
@@ -51,7 +47,7 @@ class InfoTab extends ToolboxTab {
 
         card = new ModCard(ToolboxHome.selectedMod, ModSupport.modConfig[ToolboxHome.selectedMod]);
         card.screenCenter(Y);
-        card.x = 320 + ((1280 - 320) / 2) - (card.width / 2);
+        card.x = 320 + ((FlxG.width - 320) / 2) - (card.width / 2);
 
         var OHMYFUCKINGGODITSTHELABELARMY:Array<FlxUIText> = [];
         var label = new FlxUIText(10, 10, 300, "Mod name");
@@ -66,27 +62,6 @@ class InfoTab extends ToolboxTab {
         OHMYFUCKINGGODITSTHELABELARMY.push(label);
         titlebarName = new FlxUIInputText(10, label.y + label.height, 300, title);
 
-
-        // var icon = new FlxUISprite(520, titlebarName.y).loadGraphic(Paths.image("defaultTitlebarIcon", "preload"));
-        // icon.antialiasing = true;
-        // icon.setGraphicSize(20, 20);
-        // icon.updateHitbox();
-        // add(icon);
-
-        // var chooseIconButton = new FlxUIButton(icon.x + 30, icon.y, "Choose game icon", function() {
-        //     var fDial = new FileDialog();
-		// 	fDial.onSelect.add(function(path) {
-		// 		var img = Paths.getBitmapOutsideAssets(path);
-        //         if (img == null) return;
-        //         icon.loadGraphic(img);
-        //         icon.setGraphicSize(20, 20);
-        //         icon.updateHitbox();
-		// 	});
-		// 	fDial.browse(FileDialogType.OPEN, null, null, "Select an icon.");
-        // });
-        // chooseIconButton.resize(620 - 546, 20);
-        // add(chooseIconButton);
-
         var modIcon = new FlxUISprite(85, titlebarName.y + titlebarName.height + 10)
         .loadGraphic(
             FileSystem.exists('${Paths.modsPath}/${ToolboxHome.selectedMod}/modIcon.png')
@@ -95,14 +70,14 @@ class InfoTab extends ToolboxTab {
         );
         modIcon.setGraphicSize(150, 150);
         modIcon.updateHitbox();
+        modIcon.scale.set(Math.min(modIcon.scale.x, modIcon.scale.y), Math.min(modIcon.scale.x, modIcon.scale.y));
 
         var chooseIconButton = new FlxUIButton(85, modIcon.y + 160, "Choose a mod icon", function() {
             CoolUtil.openDialogue(FileDialogType.OPEN, "Select an mod icon.", function(path) {
-				var img = Paths.getBitmapOutsideAssets(path);
-                if (img == null) return;
-                modIcon.loadGraphic(img);
+                modIcon.loadGraphic(BitmapData.fromFile(path));
                 modIcon.setGraphicSize(150, 150);
                 modIcon.updateHitbox();
+                modIcon.scale.set(Math.min(modIcon.scale.x, modIcon.scale.y), Math.min(modIcon.scale.x, modIcon.scale.y));
             });
         });
         chooseIconButton.resize(150, 20);
@@ -114,7 +89,7 @@ class InfoTab extends ToolboxTab {
             e.titleBarName = titlebarName.text;
             File.saveBytes('${Paths.modsPath}/${ToolboxHome.selectedMod}/modIcon.png', modIcon.pixels.encode(modIcon.pixels.rect, new PNGEncoderOptions(true)));
             ModSupport.saveModData(ToolboxHome.selectedMod);
-            card.updateMod(e);
+            card.updateMod(ToolboxHome.selectedMod);
         });
         saveButton.resize(145, 20);
 

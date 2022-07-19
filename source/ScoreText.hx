@@ -1,4 +1,3 @@
-import EngineSettings.Settings;
 import flixel.FlxG;
 import flixel.math.FlxMath;
 
@@ -13,7 +12,7 @@ class ScoreText {
         if (Settings.engineSettings.data.showRating) arrayData.push(generateRating(ps));
 		
 		var joinString = " | ";
-		if (PlayState.current != null)
+		if (ps != null)
 			joinString = ps.engineSettings.scoreJoinString;
 		else
 			joinString = Settings.engineSettings.data.scoreJoinString;
@@ -53,8 +52,8 @@ class ScoreText {
             case 1:
                 var accuracyFloat:Float = 0;
 
-                for(rat in PlayState.current.ratings) {
-                    accuracyFloat += PlayState.current.hits[rat.name] * rat.accuracy;
+                for(rat in ps.ratings) {
+                    accuracyFloat += ps.hits[rat.name] * rat.accuracy;
                 }
 
                 return prefix + (ps.numberOfNotes == 0 ? "0%" : Std.string(FlxMath.roundDecimal(accuracyFloat / ps.numberOfArrowNotes * 100, 2)) + "%") + " (" + accText + ")";

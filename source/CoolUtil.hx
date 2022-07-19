@@ -1,7 +1,10 @@
 package;
 
+import haxe.io.Path;
+#if cpp
+import openfl.Lib;
+#end
 import lime.app.Application;
-import EngineSettings.Settings;
 import flixel.util.FlxColor;
 import openfl.display.BitmapData;
 import lime.ui.FileDialogType;
@@ -15,15 +18,54 @@ import lime.utils.Assets;
 
 using StringTools;
 
+
+
 class CoolUtil
 {
 	/**
 	* Array for difficulty names
 	*/
-	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
+	public static final difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 
+	public static function fixPsychNoteType(noteType:String) {
+		return switch(noteType) {
+			case "Alt Animation":
+				"Alt Anim Note";
+			case "Hurt Note":
+				"Hurt Note"; // lol
+			case "GF Sing":
+				"GF Note";
+			case "No Animation":
+				"No Anim Note";
+			case _:
+				noteType;
+		}
+	}
+	public static function getCleanupImagesPath(p:String) {
+		p = CoolUtil.getLastOfArray(p.split(":"));
+		while(p.startsWith("/")) p = p.substr(1);
+		if (p.toLowerCase().startsWith("images/"))
+			p = p.substr(7);
+		while(p.startsWith("/")) p = p.substr(1);
+		return Path.withoutExtension(p);
+	}
+	public static function getLastOfArray<T>(a:Array<T>):T {
+		return a[a.length - 1];
+	}
 	
+	public static function getTimeNow() {
+		
+		return #if cpp Lib.getTimer() #else haxe.Timer.stamp() * 1000 #end;
+	}
+	public static function wrapInt(e:Int, min:Int, max:Int) {
+		if (min == max) return min;
+		var result = (e - min) % (max - min);
+		if (result < 0) result += (max - min);
+		return result + min;
+	}
 	public static function isDevMode() {
+		if (ModSupport.forceDevMode)
+			return true;
 		return Settings.engineSettings != null && Settings.engineSettings.data.developerMode && ModSupport.modConfig[Settings.engineSettings.data.selectedMod] != null && !ModSupport.modConfig[Settings.engineSettings.data.selectedMod].locked;
 	}
 	public static function getSizeLabel(num:UInt):String{
@@ -39,9 +81,18 @@ class CoolUtil
         return size + " " + dataTexts[data];
     }
 
+	public static function createUISprite(?anim:String, ?parent:FlxSprite) {
+		var sprite = new FlxSprite();
+		loadUIStuff(sprite, anim);
+		if (parent != null) {
+			sprite.setPosition(parent.x + ((parent.width - 16) / 2), parent.y + ((parent.height - 16) / 2));
+		}
+		return sprite;
+	}
+
 	public static function loadUIStuff(sprite:FlxSprite, ?anim:String) {
 		sprite.loadGraphic(Paths.image("uiIcons", "preload"), true, 16, 16);
-		var anims = ["up", "refresh", "delete", "copy", "paste", "x", "swap", "folder", "play"];
+		var anims = ["up", "refresh", "delete", "copy", "paste", "x", "swap", "folder", "play", "edit", "settings", "song", "add", "trophy", "up", "down"];
 		
 		for(k=>a in anims) {
 			sprite.animation.add(a, [k], 0, false);
@@ -49,16 +100,18 @@ class CoolUtil
 		if (anim != null) sprite.animation.play(anim);
 	}
 
-	public static function loadSong(mod:String, song:String, ?difficulty:String):haxe.Exception {
+	public static function loadSong(mod:String, song:String, ?difficulty:String, ?alternativeDifficulties:Array<String>):FunkinCodes {
 		if (difficulty == null) difficulty = "normal";
 
-
-		// 
-		// 
 		try {
 			PlayState._SONG = Song.loadModFromJson(Highscore.formatSong(song, difficulty), mod, song);
 		} catch(e) {
-			return e;
+			try {
+				PlayState._SONG = Song.loadModFromJson(Highscore.formatSong(song, "normal"), mod, song);
+			} catch(e) {
+				trace("Chart not found, aborting");
+				return CHART_NOT_FOUND;
+			}
 		}
 		PlayState._SONG.validScore = true;
 		PlayState.isStoryMode = false;
@@ -67,7 +120,9 @@ class CoolUtil
 		PlayState.jsonSongName = song;
 		PlayState.storyDifficulty = difficulty;
 		PlayState.fromCharter = false;
-		return null;
+		PlayState.blueballAmount = 0;
+		PlayState.alternativeDifficulties = alternativeDifficulties;
+		return OK;
 	}
 
 	public static function loadWeek(mod:String, week:String, ?difficulty:String) {
@@ -169,6 +224,15 @@ class CoolUtil
 
 
 
+	public static function openFolder(p:String) {
+		p = p.replace("/", "\\").replace("\\\\", "\\");
+		#if windows
+			Sys.command('explorer "$p"');	
+		#end
+		#if linux
+			Sys.command('nautilus', [p]);	
+		#end
+	}
 	public static function addBG(f:FlxState) {
 		var p = Paths.image("menuBGYoshiCrafter", 'mods/${Settings.engineSettings.data.selectedMod}');
 		if (!Assets.exists(p)) p = Paths.image("menuBGYoshiCrafter", "preload");
@@ -262,11 +326,40 @@ class CoolUtil
 	}
 
 	/**
+	 * Checks if char is BF skinnable. If true, will set the skin to the selected player's skin
+	**/
+	public static function checkBFSkin(p1:Array<String>) {
+		if (p1.length < 2) return p1;
+
+		var engineSettings = Settings.engineSettings.data;
+		if (PlayState.current != null) engineSettings = PlayState.current.engineSettings;
+
+		if (ModSupport.modConfig[p1[0]] != null && engineSettings.customBFSkin != "default")
+			if (ModSupport.modConfig[p1[0]].skinnableBFs != null)
+				for (skin in ModSupport.modConfig[p1[0]].skinnableBFs)
+					if (skin.toLowerCase() == p1[1].toLowerCase())
+						p1 = ['~', 'bf/${engineSettings.customBFSkin}'];
+		return p1;
+	}
+	public static function checkGFSkin(p2:Array<String>) {
+		if (p2.length < 2) return p2;
+
+		var engineSettings = Settings.engineSettings.data;
+		if (PlayState.current != null) engineSettings = PlayState.current.engineSettings;
+
+		if (ModSupport.modConfig[p2[0]] != null && engineSettings.customGFSkin != "default")
+			if (ModSupport.modConfig[p2[0]].skinnableGFs != null)
+				for (skin in ModSupport.modConfig[p2[0]].skinnableGFs)
+					if (skin.toLowerCase() == p2[1].toLowerCase())
+						p2 = ['~', 'gf/${engineSettings.customGFSkin}'];
+		return p2;
+	}
+
+	/**
 	* Get the difficulty name based on the actual song
 	*/
 	public static function difficultyString():String
 	{
-		// return difficultyArray[PlayState.storyDifficulty];
 		return PlayState.storyDifficulty.toUpperCase();
 	}
 
@@ -309,8 +402,17 @@ class CoolUtil
 		return dumbArray;
 	}
 
+	public static function checkSkins() {
+		if (Settings.engineSettings.data.customBFskin != "default" && !Assets.exists(Paths.getPath('~', TEXT, 'characters/bf/${Settings.engineSettings.data.customBFskin}/Character.hx')))
+			Settings.engineSettings.data.customBFskin = "default";
+		if (Settings.engineSettings.data.customGFskin != "default" && !Assets.exists(Paths.getPath('~', TEXT, 'characters/gf/${Settings.engineSettings.data.customGFskin}/Character.hx')))
+			Settings.engineSettings.data.customGFskin = "default";
+		if (Settings.engineSettings.data.customArrowSkin != "default" && (!Assets.exists(Paths.getPath('~', TEXT, '${Settings.engineSettings.data.customArrowSkin}.xml')) || !Assets.exists(Paths.getPath('~', TEXT, '${Settings.engineSettings.data.customArrowSkin}.png'))))
+			Settings.engineSettings.data.customArrowSkin = "default";
+	}
+
 	public static function getAllChartKeys() {
-		var controlKeys:Array<Int> = [];
+		var controlKeys:Array<Int> = [4];
 		var it = ModSupport.modConfig.keys();
 		while(it.hasNext()) {
 			var e = it.next();
@@ -335,12 +437,16 @@ class CoolUtil
 				soundId = 'cancelMenu';
 			case 3:
 				soundId = 'disabledMenu';
+			case 4:
+				soundId = 'medalUnlocked';
+			case 5:
+				soundId = 'warningMenu';
+			case 6:
+				soundId = 'checkboxChecked';
+			case 7:
+				soundId = 'checkboxUnchecked';
 		}
-		var mPath = Paths.sound(soundId, 'mods/${Settings.engineSettings.data.selectedMod}');
-		if (Assets.exists(mPath))
-			FlxG.sound.play(mPath);
-		else
-			FlxG.sound.play(Paths.sound(soundId), 1);
+		FlxG.sound.play(Paths.sound(soundId), 1);
 	}
 	
 	public static function wrapFloat(value:Float, min:Float, max:Float) {
@@ -366,7 +472,30 @@ class CoolUtil
 		var splitChar = char.split(":");
 		if (splitChar.length == 1) {
 			for (fileExt in Main.supportedFileTypes) {
-				if (FileSystem.exists('${Paths.modsPath}/$mod/characters/${splitChar[0]}/Character.$fileExt')) {
+				if (FileSystem.exists('${Paths.modsPath}/$mod/characters/${splitChar[0]}/Character.$fileExt') || Assets.exists(Paths.file('characters/${splitChar[0]}.json'))) {
+					splitChar.insert(0, mod);
+					break;
+				}
+			}
+			if (splitChar.length == 1) {
+				for (fileExt in Main.supportedFileTypes) {
+					if (FileSystem.exists('${Paths.modsPath}/Friday Night Funkin\'/characters/${splitChar[0]}/Character.$fileExt')) {
+						splitChar.insert(0, "Friday Night Funkin'");
+						break;
+					}
+				}
+			}
+		}
+        if (splitChar.length == 1) splitChar = ["Friday Night Funkin'", "unknown"];
+
+		
+		return splitChar;
+	}
+	public static function getCharacterFullIcon(char:String, mod:String):Array<String> {
+		var splitChar = char.split(":");
+		if (splitChar.length == 1) {
+			for (fileExt in Main.supportedFileTypes) {
+				if (FileSystem.exists('${Paths.modsPath}/$mod/characters/${splitChar[0]}/Character.$fileExt') || Assets.exists(Paths.file('characters/${splitChar[0]}.json')) || Assets.exists(Paths.image('icons/icon-${splitChar[0]}'))) {
 					splitChar.insert(0, mod);
 					break;
 				}

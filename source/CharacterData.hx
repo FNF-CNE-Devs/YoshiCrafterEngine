@@ -26,27 +26,3 @@ typedef CharacterAnims = {
     public var loop:Bool;
     public var animPrefixKeys:Array<Int>;
 }
-
-// typedef CharacterData = {
-//     public var color:FlxColor = new FlxColor(0xFF31B0D1);
-//     public var flipX:Bool = false;
-//     public var pixel:Bool = false;
-//     public var globalOffset:FlxPoint = new FlxPoint(0, 0);
-//     public var anims:Array<CharacterAnims> = [];
-//     public var idleDanceSteps:Array<String> = ["idle"];
-//     public var emotes = ["hey"];
-
-//     public function new() {}
-// }
-
-// typedef CharacterAnims = {
-//     public var name:String = "idle";
-//     public var anim:String = "BF idle dance";
-//     public var framerate:Int = 24;
-//     public var x:Int = -5;
-//     public var y:Int = 0;
-//     public var loop:Bool = false;
-//     public var animPrefixKeys:Array<Int> = null;
-
-//     public function new() {}
-// }

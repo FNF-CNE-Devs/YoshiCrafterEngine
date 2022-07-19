@@ -11,7 +11,6 @@ import sys.FileSystem;
 import sys.FileSystem;
 import haxe.io.Path;
 import flixel.text.FlxText.FlxTextBorderStyle;
-import EngineSettings.Settings;
 import flixel.input.mouse.FlxMouse;
 import lime.ui.MouseCursor;
 import openfl.ui.Mouse;
@@ -28,16 +27,11 @@ import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 
 using StringTools;
-// typedef SpawnedElements = {
-//     var sprite:FlxSprite;
-//     var jsonData:StageSprite;
-// }
 
 class StageEditor extends MusicBeatState {
     public static var fromFreeplay = false;
     public static var easeFuncs:Map<String, Float->Float>;
     public var ui:FlxSpriteGroup;
-    // var spawnedElements:Array<SpawnedElements>;
     public var camHUD:FlxCamera;
     public var camGame:FlxCamera;
     public var dummyHUDCamera:FlxCamera;
@@ -71,16 +65,6 @@ class StageEditor extends MusicBeatState {
             for (e in [sparrowAnimationTitle, animationNameTitle, animationNameTextBox, animationFPSNumeric, fpsLabel, animationLabel, animationTypeLabel, applySparrowButton]) {
                 e.visible = false;
             }
-
-            // for dumb syncing w/ characters
-            // if (selectedObj != null) {
-            //     sprPosX.value = selectedObj.x;
-            //     sprPosY.value = selectedObj.y;
-            //     scrFacX.value = selectedObj.scrollFactor.x;
-            //     scrFacY.value = selectedObj.scrollFactor.y;
-            //     scaleNum.value = (selectedObj.scale.x + selectedObj.scale.y) / 2;
-            //     antialiasingCheckbox.checked = selectedObj.antialiasing;
-            // }
         } else {
             for (e in [posLabel, sprPosX, sprPosY, scaleLabel, scaleNum, opacityLabel, opacityNum, antialiasingCheckbox, scrFacX, scrFacY, scrollFactorLabel, shaderLabel, shaderNameInput, pickShader, pickShaderIcon, bumpOffsetLabel, bumpOffsetXLabel, bumpOffsetYLabel, bumpOffsetY, bumpOffsetX, bumpOffsetEase, bumpOffsetEaseType]) {
                 e.visible = true;
@@ -108,6 +92,7 @@ class StageEditor extends MusicBeatState {
             bumpOffsetEaseType.visible = id != "";
             
             scaleNum.value = (selectedObj.scale.x + selectedObj.scale.y) / 2;
+            opacityNum.value = selectedObj.alpha;
             antialiasingCheckbox.checked = selectedObj.antialiasing;
             shaderNameInput.text = selectedObj.shaderName == null ? "" : selectedObj.shaderName;
 
@@ -136,11 +121,8 @@ class StageEditor extends MusicBeatState {
             var resolvedName = resolveButtonName(b.label.text);
             if (selectedObj != null && selectedObj.name == b.label.text) {
                 b.label.text = '> $resolvedName <';
-                // b.label.setFormat(null, 8, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
             } else {
                 b.label.text = '$resolvedName';
-                // b.label.setFormat(null, 8, FlxColor.BLACK, CENTER, FlxTextBorderStyle.NONE);
-                // b.label.scale.x = 1;
             }
         }
 
@@ -457,20 +439,9 @@ class StageEditor extends MusicBeatState {
         switch(fileExt) {
             case "png":
                 if (FileSystem.exists('$pathWithoutExt.xml')) {
-                    // Creates a directory where to put all of the bitmaps
-                    // if (FileSystem.exists('/${fileName}.png') ||
-                    //     FileSystem.exists('$stagePath/${fileName}.xml')) {
-                    //     showMessage("Error", "A Sparrow Atlas with the same name already exists.");
-                    //     return;
-                    // }
-                    // File.copy('$pathWithoutExt.png', '$stagePath/${fileName}.png');
-                    // File.copy('$pathWithoutExt.xml', '$stagePath/${fileName}.xml');
-                    // trace("TODO");
-
                     doSparrow();
                 } else {
                     if (FileSystem.exists('$stagePath/${fileName}.png')) {
-                        doSparrow();
                     } else {
                         File.copy('$pathWithoutExt.png', '$stagePath/${fileName}.png');
 						ModSupport.loadMod(ToolboxHome.selectedMod);
@@ -518,7 +489,6 @@ class StageEditor extends MusicBeatState {
 
     function addSelectedObjectTab() {
         selectedObjTab = new FlxUI(null, tabs);
-        // selectedObjTab
         selectedObjTab.name = "selectedElem";
 
         objName = new FlxUIText(10, 10, 280, "(No selected sprite)", 12);
@@ -546,12 +516,11 @@ class StageEditor extends MusicBeatState {
         scaleNum.x = 290 - scaleNum.width;
 
         opacityLabel = new FlxUIText(10, scaleLabel.y + scaleNum.height + 5, 280, "Opacity");
-        opacityNum = new FlxUINumericStepper(10, opacityLabel.y + (opacityLabel.height / 2), 0.1, 0, 0, 1, 2);
+        opacityNum = new FlxUINumericStepper(10, opacityLabel.y + (opacityLabel.height / 2), 0.1, 1, 0, 1, 2);
         opacityNum.y -= opacityNum.height / 2;
         opacityNum.x = 290 - opacityNum.width;
 
         antialiasingCheckbox = new FlxUICheckBox(10, opacityNum.y + opacityNum.height, null, null, "Anti-aliasing", 100, null, function() {
-            // sets antialiasing
             if (selectedObj != null) selectedObj.antialiasing = antialiasingCheckbox.checked;
         });
 
@@ -616,7 +585,6 @@ class StageEditor extends MusicBeatState {
         bumpOffsetEase = new FlxUIDropDownMenu(10, bumpOffsetY.y + bumpOffsetY.height + 10, eases, function(s) {
             bumpOffsetEaseType.visible = !updateEase();
         });
-        // }, new FlxUIDropDownMenu.FlxUIDropDownHeader(120, new FlxUI9SliceSprite(0, 0, FlxUIAssets.IMG_BOX, new flash.geom.Rectangle(0, 0, 120, 16), [1, 1, 14, 14])));
         bumpOffsetEase.dropDirection = Down;
         bumpOffsetEaseType = new FlxUIDropDownMenu(bumpOffsetEase.x + bumpOffsetEase.width + 10, bumpOffsetEase.y, [new StrNameLabel('In', 'In'), new StrNameLabel('Out', 'Out'), new StrNameLabel('InOut', 'In & Out')], function(s) {
             updateEase();
@@ -631,15 +599,12 @@ class StageEditor extends MusicBeatState {
 
         animationNameTextBox = new FlxUIInputText(10, animationNameTitle.y + animationNameTitle.height, 280, "", 8);
         animationFPSNumeric = new FlxUINumericStepper(10, animationNameTextBox.y + animationNameTextBox.height + 5, 1, 24, 1, 120, 0);
-        // animationFPSNumeric.x -= animationFPSNumeric.width;
 
         fpsLabel = new FlxUIText(10, animationFPSNumeric.y + (animationFPSNumeric.height / 2), 0, "FPS: ");
         fpsLabel.y -= fpsLabel.height / 2;
         animationFPSNumeric.x += fpsLabel.width;
 
-        animationLabel = new FlxUIDropDownMenu(10, animationFPSNumeric.y + animationFPSNumeric.height + 10, animTypes, function(id) {
-            // animationLabel.label
-        });
+        animationLabel = new FlxUIDropDownMenu(10, animationFPSNumeric.y + animationFPSNumeric.height + 10, animTypes, function(id) {});
 
         animationTypeLabel = new FlxUIText(10, animationLabel.y + (10), 0, "Type: ");
         animationTypeLabel.y -= animationTypeLabel.height / 2;
@@ -681,7 +646,6 @@ class StageEditor extends MusicBeatState {
         selectedObjTab.add(bumpOffsetXLabel);
         selectedObjTab.add(bumpOffsetY);
         selectedObjTab.add(bumpOffsetYLabel);
-        // selectedObjTab.add(bumpOffsetEaseLabel);
         selectedObjTab.add(sparrowAnimationTitle);
         selectedObjTab.add(animationNameTitle);
         selectedObjTab.add(animationNameTextBox);
@@ -704,8 +668,6 @@ class StageEditor extends MusicBeatState {
                 var value = Reflect.getProperty(FlxEase, s);
                 easeFuncs[s] = value;
             }
-            // if (Std.isOfType(value, Float->Float)) {
-            // }
         }
         
         Conductor.songPosition = Conductor.songPositionOld = -1;
@@ -720,7 +682,6 @@ class StageEditor extends MusicBeatState {
         persistentDraw = true;
         persistentUpdate = false;
 
-        // camGame = new FlxCamera(Settings.engineSettings.data.moveCameraInStageEditor ? -150 : 0, 0, FlxG.width, FlxG.height, 1);
         camGame = new FlxCamera(0, 0, FlxG.width, FlxG.height, 1);
         camHUD = new FlxCamera(0, 0, FlxG.width, FlxG.height, 1);
         dummyHUDCamera = new FlxCamera(0, 0, FlxG.width, FlxG.height, 1);
@@ -728,8 +689,6 @@ class StageEditor extends MusicBeatState {
         FlxG.cameras.add(camGame, true);
 		FlxG.cameras.add(camHUD, false);
         camHUD.bgColor = 0x00000000;
-
-        // FlxG.cameras.setDefaultDrawTarget(camGame, true);
 
         camThingy = new FlxSprite(0, 0).loadGraphic(Paths.image('ui/camThingy', 'shared'));
         camThingy.cameras = [dummyHUDCamera, camHUD];
@@ -820,34 +779,7 @@ class StageEditor extends MusicBeatState {
         tabs.x = FlxG.width - tabs.width;
         tabs.y = 20;
         add(tabs);
-        var closeButton = new FlxUIButton(FlxG.width - 20, 0, "X", function() {
-            if (unsaved) {
-                
-                var t = new ToolboxMessage("Warning", "Some changes to the stage weren't saved. Do you want to save them ?", [
-                    {
-                        label: "Save",
-                        onClick: function(mes) {
-                            save();
-                            bye();
-                        }
-                    },
-                    { 
-                        label: "Don't Save",
-                        onClick: function(mes) {
-                            bye();
-                        }
-                    },
-                    {
-                        label: "Cancel",
-                        onClick: function(mes) {}
-                    }
-                ], null, camHUD);
-                t.cameras = [dummyHUDCamera, camHUD];
-                openSubState(t);
-            } else {
-                bye();
-            }
-        });
+        var closeButton = new FlxUIButton(FlxG.width - 20, 0, "X", onClose);
         closeButton.resize(20, 20);
         closeButton.color = 0xFFFF4444;
         closeButton.label.color = FlxColor.WHITE;
@@ -871,6 +803,34 @@ class StageEditor extends MusicBeatState {
 
     }
     
+    public function onClose() {
+        if (unsaved) {
+            
+            var t = new ToolboxMessage("Warning", "Some changes to the stage weren't saved. Do you want to save them ?", [
+                {
+                    label: "Save",
+                    onClick: function(mes) {
+                        save();
+                        bye();
+                    }
+                },
+                { 
+                    label: "Don't Save",
+                    onClick: function(mes) {
+                        bye();
+                    }
+                },
+                {
+                    label: "Cancel",
+                    onClick: function(mes) {}
+                }
+            ], null, camHUD);
+            t.cameras = [dummyHUDCamera, camHUD];
+            openSubState(t);
+        } else {
+            bye();
+        }
+    }
     public var unsaved = false;
     public function save() {
         updateJsonData();
@@ -976,33 +936,40 @@ class StageEditor extends MusicBeatState {
                     type: sprite.type,
                     src: sprite.spritePath,
                     scrollFactor: [sprite.scrollFactor.x, sprite.scrollFactor.y],
-                    scale: ((sprite.scale.x + sprite.scale.y) / 2),
-                    pos: [sprite.x, sprite.y],
+                    scale: FlxMath.roundDecimal((sprite.scale.x + sprite.scale.y) / 2, 2),
+                    pos: [FlxMath.roundDecimal(sprite.x, 2), FlxMath.roundDecimal(sprite.y, 2)],
                     name: sprite.name,
                     antialiasing: sprite.antialiasing,
                     animation: sprite.anim,
                     shader: sprite.shaderName,
                     beatTween: sprite.onBeatOffset,
-                    alpha: sprite.alpha
+                    alpha: FlxMath.roundDecimal(sprite.alpha, 2)
                 });
             }
         }
-        stage.bfOffset = [bf.x - bfDefPos.x - bf.charGlobalOffset.x, bf.y - bfDefPos.y - bf.charGlobalOffset.y];
-        stage.gfOffset = [gf.x - gfDefPos.x - gf.charGlobalOffset.x, gf.y - gfDefPos.y - gf.charGlobalOffset.y];
-        stage.dadOffset = [dad.x - dadDefPos.x - dad.charGlobalOffset.x, dad.y - dadDefPos.y - dad.charGlobalOffset.y];
+        stage.bfOffset = [FlxMath.roundDecimal(bf.x - bfDefPos.x - bf.charGlobalOffset.x, 2), FlxMath.roundDecimal(bf.y - bfDefPos.y - bf.charGlobalOffset.y, 2)];
+        stage.gfOffset = [FlxMath.roundDecimal(gf.x - gfDefPos.x - gf.charGlobalOffset.x, 2), FlxMath.roundDecimal(gf.y - gfDefPos.y - gf.charGlobalOffset.y, 2)];
+        stage.dadOffset = [FlxMath.roundDecimal(dad.x - dadDefPos.x - dad.charGlobalOffset.x, 2), FlxMath.roundDecimal(dad.y - dadDefPos.y - dad.charGlobalOffset.y, 2)];
         
-        // stage.defaultCamZoom = 
         unsaved = true;
     }
 
     public override function update(elapsed:Float) {
+        var controlsEnabled:Bool = true;
+        for(e in members) {
+            if (Std.isOfType(e, FlxUIInputText)) {
+                if (cast(e, FlxUIInputText).hasFocus) {
+                    controlsEnabled = false;
+                    break;
+                }
+            }
+        }
         if (FlxG.sound.music.time != Conductor.songPositionOld) {
             Conductor.songPosition = Conductor.songPositionOld = FlxG.sound.music.time;
         } else {
             Conductor.songPosition += elapsed * 1000;
         }
         if (tabs.selected_tab_id != oldTab) {
-            // if (oldTab == )
             oldTab = tabs.selected_tab_id;
             switch(tabs.selected_tab_id) {
                 case "selectedElem":
@@ -1011,21 +978,23 @@ class StageEditor extends MusicBeatState {
         }
 
         var scrollVal = elapsed * 250 * (FlxG.keys.pressed.SHIFT ? 2.5 : 1) / camGame.zoom;
-        if (FlxG.keys.pressed.LEFT) {
-            camGame.scroll.x -= scrollVal;
-            moveOffset.x -= scrollVal;
-        }
-        if (FlxG.keys.pressed.RIGHT) {
-            camGame.scroll.x += scrollVal;
-            moveOffset.x += scrollVal;
-        }
-        if (FlxG.keys.pressed.DOWN) {
-            camGame.scroll.y += elapsed * 250 * (FlxG.keys.pressed.SHIFT ? 2.5 : 1) / camGame.zoom;
-            moveOffset.y += scrollVal;
-        }
-        if (FlxG.keys.pressed.UP) {
-            camGame.scroll.y -= elapsed * 250 * (FlxG.keys.pressed.SHIFT ? 2.5 : 1) / camGame.zoom;
-            moveOffset.y -= scrollVal;
+        if (controlsEnabled) {
+            if (FlxG.keys.pressed.LEFT) {
+                camGame.scroll.x -= scrollVal;
+                moveOffset.x -= scrollVal;
+            }
+            if (FlxG.keys.pressed.RIGHT) {
+                camGame.scroll.x += scrollVal;
+                moveOffset.x += scrollVal;
+            }
+            if (FlxG.keys.pressed.DOWN) {
+                camGame.scroll.y += elapsed * 250 * (FlxG.keys.pressed.SHIFT ? 2.5 : 1) / camGame.zoom;
+                moveOffset.y += scrollVal;
+            }
+            if (FlxG.keys.pressed.UP) {
+                camGame.scroll.y -= elapsed * 250 * (FlxG.keys.pressed.SHIFT ? 2.5 : 1) / camGame.zoom;
+                moveOffset.y -= scrollVal;
+            }
         }
 
         if (selectedObj != null) {
@@ -1039,53 +1008,60 @@ class StageEditor extends MusicBeatState {
                 if (splitThing.length < 2) splitThing.insert(0, ToolboxHome.selectedMod);
                 selectedObj.shader = new CustomShader(splitThing.join(":"), null, null);
             } 
-            if (FlxG.keys.pressed.SHIFT) {
-                if (FlxG.keys.justPressed.W)
-                    selectedObj.y -= 10;
+            if (controlsEnabled) {
+                if (FlxG.keys.pressed.SHIFT) {
+                    if (FlxG.keys.justPressed.W)
+                        selectedObj.y -= 10;
+        
+                    if (FlxG.keys.justPressed.S)
+                        selectedObj.y += 10;
+        
+                    if (FlxG.keys.justPressed.A)
+                        selectedObj.x -= 10;
+        
+                    if (FlxG.keys.justPressed.D)
+                        selectedObj.x += 10;
     
-                if (FlxG.keys.justPressed.S)
-                    selectedObj.y += 10;
+                } else {
+                    if (FlxG.keys.pressed.W)
+                        selectedObj.y -= 250 * elapsed / camGame.zoom;
+        
+                    if (FlxG.keys.pressed.S)
+                        selectedObj.y += 250 * elapsed / camGame.zoom;
+        
+                    if (FlxG.keys.pressed.A)
+                        selectedObj.x -= 250 * elapsed / camGame.zoom;
+        
+                    if (FlxG.keys.pressed.D)
+                        selectedObj.x += 250 * elapsed / camGame.zoom;
+                }
     
-                if (FlxG.keys.justPressed.A)
-                    selectedObj.x -= 10;
-    
-                if (FlxG.keys.justPressed.D)
-                    selectedObj.x += 10;
-
-            } else {
-                if (FlxG.keys.pressed.W)
-                    selectedObj.y -= 250 * elapsed / camGame.zoom;
-    
-                if (FlxG.keys.pressed.S)
-                    selectedObj.y += 250 * elapsed / camGame.zoom;
-    
-                if (FlxG.keys.pressed.A)
-                    selectedObj.x -= 250 * elapsed / camGame.zoom;
-    
-                if (FlxG.keys.pressed.D)
-                    selectedObj.x += 250 * elapsed / camGame.zoom;
+                if (FlxG.keys.justPressed.Q)
+                    moveLayer(selectedObj, -1);
+        
+                if (FlxG.keys.justPressed.E)
+                    moveLayer(selectedObj, 1);
             }
-
-            if (FlxG.keys.justPressed.Q)
-                moveLayer(selectedObj, -1);
-    
-            if (FlxG.keys.justPressed.E)
-                moveLayer(selectedObj, 1);
         }
 
 
-        if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.BACKSPACE) {
-            // resets
-            var f = false;
-            for(m in members) {
-                if (Std.isOfType(m, FlxUIInputText)) {
-                    if (cast(m, FlxUIInputText).hasFocus) {
-                        f = true;
-                        break;
+        if (controlsEnabled) {
+            if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.BACKSPACE) {
+                // resets
+                var f = false;
+                for(m in members) {
+                    if (Std.isOfType(m, FlxUIInputText)) {
+                        if (cast(m, FlxUIInputText).hasFocus) {
+                            f = true;
+                            break;
+                        }
                     }
                 }
+                if (!f) camGame.scroll.x = camGame.scroll.y = 0;
             }
-            if (!f) camGame.scroll.x = camGame.scroll.y = 0;
+            if (FlxG.keys.justPressed.ESCAPE) {
+                onClose();
+            }
         }
 
         for(s in members) {
@@ -1116,23 +1092,12 @@ class StageEditor extends MusicBeatState {
         
         if (objBeingMoved != null) {
             camHUD.alpha = FlxMath.lerp(camHUD.alpha, 0.2, 0.30 * 30 * elapsed);
-            
-            // if (Settings.engineSettings.data.moveCameraInStageEditor) {
-            //     var oldCamGame = camGame.x;
-            //     camGame.x = FlxMath.lerp(camGame.x, 0, 0.30 * 30 * elapsed);
-            //     var offset = camGame.x - oldCamGame;
-            //     moveOffset.x += offset * 2;
-            // }
             if (FlxG.mouse.pressed) {
-                // new FlxPointer().getScreenPosition();
                 objBeingMoved.x = mousePos.x + moveOffset.x;
                 objBeingMoved.y = mousePos.y + moveOffset.y;
                 if (FlxG.mouse.wheel != 0 && !homies.contains(objBeingMoved.type)) {
-                    
-                    // if (FlxG.keys.pressed.CONTROL) {
-                        objBeingMoved.scale.x = objBeingMoved.scale.y = ((objBeingMoved.scale.x + objBeingMoved.scale.y) / 2) + (0.1 * FlxG.mouse.wheel);
-                        objBeingMoved.updateHitbox();
-                    // }
+                    objBeingMoved.scale.x = objBeingMoved.scale.y = ((objBeingMoved.scale.x + objBeingMoved.scale.y) / 2) + (0.1 * FlxG.mouse.wheel);
+                    objBeingMoved.updateHitbox();
                 }
 
                 if (selectedObj != null) {
@@ -1141,12 +1106,8 @@ class StageEditor extends MusicBeatState {
                     scrFacX.value = selectedObj.scrollFactor.x;
                     scrFacY.value = selectedObj.scrollFactor.y;
                     scaleNum.value = (selectedObj.scale.x + selectedObj.scale.y) / 2;
-                    opacityNum.value = (selectedObj.alpha) / 2;
+                    opacityNum.value = selectedObj.alpha;
                 }
-
-                // if (FlxG.mouse.getScreenPosition(camHUD).x >= 315 && !closed) {
-                //     closed = true;
-                // }
             } else {
                 enableGUI(true);
                 objBeingMoved = null;
@@ -1154,9 +1115,6 @@ class StageEditor extends MusicBeatState {
             }
         } else {
             camHUD.alpha = FlxMath.lerp(camHUD.alpha, 1, 0.30 * 30 * elapsed);
-            // if (Settings.engineSettings.data.moveCameraInStageEditor) {
-            //     camGame.x = FlxMath.lerp(camGame.x, -150, 0.30 * 30 * elapsed);
-            // }
             if (FlxG.keys.pressed.CONTROL)
                 defCamZoomNum.value += 0.05 * FlxG.mouse.wheel;
             else
@@ -1219,9 +1177,6 @@ class StageEditor extends MusicBeatState {
         stage.defaultCamZoom = defCamZoomNum.value;
         stage.followLerp = followLerpNum.value;
         camThingy.scale.x = camThingy.scale.y = camGame.zoom / stage.defaultCamZoom;
-        // if (Settings.engineSettings.data.moveCameraInStageEditor) {
-        //     FlxG.mouse.cursorContainer.x = FlxG.game.mouseX + 150 + camGame.x;
-        // }
 
         camHUD.scroll.x = FlxMath.lerp(camHUD.scroll.x, closed ? -300 : 0, 0.30 * 30 * elapsed);
         camThingy.x = (FlxG.width / 2) + camGame.x - (camThingy.width / 2);
@@ -1257,43 +1212,14 @@ class StageEditor extends MusicBeatState {
             y2: sprite.y - sprite.offset.y + sprite.height
         };
         return mousePos.x >= pos.x && mousePos.x < pos.x2 && mousePos.y >= pos.y && mousePos.y < pos.y2;
-        // if (FlxG.mouse.overlaps(sprite, camGame)) {
-        //     // if (sprite.type == "Bitmap") {
-        //     //     var mPos = FlxG.mouse.getPosition();
-        //     //     var rX = camGame.scroll.x + ((sprite.x - camGame.scroll.x) / sprite.scrollFactor.x);
-        //     //     var rY = camGame.scroll.y + ((sprite.y - camGame.scroll.y) / sprite.scrollFactor.y);
-        //     //     var pX = FlxMath.wrap(Std.int((mPos.x - rX) / (sprite.width) * sprite.pixels.width), 0, sprite.pixels.width);
-        //     //     var pY = FlxMath.wrap(Std.int((mPos.y - rY) / (sprite.height) * sprite.pixels.height), 0, sprite.pixels.height);
-        //     //     trace(pX);
-        //     //     trace(pY);
-                
-        //     //     var pixel:FlxColor = sprite.pixels.getPixel32(pX, pY);
-        //     //     sprite.pixels.setPixel32(pX, pY, 0xFFFFFFFF);
-        //     //     if (pixel.alphaFloat < 0.1) {
-        //     //         return false;
-        //     //     } else {
-        //     //         return true;
-        //     //     }
-        //     // } else {
-        //         return true;
-        //     // }
-            
-        // }
-        // return false;
     }
 
     function moveLayer(sprite:FlxStageSprite, layer:Int) {
         for(k=>e in stage.sprites) {
-            // gets the json representation of the sprite
             if (e.name == sprite.name) {
                 if (k + layer < 0 || k + layer > stage.sprites.length) break;
-
-                // OH NO !
                 stage.sprites.remove(e);
-                // Anyways
                 stage.sprites.insert(k + layer, e);
-
-                // Updates the thing
                 updateStageElements();
                 break;
             }

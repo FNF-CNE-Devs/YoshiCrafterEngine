@@ -37,7 +37,6 @@ class CharterSection {
         }
         notes = [];
         for(n in songSection.sectionNotes) {
-            // ((Std.int(CharterNote.swagWidth / 2) * 16) * id)
             var note = new CharterNote(n[0], Std.int(n[1] + (songSection.mustHitSection ? y._song.keyNumber : 0)));
             note.scale.x *= 0.5;
             note.scale.y *= 0.5;

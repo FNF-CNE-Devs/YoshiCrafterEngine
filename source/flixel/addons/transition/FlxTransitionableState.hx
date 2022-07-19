@@ -75,6 +75,11 @@ class FlxTransitionableState extends FlxState
 	override public function create():Void
 	{
 		super.create();
+	}
+
+	override public function createPost():Void
+	{
+		super.createPost();
 		transitionIn();
 	}
 
@@ -138,6 +143,7 @@ class FlxTransitionableState extends FlxState
 	 */
 	public function transitionOut(?OnExit:Void->Void):Void
 	{
+		// closeSubState();
 		_onExit = OnExit;
 		if (hasTransOut)
 		{

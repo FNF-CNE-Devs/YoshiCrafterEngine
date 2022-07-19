@@ -3,15 +3,11 @@ import("openfl.filters.ShaderFilter");
 var three:FlxSound = null;
 var ready:FlxSound = null;
 var set:FlxSound = null;
-var go:FlxSound = null;
+var date:FlxSound = null;
 
 var shader = null;
 function create() {
-    var filters:Array<BitmapFilter> = [];
-    shader = new CustomShader(mod + ":mosaic");
-    var filter = new ShaderFilter(shader);
-    filters.push(filter);
-    FlxG.camera.setFilters(filters);
+    FlxG.camera.addShader(shader = new CustomShader(Paths.shader("mosaic")));
     FlxG.camera.filtersEnabled = true;
     PlayState.isWidescreen = false;
     
@@ -37,25 +33,23 @@ function update(elapsed) {
     PlayState.camFollow.x -= (PlayState.camFollow.x) % 6;
     PlayState.camFollow.y -= (PlayState.camFollow.y) % 6;
 
-    // FlxG.scaleMode.gameSize.x -= FlxG.scaleMode.gameSize.x % 6;
-    // FlxG.scaleMode.gameSize.y -= FlxG.scaleMode.gameSize.y % 6;
 
-    var small = FlxG.scaleMode.gameSize.x < 1280;
-    shader.shaderData.small.value = [small];
+    shader.shaderData.uBlocksize.value = [6 / FlxG.scaleMode.width * (FlxG.scaleMode.gameSize.x), 6 / FlxG.scaleMode.height * FlxG.scaleMode.gameSize.y];
+
+    var small = FlxG.scaleMode.gameSize.x < FlxG.scaleMode.width || FlxG.scaleMode.gameSize.y < FlxG.scaleMode.height;
     if (small) {
-        // shader issue, got a workaround tho
-        smallCamX = FlxMath.lerp(smallCamX, PlayState.camFollow.x + FlxG.camera.targetOffset.x - 640, CoolUtil.wrapFloat(0.04 * 60 * elapsed, 0, 1));
-        smallCamY = FlxMath.lerp(smallCamY, PlayState.camFollow.y + FlxG.camera.targetOffset.y - 360, CoolUtil.wrapFloat(0.04 * 60 * elapsed, 0, 1));
-
+        shader.shaderData.size.value = [FlxG.scaleMode.gameSize.x < (FlxG.scaleMode.width / 2) ? 0 : 1];
         FlxG.camera.scroll.x = Math.floor(smallCamX / 6) * 6;
         FlxG.camera.scroll.y = Math.floor(smallCamY / 6) * 6;
     } else {
-        shader.shaderData.uBlocksize.value = [6 / 1280 * (FlxG.scaleMode.gameSize.x), 6 / 720 * FlxG.scaleMode.gameSize.y];
+        shader.shaderData.size.value = [2];
         smallCamX = FlxG.camera.scroll.x;
         smallCamY = FlxG.camera.scroll.y;
     }
-    // shader.shaderData.uTime.value = [t];
-    // FlxG.camera.zoom = (FlxG.scaleMode.gameSize.x - (FlxG.scaleMode.gameSize.x % 6)) / FlxG.scaleMode.gameSize.x;
+    
+    smallCamX = FlxMath.lerp(smallCamX, PlayState.camFollow.x + FlxG.camera.targetOffset.x - 640, CoolUtil.wrapFloat(0.04 * 60 * elapsed, 0, 1));
+    smallCamY = FlxMath.lerp(smallCamY, PlayState.camFollow.y + FlxG.camera.targetOffset.y - 360, CoolUtil.wrapFloat(0.04 * 60 * elapsed, 0, 1));
+    
     FlxG.camera.zoom = 1;
     if (PlayState.health < 0) { // YOU WILL DIE!!!
         shader.shaderData.uBlocksize.value = [1, 1];
@@ -87,7 +81,7 @@ function onGuiPopup() {
             }
         }
     }
-    PlayState.msScoreLabel.size = 24;
+    // PlayState.msScoreLabel.size = 24;
 }
 
 function onCountdown(countdown:Int) {

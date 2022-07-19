@@ -36,7 +36,7 @@ class AddEventDialogue extends MusicBeatSubstate {
     public override function create() {
         super.create();
 
-        cast(add(new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0x88000000)), FlxSprite).scrollFactor.set(0, 0);
+        cast(add(new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0x88000000, true)), FlxSprite).scrollFactor.set(0, 0);
 
         UI_Box = new FlxUITabMenu(null, [
             {

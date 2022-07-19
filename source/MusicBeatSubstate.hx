@@ -35,6 +35,25 @@ class MusicBeatSubstate extends FlxSubState
 
 
 		super.update(elapsed);
+
+		if (MusicBeatState.medalOverlay != null) {
+			for(k=>m in MusicBeatState.medalOverlay) {
+				m.y = 10 + (110 * k);
+				m.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+				m.update(elapsed);
+			}
+		}
+	}
+	
+	override function draw() {
+		super.draw();
+		if (!Std.isOfType(subState, MusicBeatSubstate)) {
+			for(k=>m in MusicBeatState.medalOverlay) {
+				m.y = 110 * k;
+				m.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+				m.draw();
+			}
+		}
 	}
 
 	private function updateCurStep():Void

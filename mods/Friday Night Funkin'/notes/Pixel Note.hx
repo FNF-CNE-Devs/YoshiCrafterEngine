@@ -2,28 +2,42 @@ enableRating = true;
 // enableMiss(true);
 
 function create() {
-    if (EngineSettings.customArrowColors) {
-        note.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels-colored'), true, 17, 17);
-    } else {
-        note.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
+    note.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels-colored'), true, 17, 17);
+    note.colored = true;
+    
+    switch(note.noteData % 4) {
+        case 0:
+            note.animation.add('scroll', [4]);
+        case 1:
+            note.animation.add('scroll', [5]);
+        case 2:
+            note.animation.add('scroll', [6]);
+        case 3:
+            note.animation.add('scroll', [7]);
     }
-    note.colored = EngineSettings.customArrowColors;
-
-    note.animation.add('greenScroll', [6]);
-    note.animation.add('redScroll', [7]);
-    note.animation.add('blueScroll', [5]);
-    note.animation.add('purpleScroll', [4]);
 
     note.splash = Paths.splashes('weeb/splash');
     
     if (note.isSustainNote)
     {
         note.noteOffset.x += 30;
-        if (EngineSettings.customArrowColors) {
-            note.loadGraphic(Paths.image('weeb/pixelUI/arrowEnds-colored'), true, 7, 6);
-        } else {
-            note.loadGraphic(Paths.image('weeb/pixelUI/arrowEnds'), true, 7, 6);
+        note.loadGraphic(Paths.image('weeb/pixelUI/arrowEnds-colored'), true, 7, 6);
+
+        switch(note.noteData % 4) {
+            case 0:
+                note.animation.add('holdpiece', [0]);
+                note.animation.add('holdend', [4]);
+            case 1:
+                note.animation.add('holdpiece', [1]);
+                note.animation.add('holdend', [5]);
+            case 2:
+                note.animation.add('holdpiece', [2]);
+                note.animation.add('holdend', [6]);
+            case 3:
+                note.animation.add('holdpiece', [3]);
+                note.animation.add('holdend', [7]);
         }
+
         note.animation.add('purpleholdend', [4]);
         note.animation.add('greenholdend', [6]);
         note.animation.add('redholdend', [7]);
@@ -35,23 +49,8 @@ function create() {
         note.animation.add('bluehold', [1]);
     }
 
-    if (note.isSustainNote) {
-        var anims = ['purpleholdend', 'blueholdend', 'greenholdend', 'redholdend'];
-        var anims2 = ['purplehold', 'bluehold', 'greenhold', 'redhold'];
-        note.animation.play(anims[note.noteData % 4]);
-        note.setGraphicSize(Std.int(note.width * PlayState_.daPixelZoom));
-        note.updateHitbox();
-        if (note.prevNote != null) {
-            if (anims.contains(note.animation.curAnim.name)) {
-                note.prevNote.animation.play(anims2[note.noteData % 4]);
-            }
-        }
-    } else {
-        var anims = ['purpleScroll', 'blueScroll', 'greenScroll', 'redScroll'];
-        note.animation.play(anims[note.noteData % 4]);
-        note.setGraphicSize(Std.int(note.width * PlayState_.daPixelZoom));
-        note.updateHitbox();
-    }
+    note.setGraphicSize(Std.int(note.width * PlayState_.daPixelZoom));
+    note.updateHitbox();
 }
 
 

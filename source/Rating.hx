@@ -1,3 +1,4 @@
+import openfl.utils.Assets;
 import flixel.util.FlxColor;
 
 class Rating {
@@ -14,12 +15,15 @@ class Rating {
 	public var antialiasing:Bool = true;
 	public var fcRating:String = "FC";
 	public var showSplashes:Bool = false;
-
 	public var bitmap:String = null;
 
 	public function new() {}
 
 	private function set_image(path:String):String {
+		if (Assets.exists(path)) {
+			bitmap = image = path;
+			return path;
+		}
 		var splittedPath = path.split(":");
 		if (splittedPath.length < 2) return path;
 		var mod = splittedPath[0];

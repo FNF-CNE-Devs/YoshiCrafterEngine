@@ -33,7 +33,6 @@ class WaveformSprite extends FlxSprite {
         }
         trace(buffer);
         trace(buffer.data);
-        // var bytes:Bytes = buffer.data.toBytes();
         for(i in 0...Math.floor(buffer.data.length / buffer.bitsPerSample)) {
             var pos = i * buffer.bitsPerSample;
             var thing = buffer.data.buffer.get(pos) | (buffer.data.buffer.get(pos + 1) << 8);
@@ -53,7 +52,6 @@ class WaveformSprite extends FlxSprite {
         pixels.lock();
         pixels.fillRect(new Rectangle(0, 0, pixels.width, pixels.height), 0); 
         var diff = endPos - startPos;
-        // var bytes = buffer.data.toBytes();
         var diffRange = Math.floor(diff / pixels.height);
         for(y in 0...pixels.height) {
             var d = Math.floor(diff * (y / pixels.height));
@@ -61,7 +59,6 @@ class WaveformSprite extends FlxSprite {
             var pos = startPos + d;
             var max:Int = 0;
             for(i in 0...Math.floor(diffRange / buffer.bitsPerSample)) {
-                // var thing = bytes.getUInt16(pos + (i * buffer.bitsPerSample));
                 var thing = buffer.data.buffer.get(pos + (i * buffer.bitsPerSample)) | (buffer.data.buffer.get(pos + (i * buffer.bitsPerSample) + 1) << 8);
                 if (thing > 256 * 128)
                     thing -= 256 * 256;

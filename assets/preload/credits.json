@@ -20,23 +20,8 @@
             ]
         },
         {
-            "name" : "KiyuuuSama",
-            "role" : "Artist - Drew the icons & the engine's logo",
-            "icon" : "credits/kiyuusama",
-            "urls" : [
-                {
-                    "name" : "Twitter",
-                    "url" : "https://twitter.com/KiyuuuSama"
-                },
-                {
-                    "name" : "YouTube",
-                    "url" : "https://www.youtube.com/channel/UC5vO3P1ZoZWrSy8upg3xBww"
-                }
-            ]
-        },
-        {
             "name" : "Siivkoi",
-            "role" : "Artist & Animator - Note Splashes & Drew the update and loading screen background (and drew this icon)",
+            "role" : "Artist & Animator - Note Splashes & Drew the update and loading screen background (and drew this icon). Made the secret Yoshi song and is very based imo",
             "icon" : "credits/siivkoi",
             "urls" : [
                 {
@@ -50,6 +35,36 @@
                 {
                     "name" : "Newgrounds",
                     "url" : "https://siivkoi.newgrounds.com/"
+                }
+            ]
+        },
+        {
+            "name" : "CaptainKirb",
+            "role" : "Helper - Made YouTube tutorials and helped me out with some stuff",
+            "icon" : "credits/captainkirb",
+            "urls" : [
+                {
+                    "name" : "YouTube",
+                    "url" : "https://www.youtube.com/channel/UCLr5zAesggUSXlLd9J6vfjw"
+                },
+                {
+                    "name" : "Twitter",
+                    "url" : "https://twitter.com/kirb_captain"
+                }
+            ]
+        },
+        {
+            "name" : "KiyuuuSama",
+            "role" : "Artist - Drew the icons & the engine's logo",
+            "icon" : "credits/kiyuusama",
+            "urls" : [
+                {
+                    "name" : "Twitter",
+                    "url" : "https://twitter.com/KiyuuuSama"
+                },
+                {
+                    "name" : "YouTube",
+                    "url" : "https://www.youtube.com/channel/UC5vO3P1ZoZWrSy8upg3xBww"
                 }
             ]
         },

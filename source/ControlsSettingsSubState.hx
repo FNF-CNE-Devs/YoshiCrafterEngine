@@ -1,3 +1,4 @@
+import flixel.math.FlxRect;
 import options.screens.KeybindsMenu;
 import flixel.math.FlxMath;
 import NoteShader.ColoredNoteShader;
@@ -11,7 +12,6 @@ import flixel.util.FlxColor;
 import flixel.text.FlxText;
 import Note.NoteDirection;
 import flixel.input.keyboard.FlxKey;
-import EngineSettings.Settings;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.FlxG;
@@ -19,7 +19,7 @@ import flixel.group.FlxSpriteGroup;
 
 class ControlsSettingsSubState extends MusicBeatSubstate {
 
-    public static var customKeybindsNameOverride:Map<String, String> = [
+    public static final customKeybindsNameOverride:Map<String, String> = [
         "numpadone" => "Numpad 1",
         "numpadtwo" => "Numpad 2",
         "numpadthree" => "Numpad 3",
@@ -44,7 +44,7 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
         "numpadminus" => "Numpad -",
         "numpadmultiply" => "Numpad *"
     ];
-    public static var customKeybindsNameOverrideSimple:Map<String, String> = [
+    public static final customKeybindsNameOverrideSimple:Map<String, String> = [
         "numpadone" => "#1",
         "numpadtwo" => "#2",
         "numpadthree" => "#3",
@@ -69,7 +69,7 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
         "numpadminus" => "#-",
         "numpadmultiply" => "#*"
     ];
-    var bg = new FlxSprite(0, 0).makeGraphic(1280, 720, 0xFF000000);
+    var bg = new FlxSprite(0, 0).makeGraphic(1280, 720, 0xFF000000, true);
 
     public var strums:Array<FlxSprite> = [];
     public var labels:Array<AlphabetOptimized> = [];
@@ -81,8 +81,18 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
     public var changeThingGrp:FlxSpriteGroup = new FlxSpriteGroup();
     public var strumsGrp:FlxSpriteGroup = new FlxSpriteGroup();
     public var callback:Void->Void = null;
+    public var sizeRect:FlxRect = new FlxRect();
 
     public function new(arrowNumber:Int, camera:FlxCamera, ?callback:Void->Void) {
+        var engineSettings = Settings.engineSettings.data;
+        sizeRect.width = FlxG.width;
+        sizeRect.height = FlxG.height;
+        if (PlayState.current != null) {
+            engineSettings = PlayState.current.engineSettings;
+            sizeRect.width = PlayState.current.guiSize.x;
+            sizeRect.height = PlayState.current.guiSize.y;
+        }
+        
         super();
         this.cameras = [camera];
         this.arrowNumber = arrowNumber;
@@ -90,15 +100,11 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
         bg.alpha = 0.5;
         add(bg);
 
-        var title = new AlphabetOptimized(0, 20, "Change Keybinds", true);
-        title.textSize = 0.75;
-        title.calculateShit(false);
+        var title = new AlphabetOptimized(0, 20, "Change Keybinds", true, 0.75);
         title.screenCenter(X);
         add(title);
 
-        var statusThing = new AlphabetOptimized(10, FlxG.height - 70, "[Enter] Change Selected Keybind | [Esc] Save & Exit", false);
-        statusThing.textSize = 0.5;
-        statusThing.calculateShit(false);
+        var statusThing = new AlphabetOptimized(10, sizeRect.height - 70, "[Enter] Change Selected Keybind | [Esc] Save & Exit", false, 0.5);
         statusThing.screenCenter(X);
         add(statusThing);
 
@@ -107,12 +113,12 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
         for(i in 0...arrowNumber) {
             var babyArrow = new FlxSprite(size * (i), 110);
             
-            babyArrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas_Custom("skins/notes/" + Settings.engineSettings.data.customArrowSkin.toLowerCase());
+            babyArrow.frames = (Settings.engineSettings.data.customArrowSkin == "default") ? Paths.getSparrowAtlas('NOTE_assets_colored', 'shared') : Paths.getSparrowAtlas(engineSettings.customArrowSkin.toLowerCase(), 'skins');
 					
             babyArrow.animation.addByPrefix('up', 'arrowUP');
             babyArrow.animation.addByPrefix('down', 'arrowDOWN');
-            babyArrow.animation.addByPrefix('left', 'arrowLEFT');
-            babyArrow.animation.addByPrefix('right', 'arrowRIGHT');
+            babyArrow.animation.addByPrefix('left', 'arrowLEFT0');
+            babyArrow.animation.addByPrefix('right', 'arrowRIGHT0');
             var color = [
                 new FlxColor(Settings.engineSettings.data.arrowColor0),
                 new FlxColor(Settings.engineSettings.data.arrowColor1),
@@ -127,7 +133,7 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
             switch (noteNumberScheme[i % noteNumberScheme.length])
             {
                 case Left:
-                    babyArrow.animation.addByPrefix('static', 'arrowLEFT');
+                    babyArrow.animation.addByPrefix('static', 'arrowLEFT0');
                     babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
                     babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
                 case Down:
@@ -139,7 +145,7 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
                     babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
                     babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
                 case Right:
-                    babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
+                    babyArrow.animation.addByPrefix('static', 'arrowRIGHT0');
                     babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
                     babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
             }
@@ -147,9 +153,6 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
             babyArrow.animation.play("static");
             babyArrow.antialiasing = true;
             babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
-
-            // babyArrow.scale.x *= Math.min(1, 10 / arrowNumber);
-			// babyArrow.scale.y *= Math.min(1, 10 / arrowNumber);
             babyArrow.camera = camera;
 
             
@@ -163,29 +166,25 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
             var key:FlxKey = cast(Reflect.field(Settings.engineSettings.data, 'control_' + arrowNumber + '_$i'), FlxKey);
             currentKeys.push(key);
 
-            var t = new AlphabetOptimized(babyArrow.x + (babyArrow.width / 2), babyArrow.y + size + 20, getKeyName(key, true), false);
+            var t = new AlphabetOptimized(babyArrow.x + (babyArrow.width / 2), babyArrow.y + size + 20, getKeyName(key, true), false, 0.5);
             t.textColor = 0xFFFFFFFF;
-            t.textSize = 0.5;
-            t.calculateShit(false);
             t.x -= t.width / 2;
             labels.push(t);
             strumsGrp.add(t);
         }
 
-        var bg = new FlxSprite(0, 0).makeGraphic(1280, 720, 0xFF000000);
+        var bg = new FlxSprite(0, 0).makeGraphic(1280, 720, 0xFF000000, true);
         bg.alpha = 0.5;
         changeThingGrp.add(bg);
 
-        var instructions = new AlphabetOptimized(30, 30, "Press any key to change the keybind\n     or press [Esc] to cancel.", false);
-        instructions.textSize = 0.75;
-        instructions.calculateShit(false);
+        var instructions = new AlphabetOptimized(30, 30, "Press any key to change the keybind\n     or press [Esc] to cancel.", false, 0.75);
         instructions.screenCenter();
         instructions.y -= 60;
 
         changeThingGrp.add(instructions);
         add(strumsGrp);
         add(changeThingGrp);
-        if (strumsGrp.width < FlxG.width - size)
+        if (strumsGrp.width < sizeRect.width - size)
             strumsGrp.screenCenter(X);
         else
             strumsGrp.x = size / 2;
@@ -200,15 +199,14 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
             var strum = strums[i];
 
             label.text = getKeyName(k, true);
-            label.calculateShit(false);
             label.x = strum.x + ((strum.width - label.width) / 2);
         }
     }
     public override function update(elapsed:Float) {
         super.update(elapsed);
         if (Std.isOfType(FlxG.state, PlayState)) {
-            camera.scroll.x = -(FlxG.width - 1280) / 2;
-            camera.scroll.y = -(FlxG.height - 720) / 2;
+            camera.scroll.x = -(sizeRect.width - 1280) / 2;
+            camera.scroll.y = -(sizeRect.height - 720) / 2;
         }
         changeThingGrp.visible = isChanging;
         if (!controls.ACCEPT) isAccept = false;
@@ -225,14 +223,17 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
                 }
             }
         } else {
-            if (strumsGrp.width >= FlxG.width - size) {
-                strumsGrp.x = FlxMath.lerp(strumsGrp.x, FlxMath.bound(-curSelected * size + (FlxG.width / 2) - (size * 0.5), -(strumsGrp.width - FlxG.width) - 100, 100), 0.125 * 60 * elapsed); 
+            if (strumsGrp.width >= sizeRect.width - size) {
+                strumsGrp.x = FlxMath.lerp(strumsGrp.x, FlxMath.bound(-curSelected * size + (sizeRect.width / 2) - (size * 0.5), -(strumsGrp.width - sizeRect.width) - 100, 100), 0.125 * 60 * elapsed); 
             } else {
-                strumsGrp.x = 640 - (size * 0.5 * arrowNumber);
+                strumsGrp.x = (sizeRect.width / 2) - (size * 0.5 * arrowNumber);
             }
             if (controls.BACK) {
                 for(i=>k in currentKeys) {
                     Reflect.setField(Settings.engineSettings.data, 'control_' + arrowNumber + '_$i', k);
+                    if (PlayState.current != null && PlayState.current.engineSettings != null) {
+                        Reflect.setField(PlayState.current.engineSettings, 'control_' + arrowNumber + '_$i', k);
+                    }
                 }
                 CoolUtil.playMenuSFX(1);
                 close();

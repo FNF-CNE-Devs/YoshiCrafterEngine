@@ -3,7 +3,6 @@ import openfl.utils.Assets;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.FlxColor;
 import NoteShader.ColoredNoteShader;
-import EngineSettings.Settings;
 import flixel.FlxG;
 import flixel.FlxSprite;
 
@@ -43,7 +42,7 @@ class Splash extends FlxSprite {
                 var conf = Json.parse(Assets.getText('${path}.json'));
                 config = conf;
             } catch(e) {
-                PlayState.trace('Failed to parse splash config for ${path}.\n\n$e');
+                LogsOverlay.error('Failed to parse splash config for ${path}.\n\n$e');
             }
         }
 

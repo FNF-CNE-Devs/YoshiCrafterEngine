@@ -1,6 +1,7 @@
 /*
  -- YOSHI ENGINE FIXES --
  Fixed following scrolling speed being different based on FPS.
+ Fixed Shader resizing problem (fix from hazard24)
 */
 
 package flixel;
@@ -28,6 +29,7 @@ import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSpriteUtil;
 import openfl.display.BlendMode;
 import openfl.filters.BitmapFilter;
+import openfl.filters.ShaderFilter;
 import openfl.Vector;
 
 using flixel.util.FlxColorTransformUtil;
@@ -49,6 +51,17 @@ private typedef FlxDrawItem = #if FLX_DRAW_QUADS flixel.graphics.tile.FlxDrawQua
  */
 class FlxCamera extends FlxBasic
 {
+	public function addShader(shader:FlxShader) {
+		var filter:ShaderFilter = null;
+		if (_filters == null) _filters = [];
+		_filters.push(filter = new ShaderFilter(shader));
+		return filter;
+	}
+	/**
+	 * Whenever the camera follow is active. Used for pause.
+	 */
+	public var followActive:Bool = true;
+
 	/**
 	 * While you can alter the zoom of each camera after the fact,
 	 * this variable determines what value the camera will start at when created.
@@ -1053,7 +1066,7 @@ class FlxCamera extends FlxBasic
 	override public function update(elapsed:Float):Void
 	{
 		// follow the target, if there is one
-		if (target != null)
+		if (target != null && followActive)
 		{
 			updateFollow(elapsed);
 		}
@@ -1066,6 +1079,18 @@ class FlxCamera extends FlxBasic
 
 		updateFlashSpritePosition();
 		updateShake(elapsed);
+
+		if (filtersEnabled && flashSprite.filters != null) {
+			for(f in flashSprite.filters) {
+				if (Std.isOfType(f, ShaderFilter)) {
+					var f2 = cast(f, ShaderFilter);
+					if (Std.isOfType(f2.shader, CustomShader)) {
+						var shader = cast(f2.shader, CustomShader);
+						shader.setCamSize(_scrollRect.scrollRect.x, _scrollRect.scrollRect.y, _scrollRect.scrollRect.width, _scrollRect.scrollRect.height);
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -1173,8 +1198,6 @@ class FlxCamera extends FlxBasic
 			{
                 scroll.x = FlxMath.lerp(scroll.x, _scrollTarget.x, CoolUtil.wrapFloat(followLerp * 60 * elapsed, 0, 1));
                 scroll.y = FlxMath.lerp(scroll.y, _scrollTarget.y, CoolUtil.wrapFloat(followLerp * 60 * elapsed, 0, 1));
-				// scroll.x += (_scrollTarget.x - scroll.x) * followLerp * FlxG.updateFramerate / 60;
-				// scroll.y += (_scrollTarget.y - scroll.y) * followLerp * FlxG.updateFramerate / 60;
 			}
 		}
 	}

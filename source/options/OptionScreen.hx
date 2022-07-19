@@ -1,5 +1,6 @@
 package options;
 
+import flixel.FlxSprite;
 import options.screens.OptionMain;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.tweens.FlxEase;
@@ -17,13 +18,15 @@ class OptionScreen extends MusicBeatSubstate {
     public var emptyTxt:FlxText;
     public var canSelect:Bool = true;
     public var curSelected:Int = 0;
+    public var name:String = "";
 
-    public static inline var speedMultiplier:Float = 0.75;
+    public static inline final speedMultiplier:Float = 0.75;
 
     var spawnedOptions:Array<OptionSprite> = [];
     var optionsPanel:FlxSpriteGroup = new FlxSpriteGroup();
-    public function new() {
+    public function new(name:String) {
         super();
+        this.name = name;
     }
     public override function create() {
         super.create();
@@ -41,12 +44,28 @@ class OptionScreen extends MusicBeatSubstate {
             add(emptyTxt);
         } else {
             for(o in options) {
+                if (o.additional == true && !Settings.engineSettings.data.showAdvancedOptions)
+                    continue;
                 var option = new OptionSprite(o);
                 spawnedOptions.push(option);
                 optionsPanel.add(option);
             }
         }
         add(optionsPanel);
+
+        var bg = new FlxSprite(0, -1);
+        bg.makeGraphic(1, 1, 0xFF000000);
+        bg.scale.set(FlxG.width, 51);
+        bg.alpha = 0.5;
+        bg.updateHitbox();
+        bg.scrollFactor.set();
+        add(bg);
+
+        var title = new AlphabetOptimized(15, 15, name, false, 1/3);
+        title.outline = true;
+        title.alpha = 0.75;
+        title.scrollFactor.set();
+        add(title);
     }
 
     var time:Float = 0;
@@ -57,7 +76,7 @@ class OptionScreen extends MusicBeatSubstate {
         super.update(elapsed);
         time += elapsed;
         FlxG.camera.y = FlxMath.lerp(-FlxG.height, 0, FlxEase.quartOut(FlxMath.bound(time / speedMultiplier, 0, 1)));
-        if (controls.BACK) onExit();
+        if (controls.BACK && canSelect) onExit();
         if (options.length <= 0) {
             var l = FlxEase.quintOut(FlxMath.bound(time, 0, 1));
             emptyTxt.offset.y = FlxMath.lerp(50, 0, l);

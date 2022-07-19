@@ -65,7 +65,7 @@ class ColorPicker extends MusicBeatSubstate {
     public override function new(color2:FlxColor, callback:FlxColor->Void) {
         super();
         color = color2;
-        var bg:FlxSprite = new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000);
+        var bg:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0x88000000);
         bg.scrollFactor.set();
         add(bg);
 

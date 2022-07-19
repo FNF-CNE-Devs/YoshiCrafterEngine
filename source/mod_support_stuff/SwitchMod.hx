@@ -28,6 +28,11 @@ class SwitchMod extends FlxTypedSpriteGroup<FlxSprite> {
             icon.loadGraphic(bmap);
             icon.setGraphicSize(150, 150);
             icon.updateHitbox();
+            icon.scale.set(Math.min(icon.scale.x, icon.scale.y), Math.min(icon.scale.x, icon.scale.y));
         }
+    }
+
+    public override function destroy() {
+        super.destroy();
     }
 }

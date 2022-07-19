@@ -2,7 +2,6 @@ package options.screens;
 
 import flixel.FlxG;
 import flixel.input.keyboard.FlxKey;
-import EngineSettings.Settings;
 import options.*;
 
 class KeybindsMenu extends OptionScreen {
@@ -11,7 +10,7 @@ class KeybindsMenu extends OptionScreen {
     var map = FlxKey.toStringMap;
     
     public function new() {
-        super();
+        super("Options > Keybinds");
     }
 
     function getKeyLabel(key) {
@@ -35,6 +34,13 @@ class KeybindsMenu extends OptionScreen {
                 }
             });
         }
+        options.push({
+                name: "Reset Button",
+                desc: "If enabled, pressing [R] will blue ball yourself.",
+                value: "",
+                onCreate: function(e) {e.check(Settings.engineSettings.data.resetButton);},
+                onSelect: function(e) {e.check(Settings.engineSettings.data.resetButton = !Settings.engineSettings.data.resetButton);}
+            });
         super.create();
     }
 }

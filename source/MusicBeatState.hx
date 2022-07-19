@@ -1,5 +1,7 @@
 package;
 
+import charter.YoshiCrafterCharter;
+import flixel.graphics.FlxGraphic;
 import flixel.addons.transition.Transition;
 import flixel.FlxSubState;
 import dev_toolbox.ToolboxMessage;
@@ -11,56 +13,69 @@ import lime.utils.Assets;
 import lime.app.Application;
 import flixel.system.scaleModes.RatioScaleMode;
 import flixel.addons.transition.TransitionData;
-import EngineSettings.Settings;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
 import flixel.math.FlxRect;
 import openfl.utils.Assets;
+import lime.utils.Assets as LimeAssets;
 
 typedef FlxSpriteTypedGroup = FlxTypedGroup<FlxSprite>;
 typedef FlxSpriteArray = Array<FlxSprite>;
 
 
+@:allow(mod_support_stuff.SwitchModSubstate)
 class MusicBeatState extends FlxUIState
 {
+	public static var medalOverlay:Array<MedalsOverlay> = [];
 	private var reloadModsState:Bool = false;
 
+	private static var doCachingShitNextTime:Bool = false;
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
 
 	private var curStep:Int = 0;
+	private var curDecStep:Float = 0;
 	private var curBeat:Int = 0;
+	private var curDecBeat:Float = 0;
 	private var controls(get, never):Controls;
 
 	public static var defaultIcon:Image = null;
 
 	public var lastElapsed:Float = 0;
+
 	public override function onFocus() {
 		if (reloadModsState) {
 			super.onFocus();
 			if (Settings.engineSettings.data.alwaysCheckForMods) if (ModSupport.reloadModsConfig(false, false)) FlxG.resetState();	
 		}
 	}
+
+	public override function destroy() {
+		super.destroy();
+	}
+
+	var oldPersistStuff:Map<FlxGraphic, Bool> = [];
 	public function new(?transIn:TransitionData, ?transOut:TransitionData) {
-		
-		if (CoolUtil.isDevMode()) {
-			try {
-				Paths.clearCache();
-			} catch(e) {
+		ModSupport.updateTitleBar();
+		ModSupport.refreshDiscordRpc();
+		ModSupport.updateCursor();
+		ModSupport.reloadModsConfig(false, true, false, CoolUtil.isDevMode());
+		Settings.engineSettings.flush();
 
+		LimeAssets.loggedRequests = [];
+
+		if (doCachingShitNextTime) {
+			LimeAssets.logRequests = true;
+			@:privateAccess
+			for(e in FlxG.bitmap._cache) {
+				oldPersistStuff[e] = e.persist;
+				e.persist = true;
 			}
-			ModSupport.reloadModsConfig(true);
-			Settings.engineSettings.flush();
 		} else {
-			ModSupport.reloadModsConfig(false);
+			doCachingShitNextTime = true;
 		}
-		if (FlxG.save.data != null)
-			FlxG.save.flush();
-		if (Settings.engineSettings != null)
-			Settings.engineSettings.flush();
-
 		#if !android
 			@:privateAccess
 			FlxG.width = 1280;
@@ -68,32 +83,73 @@ class MusicBeatState extends FlxUIState
 			FlxG.height = 720;
 		#end
 		
-		FlxG.scaleMode = new RatioScaleMode();
 		super(transIn, transOut);
+	}
 
-		//if (defaultIcon == null) defaultIcon = Assets.getBitmapData(Paths.file('icon.png', IMAGE, 'mods/));
-		if (defaultIcon == null) defaultIcon = lime.utils.Assets.getImage(Paths.image("icon", "preload"));
-		lime.app.Application.current.window.title = "Friday Night Funkin' - YoshiCrafter Engine";
-		if (PlayState.iconChanged) {
-			lime.app.Application.current.window.setIcon(defaultIcon);
-			PlayState.iconChanged = false;
+	override function createPost() {
+		super.createPost();
+		if (LimeAssets.logRequests) {
+			
+			LimeAssets.logRequests = false;
+
+			for(k=>e in oldPersistStuff) {
+				k.persist = e;
+			}
+			
+			FlxG.bitmap.clearCache();
+
+			try {
+				Assets.cache.clearExceptArray(LimeAssets.loggedRequests);
+			} catch(e) {
+				trace(e);
+			}
+			
+
+			oldPersistStuff = [];
+
+			LimeAssets.loggedRequests = [];
 		}
-		
-    	FlxG.game.stage.quality = Settings.engineSettings.data.stageQuality;
 	}
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
+	public function doResizeShit() {return true;}
+	
 	override function create()
 	{
-		if (transIn != null)
-			trace('reg ' + transIn.region);
+		if (!Std.isOfType(FlxG.scaleMode, WideScreenScale)) {
+			FlxG.scaleMode = new WideScreenScale();
+		}
+		var scl:WideScreenScale = cast FlxG.scaleMode;
+        scl.isWidescreen = false;
+
+		var width = 1280;
+		var height = 720;
+		var conf = ModSupport.modConfig[Settings.engineSettings.data.selectedMod];
+		if (conf != null) {
+			if (conf.gameWidth != null && conf.gameWidth > 0) width = conf.gameWidth;
+			if (conf.gameHeight != null && conf.gameHeight > 0) height = conf.gameHeight;
+		}
+        scl.width = width;
+		scl.height = height;
 
 		super.create();
-		if (EngineSettings.Settings.engineSettings != null) {
-			FlxG.drawFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
-			FlxG.updateFramerate = EngineSettings.Settings.engineSettings.data.fpsCap;
+		if (Settings.engineSettings != null) {
+			FlxG.drawFramerate = Settings.engineSettings.data.fpsCap;
+			FlxG.updateFramerate = Settings.engineSettings.data.fpsCap;
+		}
+
+	}
+	
+	override function draw() {
+		super.draw();
+		if (!Std.isOfType(subState, MusicBeatSubstate)) {
+			for(k=>m in MusicBeatState.medalOverlay) {
+				m.y = 110 * k;
+				m.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+				m.draw();
+			}
 		}
 	}
 
@@ -108,63 +164,70 @@ class MusicBeatState extends FlxUIState
 		
 		if (oldStep < curStep && curStep > 0)
 			stepHit();
-		// if (oldStep < curStep)
-
+		
 		super.update(elapsed);
-
-		/*
-		if (Settings.engineSettings != null)
-			if (!Settings.engineSettings.data.antialiasing)
-				for(e in members)
-					if (Std.isOfType(e, FlxSprite))
-						cast(e, FlxSprite).antialiasing = false;
-		*/
-		if (Settings.engineSettings != null) {
-			if (!Settings.engineSettings.data.antialiasing) {
-				for(e in members) {
-					if (Std.isOfType(e, FlxSprite)) {
-						cast(e, FlxSprite).antialiasing = false;
-					} else if (Std.isOfType(e, FlxSpriteGroup)) {
-						var grp:FlxSpriteGroup = cast e;
-						for (m in grp.members) {
-							m.antialiasing = false;
-						}
-					} else if (Std.isOfType(e, FlxSpriteTypedGroup)) {
-						var grp:FlxTypedGroup<FlxSprite> = cast e;
-						for (m in grp.members) {
-							m.antialiasing = false;
-						}
-					}
-				}
+		
+		if (MusicBeatState.medalOverlay != null) {
+			for(k=>m in MusicBeatState.medalOverlay) {
+				m.y = 110 * k;
+				m.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+				m.update(elapsed);
 			}
 		}
-			
-				
-					
 	}
 
 	private function updateBeat():Void
 	{
-		curBeat = Std.int(Math.floor(curStep / 4));
+		curDecBeat = curDecStep / 4;
+		curBeat = Std.int(curDecBeat);
 	}
 
 	private function updateCurStep():Void
 	{
-		var lastChange = getLastChange();
-
-		curStep = Std.int(lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet));
+		curStep = Std.int(curDecStep = getStepAtPos(Conductor.songPosition));
 	}
 
-	private function getLastChange() {
+	function getStepAtPos(t:Float) {
+		var lastChange = getLastChange(t);
+		var bpm = Conductor.bpm;
+		if (Std.isOfType(FlxG.state, PlayState) && PlayState.SONG != null) {
+			bpm = PlayState.SONG.bpm;
+		} else if (Std.isOfType(FlxG.state, YoshiCrafterCharter) && YoshiCrafterCharter._song != null) {
+			bpm = YoshiCrafterCharter._song.bpm;
+		}
+
+		return lastChange.stepTime + ((t - lastChange.songTime) / (lastChange.bpm == 0 ? (60 / bpm * 250) : ((60 / lastChange.bpm) * 250)));
+	}
+
+	private function getLastChange(t:Float) {
 		var lastChange:BPMChangeEvent = {
 			stepTime: 0,
 			songTime: 0,
 			bpm: 0
 		}
-		for (i in 0...Conductor.bpmChangeMap.length)
-		{
-			if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime)
-				lastChange = Conductor.bpmChangeMap[i];
+		if (Conductor.bpmChangeMap != null) {
+			for (i in 0...Conductor.bpmChangeMap.length)
+			{
+				if (t >= Conductor.bpmChangeMap[i].songTime)
+					lastChange = Conductor.bpmChangeMap[i];
+			}
+		}
+		return lastChange;
+	}
+
+	private function getLastChangeForStep(step:Float) {
+		var lastChange:BPMChangeEvent = {
+			stepTime: 0,
+			songTime: 0,
+			bpm: 0
+		}
+		
+		if (Conductor.bpmChangeMap != null) {
+			for (i in 0...Conductor.bpmChangeMap.length)
+			{
+				if (step >= Conductor.bpmChangeMap[i].stepTime)
+					lastChange = Conductor.bpmChangeMap[i];
+			}
 		}
 		return lastChange;
 	}

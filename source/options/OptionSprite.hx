@@ -23,20 +23,23 @@ class OptionSprite extends FlxSpriteGroup {
         name = option.name;
         desc = option.desc;
         value = option.value;
-        _nameAlphabet = new AlphabetOptimized(150, 0, option.name, true);
-        _nameAlphabet.textSize = 0.75;
+        _nameAlphabet = new AlphabetOptimized(150, 0, option.name, true, 0.75);
         add(_nameAlphabet);
-        _descAlphabet = new AlphabetOptimized(155, 60, option.desc, false);
-        _descAlphabet.textSize = 1 / 3;
+        _descAlphabet = new AlphabetOptimized(155, 60, option.desc, false, 1/3);
         _descAlphabet.maxWidth = FlxG.width - 310;
         add(_descAlphabet);
-        _icon = new FlxSprite(40, 0).loadGraphic(option.img);
+        _icon = new FlxSprite(40, 0);
+        if (option.img != null)
+            _icon.loadGraphic(option.img);
+        else
+            _icon.makeGraphic(100, 100, 0);
+        
         _icon.setGraphicSize(100, 100);
         _icon.updateHitbox();
         _icon.antialiasing = true;
         add(_icon);
-        _valueAlphabet = new AlphabetOptimized(100, 20, option.value, false);
-        _valueAlphabet.textSize = 0.6;
+        _valueAlphabet = new AlphabetOptimized(100, 20, option.value, false, 0.6);
+        _valueAlphabet.outline = true;
         add(_valueAlphabet);
         onCreate = option.onCreate;
         onSelect = option.onSelect;

@@ -1,3 +1,7 @@
+import discord_rpc.DiscordRpc;
+import Discord.DiscordClient;
+import openfl.display.BlendMode;
+import flixel.tile.FlxTilemap;
 import animateatlas.AtlasFrameMaker;
 import Script.HScript;
 import haxe.EnumTools;
@@ -7,9 +11,6 @@ import openfl.utils.AssetLibrary;
 import openfl.utils.AssetManifest;
 import haxe.io.Path;
 import haxe.io.Bytes;
-// import zip.Zip;
-// import zip.ZipEntry;
-// import zip.ZipReader;
 import Shaders.ColorShader;
 #if desktop
 import cpp.Lib;
@@ -38,8 +39,8 @@ import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 import sys.io.File;
 import lime.utils.Assets;
+import openfl.utils.Assets as DeezNutsAssets;
 import flixel.system.FlxAssets;
-import EngineSettings.Settings;
 import flixel.FlxSprite;
 import openfl.display.BitmapData;
 import flixel.FlxG;
@@ -61,36 +62,8 @@ typedef CacheExpr = {
 	var time:Null<Float>;
 }
 
-class ExceptionState extends FlxState {
-    var text:String;
-    var resumeTo = 0;
-    public function new<T>(text:String, resumeTo:Int) {
-        super();
-        this.text = text;
-        this.resumeTo = resumeTo;
-    }
-    public override function create() {
-        super.create();
-        var exceptionText = new FlxText(0,0,FlxG.width,text +"\r\n\r\nPress enter to retry.",8);
-        exceptionText.setFormat(Paths.font("vcr.ttf"), Std.int(16), FlxColor.WHITE, LEFT);
-        add(exceptionText);
-    }
-
-    public override function update(elapsed:Float) {
-        super.update(elapsed);
-        if (FlxControls.pressed.ENTER) {
-            switch(resumeTo) {
-                case 0:
-                    FlxG.switchState(new PlayState());
-            }
-        }
-    }
-}
-
-// typedef ZipProgress = {
-//     var progress:Float;
-//     var zipReader:ZipReader;
-// }
+@:allow(CoolUtil)
+@:allow(Main)
 class ModSupport {
     public static var song_config_parser:hscript.Interp;
     public static var song_modchart_path:String = "";
@@ -103,11 +76,27 @@ class ModSupport {
 
     public static var scripts:Array<ModScript> = [];
 
-    public static var modConfig:Map<String, ModConfig> = null;
-
+    public static var modConfig:Map<String, ModConfig> = [];
     public static var modSaves:Map<String, FlxSave> = [];
+    public static var modMedals:Map<String, MedalsJSON> = [];
+
+    private static var forceDevMode:Bool = false;
+
+
     public static var mFolder = Paths.modsPath;
 
+    public static function refreshDiscordRpc() {
+        if (!DiscordClient.init) {
+            trace("Discord not init yet");
+            return;
+        }
+        var discordRpc = "915896776869953588";
+        var mod:ModConfig = null;
+        if (Settings.engineSettings != null && ((mod = modConfig[Settings.engineSettings.data.selectedMod]) != null) && mod.discordRpc != null) {
+            discordRpc = mod.discordRpc;
+        }
+        DiscordClient.switchRPC(discordRpc);
+    }
     public static function getMods():Array<String> {
         var modFolder = Paths.modsPath;
         var a = FileSystem.readDirectory(modFolder);
@@ -121,11 +110,15 @@ class ModSupport {
     public static function getAssetFiles(assets:Array<Dynamic>, rootPath:String, path:String, libraryName:String, prefix:String = "", addRoot:Bool = false) {
         for(f in FileSystem.readDirectory('$rootPath$path')) {
             if (FileSystem.isDirectory('$rootPath$path$f')) {
-                getAssetFiles(assets, rootPath, '$path$f/', libraryName);
+                // fuck you git
+                if (f.toLowerCase() != ".git") {
+                    getAssetFiles(assets, rootPath, '$path$f/', libraryName);
+                }
             } else {
                 var type = "BINARY";
+                var useExt:Bool = true;
                 switch(Path.extension(f).toLowerCase()) {
-                    case "txt" | "xml" | "json" | "hx" | "hscript" | "hsc" | "lua":
+                    case "txt" | "xml" | "json" | "hx" | "hscript" | "hsc" | "lua" | "frag" | "vert":
                         type = "TEXT";
                     case "png":
                         type = "IMAGE";
@@ -133,33 +126,77 @@ class ModSupport {
                         type = path.toLowerCase().startsWith("music") ? "MUSIC" : "SOUND";
                     case "ttf":
                         type = "FONT";
+                        useExt = false;
 
                 }
+                var stat = FileSystem.stat('$rootPath$path$f');
                 assets.push({
                     type: type,
-                    id: ('assets/$libraryName/$prefix$path$f').toLowerCase(), // for case sensitive shit & correct linux support
+                    id: ('assets/$libraryName/$prefix$path${useExt ? f : Path.withoutExtension(f)}').toLowerCase(), // for case sensitive shit & correct linux support
                     path: (addRoot ? rootPath : '') + '$path$f',
-                    size: FileSystem.stat('$rootPath$path$f').size
+                    size: stat.size,
+                    edited: stat.mtime.getTime() / 1000
                 });
             }
         }
     }
-    public static function reloadModsConfig(reloadAll:Bool = false, reloadSkins:Bool = true):Bool {
-        switch(Settings.engineSettings.data.optimizationType) {
-            default:
-                Assets.cache.clear('');
-                openfl.utils.Assets.cache.clear('');
-            case 1:
-                Assets.cache.clear('mods');
-                openfl.utils.Assets.cache.clear('mods');
-            case 2:
-                Assets.cache.clear('mods/${Settings.engineSettings.data.selectedMod}');
-                openfl.utils.Assets.cache.clear('mods/${Settings.engineSettings.data.selectedMod}');
-            case 3:
-                // no clearing
 
+    public static var lastTitlebarMod:String = "Friday Night Funkin'";
+    public static function updateTitleBar() {
+        if (Settings.engineSettings == null) return;
+        var mod = Settings.engineSettings.data.selectedMod;
+
+        if (lastTitlebarMod == mod) return;
+        var title = getModName(mod);
+
+        var modConf = modConfig[mod];
+		if (modConf != null && modConf.titleBarName != "" && modConf.titleBarName != null)
+		{
+			title = modConf.titleBarName;
+		}
+		else
+		{
+			var fullTitleThingies = ["friday night funkin", "-", "fnf"];
+			var fullTitle = false;
+			for (t in fullTitleThingies)
+			{
+				if (mod.toLowerCase().contains(t))
+				{
+					fullTitle = true;
+					break;
+				}
+			}
+			if (!fullTitle)
+				title = 'Friday Night Funkin\' - $title';
+		}
+
+		lime.app.Application.current.window.title = title;
+        var path = Paths.getPath("icon.png", IMAGE);
+        if (!Assets.exists(path)) {
+            path = Paths.image("icon");
         }
-        modConfig = [];
+        lime.app.Application.current.window.setIcon(lime.utils.Assets.getImage(path));
+
+        lastTitlebarMod = mod;
+    }
+    public static function reloadModsConfig(reloadAll:Bool = false, reloadSkins:Bool = true, clearCache:Bool = false, reloadCurrent:Bool = false):Bool {
+        if (clearCache) {
+            Assets.cache.clear();
+            openfl.utils.Assets.cache.clear();
+            // long ass reset but you cant stop me haha
+            PlayState.SONG = null;
+            PlayState._SONG = null;
+            PlayState.scripts = null;
+            PlayState.cutscene = null;
+            PlayState.end_cutscene = null;
+            PlayState.prevCamFollow = null;
+            PlayState.current = null;
+            PlayState.actualModWeek = null;
+            PlayState.startTime = 0;
+            PlayState.blueballAmount = 0;
+            PlayState.fromCharter = false;
+            PlayState.songMod = "Friday Night Funkin'";
+        }
 
         if (reloadSkins) {
             // skins shit
@@ -169,7 +206,6 @@ class ModSupport {
             assets.libraryType = null;
             assets.version = 2;
             assets.libraryArgs = [];
-            // assets.rootPath = '${Paths.getSkinsPath()}';
             assets.assets = [];
             FileSystem.createDirectory('${Paths.getSkinsPath()}/bf/');
             FileSystem.createDirectory('${Paths.getSkinsPath()}/gf/');
@@ -196,8 +232,6 @@ class ModSupport {
             } catch(e) {
                 trace(e.details());
             }
-            // trace(assets.assets);
-            // getAssetFiles(assets.assets, '${Paths.modsPath}/$mod/', '', libName);
 
             if (openfl.utils.Assets.hasLibrary("skins"))
                 openfl.utils.Assets.unloadLibrary("skins");
@@ -206,23 +240,56 @@ class ModSupport {
         var mods = getMods();
         var newMod = false;
         for(mod in mods)
-            if (reloadAll || modConfig[mod] == null)
-                newMod = newMod || loadMod(mod);
+            if (reloadAll || modConfig[mod] == null || (reloadCurrent && mod == Settings.engineSettings.data.selectedMod))
+                newMod = loadMod(mod) || newMod;
         Settings.engineSettings.data.lastInstalledMods = mods;
         return newMod;
     }
 
+    public static var assetEditTimes:Map<String, Float> = [];
+
+    public static var lastCursorMod:String = null;
+    public static function updateCursor() {
+        if (Settings.engineSettings == null) return;
+        var mod = Settings.engineSettings.data.selectedMod;
+        var path = null;
+        if (lastCursorMod != (lastCursorMod = mod)) {
+            if (Assets.exists(path = Paths.image('cursor', 'mods/$mod')))
+                FlxG.mouse.load(DeezNutsAssets.getBitmapData(path));
+            else
+                FlxG.mouse.unload();
+        }
+        
+    }
+    public static function getEditedTime(asset:String) {
+        return assetEditTimes.exists(asset) ? assetEditTimes.get(asset) : 0;
+    }
+
+    public static function checkForOutdatedAssets(assets:AssetManifest) {
+        for(e in assets.assets) {
+            if (e == null) continue;
+            if (Reflect.hasField(e, "id") && Reflect.hasField(e, "edited")) {
+                var id = '${assets.name}:${e.id}';
+                if (getEditedTime(id) < e.edited) {
+                    Assets.cache.clear(id);
+                    @:privateAccess
+                    FlxG.bitmap.removeKey(id);
+                }
+                assetEditTimes[id] = e.edited;
+            }
+        }
+    }
     public static function loadMod(mod:String) {
         try {
             var s = new FlxSave();
             s.bind(mod.replace(" ", "_").replace("'", "_"));
             s.data.mod = mod;
-            // s.flush();
             modSaves[mod] = s;
         } catch(e) {
             trace(e.details());
         }
 
+        
         // imma do assets lol
         var libName = 'mods/$mod'.toLowerCase();
         var assets:AssetManifest = new AssetManifest();
@@ -233,6 +300,7 @@ class ModSupport {
         assets.rootPath = '${Paths.modsPath}/$mod/';
         assets.assets = [];
         getAssetFiles(assets.assets, '${Paths.modsPath}/$mod/', '', libName);
+        checkForOutdatedAssets(assets);
 
         if (openfl.utils.Assets.hasLibrary(libName))
             openfl.utils.Assets.unloadLibrary(libName);
@@ -246,7 +314,7 @@ class ModSupport {
             try {
                 json = Json.parse(Assets.getText(path));
             } catch(e) {
-                for (e in ('Failed to parse mod config for $mod.').split('\n')) PlayState.log.push(e);
+                LogsOverlay.error(e);
             }
         }
             
@@ -271,6 +339,17 @@ class ModSupport {
         };
         modConfig[mod] = json;
 
+        if (Assets.exists(Paths.file('medals.json', TEXT, 'mods/$mod'))) {
+            try {
+                modMedals[mod] = Json.parse(Assets.getText(Paths.file('medals.json', TEXT, 'mods/$mod')));
+            } catch(e) {
+                FlxG.log.error(e);
+                modMedals[mod] = {medals: []};
+            }
+        } else {
+            modMedals[mod] = {medals: []};
+            File.saveContent('${Paths.modsPath}/$mod/medals.json', Json.stringify(modMedals[mod]));
+        }
         if (!Settings.engineSettings.data.lastInstalledMods.contains(mod)) {
             trace("NEW MOD INSTALLED: " + mod);
             if (Settings.engineSettings.data.autoSwitchToLastInstalledMod) {
@@ -292,46 +371,16 @@ class ModSupport {
 		try {
 			var cachePath = path.toLowerCase();
 			var fileData = FileSystem.stat(path);
-			var cachePath = Paths.getCachePath(path);
-			
-			// if (Reflect.hasField(Settings.hscriptCache.data, cachePath)) {
-			// 	var thing = Reflect.field(Settings.hscriptCache.data, cachePath);
-			// 	if (Std.isOfType(thing, Dynamic)) {
-			// 		var cache:CacheExpr = thing;
-			// 		if (cache.time != null && cache.code != null) {
-			// 			if (cache.time >= fileData.mtime.getTime()) {
-			// 				ast = cache.code;
-			// 				trace("Using cache.");
-			// 				return ast;
-			// 			} else {
-							// trace("Cache is outdated!");
-						// }
-					// } else {
-						// trace("Cache is invalid!");
-					// }
-				// } else {
-					// trace("Cache is not of the right type!");
-				// }
-			// } else {
-				// trace("Cache not found!");
-			// }
 			#if sys
 			ast = parser.parseString(sys.io.File.getContent(path));
 			#else
 			trace("no sys support");
 			#end
-			// Reflect.setField(Settings.hscriptCache.data, cachePath, {
-			// 	time: fileData.mtime.getTime(),
-			// 	code: ast
-			// });
 		} catch(ex) {
 			trace(ex);
             var exThingy = Std.string(ex);
             var line = parser.line;
             if (!openfl.Lib.application.window.fullscreen) openfl.Lib.application.window.alert('Failed to parse the file located at "$path".\r\n$exThingy at $line');
-            // if (critical) {
-            //     FlxG.switchState(new ExceptionState('Failed to parse the file located at "$path".\r\n$exThingy at $line', 0));
-            // }
             trace('Failed to parse the file located at "$path".\r\n$exThingy at $line');
 		}
         return ast;
@@ -347,7 +396,7 @@ class ModSupport {
         trace('$fileName:$methodName:$lineNumber: $text');
 
         if (!Settings.engineSettings.data.developerMode) return;
-        for (e in ('$fileName:$methodName:$lineNumber: $text').split("\n")) PlayState.log.push(e.trim());
+        for (e in ('$fileName:$methodName:$lineNumber: $text').split("\n")) LogsOverlay.trace(e.trim());
     }
 
     public static function saveModData(mod:String):Bool {
@@ -376,6 +425,7 @@ class ModSupport {
                 Reflect.setField(superVar, k, v);
             }
         }
+        script.mod = mod;
 		script.setVariable("super", superVar);
 		script.setVariable("mod", mod);
 		script.setVariable("PlayState", PlayState.current);
@@ -385,7 +435,7 @@ class ModSupport {
             var cl = Type.resolveClass(realClassName);
             var en = Type.resolveEnum(realClassName);
             if (cl == null && en == null) {
-                PlayState.trace('Class / Enum at $realClassName does not exist.');
+                LogsOverlay.error('Class / Enum at $realClassName does not exist.');
             } else {
                 if (en != null) {
                     // ENUM!!!!
@@ -400,16 +450,6 @@ class ModSupport {
                 }
             }
         });
-        // script.setVariable("include", function(path:String) {
-        //     var splittedPath = path.split(":");
-        //     if (splittedPath.length < 2) splittedPath.insert(0, mod);
-        //     var joinedPath = splittedPath.join("/");
-        //     var mFolder = Paths.modsPath;
-        //     var expr = getExpressionFromPath('$mFolder/$joinedPath.hx');
-        //     if (expr != null) {
-        //         hscript.execute(expr);
-        //     }
-        // });
 
         if (PlayState.current != null) {
             script.setVariable("EngineSettings", PlayState.current.engineSettings);
@@ -436,7 +476,8 @@ class ModSupport {
 		script.setVariable("FlxSprite", FlxSprite);
 		script.setVariable("BitmapData", BitmapData);
 		script.setVariable("FlxG", FlxG);
-		script.setVariable("Paths", new Paths_Mod(mod, settings));
+		script.setVariable("Paths", Paths);
+		script.setVariable("Medals", new ModMedals(mod));
 		script.setVariable("Paths_", Paths);
 		script.setVariable("Std", Std);
 		script.setVariable("Math", Math);
@@ -475,9 +516,31 @@ class ModSupport {
 		script.setVariable("CustomShader", CustomShader_Helper);
 		script.setVariable("FlxControls", FlxControls);
 		script.setVariable("save", modSaves[mod]);
+        script.setVariable("flashingLights", Settings.engineSettings.data.flashingLights == true);
+
 		script.setVariable("ModState", ModState);
+		script.setVariable("ModSubState", ModSubState);
+		script.setVariable("ModSprite", ModSprite);
+        
 		script.setVariable("AtlasFrameMaker", AtlasFrameMaker);
-		// script.setVariable("FlxKey", FlxKey);
+		script.setVariable("FlxTilemap", FlxTilemap);
+		script.setVariable("BlendMode", {
+            ADD: BlendMode.ADD,
+            ALPHA: BlendMode.ALPHA,
+            DARKEN: BlendMode.DARKEN,
+            DIFFERENCE: BlendMode.DIFFERENCE,
+            ERASE: BlendMode.ERASE,
+            HARDLIGHT: BlendMode.HARDLIGHT,
+            INVERT: BlendMode.INVERT,
+            LAYER: BlendMode.LAYER,
+            LIGHTEN: BlendMode.LIGHTEN,
+            MULTIPLY: BlendMode.MULTIPLY,
+            NORMAL: BlendMode.NORMAL,
+            OVERLAY: BlendMode.OVERLAY,
+            SCREEN: BlendMode.SCREEN,
+            SHADER: BlendMode.SHADER,
+            SUBTRACT: BlendMode.SUBTRACT
+        });
 
         script.mod = mod;
     }
@@ -490,35 +553,6 @@ class ModSupport {
         scripts = songConf.scripts;
         song_cutscene = songConf.cutscene;
         song_end_cutscene = songConf.end_cutscene;
-        // var parser = new hscript.Parser();
-        // parser.allowTypes = true;
-        // var ast = null;
-        #if sys
-        // ast = parser.parseString(sys.io.File.getContent(songCodePath));
-        #end
-        
-        // scripts = [];
-        // scripts.push(getModScriptFromValue('stages/$stage'));
-        // for (s in sc) {
-        //     scripts.push(getModScriptFromValue(s));
-        // }
-
-        // OUTDATED CODE, HOW TF DID I WROTE THIS IN RELEASE
-        // if (stage == "default_stage")
-        //     song_stage_path = Paths.modsPath + '/Friday Night Funkin\'/stages/$stage'; // fallback
-        // else
-        //     song_stage_path = Paths.modsPath + '/$currentMod/stages/$stage';
-
-        // if (modchart != "")
-        //     song_modchart_path = Paths.modsPath + '/$currentMod/modcharts/$modchart';
-        // else
-        //     song_modchart_path = "";
-
-        
-
-        // trace(scripts);
-        // trace(song_stage_path);
-        // trace(song_modchart_path);
     }
 
     
@@ -545,41 +579,4 @@ class ModSupport {
         }
         return songs;
     }
-
-    /*
-    public static function installModFromZip(zipPath:String, callback:Void->Void):ZipProgress {
-        var fileContent = File.getBytes(zipPath);
-        var zip = new ZipReader(fileContent);
-
-        var thingy:ZipProgress = {
-            progress: 0,
-            zipReader: zip
-        };
-        #if (target.threaded)
-        sys.thread.Thread.create(function() {
-        #end
-            var entries:Map<String, ZipEntry> = [];
-            while(true) {
-                var entry = zip.getNextEntry();
-                if (entry == null) break;
-                entries[entry.fileName] = entry;
-                thingy.progress = zip.progress() / 2;
-            }
-            var p = 0;
-            var keys = entries.keys();
-            var am = [while (keys.hasNext()) keys.next()];
-            for(k=>e in entries) {
-                // wtf
-                var bytes:Bytes = cast(Zip.getBytes(entries.get(k)), Bytes);
-                File.saveBytes('${Paths.modsPath}/$k', bytes);
-                p++;
-                thingy.progress = 0.5 + (p / am.length / 2);
-            }
-            callback();
-        #if (target.threaded)
-        });
-        #end
-        return thingy;
-    }
-    */
 }

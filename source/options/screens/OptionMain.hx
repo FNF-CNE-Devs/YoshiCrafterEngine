@@ -1,13 +1,17 @@
 package options.screens;
 
+import flixel.input.keyboard.FlxKey;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxG;
 
 class OptionMain extends OptionScreen {
     public static var fromFreeplay:Bool = false;
+    public var skipKeybinds:Bool = false;
+    var kId = 0;
+    var keys:Array<FlxKey> = [D, E, B, U, G, SEVEN]; // lol
 
     public function new(x:Float, y:Float) {
-        super();
+        super("Options");
     }
 
     public override function create() {
@@ -21,95 +25,84 @@ class OptionMain extends OptionScreen {
             }
             label += Std.string(i);
         }
+        skipKeybinds = keys.length <= 1;
         options = [
             {
                 name: "Keybinds",
                 desc: 'Edit Keybinds for $label keys charts.',
                 value: "",
-                onUpdate: null
+                onSelect: function(spr) {
+                    doFlickerAnim(curSelected, function() {FlxG.switchState(new KeybindsMenu());});
+                }
             },
             {
                 name: "Gameplay",
-                desc: "Customize Gameplay Settings such as Downscroll, Middlescroll and more.",
+                desc: "Customize Gameplay Settings such as Downscroll, Middlescroll and more, and access accessibility settings such as turning off flashing lights.",
                 value: "",
-                img: null,
-                onUpdate: null
+                onSelect: function(spr) {
+                    doFlickerAnim(curSelected, function() {FlxG.switchState(new GameplayMenu());});
+                }
             },
             {
-                name: "GUI Settings",
-                desc: "Customize GUI Settings such as Gui Size, or Score Bar appearance.",
-                value: "",
-                img: null,
-                onUpdate: null
-            },
-            {
-                name: "Notes",
+                name: "Customisation",
                 desc: "Customize Note settings, such as note colors and splashes.",
                 value: "",
-                img: null,
-                onUpdate: null
-            },
-            {
-                name: "Skins",
-                desc: "Select your BF or GF skin here.",
-                value: "",
-                img: null,
-                onUpdate: null
+                onSelect: function(spr) {
+                    doFlickerAnim(curSelected, function() {FlxG.switchState(new NotesMenu());});
+                }
             },
             {
                 name: "Optimization",
                 desc: "Change optimization settings here.",
                 value: "",
-                img: null,
-                onUpdate: null
+                onSelect: function(spr) {
+                    doFlickerAnim(curSelected, function() {FlxG.switchState(new OptiMenu());});
+                }
             },
             {
                 name: "Miscellaneous",
                 desc: "Other settings that does not fit any of the categories above.",
                 value: "",
-                img: null,
-                onUpdate: null
+                onSelect: function(spr) {
+                    doFlickerAnim(curSelected, function() {FlxG.switchState(new MiscMenu());});
+                }
             },
             {
                 name: "Developer Settings",
                 desc: "Enable Developer Mode to access the Toolbox.",
                 value: "",
-                img: null,
-                onUpdate: null
+                onSelect: function(spr) {
+                    doFlickerAnim(curSelected, function() {FlxG.switchState(new DevMenu());});
+                }
             }
         ];
         super.create();
     }
 
+    public override function update(elapsed:Float) {
+        super.update(elapsed);
+        // cheat code lmao
+        if (FlxG.keys.justPressed.ANY) {
+            var k = keys[kId];
+            if (FlxG.keys.anyJustPressed([k])) {
+                kId++;
+                if (kId >= keys.length) {
+                    FlxG.switchState(new DebugMenu());
+                }
+            }
+        }
+    }
+
     public override function onExit() {
+        if (fromFreeplay && FlxG.sound.music != null)
+            FlxG.sound.music.fadeOut(OptionScreen.speedMultiplier);
+        
         doFlickerAnim(-2, function() {
-            if (fromFreeplay)
+            if (fromFreeplay) {
                 FlxG.switchState(new PlayState());
+            }
             else
                 FlxG.switchState(new MainMenuState());
         });
-    }
-
-    public override function onSelect(id:Int) {
-        switch(id) {
-            case 0:
-                doFlickerAnim(id, function() {FlxG.switchState(new KeybindsMenu());});
-            case 1:
-                doFlickerAnim(id, function() {FlxG.switchState(new GameplayMenu());});
-            case 2:
-                doFlickerAnim(id, function() {FlxG.switchState(new GUIMenu());});
-            case 3:
-                doFlickerAnim(id, function() {FlxG.switchState(new NotesMenu());});
-            case 4:
-                doFlickerAnim(id, function() {FlxG.switchState(new SkinsMenu());});
-            case 5:
-                doFlickerAnim(id, function() {FlxG.switchState(new OptiMenu());});
-            case 6:
-                doFlickerAnim(id, function() {FlxG.switchState(new MiscMenu());});
-            case 7:
-                doFlickerAnim(id, function() {FlxG.switchState(new DevMenu());});
-            default:
-                trace(id);
-        }
     }
 }

@@ -30,16 +30,11 @@ class FreeplayGraph {
                 newColor = FlxColor.WHITE;
 
             var pos = new FlxPoint(center.x + (Math.sin(current / total * maxAngle) * ((width + 2) / 2)), center.y + (Math.cos(current / total * maxAngle) * ((height + 2) / 2)));
-            // if (Math.abs(pos.x - center.x ) / (width / 2) < 2) continue;
             bData.drawLine(center, pos, newColor, 2);
             
             var pos2 = new FlxPoint(
                 center.x + 2,
                 center.y - (height / 4));
-            // var pos2 = new FlxPoint(
-            //     center.x + ((Math.sin(current / total * maxAngle) * ((width) / 2)) * 0.9),
-            //     center.y + (Math.cos(current / total * maxAngle) * ((height) / 2) * 0.9)
-            // );
             if (pos2.x > center.x && (pos2.x < pos.x || pos.x <= center.x || pos.y > center.y)) bData.floodFill(Std.int(pos2.x), Std.int(pos2.y), g.color);
             colorToReplace = g.color;
 
@@ -59,13 +54,7 @@ class FreeplayGraph {
                 }
             }
         }
-
-
-        // current = 0;
-        // for (g in data) {
-        //     // if (g.number / total < 0.05) continue;
-        //     current += g.number;
-        // }
+        
         return bData;
     }
 }

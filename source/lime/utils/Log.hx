@@ -41,7 +41,7 @@ class Log
 				#else
 				println(message);
 				#end
-                PlayState.trace(message);
+                LogsOverlay.error(message);
 			}
 		}
 	}

@@ -1,5 +1,5 @@
 function create() {
-    character.frames = Paths.getCharacter(mod + ":bf");
+    character.frames = Paths.getCharacter(character.curCharacter);
 
     character.animation.addByPrefix('firstDeath', "BF dies", 24, false);
     character.animation.addByPrefix('deathLoop', "BF Dead Loop", 24, false);

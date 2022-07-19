@@ -1,6 +1,6 @@
 package;
 
-import PlayState.SongEvent;
+import SongEvent;
 import sys.io.File;
 import Section.SwagSection;
 import haxe.Json;
@@ -23,8 +23,13 @@ typedef SwagSong =
 	var validScore:Bool;
 	var keyNumber:Null<Int>;
 	var noteTypes:Array<String>;
+
+	@:optional var sectionLength:Null<Int>;
 	@:optional var scripts:Array<String>;
 	@:optional var gfVersion:String;
+	@:optional var noGF:Bool;
+	@:optional var noBF:Bool;
+	@:optional var noDad:Bool;
 }
 
 class Song
@@ -54,24 +59,7 @@ class Song
 		while (!rawJson.endsWith("}"))
 		{
 			rawJson = rawJson.substr(0, rawJson.length - 1);
-			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 		}
-
-		// FIX THE CASTING ON WINDOWS/NATIVE
-		// Windows???
-		// trace(songData);
-
-		// trace('LOADED FROM JSON: ' + songData.notes);
-		/* 
-			for (i in 0...songData.notes.length)
-			{
-				trace('LOADED FROM JSON: ' + songData.notes[i].sectionNotes);
-				// songData.notes[i].sectionNotes = songData.notes[i].sectionNotes
-			}
-
-				daNotes = songData.notes;
-				daSong = songData.song;
-				daBpm = songData.bpm; */
 
 		return parseJSONshit(rawJson);
 	}
@@ -79,32 +67,22 @@ class Song
 	public static function loadModFromJson(jsonInput:String, mod:String, ?folder:String):SwagSong
 	{
 		var rawJson = "";
+		var path = "";
 		if (folder == null)
-			rawJson = Assets.getText(Paths.json('$jsonInput/$jsonInput', 'mods/$mod'));
+			path = Paths.json('$jsonInput/$jsonInput', 'mods/$mod');
 		else
-			rawJson = Assets.getText(Paths.json('$folder/$jsonInput', 'mods/$mod'));
+			path = Paths.json('$folder/$jsonInput', 'mods/$mod');
 
+		if (Assets.exists(path)) {
+			rawJson = Assets.getText(path);
+		} else {
+			throw "Chart doesn't exist.";
+			return null;
+		}
 		while (!rawJson.endsWith("}"))
 		{
 			rawJson = rawJson.substr(0, rawJson.length - 1);
-			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 		}
-
-		// FIX THE CASTING ON WINDOWS/NATIVE
-		// Windows???
-		// trace(songData);
-
-		// trace('LOADED FROM JSON: ' + songData.notes);
-		/* 
-			for (i in 0...songData.notes.length)
-			{
-				trace('LOADED FROM JSON: ' + songData.notes[i].sectionNotes);
-				// songData.notes[i].sectionNotes = songData.notes[i].sectionNotes
-			}
-
-				daNotes = songData.notes;
-				daSong = songData.song;
-				daBpm = songData.bpm; */
 
 		return parseJSONshit(rawJson);
 	}

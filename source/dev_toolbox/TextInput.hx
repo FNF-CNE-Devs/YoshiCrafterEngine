@@ -1,19 +1,20 @@
 package dev_toolbox;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.ui.*;
 
 class TextInput extends MusicBeatSubstate {
     public override function new(title:String, desc:String, text:String, callback:String->Void) {
         super();
-        add(new FlxSprite(0, 0).makeGraphic(1280, 720, 0x88000000));
+        add(new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0x88000000));
         var tabUIThingy = new FlxUITabMenu(null, [
             {
                 label: title,
                 name: "window"
             }
         ], true);
-        tabUIThingy.resize(640, 200);
+        tabUIThingy.resize((FlxG.width / 2), 200);
         add(tabUIThingy);
 
         var tab = new FlxUI(null, tabUIThingy);
@@ -37,7 +38,7 @@ class TextInput extends MusicBeatSubstate {
         tab.add(confirmButton);
         tab.add(cancelButton);
 
-        tabUIThingy.resize(640, cancelButton.y + cancelButton.height + 30);
+        tabUIThingy.resize((FlxG.width / 2), cancelButton.y + cancelButton.height + 30);
         tabUIThingy.screenCenter();
 
         tabUIThingy.addGroup(tab);

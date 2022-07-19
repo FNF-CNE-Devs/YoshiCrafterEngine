@@ -5,10 +5,8 @@ import Discord.DiscordClient;
 import discord_rpc.DiscordRpc;
 import dev_toolbox.toolbox_tabs.*;
 import lime.math.Rectangle;
-import dev_toolbox.week_editor.CreateWeekWizard;
-import dev_toolbox.week_editor.WeekCharacterSettings;
 import dev_toolbox.file_explorer.FileExplorer;
-import StoryMenuState.FNFWeek;
+import WeeksJson.FNFWeek;
 import Song.SwagSong;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -27,7 +25,7 @@ import flixel.addons.ui.*;
 import flixel.FlxG;
 import haxe.Json;
 import FreeplayState;
-import StoryMenuState.WeeksJson;
+import WeeksJson;
 import flixel.text.FlxText;
 
 using StringTools;
@@ -40,6 +38,8 @@ class ToolboxHome extends MusicBeatState {
     public var oldTab:String = "";
     public var bg:FlxSprite;
     public var closeButton:FlxUIButton;
+    public var helpButton:FlxUIButton;
+    public var docButton:FlxUIButton;
     public var bgColorTween:FlxTween;
     public var bgTweenColor(default, set):Null<FlxColor>;
     private function set_bgTweenColor(c:Null<FlxColor>) {
@@ -60,20 +60,23 @@ class ToolboxHome extends MusicBeatState {
 
     public var tabs:Map<String, ToolboxTab> = [];
 
-    public override function new(mod:String) {
-        
+    public override function new(?mod:String) {
+        super();
+        if (mod != null) selectedMod = mod;
+    }
+
+    public override function create() {
+        super.create();
+        var mod = selectedMod;
         FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/');
         FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/data/');
         FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/images/');
         FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/songs/');
         FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/sounds/');
         FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/music/');
-        // FlxG.sound.playMusic(Paths.music("characterEditor", "preload"));
         #if desktop
             DiscordClient.changePresence("In the Toolbox", null, "Toolbox Icon");
         #end
-        if (mod != null) selectedMod = mod;
-        super();
         if (ModSupport.modConfig[mod] == null) {
             var conf:ModConfig = {
                 name : mod,
@@ -106,19 +109,19 @@ class ToolboxHome extends MusicBeatState {
 			{name: "weeks", label: 'Weeks'},
 			{name: "stages", label: 'Stages JSONs'},
 			{name: "songconf", label: 'Song Config'},
+			{name: "medals", label: 'Medals'},
 		];
         UI_Tabs = new FlxUITabMenu(null, tabs, true);
         UI_Tabs.x = 0;
-        UI_Tabs.resize(1260, 22);
-        // UI_Tabs.screenCenter(Y);
+        UI_Tabs.resize(FlxG.width - 220, 22);
         UI_Tabs.scrollFactor.set();
         add(UI_Tabs);
-        var coolTabFadeout = new FlxSprite(0, 20).makeGraphic(1280, 10, 0x00000000);
+        var coolTabFadeout = new FlxSprite(0, 20).makeGraphic(FlxG.width, 10, 0x00000000);
         coolTabFadeout.pixels.lock();
         for(y in 0...coolTabFadeout.pixels.height) {
             var c:FlxColor = 0xFF8C8C8C;
             c.alphaFloat = 1 - (y / coolTabFadeout.pixels.height);
-            coolTabFadeout.pixels.fillRect(new openfl.geom.Rectangle(0, y, 1280, 1), c);
+            coolTabFadeout.pixels.fillRect(new openfl.geom.Rectangle(0, y, FlxG.width, 1), c);
         }
         coolTabFadeout.pixels.unlock();
         add(coolTabFadeout);
@@ -129,6 +132,7 @@ class ToolboxHome extends MusicBeatState {
         new SongTab(0, 22, this);
         new StagesTab(0, 22, this);
         new SongConfTab(0, 22, this);
+        new MedalsTab(0, 22, this);
 
         closeButton = new FlxUIButton(FlxG.width - 20, 0, "X", function() {
             FlxG.switchState(new ToolboxMain());
@@ -137,8 +141,22 @@ class ToolboxHome extends MusicBeatState {
         closeButton.resize(20, 20);
         closeButton.label.color = FlxColor.WHITE;
         add(closeButton);
-       
-		// tab.add(modDropDown);
+
+        docButton = new FlxUIButton(FlxG.width - 120, 0, "Documentation", function() {
+            FlxG.openURL("https://yoshicrafter29.github.io/YoshiCrafterEngine-Doc/");
+        });
+        docButton.color = 0xFF4444FF;
+        docButton.resize(100, 20);
+        docButton.label.color = FlxColor.WHITE;
+        add(docButton);
+
+        helpButton = new FlxUIButton(FlxG.width - 220, 0, "Open Folder", function() {
+            CoolUtil.openFolder('${Paths.modsPath}/$mod/');
+        });
+        helpButton.color = 0xFFFFA244;
+        helpButton.resize(100, 20);
+        helpButton.label.color = FlxColor.WHITE;
+        add(helpButton);
     }
 
     public function onChangeTab(tab:String) {

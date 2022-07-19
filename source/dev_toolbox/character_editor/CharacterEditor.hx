@@ -1,7 +1,6 @@
 package dev_toolbox.character_editor;
 
 import flixel.math.FlxMath;
-import EngineSettings.Settings;
 import flixel.animation.FlxAnimation;
 import flixel.graphics.frames.FlxFrame;
 import flixel.ui.FlxSpriteButton;
@@ -20,6 +19,11 @@ import flixel.util.FlxColor;
 
 using StringTools;
 
+@:enum abstract Shrex(Int) {
+    var DAD = 0;
+    var BF = 1;
+    var GF = 2;
+}
 class CharacterEditor extends MusicBeatState {
     var camHUD:FlxCamera;
 
@@ -29,6 +33,7 @@ class CharacterEditor extends MusicBeatState {
     var anim:FlxUITabMenu;
     var dad:Character;
     var bf:Character;
+    var gf:Character;
     var animationTab:FlxUI;
     var closeButton:FlxUIButton;
     var saveButton:FlxUIButton;
@@ -47,7 +52,7 @@ class CharacterEditor extends MusicBeatState {
     var canBeBFSkinned:FlxUICheckBox = null;
     var isBFskin:FlxUICheckBox = null;
     var canBeGFSkinned:FlxUICheckBox = null;
-    var editAsPlayer:FlxUICheckBox = null;
+    var editAsPlayer:FlxUIDropDownMenu = null;
     var showCharacterReferences:FlxUICheckBox = null;
     var isGFskin:FlxUICheckBox = null;
     var antialiasing:FlxUICheckBox = null;
@@ -62,8 +67,8 @@ class CharacterEditor extends MusicBeatState {
     var shadowCharacter:Character;
     var usePlayerColors:FlxUICheckBox = null;
 
-    var isPlayer:Bool = false;
     var usePlayerArrowColors:Bool = false;
+    var editedAs:Shrex = DAD;
 
     var currentAnim(default, set):String = "";
 
@@ -85,14 +90,12 @@ class CharacterEditor extends MusicBeatState {
         if (framerate != null) framerate.value = anim.frameRate;
         if (loopCheckBox != null) loopCheckBox.checked = anim.looped;
         character.playAnim(currentAnim);
-        // shadowCharacter.playAnim(currentAnim);
 
         if (offsetX == null || offsetY == null) return;
         var offsets = character.animOffsets[currentAnim];
         if (offsets == null) offsets = [0, 0];
         offsetX.value = offsets[0];
         offsetY.value = offsets[1];
-        // shadowCharacter.offset.set(offsetX.value, offsetY.value);
     }
 
     public function save() {
@@ -147,8 +150,20 @@ class CharacterEditor extends MusicBeatState {
         var json:CharacterJSON = {
             anims: anims,
             globalOffset: {
-                x: character.x - (isPlayer ? 770 : 100),
-                y: character.y - 100
+                x: character.x - switch(editedAs) {
+                    case BF:
+                        770;
+                    case DAD:
+                        100;
+                    case GF:
+                        400;
+                },
+                y: character.y - switch(editedAs) {
+                    case BF | DAD:
+                        100;
+                    case GF:
+                        130;
+                }
             },
             camOffset: {
                 x: character.camOffset.x,
@@ -158,7 +173,7 @@ class CharacterEditor extends MusicBeatState {
             scale: (character.scale.x + character.scale.y) / 2,
             danceSteps: ['idle'],
             healthIconSteps: [[20, 0], [0, 1]],
-            flipX: isPlayer ? !character.flipX : character.flipX,
+            flipX: (editedAs == BF) ? !character.flipX : character.flipX,
             healthbarColor: healthBar.color.toWebString(),
             arrowColors: usePlayerColors.checked ? null : [
                 for (c in arrows) {
@@ -170,29 +185,6 @@ class CharacterEditor extends MusicBeatState {
         var folder = '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$c';
         if (ToolboxHome.selectedMod == "~") folder = '${Paths.getSkinsPath()}/$c';
         File.saveContent('$folder/Character.json', Json.stringify(json, "\t"));
-        // if (isBFskin.checked) {
-        //     if (ModSupport.modConfig[ToolboxHome.selectedMod].BFskins == null) ModSupport.modConfig[ToolboxHome.selectedMod].BFskins = [];
-        //     var exists = false;
-        //     for (e in ModSupport.modConfig[ToolboxHome.selectedMod].BFskins) {
-        //         if (e.char == c) {
-        //             exists = true;
-        //             break;
-        //         }
-        //     }
-        //     if (!exists) {
-        //         ModSupport.modConfig[ToolboxHome.selectedMod].BFskins.push({
-                    
-        //         });
-        //     }
-        //     if (!ModSupport.modConfig[ToolboxHome.selectedMod].BFskins.contains(c)) {
-        //         ModSupport.saveModData(ToolboxHome.selectedMod);
-        //     }
-        // } else {
-        //     if (ModSupport.modConfig[ToolboxHome.selectedMod].BFskins.contains(c)) {
-        //         ModSupport.modConfig[ToolboxHome.selectedMod].BFskins.remove(c);
-        //         ModSupport.saveModData(ToolboxHome.selectedMod);
-        //     }
-        // }
         if (canBeBFSkinned.checked) {
             if (!ModSupport.modConfig[ToolboxHome.selectedMod].skinnableBFs.contains(c)) {
                 ModSupport.modConfig[ToolboxHome.selectedMod].skinnableBFs.push(c);
@@ -290,12 +282,15 @@ class CharacterEditor extends MusicBeatState {
         bf.visible = Settings.engineSettings.data.charEditor_showDadAndBF;
         add(bf);
 
+        gf = new Character(400, 130, "Friday Night Funkin':gf");
+        gf.color = 0xFF000000;
+        gf.alpha = 1 / 3;
+        gf.visible = false;
+        add(gf);
+
 
 
         character = new Character(100, 100, '${ToolboxHome.selectedMod}:$char');
-        // character.curCharacter = '${ToolboxHome.selectedMod}:$char';
-        // character.frames = Paths.getModCharacter();
-        // character.loadJSON(true);
         character.setPosition(100 + character.charGlobalOffset.x, 100 + character.charGlobalOffset.y);
         shadowCharacter.setPosition(100 + character.charGlobalOffset.x, 100 + character.charGlobalOffset.y);
         
@@ -434,27 +429,34 @@ class CharacterEditor extends MusicBeatState {
         });
         animSettings.add(loopCheckBox);
 
-        // var label:FlxUIText = new FlxUIText(10, loopCheckBox.y + loopCheckBox.height + 10, 280, "Indices (separate by \",\", leave blank for no indices)");
-        // animSettings.add(label);
-        // indices = new FlxUIInputText(10, label.y + label.height, 280, "");
-        // animSettings.add(indices);
-
-
         animSettingsTabs.addGroup(animSettings);
         animSettingsTabs.resize(300, 200);
         animSettingsTabs.setPosition(1280 - animSettingsTabs.width - 10, 10);
-        editAsPlayer = new FlxUICheckBox(anim.x + anim.width + 10, 10, null, null, "Edit as player", 250, null, function() {
+        editAsPlayer = new FlxUIDropDownMenu(anim.x + anim.width + 10, 10, [new StrNameLabel("dad", "Opponent"), new StrNameLabel("bf", "Player"), new StrNameLabel("gf", "Girlfriend")], function(id) {
+            editedAs = (switch(id) {
+                case "bf":
+                    BF;
+                case "gf":
+                    GF;
+                case "dad":
+                    DAD;
+                case _:
+                    DAD;
+            });
+
             character.flipX = flipCheckbox.checked;
-            if (editAsPlayer.checked) {
+            if (editedAs == BF) {
                 character.flipX = !character.flipX;
             }
             shadowCharacter.flipX = character.flipX;
+
+            updateShadows();
         });
         editAsPlayer.scrollFactor.set();
         add(editAsPlayer);
 
         showCharacterReferences = new FlxUICheckBox(anim.x + anim.width + 10, editAsPlayer.y + editAsPlayer.height + 10, null, null, "Show Dad and BF", 250, null, function() {
-            Settings.engineSettings.data.charEditor_showDadAndBF = dad.visible = bf.visible = showCharacterReferences.checked;
+            updateShadows();
         });
         showCharacterReferences.scrollFactor.set();
         showCharacterReferences.checked = Settings.engineSettings.data.charEditor_showDadAndBF;
@@ -482,20 +484,18 @@ class CharacterEditor extends MusicBeatState {
 
         flipCheckbox = new FlxUICheckBox(10, 10, null, null, "Flip Character", 120, null, function() {
             character.flipX = flipCheckbox.checked;
-            if (isPlayer) character.flipX = !character.flipX;
+            if (editedAs == BF) character.flipX = !character.flipX;
             shadowCharacter.flipX = character.flipX;
         });
         flipCheckbox.checked = character.flipX;
-        // add(flipCheckbox);
 
         antialiasing = new FlxUICheckBox(flipCheckbox.x + 145, 10, null, null, "Anti-Aliasing", 120, null, function() {
             character.antialiasing = antialiasing.checked;
             shadowCharacter.antialiasing = antialiasing.checked;
         });
         antialiasing.checked = character.antialiasing;
-        // add(antialiasing);
         characterSettingsTabs.addGroup(charSettings);
-        characterSettingsTabs.x = 1280 - characterSettingsTabs.width - 10;
+        characterSettingsTabs.x = FlxG.width - characterSettingsTabs.width - 10;
         characterSettingsTabs.y = animSettingsTabs.y + animSettingsTabs.height + 10;
         globalOffsetX = new FlxUINumericStepper(10, 36, 10, 0, -999, 999, 0);
         globalOffsetY = new FlxUINumericStepper(globalOffsetX.x + globalOffsetX.width + 5, 36, 10, 0, -999, 999, 0);
@@ -510,7 +510,7 @@ class CharacterEditor extends MusicBeatState {
         
         var label:FlxUIText = new FlxUIText(globalOffsetY.x + globalOffsetY.width + 10, globalOffsetY.y + (globalOffsetY.height / 2), 32, "Scale:");
         label.y -= (label.height / 2);
-        scale = new FlxUINumericStepper(10 + label.x + label.width, globalOffsetY.y, 0.1, 1, 0.1, 10, 1);
+        scale = new FlxUINumericStepper(10 + label.x + label.width, globalOffsetY.y, 0.05, 1, 0.1, 10, 1);
 
         
         var label2:FlxUIText = new FlxUIText(10, canBeGFSkinned.y + canBeGFSkinned.height + 10, 280, "Camera Offset");
@@ -527,9 +527,7 @@ class CharacterEditor extends MusicBeatState {
         charSettings.add(globalOffsetX);
         charSettings.add(globalOffsetY);
         charSettings.add(canBeGFSkinned);
-        // charSettings.add(isGFskin);
         charSettings.add(canBeBFSkinned);
-        // charSettings.add(isBFskin);
         charSettings.add(label2);
         charSettings.add(camOffsetX);
         charSettings.add(camOffsetY);
@@ -674,6 +672,20 @@ class CharacterEditor extends MusicBeatState {
         }
     }
 
+    public function updateShadows() {
+        if (Settings.engineSettings.data.charEditor_showDadAndBF = showCharacterReferences.checked) {
+            if (editedAs == GF) {
+                dad.visible = bf.visible = false;
+                gf.visible = true;
+            } else {
+                dad.visible = bf.visible = true;
+                gf.visible = false;
+            }
+        } else {
+            dad.visible = bf.visible = gf.visible = false;
+        }
+    }
+
     public function updateAnimSelection(?newAnimName:String, ?removeOldAnim:Bool = false) {
         var oldSelec = animSelection.selectedLabel;
         var anims:Array<StrNameLabel> = [];
@@ -780,10 +792,11 @@ class CharacterEditor extends MusicBeatState {
         globalOffsetY.stepSize = (FlxControls.pressed.SHIFT ? 1 : 10);
         camOffsetX.stepSize = (FlxControls.pressed.SHIFT ? 1 : 10);
         camOffsetY.stepSize = (FlxControls.pressed.SHIFT ? 1 : 10);
+        
+        shadowCharacter.animOffsets = character.animOffsets;
 
         super.update(elapsed);
 
-        isPlayer = editAsPlayer.checked;
         var move:FlxPoint = new FlxPoint(0, 0);
         if (FlxControls.pressed.RIGHT) move.x += 1;
         if (FlxControls.pressed.UP) move.y -= 1;
@@ -791,8 +804,21 @@ class CharacterEditor extends MusicBeatState {
         if (FlxControls.pressed.DOWN) move.y += 1;
         camGame.scroll.x += move.x * 400 * elapsed * (FlxControls.pressed.SHIFT ? 2.5 : 1);
         camGame.scroll.y += move.y * 400 * elapsed * (FlxControls.pressed.SHIFT ? 2.5 : 1);
-        character.x = (isPlayer ? 770 : 100) + globalOffsetX.value;
-        character.y = 100 + globalOffsetY.value;
+        character.x = (switch(editedAs) {
+            case BF:
+                770;
+            case DAD:
+                100;
+            case GF:
+                400;
+        }) + globalOffsetX.value;
+        character.y = (switch(editedAs) {
+            case BF | DAD:
+                100;
+            case GF:
+                130;
+        }) + globalOffsetY.value;
+        character.isPlayer = editedAs == BF;
         shadowCharacter.setPosition(character.x, character.y);
 
 
@@ -803,10 +829,6 @@ class CharacterEditor extends MusicBeatState {
 
         if (character.animation.curAnim != null) {
             if (character.animation.curAnim.name != "") {
-                // YOU CANT STOP ME HAXEFLIXEL
-
-                // WTF LOL
-                // var anim = character.animation.getByName(character.animation.curAnim.name);
                 var anim = character.animation.curAnim;
                 @:privateAccess
                 anim.looped = loopCheckBox.checked;
@@ -819,16 +841,9 @@ class CharacterEditor extends MusicBeatState {
         }
         character.scale.set(scale.value, scale.value);
         shadowCharacter.scale.set(scale.value, scale.value);
-        var midpoint = character.getMidpoint();
-        if (isPlayer) {
-            cross.x = -25 + midpoint.x - 100 + character.camOffset.x;
-            cross.y = -25 + midpoint.y - 100 + character.camOffset.y;
-        } else {
-            cross.x = -25 + midpoint.x + 150 + character.camOffset.x;
-            cross.y = -25 + midpoint.y - 100 + character.camOffset.y;
-        }
-        // FlxG.camera.scroll.x = midpoint.x + character.camOffset.x + 150 - 640;
-        // FlxG.camera.scroll.y = midpoint.y + character.camOffset.y - 100 - 360;
+
+        var camPos = character.getCamPos();
+        cross.setPosition(camPos.x - 25, camPos.y - 25);
     }
 
     public function mouseOverlapsChar() {

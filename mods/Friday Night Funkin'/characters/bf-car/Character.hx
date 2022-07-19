@@ -1,5 +1,5 @@
 function create() {
-    character.frames = Paths.getCharacter(mod + ":bf-car");
+    character.frames = Paths.getCharacter(character.curCharacter);
 
     character.animation.addByPrefix('idle', 'BF idle dance', 24, false);
     character.animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);

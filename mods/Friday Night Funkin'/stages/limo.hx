@@ -24,17 +24,18 @@ function beatHit(curBeat)
 
 function create()
 {
-    PlayState.defaultCamZoom = 0.90;
+    PlayState.defaultCamZoom = 0.7;
 
-    var skyBG:FlxSprite = new FlxSprite(-120, -50).loadGraphic(Paths.image('limo/limoSunset'));
+    var skyBG:FlxSprite = new FlxSprite(-300, -180).loadGraphic(Paths.image('limo/limoSunset'));
     skyBG.scrollFactor.set(0.1, 0.1);
     PlayState.add(skyBG);
 
-    var bgLimo:FlxSprite = new FlxSprite(-200, 480);
+    var bgLimo:FlxSprite = new FlxSprite(-200, 550);
     bgLimo.frames = Paths.getSparrowAtlas('limo/bgLimo');
     bgLimo.animation.addByPrefix('drive', "background limo pink", 24);
     bgLimo.animation.play('drive');
     bgLimo.scrollFactor.set(0.4, 0.4);
+    bgLimo.antialiasing = true;
     PlayState.add(bgLimo);
     grpLimoDancers = [];
     PlayState.add(grpLimoDancers);
@@ -53,14 +54,7 @@ function create()
     }
 
     var overlayShit:FlxSprite = new FlxSprite(-500, -600).loadGraphic(Paths.image('limo/limoOverlay'));
-    overlayShit.alpha = 0.5;
-    // add(overlayShit);
-
-    // var shaderBullshit = new BlendModeEffect(new OverlayShader(), FlxColor.RED);
-
-    // FlxG.camera.setFilters([new ShaderFilter(cast shaderBullshit.shader)]);
-
-    // overlayShit.shader = shaderBullshit;
+    overlayShit.alpha = 0.125;
 
     var limoTex = Paths.getSparrowAtlas(BackgroundDancer.shrek ? 'limo/shrekDrive' : 'limo/limoDrive');
 
@@ -75,11 +69,41 @@ function create()
     PlayState.boyfriend.y -= 220;
     PlayState.boyfriend.x += 260;
 
+    // PlayState.boyfriend.camOffset -= 20;
+    // PlayState.dad.camOffset += 40;
+
+    if (PlayState.gf.curCharacter.toLowerCase() == "friday night funkin':gf-car") {
+        PlayState.gf.y += 140;
+        PlayState.gf.x -= 60;
+        PlayState.gf.scale.x = 0.75;
+        PlayState.gf.scale.y = 0.75;
+        PlayState.gf.scrollFactor.set(0.4, 0.4);
+    }
+    PlayState.add(PlayState.gf);
+    PlayState.add(overlayShit);
+
+
     resetFastCar();
     PlayState.add(fastCar);
     
-    PlayState.add(PlayState.gf);
     PlayState.add(limo);
+
+}
+
+var fancyStuff = false;
+function musicstart() {
+    fancyStuff = true;
+}
+function updatePost(elapsed) {
+    PlayState.camFollowLerp = 0.02;
+
+    var i = (Conductor.songPosition + 5000) / 1000 * 30;
+    PlayState.defaultCamZoom = (Math.sin(i/40)*0.05) + 0.8;
+
+    if (!fancyStuff) return;
+    PlayState.camFollow.y += (Math.sin(i/14)*30) - 50;
+    PlayState.camFollow.x += (Math.sin(i/7)*15);
+    
 }
 
 function resetFastCar():Void

@@ -108,7 +108,7 @@ class LogFrontEnd
             var a:Array<Dynamic> = Data;
             var strs = [for(e in a) Std.string(e)];
             for(e in strs) {
-                PlayState.log.push('$prefix $e');
+                (Style == LogStyle.ERROR ? LogsOverlay.error : LogsOverlay.trace)('$prefix $e');
             }
         }
 	}

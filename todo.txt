@@ -19,15 +19,15 @@
 [x] Custom Menus
 
 OOPSIE!!!
-[ ] Custom Discord RPC
+[x] Custom Discord RPC
 
 ADDITIONAL
-[ ] Camera movement
+[x] Camera movement
 [ ] Fish Engine easter egg lol
 [ ] Dialogue (maybe????)
 [-] Better Menus
 
-[ ] Copy last sections in Charter
+[x] Copy last sections in Charter
 [x] Customisable Separators
 [x] Play Here in Charter
 [ ] In-Game Tutorial

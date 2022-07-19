@@ -1,3 +1,4 @@
+import haxe.io.Path;
 import lime.utils.Assets;
 import mod_support_stuff.*;
 import haxe.Json;
@@ -27,23 +28,18 @@ typedef SongConfResult = {
 }
 class SongConf {
     public static function parse(mod:String, song:String, ?chart:SwagSong):SongConfResult {
-        // TODO : gotta finish stage editor first
-        // Anyways, doin this shit
-
         var scripts:Array<ModScript> = [];
         var cutscene:ModScript = null;
         var end_cutscene:ModScript = null;
 
 
-
-        // var songConfPath = '${Paths.modsPath}/$mod/song_conf';
         var songConfPath = Paths.getPath('song_conf', TEXT, 'mods/$mod');
         if (Assets.exists('$songConfPath.json')) {
             var json:SongConfJson = null;
             try {
                 json = Json.parse(Assets.getText('$songConfPath.json'));
             } catch(e) {
-                PlayState.trace(Std.string(e));
+                LogsOverlay.error(Std.string(e));
             }
             if (json != null) {
                 for(s in json.songs) {
@@ -98,6 +94,28 @@ class SongConf {
             }
         }
 
+        if (FileSystem.exists('${Paths.modsPath}/${mod}/data/${song}/') && FileSystem.isDirectory('${Paths.modsPath}/${mod}/data/${song}/')) {
+            try {
+                for(f in FileSystem.readDirectory('${Paths.modsPath}/${mod}/data/${song}/')) {
+                    if (!FileSystem.isDirectory('${Paths.modsPath}/${mod}/data/${song}/$f') && Main.supportedFileTypes.contains(Path.extension(f).toLowerCase())) {
+                        scripts.push(getModScriptFromValue(mod, '$mod:data/$song/$f'));
+                    }
+                }
+            }
+        }
+
+        if (cutscene == null) {
+            if (Assets.exists(Paths.video('${song}-cutscene', 'mods/${mod}'))) {
+                cutscene = getModScriptFromValue("YoshiCrafterEngine", "MP4-Cutscene");
+            } else if (Assets.exists(Paths.json('${PlayState.SONG.song}/dialogue-yce'))) {
+                cutscene = getModScriptFromValue("YoshiCrafterEngine", "Dialogue");
+            }
+        }
+
+        if (end_cutscene == null && Assets.exists(Paths.video('${song}-end-cutscene', 'mods/${mod}'))) {
+            end_cutscene = getModScriptFromValue("YoshiCrafterEngine", "MP4-End-Cutscene");
+        }
+
         if (chart != null) {
             if (chart.scripts != null) {
                 for(s in chart.scripts) scripts.push(getModScriptFromValue(mod, s));
@@ -112,15 +130,6 @@ class SongConf {
                 }
             ];
         }
-        // if (cutscene != "")
-        //     ModSupport.song_cutscene = getModScriptFromValue(cutscene);
-        // else
-        //     ModSupport.song_cutscene = null;
-        
-        // if (end_cutscene != "")
-        //     ModSupport.song_end_cutscene = getModScriptFromValue(end_cutscene);
-        // else
-        //     ModSupport.song_end_cutscene = null;
 
         return {
             scripts: scripts,
@@ -132,7 +141,7 @@ class SongConf {
     public static function getModScriptFromValue(currentMod:String, value:String):ModScript {
         var splitValue = value.split(":");
         if (splitValue[0] == "") {
-            PlayState.log.push('Script not found for $value.');
+            LogsOverlay.error('Script not found for $value.');
             return {mod : "Friday Night Funkin'", path : "Friday Night Funkin'/modcharts/unknown"};
         }
 		if(splitValue[0].toLowerCase() == "yoshiengine") splitValue[0] = "YoshiCrafterEngine";
@@ -163,7 +172,7 @@ class SongConf {
                         }
                         
                         if (!valid) {
-                            PlayState.log.push('Script not found for $value.');
+                            LogsOverlay.error('Script not found for $value.');
                             return {mod : "Friday Night Funkin'", path : "Friday Night Funkin'/modcharts/unknown"};
                         }
                     }

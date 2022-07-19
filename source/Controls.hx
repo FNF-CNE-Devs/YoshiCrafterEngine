@@ -19,7 +19,6 @@ class AndroidSupportFlxActionDigital extends FlxActionDigital {
 		#if MOBILE_UI
 		var repeatActions = ["up", "left", "down", "right"];
 		var type:FlxControlType = repeatActions.contains(name) ? Pressed : JustPressed;
-		// trace(name);
 		if (name.endsWith("-press")) {
 			type = JustPressed;
 		} else if (name.endsWith("-release")) {
@@ -299,7 +298,6 @@ class Controls extends FlxActionSet
 		super.update();
 	}
 
-	// inline
 	public function checkByName(name:Action):Bool
 	{
 		#if debug

@@ -38,8 +38,10 @@ class ChooseCharacterScreen extends MusicBeatSubstate {
             if (Assets.exists(Paths.file('modIcon.png', IMAGE, 'mods/$k'))) {
                 buttonIcon.loadGraphic(Paths.file('modIcon.png', IMAGE, 'mods/$k'));
             }
+            
             buttonIcon.setGraphicSize(40, 40);
             buttonIcon.updateHitbox();
+            buttonIcon.scale.set(Math.min(buttonIcon.scale.x, buttonIcon.scale.y), Math.min(buttonIcon.scale.x, buttonIcon.scale.y));
             var markThing = new FlxSprite(button.x + 273, button.y + 18).loadGraphic(FlxUIAssets.IMG_DROPDOWN_RIGHT);
             modsScroll.add(button);
             modsScroll.add(markThing);

@@ -23,12 +23,18 @@ var trainCooldown:Int = 0;
 var startedMoving:Bool = false;
 var triggeredAlready:Bool = false;
 
+gfVersion = "gf-philly";
+
+function musicstart() {
+    beatHit(0);
+}
 function beatHit(curBeat) {
     if (curBeat % 4 == 0)
     {
         var c = phillyCityLights[FlxG.random.int(0, phillyCityLights.length - 1)];
         light.color = c;
         light.alpha = 1;
+        if (PlayState.timerBar != null) PlayState.timerBar.createGradientBar([0xFF111111], [c, c - 0x00222222], 1, 90, true, 0xFF000000);
     }
 
     if (!trainMoving)
@@ -39,7 +45,7 @@ function beatHit(curBeat) {
         trainCooldown = FlxG.random.int(-4, 0);
         trainStart();
     }
-}
+}   
 function create()
 {
     bg = new FlxSprite(-100).loadGraphic(Paths.image('philly/sky'));
@@ -51,6 +57,7 @@ function create()
     city.scrollFactor.set(0.3, 0.3);
     city.setGraphicSize(Std.int(city.width * 0.85));
     city.updateHitbox();
+    city.antialiasing = true;
     PlayState.add(city);
     global["city"] = city;
 
@@ -64,10 +71,12 @@ function create()
     PlayState.add(light);
 
     streetBehind = new FlxSprite(-40, 50).loadGraphic(Paths.image('philly/behindTrain'));
+    streetBehind.antialiasing = true;
     PlayState.add(streetBehind);
     global["streetBehind"] = streetBehind;
 
     phillyTrain = new FlxSprite(2000, 360).loadGraphic(Paths.image('philly/train'));
+    phillyTrain.antialiasing = true;
     PlayState.add(phillyTrain);
     global["phillyTrain"] = phillyTrain;
 
@@ -78,11 +87,14 @@ function create()
     // var cityLights:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.win0);
 
     street = new FlxSprite(-40, streetBehind.y).loadGraphic(Paths.image('philly/street'));
+    street.antialiasing = true;
     global["street"] = street;
     PlayState.add(street);
 }
+    
 
 function update(elapsed) {
+
     if (trainMoving)
     {
         trainFrameTiming += elapsed;
@@ -94,35 +106,37 @@ function update(elapsed) {
         }
     }
 
-    light.alpha = light.alpha - (elapsed /   (Conductor.crochet / 1000 * 4));
-
-    // General duration of the song
-    if (PlayState.curBeat < 250)
-    {
-        // Beats to skip or to stop GF from cheering
-        if (PlayState.curBeat != 184 && PlayState.curBeat != 216)
-        {
-            if (PlayState.curBeat % 16 == 8)
-            {
-                // Just a garantee that it'll trigger just once
-                if (!triggeredAlready)
-                {
-                    PlayState.gf.playAnim('cheer');
-                    triggeredAlready = true;
-                }
-            }
-            else
-                triggeredAlready = false;
+    light.alpha = FlxMath.lerp(1, 0, ((Conductor.songPosition / Conductor.crochet / 4) % 1));
+    
+    // train cool shit
+    if (global["blammedEffectOn"] == true) {
+        for(c in [PlayState.boyfriend, PlayState.gf, PlayState.dad]) {
+            c.colorTransform.redMultiplier = c.colorTransform.greenMultiplier = c.colorTransform.blueMultiplier = 1;
+            c.colorTransform.redOffset = c.colorTransform.greenOffset = c.colorTransform.blueOffset = 0;
         }
+        light.alpha = city.alpha = bg.alpha = 1;
+    } else {
+        var ratio = 0.25 * elapsed * 60;
+        var theLerp = Math.abs(FlxMath.bound(FlxMath.remapToRange(phillyTrain.x, 0, -2000, 0, 1), 0, 100));
+        var ogAlpha = phillyTrain.x > -2000 && phillyTrain.x < 0 ? 0 : 1;
+        if (theLerp > 1) theLerp = 1 - (theLerp - 1);
+        for(c in [PlayState.boyfriend, PlayState.gf, PlayState.dad, street, city, bg, streetBehind]) {
+            c.colorTransform.redMultiplier = FlxMath.lerp(c.colorTransform.redMultiplier, FlxMath.lerp(ogAlpha, (118 / 255), theLerp), ratio);
+            c.colorTransform.greenMultiplier = FlxMath.lerp(c.colorTransform.greenMultiplier, FlxMath.lerp(ogAlpha, (255 / 255), theLerp), ratio);
+            c.colorTransform.blueMultiplier = FlxMath.lerp(c.colorTransform.blueMultiplier, FlxMath.lerp(ogAlpha, (111 / 255), theLerp), ratio);
+        }
+        city.alpha = FlxMath.lerp(city.alpha, (1 - theLerp) * (1 - theLerp), ratio);
+        bg.alpha = Math.min(FlxMath.lerp(bg.alpha, ogAlpha, ratio), city.alpha);
+        light.alpha *= city.alpha;
     }
 }
 
 function trainStart()
 {
+    if (global["blammedEffectOn"] == true || trainSound.playing) return;
     trace(trainSound);
     trainMoving = true;
-    if (!trainSound.playing)
-        trainSound.play(true);
+    trainSound.play(true);
 }
 
 function updateTrainPos()

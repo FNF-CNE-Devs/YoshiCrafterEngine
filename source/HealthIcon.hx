@@ -8,7 +8,6 @@ import sys.FileSystem;
 import flixel.FlxG;
 import lime.utils.Assets;
 import flixel.FlxSprite;
-import EngineSettings.Settings;
 
 using StringTools;
 
@@ -21,13 +20,13 @@ class HealthIcon extends FlxSprite
 	public var isAnimated:Bool = false;
 	public var frameIndexes(default, set):Array<Array<Int>> = [[20, 0], [0, 1]];
 	public var frameIndexesAnimated:Array<Array<Dynamic>> = [[80, "winning"], [20, "normal"], [0, "losing"]];
-	// public var health:Float = 0.5;
 	public var curCharacter:String = "";
 	public var isPlayer:Bool = false;
 	/**
 		Whenever the icon should be automatically managed by PlayState.
 	**/
 	public var auto:Bool = true;
+
 	private function set_frameIndexes(f:Array<Array<Int>>):Array<Array<Int>> {
 		frameIndexes = f;
 		animation.curAnim.reset();
@@ -47,38 +46,12 @@ class HealthIcon extends FlxSprite
 	{
 		super();
 		this.isPlayer = isPlayer;
-		// if (char.indexOf(":") == -1 && mod != null) {
-		// 	if (FileSystem.exists(Paths.modsPath + '/$mod/characters/$char/icon.png'))
-		// 		char = '$mod:$char';
-		// }
-		// if (HealthIcon.redirects == null) {
-		// 	var ir = CoolUtil.coolTextFile("characters:assets/characters/icons/iconRedirects.txt");
-		// 	var redirects:Map<String, String> = [];
-		// 	for (icon in ir) {
-		// 		var split = icon.split(":");
-		// 		redirects[split[0]] = split[1];
-		// 	}
-		// 	HealthIcon.redirects = redirects;
-		// }
 
 
 		antialiasing = true;
 		scrollFactor.set();
 
 		changeCharacter(char, mod);
-
-		
-		// if (HealthIcon.redirects[character] != null) {
-		// 	character = HealthIcon.redirects[character];
-		// }
-		
-		// var cBF:String = Settings.engineSettings.data.customBFSkin;
-		// if (PlayState.current != null) cBF = PlayState.current.engineSettings.customBFSkin;
-		// var cGF:String = Settings.engineSettings.data.customGFSkin;
-		// if (PlayState.current != null) cGF = PlayState.current.engineSettings.customGFSkin;
-		
-		// loadGraphic(FileSystem.exists(path) ? Paths.getBitmapOutsideAssets(path) : Paths.getBitmapOutsideAssets(Paths.modsPath + "/Friday Night Funkin'/characters/unknown/icon.png"), true, 150, 150);
-		
 	}
 
 	override function update(elapsed:Float)
@@ -98,7 +71,7 @@ class HealthIcon extends FlxSprite
 			}
 			var anim = "";
 			if (animation.curAnim != null) anim = animation.curAnim.name;
-			if (anim != name) {
+			if (anim != name && animation.getByName(name) != null) {
 				animation.play(name);
 			}
 		} else {
@@ -118,11 +91,24 @@ class HealthIcon extends FlxSprite
 	}
 
 	public function changeCharacter(char:String, mod:String) {
-		var character = CoolUtil.getCharacterFull(char, mod);
-		var tex = Paths.getCharacterIcon(character[1], 'mods/${character[0]}');
-		var xml = Paths.getCharacterIconXml(character[1], 'mods/${character[0]}');
-		if (openfl.utils.Assets.exists(tex)) {
-			if (openfl.utils.Assets.exists(xml)) {
+		var split = char.split(":");
+		var charName = CoolUtil.getLastOfArray(split);
+		var lib = null;
+		if (split.length > 1) {
+			lib = 'mods/${split[0]}';
+		} else if (mod != null) {
+			lib = 'mods/$mod';
+		}
+		trace(charName);
+		trace(lib);
+
+		var tex = Paths.getCharacterIcon(charName, lib);
+		var altTex = Paths.image('icons/icon-${charName}', lib);
+		var xml = Paths.getCharacterIconXml(charName, lib);
+
+		var useAltTex = false;
+		if (openfl.utils.Assets.exists(tex) || (useAltTex = Assets.exists(altTex))) {
+			if (openfl.utils.Assets.exists(xml) && openfl.utils.Assets.exists(tex)) {
 				isAnimated = true;
 				frames = FlxAtlasFrames.fromSparrow(tex, xml);
 				
@@ -141,7 +127,7 @@ class HealthIcon extends FlxSprite
 				}
 				animation.play('normal');
 			} else {
-				loadGraphic(tex, true, 150, 150);
+				loadGraphic(useAltTex ? altTex : tex, true, 150, 150);
 				animation.add('char', [for (i in 0...frames.frames.length) i], 0, true, isPlayer);
 				animation.play('char');	
 				
@@ -157,6 +143,6 @@ class HealthIcon extends FlxSprite
 		}
 
 		
-		this.curCharacter = character.join(":");
+		this.curCharacter = '${lib == null ? '' : '$lib:'}$charName';
 	}
 }

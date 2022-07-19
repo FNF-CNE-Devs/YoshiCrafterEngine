@@ -5,6 +5,16 @@ var tankSpeed:Float = FlxG.random.float(5, 7);
 var tankRolling:FlxSprite = null;
 var pico:Bool = true;
 
+var tank0:FlxSprite = null;
+var tank1:FlxSprite = null;
+var tank2:FlxSprite = null;
+var tank3:FlxSprite = null;
+var tank4:FlxSprite = null;
+var tank5:FlxSprite = null;
+var tankWatchtower:FlxSprite = null;
+
+
+
 if (PlayState.song.song.toLowerCase() != "stress") {
     gfVersion = "gf-tankmen";
     pico = false;
@@ -87,11 +97,10 @@ function create() {
     PlayState.add(smokeRight);
 
     var tankWatchtowerTex = Paths.getSparrowAtlas('tank/tankWatchtower');
-    var tankWatchtower = new FlxSprite(100, 50);
+    tankWatchtower = new FlxSprite(100, 50);
     tankWatchtower.scrollFactor.set(0.5,0.5);
     tankWatchtower.frames = tankWatchtowerTex;
-    tankWatchtower.animation.addByPrefix('watchtower gradient color', "watchtower gradient color", 24);
-    tankWatchtower.animation.play('watchtower gradient color');
+    tankWatchtower.animation.addByPrefix('watchtower gradient color', "watchtower gradient color", 24, false);
     tankWatchtower.antialiasing = true;
     PlayState.add(tankWatchtower);
 
@@ -126,65 +135,74 @@ function update(elapsed) {
     //updates the background tank
     tankAngle += elapsed * tankSpeed;
     tankRolling.angle = tankAngle - 90 + 15;
-    tankRolling.x = 400 + (1000 * Math.cos(Math.PI / 180 * (1 * tankAngle + 180)));
-    tankRolling.y = 700 + (500 * Math.sin(Math.PI / 180 * (1 * tankAngle + 180)));
+    // tankRolling.x = 400 + (1000 * Math.cos(Math.PI / 180 * (1 * tankAngle + 180)));
+    // tankRolling.y = 700 + (500 * Math.sin(Math.PI / 180 * (1 * tankAngle + 180)));
+    tankRolling.x = 400 + 1500 * Math.cos(Math.PI / 180 * (1 * tankAngle + 180));
+    tankRolling.y = 1300 + 1100 * Math.sin(Math.PI / 180 * (1 * tankAngle + 180));
 }
 function createInFront() {
     var tank0Tex = Paths.getSparrowAtlas('tank/tank0');
-    var tank0 = new FlxSprite(-500, 650);
+    tank0 = new FlxSprite(-500, 650);
     tank0.scrollFactor.set(1.7,1.5);
     tank0.frames = tank0Tex;
-    tank0.animation.addByPrefix('fg', "fg", 24);
-    tank0.animation.play('fg');
+    tank0.animation.addByPrefix('fg', "fg", 24, false);
     tank0.antialiasing = true;
     PlayState.add(tank0);
 
     global["level"] = PlayState.members.indexOf(tank0);
 
     var tank1Tex = Paths.getSparrowAtlas('tank/tank1');
-    var tank1 = new FlxSprite(-300, 750);
+    tank1 = new FlxSprite(-300, 750);
     tank1.scrollFactor.set(2,0.2);
     tank1.frames = tank1Tex;
-    tank1.animation.addByPrefix('fg', "fg", 24);
-    tank1.animation.play('fg');
+    tank1.animation.addByPrefix('fg', "fg", 24, false);
     tank1.antialiasing = true;
     PlayState.add(tank1);
 
     var tank2Tex = Paths.getSparrowAtlas('tank/tank2');
-    var tank2 = new FlxSprite(450, 940);
+    tank2 = new FlxSprite(450, 940);
     tank2.scrollFactor.set(1.5,1.5);
     tank2.frames = tank2Tex;
-    tank2.animation.addByPrefix('foreground', "foreground", 24);
-    tank2.animation.play('foreground');
+    tank2.animation.addByPrefix('foreground', "foreground", 24, false);
+
     tank2.antialiasing = true;
     PlayState.add(tank2);
 
     var tank4Tex = Paths.getSparrowAtlas('tank/tank4');
-    var tank4 = new FlxSprite(1300, 900);
+    tank4 = new FlxSprite(1300, 900);
     tank4.scrollFactor.set(1.5,1.5);
     tank4.frames = tank4Tex;
-    tank4.animation.addByPrefix('fg', "fg", 24);
-    tank4.animation.play('fg');
+    tank4.animation.addByPrefix('fg', "fg", 24, false);
+
     tank4.antialiasing = true;
     PlayState.add(tank4);
 
     var tank5Tex = Paths.getSparrowAtlas('tank/tank5');
-    var tank5 = new FlxSprite(1620, 700);
+    tank5 = new FlxSprite(1620, 700);
     tank5.scrollFactor.set(1.5,1.5);
     tank5.frames = tank5Tex;
-    tank5.animation.addByPrefix('fg', "fg", 24);
-    tank5.animation.play('fg');
+    tank5.animation.addByPrefix('fg', "fg", 24, false);
+
     tank5.antialiasing = true;
     PlayState.add(tank5);
 
     var tank3Tex = Paths.getSparrowAtlas('tank/tank3');
-    var tank3 = new FlxSprite(1300, 1200);
+    tank3 = new FlxSprite(1300, 1200);
     tank3.scrollFactor.set(3.5,2.5);
     tank3.frames = tank3Tex;
-    tank3.animation.addByPrefix('fg', "fg", 24);
-    tank3.animation.play('fg');
+    tank3.animation.addByPrefix('fg', "fg", 24, false);
     tank3.antialiasing = true;
     PlayState.add(tank3);
 
     global["tanks"] = [tank0, tank1, tank2, tank3, tank4, tank5];
+}
+
+function beatHit(curBeat) {
+        tank0.animation.play('fg');
+        tank1.animation.play('fg');
+        tank2.animation.play('foreground');
+        tank3.animation.play('fg');
+        tank4.animation.play('fg');
+        tank5.animation.play('fg');
+        tankWatchtower.animation.play('watchtower gradient color');
 }

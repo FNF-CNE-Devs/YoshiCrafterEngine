@@ -64,7 +64,6 @@ class ContextMenu extends MusicBeatSubstate {
     public override function update(elapsed:Float) {
         if (FlxG.mouse.overlaps(bg)) { // nice bg
             var y = FlxG.mouse.y - FlxG.camera.scroll.y - bg.y;
-            // trace(y);
             curSelected = FlxMath.wrap(Std.int(y / 20), 0, options.length - 1);
             if (FlxG.mouse.justPressed && FlxG.mouse.overlaps(selectorThing)) {
                 select();
@@ -80,11 +79,9 @@ class ContextMenu extends MusicBeatSubstate {
             if (FlxG.mouse.justPressed || controls.BACK) {
                 FlxG.state.persistentUpdate = false;
                 close();
-                // return;
             }
             if (controls.ACCEPT) {
                 select();
-                // return;
             }
         }
         selectorThing.value = FlxMath.lerp(selectorThing.value, selectorThing.max, CoolUtil.wrapFloat(0.5 * 60 * elapsed, 0, 1));

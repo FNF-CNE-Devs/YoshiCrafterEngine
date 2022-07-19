@@ -10,6 +10,8 @@ using StringTools;
 */
 class DiscordClient
 {
+	public static var clientID:String = null;
+	public static var init:Bool = false;
 	/**
 	* Creates a new Discord Client.
 	*/
@@ -18,6 +20,18 @@ class DiscordClient
 		_create("915896776869953588");
 	}
 
+	public static function switchRPC(clientID:String) {
+		if (DiscordClient.clientID != (DiscordClient.clientID = clientID)) {
+            trace("doing change to " + clientID);
+			DiscordRpc.shutdown();
+			DiscordRpc.start({
+				clientID: DiscordClient.clientID,
+				onReady: onReady,
+				onError: onError,
+				onDisconnected: onDisconnected
+			});
+		}
+	}
 	public function _create(clientID:String) {
 		trace("Discord Client starting...");
 		DiscordRpc.start({
@@ -26,19 +40,12 @@ class DiscordClient
 			onError: onError,
 			onDisconnected: onDisconnected
 		});
-		// DiscordRpc.start({
-		// 	clientID: "814588678700924999",
-		// 	onReady: onReady,
-		// 	onError: onError,
-		// 	onDisconnected: onDisconnected
-		// });
 		trace("Discord Client started.");
 
 		while (true)
 		{
 			DiscordRpc.process();
 			sleep(2);
-			//trace("Discord Client Update");
 		}
 
 		DiscordRpc.shutdown();
@@ -54,11 +61,12 @@ class DiscordClient
 
 	static function onReady()
 	{
+		init = true;
 		DiscordRpc.presence({
 			details: "In the Menus",
 			state: null,
 			largeImageKey: 'icon',
-			largeImageText: "Friday Night Funkin'"
+			largeImageText: "Friday Night Funkin' - YoshiCrafter Engine"
 		});
 	}
 
@@ -97,7 +105,7 @@ class DiscordClient
 			details: details,
 			state: state,
 			largeImageKey: 'icon',
-			largeImageText: "Friday Night Funkin'",
+			largeImageText: "Friday Night Funkin' - YoshiCrafter Engine",
 			smallImageKey : smallImageKey,
 			// Obtained times are in milliseconds so they are divided so Discord can use it
 			startTimestamp : Std.int(startTimestamp / 1000),

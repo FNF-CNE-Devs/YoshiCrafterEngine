@@ -1,4 +1,3 @@
-import EngineSettings.Settings;
 import flixel.system.FlxAssets.FlxShader;
 
 class ColoredNoteShader extends FlxFixedShader {

@@ -6,7 +6,6 @@ import lime.utils.Assets;
 import dev_toolbox.ToolboxHome;
 import dev_toolbox.stage_editor.StageEditor;
 import ControlsSettingsSubState;
-import EngineSettings.Settings;
 import Controls.Control;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -28,8 +27,7 @@ class PauseSubState extends MusicBeatSubstate
 	function get_items() {return grpMenuShit;}
 	function set_items(i) {return grpMenuShit = i;}
 
-	public var menuItems:Array<String> = ['Resume', 'Restart Song', 'Change Keybinds', 'Options'];
-	public var devMenuItems:Array<String> = ['Logs', 'Edit Opponent', 'Edit Player', 'Edit Stage'];
+	public var menuItems:Array<String> = ['Resume', 'Restart Song', 'Change Difficulty', 'Change Keybinds', 'Options', 'Exit to menu'];
 	public var curSelected:Int = 0;
 
 	public var pauseMusic:FlxSound;
@@ -38,6 +36,7 @@ class PauseSubState extends MusicBeatSubstate
 	public var pauseMenuScript:Script = null;
 	public var levelInfo:FlxText;
 	public var levelDifficulty:FlxText;
+	public var blueballAmount:FlxText;
 
 	public var cam:FlxCamera;
 
@@ -46,6 +45,8 @@ class PauseSubState extends MusicBeatSubstate
 	public function new(x:Float, y:Float)
 	{
 		super();
+
+		if (PlayState.isStoryMode || PlayState.alternativeDifficulties == null || PlayState.alternativeDifficulties.length < 2) menuItems.remove("Change Difficulty");
 		
 		cam = new FlxCamera(0, 0, FlxG.width, FlxG.height, 1);
 		cam.bgColor = 0;
@@ -66,7 +67,10 @@ class PauseSubState extends MusicBeatSubstate
 		script.setVariable("postUpdate", function(elapsed) {});
 		script.setVariable("onSelect", function(name) {}); // return false to cancel default
 		script.setVariable("state", this); // return false to cancel default
-		if (valid) script.loadFile('${Paths.modsPath}/${PlayState.songMod}/ui/PauseSubState');
+		if (valid) {
+			script.setScriptObject(this);
+			script.loadFile('${Paths.modsPath}/${PlayState.songMod}/ui/PauseSubState');
+		}
 		script.executeFunc("preCreate");
 		
 
@@ -93,19 +97,24 @@ class PauseSubState extends MusicBeatSubstate
 		levelDifficulty.updateHitbox();
 		add(levelDifficulty);
 
-		levelDifficulty.alpha = 0;
-		levelInfo.alpha = 0;
+		blueballAmount = new FlxText(20, 15 + 64, 0, "", 32);
+		blueballAmount.text += 'Blueballed: ${PlayState.blueballAmount}';
+		blueballAmount.scrollFactor.set();
+		blueballAmount.setFormat(Paths.font('vcr.ttf'), 32);
+		blueballAmount.updateHitbox();
+		add(blueballAmount);
+
+		levelDifficulty.alpha = levelInfo.alpha = blueballAmount.alpha = 0;
 
 		levelInfo.x = Std.int(1280) - (levelInfo.width + 20);
 		levelDifficulty.x = Std.int(1280) - (levelDifficulty.width + 20);
+		blueballAmount.x = Std.int(1280) - (blueballAmount.width + 20);
 
 		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 		FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
-		if (CoolUtil.isDevMode()) {
-			for (d in devMenuItems) menuItems.push(d);
-			if (PlayState.current.devStage == null) menuItems.remove("Edit Stage");
-		}
-		menuItems.push("Exit to menu");
+		FlxTween.tween(blueballAmount, {alpha: 1, y: blueballAmount.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
+		if (CoolUtil.isDevMode())
+			menuItems.insert(2, "Developer Options");
 		
 		script.executeFunc("create");
 		
@@ -132,6 +141,7 @@ class PauseSubState extends MusicBeatSubstate
 		
 		levelInfo.x = FlxG.width - (levelInfo.width + 20);
 		levelDifficulty.x = FlxG.width - (levelDifficulty.width + 20);
+		blueballAmount.x = FlxG.width - (blueballAmount.width + 20);
 
 		alpha = FlxMath.lerp(alpha, 0.6, 0.125 * elapsed * 60);
 
@@ -170,44 +180,129 @@ class PauseSubState extends MusicBeatSubstate
 					case "Restart Song":
 						FlxG.resetState();
 					case "Change Keybinds":
-						// var oldZoom = PlayState.current.camHUD.zoom;
 						var s = new ControlsSettingsSubState(PlayState.SONG.keyNumber, cam);
-						// FlxTween.tween(PlayState.current.camHUD, {zoom : 1}, 0.2, {ease : FlxEase.smoothStepInOut});
-						// s.closeCallback = function() {
-						// 	FlxTween.tween(PlayState.current.camHUD, {zoom : oldZoom}, 0.2, {ease : FlxEase.smoothStepInOut});
-						// };
 						openSubState(s);
-					case "Logs":
-						Main.logsOverlay.visible = !Main.logsOverlay.visible;
-					case "Edit Player":
-						var split = PlayState.SONG.player1.split(":");
-						dev_toolbox.character_editor.CharacterEditor.fromFreeplay = true;
-						dev_toolbox.ToolboxHome.selectedMod = split[0];
-						FlxG.switchState(new dev_toolbox.character_editor.CharacterEditor(split[1]));
-					case "Edit Opponent":
-						var split = PlayState.SONG.player2.split(":");
-						dev_toolbox.character_editor.CharacterEditor.fromFreeplay = true;
-						dev_toolbox.ToolboxHome.selectedMod = split[0];
-						FlxG.switchState(new dev_toolbox.character_editor.CharacterEditor(split[1]));
-					case "Edit Stage":
-						var devStageSplit = PlayState.current.devStage.split(":");
-						ToolboxHome.selectedMod = devStageSplit[0];
-						StageEditor.fromFreeplay = true;
-						FlxG.switchState(new StageEditor(devStageSplit[1]));
+					case "Change Difficulty":
+
+						var controlsList:Array<{label:String, callback:RightPane->Void}> = [];
+						for(e in PlayState.alternativeDifficulties) {
+							controlsList.push({
+								label: e,
+								callback: function(state) {
+									state.close();
+									CoolUtil.loadSong(PlayState.songMod, PlayState.SONG.song, e, PlayState.alternativeDifficulties);
+									FlxG.resetState();
+								}
+							});
+						}
+						var pane = new RightPane("Difficulties", controlsList);
+						pane.cameras = cameras;
+						openSubState(pane);
+
+					case "Developer Options":
+						var controlsList:Array<{label:String, callback:RightPane->Void}> = [];
+						var devMenuItems:Array<String> = ['Skip Song', 'Logs', 'Edit Opponent', 'Edit Player', 'Edit Stage'];
+						controlsList.push({
+							label: 'Skip Song',
+							callback: function(t) {
+								close();
+								PlayState.current.endSong();
+							}
+						});
+						controlsList.push({
+							label: 'Logs (F6)',
+							callback: function(t) {
+								Main.logsOverlay.visible = !Main.logsOverlay.visible;
+							}
+						});
+						controlsList.push({
+							label: 'Edit Player',
+							callback: function(t) {
+								var split = PlayState.SONG.player1.split(":");
+								dev_toolbox.character_editor.CharacterEditor.fromFreeplay = true;
+								dev_toolbox.ToolboxHome.selectedMod = split[0];
+								FlxG.switchState(new dev_toolbox.character_editor.CharacterEditor(split[1]));
+							}
+						});
+						controlsList.push({
+							label: 'Edit Opponent',
+							callback: function(t) {
+								var split = PlayState.SONG.player2.split(":");
+								dev_toolbox.character_editor.CharacterEditor.fromFreeplay = true;
+								dev_toolbox.ToolboxHome.selectedMod = split[0];
+								FlxG.switchState(new dev_toolbox.character_editor.CharacterEditor(split[1]));
+							}
+						});
+						if (PlayState.current.devStage != null) {
+							controlsList.push({
+								label: 'Edit Stage',
+								callback: function(t) {
+									var devStageSplit = PlayState.current.devStage.split(":");
+									ToolboxHome.selectedMod = devStageSplit[0];
+									StageEditor.fromFreeplay = true;
+									FlxG.switchState(new StageEditor(devStageSplit[1]));
+								}
+							});
+						}
+						controlsList.push({
+							label: 'Open charts folder',
+							callback: function(t) {
+								CoolUtil.openFolder('${Paths.modsPath}/${PlayState.songMod}/data/${PlayState.SONG.song}/');
+							}
+						});
+						controlsList.push({
+							label: 'Reload chart',
+							callback: function(t) {
+								CoolUtil.loadSong(PlayState.songMod, PlayState.SONG.song, PlayState.storyDifficulty, PlayState.alternativeDifficulties);
+								FlxG.resetState();
+							}
+						});
+						controlsList.push({
+							label: 'Open Toolbox',
+							callback: function(t) {
+								FlxG.switchState(new ToolboxHome(PlayState.songMod));
+							}
+						});
+						if (PlayState.fromCharter) 
+							controlsList.push({
+								label: 'Exit Charter Mode',
+								callback: function(t) {
+									CoolUtil.playMenuSFX(1);
+									PlayState.fromCharter = false;
+									PlayState.current.scoreWarning.text = "/!\\ Score will not be saved";
+								}
+							});
+
+						var pane = new RightPane("Developer Options", controlsList);
+						pane.cameras = cameras;
+						openSubState(pane);
 					case "Options":
 						OptionsMenu.fromFreeplay = true;
 						FlxG.switchState(new OptionsMenu(0, 0));
 					case "Exit to menu":
-						FlxG.switchState(new MainMenuState());
+						if (PlayState.fromCharter) {
+							var m = new MenuMessage("Are you sure you want to exit back to the main menu? Any unsaved progress will be lost.", [
+								{
+									label: "No",
+									callback: function() {}
+								},
+								{
+									label: "Yes",
+									callback: function() {
+										FlxG.switchState(new MainMenuState());
+										PlayState._SONG = null;
+									}
+								}
+							]);
+							m.cameras = cameras;
+							openSubState(m);
+						} else {
+							FlxG.switchState(new MainMenuState());
+							PlayState._SONG = null;
+						}
 				}
 			}
 			
-		}
-
-		if (FlxControls.justPressed.J)
-		{
-			// for reference later!
-			// PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxKey.J, null);
 		}
 		script.executeFunc("updatePost", [elapsed]);
 		script.executeFunc("postUpdate", [elapsed]);
@@ -226,6 +321,7 @@ class PauseSubState extends MusicBeatSubstate
 	{
 		var oldSelected = curSelected;
 		curSelected += change;
+		if (change != 0) CoolUtil.playMenuSFX(0);
 
 		if (curSelected < 0)
 			curSelected = menuItems.length - 1;
@@ -241,12 +337,10 @@ class PauseSubState extends MusicBeatSubstate
 				bullShit++;
 
 				item.alpha = 0.6;
-				// item.setGraphicSize(Std.int(item.width * 0.8));
 
 				if (item.targetY == 0)
 				{
 					item.alpha = 1;
-					// item.setGraphicSize(Std.int(item.width));
 				}
 			}	
 		} else {

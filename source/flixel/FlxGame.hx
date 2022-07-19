@@ -1,5 +1,7 @@
 package flixel;
 
+import openfl.filters.ShaderFilter;
+import flixel.system.FlxAssets.FlxShader;
 import flash.Lib;
 import flash.display.Sprite;
 import flash.display.StageAlign;
@@ -289,6 +291,9 @@ class FlxGame extends Sprite
 		addEventListener(Event.ADDED_TO_STAGE, create);
 	}
 
+	public function addShader(shader:FlxShader) {
+		_filters.push(new ShaderFilter(shader));
+	}
 	/**
 	 * Sets the filter array to be applied to the game.
 	 */
@@ -562,7 +567,6 @@ class FlxGame extends Sprite
 			debugger.update();
 			#end
 		}
-        FlxG.textInput.reset();
 	}
 
 	/**
@@ -607,6 +611,7 @@ class FlxGame extends Sprite
 	 */
 	function switchState():Void
 	{
+		if (Settings.engineSettings != null && Settings.engineSettings.data.logStateChanges) LogsOverlay.trace('[FLIXEL ENGINE] == Switching State to ${Type.getClassName(Type.getClass(_requestedState))} == ');
 		// Basic reset stuff
 		FlxG.cameras.reset();
 		FlxG.inputs.onStateSwitch();
@@ -627,6 +632,10 @@ class FlxGame extends Sprite
 		// we need to clear bitmap cache only after previous state is destroyed, which will reset useCount for FlxGraphic objects
 		FlxG.bitmap.clearCache();
 
+		// clearing shaders cause people love fucking around
+		_filters = [];
+		filtersEnabled = true;
+
 		// Finally assign and create the new state
 		_state = _requestedState;
 
@@ -645,6 +654,8 @@ class FlxGame extends Sprite
 		#end
 
 		FlxG.signals.postStateSwitch.dispatch();
+
+        _state.createPost();
 	}
 
 	function gameStart():Void
