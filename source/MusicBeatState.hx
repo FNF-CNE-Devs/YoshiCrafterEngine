@@ -31,7 +31,7 @@ class MusicBeatState extends FlxUIState
 	public static var medalOverlay:Array<MedalsOverlay> = [];
 	private var reloadModsState:Bool = false;
 
-	private static var doCachingShitNextTime:Bool = true;
+	private static var doCachingShitNextTime:Bool = false;
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
 
@@ -205,10 +205,12 @@ class MusicBeatState extends FlxUIState
 			songTime: 0,
 			bpm: 0
 		}
-		for (i in 0...Conductor.bpmChangeMap.length)
-		{
-			if (t >= Conductor.bpmChangeMap[i].songTime)
-				lastChange = Conductor.bpmChangeMap[i];
+		if (Conductor.bpmChangeMap != null) {
+			for (i in 0...Conductor.bpmChangeMap.length)
+			{
+				if (t >= Conductor.bpmChangeMap[i].songTime)
+					lastChange = Conductor.bpmChangeMap[i];
+			}
 		}
 		return lastChange;
 	}
@@ -219,10 +221,13 @@ class MusicBeatState extends FlxUIState
 			songTime: 0,
 			bpm: 0
 		}
-		for (i in 0...Conductor.bpmChangeMap.length)
-		{
-			if (step >= Conductor.bpmChangeMap[i].stepTime)
-				lastChange = Conductor.bpmChangeMap[i];
+		
+		if (Conductor.bpmChangeMap != null) {
+			for (i in 0...Conductor.bpmChangeMap.length)
+			{
+				if (step >= Conductor.bpmChangeMap[i].stepTime)
+					lastChange = Conductor.bpmChangeMap[i];
+			}
 		}
 		return lastChange;
 	}

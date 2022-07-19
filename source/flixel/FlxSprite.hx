@@ -671,8 +671,10 @@ class FlxSprite extends FlxObject
 		if (dirty) // rarely
 			calcFrame(useFramePixels);
 
+		if (cameras == null) cameras = [];
 		for (camera in cameras)
 		{
+			if (camera == null) continue;
 			if (!camera.visible || !camera.exists || !isOnScreen(camera))
 				continue;
 

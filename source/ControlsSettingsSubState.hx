@@ -1,3 +1,4 @@
+import flixel.math.FlxRect;
 import options.screens.KeybindsMenu;
 import flixel.math.FlxMath;
 import NoteShader.ColoredNoteShader;
@@ -80,11 +81,17 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
     public var changeThingGrp:FlxSpriteGroup = new FlxSpriteGroup();
     public var strumsGrp:FlxSpriteGroup = new FlxSpriteGroup();
     public var callback:Void->Void = null;
+    public var sizeRect:FlxRect = new FlxRect();
 
     public function new(arrowNumber:Int, camera:FlxCamera, ?callback:Void->Void) {
         var engineSettings = Settings.engineSettings.data;
-        if (PlayState.current != null)
+        sizeRect.width = FlxG.width;
+        sizeRect.height = FlxG.height;
+        if (PlayState.current != null) {
             engineSettings = PlayState.current.engineSettings;
+            sizeRect.width = PlayState.current.guiSize.x;
+            sizeRect.height = PlayState.current.guiSize.y;
+        }
         
         super();
         this.cameras = [camera];
@@ -97,7 +104,7 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
         title.screenCenter(X);
         add(title);
 
-        var statusThing = new AlphabetOptimized(10, FlxG.height - 70, "[Enter] Change Selected Keybind | [Esc] Save & Exit", false, 0.5);
+        var statusThing = new AlphabetOptimized(10, sizeRect.height - 70, "[Enter] Change Selected Keybind | [Esc] Save & Exit", false, 0.5);
         statusThing.screenCenter(X);
         add(statusThing);
 
@@ -177,7 +184,7 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
         changeThingGrp.add(instructions);
         add(strumsGrp);
         add(changeThingGrp);
-        if (strumsGrp.width < FlxG.width - size)
+        if (strumsGrp.width < sizeRect.width - size)
             strumsGrp.screenCenter(X);
         else
             strumsGrp.x = size / 2;
@@ -198,8 +205,8 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
     public override function update(elapsed:Float) {
         super.update(elapsed);
         if (Std.isOfType(FlxG.state, PlayState)) {
-            camera.scroll.x = -(FlxG.width - 1280) / 2;
-            camera.scroll.y = -(FlxG.height - 720) / 2;
+            camera.scroll.x = -(sizeRect.width - 1280) / 2;
+            camera.scroll.y = -(sizeRect.height - 720) / 2;
         }
         changeThingGrp.visible = isChanging;
         if (!controls.ACCEPT) isAccept = false;
@@ -216,10 +223,10 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
                 }
             }
         } else {
-            if (strumsGrp.width >= FlxG.width - size) {
-                strumsGrp.x = FlxMath.lerp(strumsGrp.x, FlxMath.bound(-curSelected * size + (FlxG.width / 2) - (size * 0.5), -(strumsGrp.width - FlxG.width) - 100, 100), 0.125 * 60 * elapsed); 
+            if (strumsGrp.width >= sizeRect.width - size) {
+                strumsGrp.x = FlxMath.lerp(strumsGrp.x, FlxMath.bound(-curSelected * size + (sizeRect.width / 2) - (size * 0.5), -(strumsGrp.width - sizeRect.width) - 100, 100), 0.125 * 60 * elapsed); 
             } else {
-                strumsGrp.x = (FlxG.width / 2) - (size * 0.5 * arrowNumber);
+                strumsGrp.x = (sizeRect.width / 2) - (size * 0.5 * arrowNumber);
             }
             if (controls.BACK) {
                 for(i=>k in currentKeys) {

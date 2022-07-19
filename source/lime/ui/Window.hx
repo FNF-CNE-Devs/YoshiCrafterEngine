@@ -358,6 +358,8 @@ class Window
 
 	public function alert(message:String = null, title:String = null):Void
 	{
+		if (fullscreen)
+			fullscreen = false;
         #if noAlert
             trace("========");
             trace(title);

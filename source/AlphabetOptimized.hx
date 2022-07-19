@@ -506,6 +506,11 @@ class OutlineShader extends FlxFixedShader {
     float sin45 = sin(radians(45.0));
     uniform vec4 cuttingEdge;
     
+    float motherfuckingAbs(float v) {
+        if (v < 0)
+            return -v;
+        return v;
+    }
     vec4 flixel_texture2D_safe(sampler2D bitmap, vec2 pos) {
         if (pos.x < cuttingEdge.x || pos.x > cuttingEdge.x + cuttingEdge.z || pos.y < cuttingEdge.y || pos.y > cuttingEdge.y + cuttingEdge.w)
              return vec4(0, 0, 0, 0);
@@ -529,7 +534,7 @@ class OutlineShader extends FlxFixedShader {
             for(int y = -int(diff); y < int(diff); y += step) {
                 vec2 offset = vec2(x / openfl_TextureSize.x, y / openfl_TextureSize.y);
                 float angle = atan(offset.y, offset.x);
-                offset = vec2(cos(angle) * (abs(x) / openfl_TextureSize.x), sin(angle) * (abs(y) / openfl_TextureSize.y));
+                offset = vec2(cos(angle) * (motherfuckingAbs(x) / openfl_TextureSize.x), sin(angle) * (motherfuckingAbs(y) / openfl_TextureSize.y));
 
                 vec4 c1 = flixel_texture2D_safe(bitmap, newPos + offset);
                 if (a < c1.a) a = c1.a;
