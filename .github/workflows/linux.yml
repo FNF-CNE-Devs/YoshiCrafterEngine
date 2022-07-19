@@ -52,6 +52,7 @@ jobs:
           haxelib git polymod https://github.com/MasterEric/polymod.git
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
           haxelib git flixel-textureatlas-yoshiengine https://github.com/YoshiCrafter29/Flixel-TextureAtlas-YoshiCrafterEngine
+          haxelib git hscript-yoshiengine https://github.com/YoshiCrafter29/hscript-improved
           haxelib run lime build linux
           
       - uses: actions/upload-artifact@v2
