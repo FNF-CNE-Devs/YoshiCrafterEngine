@@ -1,0 +1,275 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Build
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  buildLinux:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.2.5
+      # Runs a set of commands using the runners shell
+      - name: Install Haxelib
+        run: |
+          sudo apt-get install libvlc-dev
+          sudo apt-get install libvlccore-dev
+          haxelib setup ~/haxelib
+          haxelib install hxcpp > /dev/null
+          haxelib install lime
+          haxelib install openfl
+          haxelib install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install flixel-tools
+          haxelib install flixel-addons
+          haxelib install flixel-ui
+          haxelib install hscript
+          haxelib install hscript
+          haxelib install akifox-asynchttp
+          haxelib install flixel-addons
+          haxelib install newgrounds
+          haxelib install linc_luajit
+          haxelib install hxp
+          haxelib install hxcpp-debug-server
+          haxelib git faxe https://github.com/uhrobots/faxe
+          haxelib git polymod https://github.com/MasterEric/polymod.git
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          haxelib git flixel-textureatlas-yoshiengine https://github.com/YoshiCrafter29/Flixel-TextureAtlas-YoshiCrafterEngine
+          haxelib git hscript-yoshiengine https://github.com/YoshiCrafter29/hscript-improved
+          haxelib list
+      - name: Compile
+        run: haxelib run lime build Project.xml linux
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: linuxBuild
+          path: 'export/release/linux/bin'
+  buildWindows:
+    runs-on: windows-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2.3.0
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.2.5
+      # Runs a set of commands using the runners shell
+      - name: Install Haxelib
+        run: |
+          haxelib setup C:/haxelib
+          haxelib install hxcpp > nul
+          haxelib install lime
+          haxelib install openfl
+          haxelib install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install flixel-tools
+          haxelib install flixel-addons
+          haxelib install flixel-ui
+          haxelib install hscript
+          haxelib install hscript
+          haxelib install akifox-asynchttp
+          haxelib install flixel-addons
+          haxelib install newgrounds
+          haxelib install linc_luajit
+          haxelib install hxp
+          haxelib install hxcpp-debug-server
+          haxelib git faxe https://github.com/uhrobots/faxe
+          haxelib git polymod https://github.com/MasterEric/polymod.git
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          haxelib git flixel-textureatlas-yoshiengine https://github.com/YoshiCrafter29/Flixel-TextureAtlas-YoshiCrafterEngine
+          haxelib git hscript-yoshiengine https://github.com/YoshiCrafter29/hscript-improved
+          haxelib list
+        shell: cmd
+      - name: Compile
+        run: haxelib run lime build windows
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: windowsBuild
+          path: export/release/windows/bin
+  buildMac:
+    runs-on: macos-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.2.5
+      # Runs a set of commands using the runners shell
+      - name: Install Haxelib
+        run: |
+          haxelib setup ~/haxelib
+          haxelib install hxcpp > /dev/null
+          haxelib install lime
+          haxelib install openfl
+          haxelib install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install flixel-tools
+          haxelib install flixel-addons
+          haxelib install flixel-ui
+          haxelib install hscript
+          haxelib install hscript
+          haxelib install akifox-asynchttp
+          haxelib install flixel-addons
+          haxelib install newgrounds
+          haxelib install linc_luajit
+          haxelib install hxp
+          haxelib install hxcpp-debug-server
+          haxelib git faxe https://github.com/uhrobots/faxe
+          haxelib git polymod https://github.com/MasterEric/polymod.git
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          haxelib git flixel-textureatlas-yoshiengine https://github.com/YoshiCrafter29/Flixel-TextureAtlas-YoshiCrafterEngine
+          haxelib git hscript-yoshiengine https://github.com/YoshiCrafter29/hscript-improved
+          haxelib list
+      - name: Compile
+        run: haxelib run lime build mac
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: macBuild
+          path: export/release/macos/bin
+  pagesBuild:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.2.5
+      # Runs a set of commands using the runners shell
+      - name: Install Haxelib
+        run: |
+          haxelib setup ~/haxelib
+          haxelib install hxcpp > /dev/null
+          haxelib install lime
+          haxelib install openfl
+          haxelib install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install flixel-tools
+          haxelib install flixel-addons
+          haxelib install flixel-ui
+          haxelib install hscript
+          haxelib install hscript
+          haxelib install akifox-asynchttp
+          haxelib install flixel-addons
+          haxelib install newgrounds
+          haxelib install linc_luajit
+          haxelib install hxp
+          haxelib install hxcpp-debug-server
+          haxelib git faxe https://github.com/uhrobots/faxe
+          haxelib git polymod https://github.com/MasterEric/polymod.git
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          haxelib git flixel-textureatlas-yoshiengine https://github.com/YoshiCrafter29/Flixel-TextureAtlas-YoshiCrafterEngine
+          haxelib git hscript-yoshiengine https://github.com/YoshiCrafter29/hscript-improved
+          haxelib list
+      - name: Compile
+        run: haxelib run lime build html5
+      - name: GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v2.5.0
+        with:
+          target_branch: gh-pages
+          build_dir: export/release/html5/bin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  buildAndroid:
+    name: buildAndroid
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.1
+
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r21e
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+
+      - name: Setup Haxe
+        uses: krdlab/setup-haxe@v1.1.5
+        with:
+          haxe-version: 4.2.5
+
+      - name: Install Haxelib
+        run: |
+          haxelib setup ~/haxelib
+          haxelib install hxcpp > /dev/null
+          haxelib install lime
+          haxelib install openfl
+          haxelib install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install flixel-tools
+          haxelib install flixel-addons
+          haxelib install flixel-ui
+          haxelib install hscript
+          haxelib install hscript
+          haxelib install akifox-asynchttp
+          haxelib install flixel-addons
+          haxelib install newgrounds
+          haxelib install linc_luajit
+          haxelib install hxp
+          haxelib install hxcpp-debug-server
+          haxelib git faxe https://github.com/uhrobots/faxe
+          haxelib git polymod https://github.com/MasterEric/polymod.git
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          haxelib git flixel-textureatlas-yoshiengine https://github.com/YoshiCrafter29/Flixel-TextureAtlas-YoshiCrafterEngine
+          haxelib git hscript-yoshiengine https://github.com/YoshiCrafter29/hscript-improved
+          haxelib list
+      - name: Create Version Tag
+        run: echo "${{github.run_id}}" > VERSION
+
+      - name: Setup Lime
+        run: |
+          haxelib run lime setup -alias -y
+          haxelib run lime config ANDROID_SDK $ANDROID_HOME
+          haxelib run lime config ANDROID_NDK_ROOT $ANDROID_NDK_HOME
+          haxelib run lime config JAVA_HOME $JAVA_HOME
+          haxelib run lime config ANDROID_SETUP true
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+
+      - name: Compile
+        run: haxelib run lime build android --app-version="4.0.0-${{ github.run_id}}"
+
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: androidBuild
+          path: export/release/android/bin/app/build/outputs/apk/debug
