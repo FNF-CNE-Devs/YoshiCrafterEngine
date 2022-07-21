@@ -44,7 +44,6 @@ jobs:
           haxelib install flixel-addons
           haxelib install flixel-ui
           haxelib install hscript
-          haxelib install hscript
           haxelib install akifox-asynchttp
           haxelib install flixel-addons
           haxelib install newgrounds
@@ -89,7 +88,6 @@ jobs:
           haxelib install flixel-tools
           haxelib install flixel-addons
           haxelib install flixel-ui
-          haxelib install hscript
           haxelib install hscript
           haxelib install akifox-asynchttp
           haxelib install flixel-addons
@@ -137,7 +135,6 @@ jobs:
           haxelib install flixel-addons
           haxelib install flixel-ui
           haxelib install hscript
-          haxelib install hscript
           haxelib install akifox-asynchttp
           haxelib install flixel-addons
           haxelib install newgrounds
@@ -182,7 +179,6 @@ jobs:
           haxelib install flixel-tools
           haxelib install flixel-addons
           haxelib install flixel-ui
-          haxelib install hscript
           haxelib install hscript
           haxelib install akifox-asynchttp
           haxelib install flixel-addons
@@ -247,7 +243,6 @@ jobs:
           haxelib install flixel-addons
           haxelib install flixel-ui
           haxelib install hscript
-          haxelib install hscript
           haxelib install akifox-asynchttp
           haxelib install flixel-addons
           haxelib install newgrounds
@@ -262,8 +257,6 @@ jobs:
           haxelib git flixel-textureatlas-yoshiengine https://github.com/YoshiCrafter29/Flixel-TextureAtlas-YoshiCrafterEngine
           haxelib git hscript-yoshiengine https://github.com/YoshiCrafter29/hscript-improved
           haxelib list
-      - name: Create Version Tag
-        run: echo "${{github.run_id}}" > VERSION
 
       - name: Setup Lime
         run: |
@@ -276,7 +269,7 @@ jobs:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
       - name: Compile
-        run: haxelib run lime build android --app-version="4.0.0-${{ github.run_id}}"
+        run: haxelib run lime build android
 
       - name: Publish Artifact
         uses: actions/upload-artifact@v2.2.4
