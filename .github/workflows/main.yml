@@ -50,6 +50,7 @@ jobs:
           haxelib install newgrounds
           haxelib install linc_luajit
           haxelib install hxp
+          haxelib install hxCodec
           haxelib install hxcpp-debug-server
           haxelib git faxe https://github.com/uhrobots/faxe
           haxelib git polymod https://github.com/MasterEric/polymod.git
@@ -94,6 +95,7 @@ jobs:
           haxelib install newgrounds
           haxelib install linc_luajit
           haxelib install hxp
+          haxelib install hxCodec
           haxelib install hxcpp-debug-server
           haxelib git faxe https://github.com/uhrobots/faxe
           haxelib git polymod https://github.com/MasterEric/polymod.git
@@ -139,6 +141,7 @@ jobs:
           haxelib install newgrounds
           haxelib install linc_luajit
           haxelib install hxp
+          haxelib install hxCodec
           haxelib install hxcpp-debug-server
           haxelib git faxe https://github.com/uhrobots/faxe
           haxelib git polymod https://github.com/MasterEric/polymod.git
@@ -183,6 +186,7 @@ jobs:
           haxelib install newgrounds
           haxelib install linc_luajit
           haxelib install hxp
+          haxelib install hxCodec
           haxelib install hxcpp-debug-server
           haxelib git faxe https://github.com/uhrobots/faxe
           haxelib git polymod https://github.com/MasterEric/polymod.git
@@ -245,6 +249,7 @@ jobs:
           haxelib install newgrounds
           haxelib install linc_luajit
           haxelib install hxp
+          haxelib install hxCodec
           haxelib install hxcpp-debug-server
           haxelib git faxe https://github.com/uhrobots/faxe
           haxelib git polymod https://github.com/MasterEric/polymod.git
