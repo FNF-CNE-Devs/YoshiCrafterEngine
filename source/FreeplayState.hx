@@ -296,7 +296,7 @@ class FreeplayState extends FullyModState
 		freeplayScript.executeFunc("onAdvancedDataUpdate");
 		var mod = ModSupport.getModName(_songs[curSelected].mod);
 		var song = _songs[curSelected].songName;
-		var diff = _songs[curSelected].difficulties[curDifficulty];
+		var diff = _songs[curSelected].difficulties[curDifficulty].toLowerCase();
 		var daSong = 'advanced/' + Highscore.formatSong('$mod:$song', diff);
 		#if debug
 			trace(daSong);

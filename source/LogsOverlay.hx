@@ -135,12 +135,15 @@ class LogsOverlay extends Sprite {
                 
             });
 
-        visible = false;
+        visible = true;
+        switchState();
     }
 
     function switchState() {
         FlxG.mouse.useSystemCursor = (visible = !visible);
         FlxG.mouse.enabled = !FlxG.mouse.useSystemCursor;
+        FlxG.keys.enabled = true;
+        FlxG.stage.focus = null;
     }
     public override function __enterFrame(deltaTime:Int) {
         super.__enterFrame(deltaTime);
@@ -172,12 +175,6 @@ class LogsOverlay extends Sprite {
             }
             lastPos = tracedShit;
             lastErrors = errors;
-        } else {
-            FlxG.keys.enabled = true;
-            if (FlxG.stage.focus == command) {
-                FlxG.stage.focus = null;
-            }
-            // logsText.text = "";
         }
     }
 }

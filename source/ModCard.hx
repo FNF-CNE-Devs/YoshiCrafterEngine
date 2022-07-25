@@ -22,6 +22,7 @@ class ModCard extends FlxSpriteGroup {
         var bg = new FlxSprite(0, 0).loadGraphic(Paths.image('modcardbg', 'preload'));
 
         mod_name = new AlphabetOptimized(10, 10, "Mod Name", false, 0.5);
+        mod_name.doOptimisationStuff = false;
 
         mod_desc = new FlxUIText(170, mod_name.y + 50, 460, "Mod Description");
         mod_icon = new FlxUISprite(10, mod_name.y + 50);

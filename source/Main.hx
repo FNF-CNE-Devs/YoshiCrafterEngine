@@ -88,7 +88,7 @@ class Main extends Sprite
 		#end
 	}
 	// YOSHI ENGINE STUFF
-	public static var engineVer:String = "2.0.1";
+	public static var engineVer:String = "2.0.3";
 	public static var buildVer:String = #if ycebeta "BETA" #elseif official "" #else "Custom Build" #end;
 	public static var fps:GameStats;
 

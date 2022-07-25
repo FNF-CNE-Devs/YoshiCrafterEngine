@@ -93,6 +93,17 @@ class ModMenuState extends MusicBeatState {
         if (controls.ACCEPT) {
             openSubState(new RightPane('Mod Settings', [
                 {
+                    label: "Switch to",
+                    callback: function(t) {
+                        Settings.engineSettings.data.selectedMod = cards[selectedIndex].folderName;
+                        FlxG.switchState(new MainMenuState());
+                        if (FlxG.sound.music != null) FlxG.sound.music.fadeOut(0.25, 0, function(t) {
+                            FlxG.sound.music.stop();
+                            FlxG.sound.music = null;
+                        });
+                    }
+                },
+                {
                     label: "Delete Save Data",
                     callback: function(t) {
                         var mod = cards[selectedIndex].folderName;

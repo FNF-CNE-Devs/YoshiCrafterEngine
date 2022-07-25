@@ -586,7 +586,7 @@ class StoryMenuState extends MusicBeatState
 		curDifficulty += change;
 
 		if (curDifficulty < 0)
-			curDifficulty = 2;
+			curDifficulty = weekData[curWeek].difficulties.length - 1;
 		if (curDifficulty >= weekData[curWeek].difficulties.length)
 			curDifficulty = 0;
 

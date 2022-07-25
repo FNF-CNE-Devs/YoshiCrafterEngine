@@ -304,14 +304,15 @@ class Character extends FlxStageSprite
 			this.charGlobalOffset.x = json.globalOffset.x;
 			this.charGlobalOffset.y = json.globalOffset.y;
 		}
-		if (json.danceSteps != null) json.danceSteps = ["idle"];
 		if (overrideFuncs) {
 			var i = 0;
-			characterScript.setVariable("dance", function() {
-				playAnim(json.danceSteps[i]);
-				i++;
-				i = i % json.danceSteps.length;
-			});
+			if (json.danceSteps != null) {
+				characterScript.setVariable("dance", function() {
+					playAnim(json.danceSteps[i]);
+					i++;
+					i = i % json.danceSteps.length;
+				});
+			}
 			if (json.healthIconSteps != null && (json.healthIconSteps.length != 2 || json.healthIconSteps[0][0] != 20 || json.healthIconSteps[1][0] != 0)) characterScript.setVariable("healthIcon", function(e) {
 				e.frameIndexes = json.healthIconSteps;
 			});
@@ -503,7 +504,7 @@ class Character extends FlxStageSprite
 		if (AnimName.startsWith("sing")) {
 			lastNoteHitTime = Conductor.songPosition;
 		}
-		var blockAnim:Null<Bool> = characterScript.executeFunc("onAnim", [AnimName]);
+		var blockAnim:Null<Bool> = characterScript.executeFunc("onAnim", [AnimName, Force, Reversed, Frame]);
 
 		if (blockAnim != true) {
 			// will obviously not play the animation and "pause it", to prevent null exception. it will keep the current frame and not set the offset.
