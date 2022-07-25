@@ -266,11 +266,13 @@ class YoshiCrafterCharter extends MusicBeatState {
         var pasteSectionButton = new FlxUIButton(copySectionButton.x, copySectionButton.y + copySectionButton.height + 5, "", function() {
             var sec = Math.floor(getStepAtPos(Conductor.songPosition) / 4 / _song.sectionLength);
             if (copiedSection != sec && copiedSection >= 0) {
-                var newMin = Math.floor(getStepAtPos(Conductor.songPosition) / 4 / _song.sectionLength);
-                var newMax = Math.ceil(getStepAtPos(Conductor.songPosition) / 4 / _song.sectionLength);
+                var newMin:Float = Math.floor(getStepAtPos(Conductor.songPosition) / 4 / _song.sectionLength);
+                var newMax:Float = Math.ceil(getStepAtPos(Conductor.songPosition) / 4 / _song.sectionLength);
                 if (newMin == newMax) newMax++;
-                var min = copiedSection * Conductor.crochet * _song.sectionLength;
-                var max = (copiedSection + 1) * Conductor.crochet * _song.sectionLength;
+                newMin = getTimeforStep(newMin * 4 * _song.sectionLength);
+                newMax = getTimeforStep(newMax * 4 * _song.sectionLength);
+                var min = getTimeforStep(copiedSection * 4 * _song.sectionLength);
+                var max = getTimeforStep((copiedSection + 1) * 4 * _song.sectionLength);
                 var notesToCopy:Array<CharterNote> = [];
                 for(n in notes) {
                     if (n.strumTime >= min && n.strumTime < max) {

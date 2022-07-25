@@ -204,10 +204,6 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
     }
     public override function update(elapsed:Float) {
         super.update(elapsed);
-        if (Std.isOfType(FlxG.state, PlayState)) {
-            camera.scroll.x = -(sizeRect.width - 1280) / 2;
-            camera.scroll.y = -(sizeRect.height - 720) / 2;
-        }
         changeThingGrp.visible = isChanging;
         if (!controls.ACCEPT) isAccept = false;
         if (isChanging) {

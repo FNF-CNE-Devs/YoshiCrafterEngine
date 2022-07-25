@@ -403,11 +403,11 @@ class CoolUtil
 	}
 
 	public static function checkSkins() {
-		if (Settings.engineSettings.data.customBFskin != "default" && !Assets.exists(Paths.getPath('~', TEXT, 'characters/bf/${Settings.engineSettings.data.customBFskin}/Character.hx')))
+		if (Settings.engineSettings.data.customBFskin != "default" && !Assets.exists(Paths.getPath('characters/bf/${Settings.engineSettings.data.customBFskin}/Character.hx', TEXT, '~')))
 			Settings.engineSettings.data.customBFskin = "default";
-		if (Settings.engineSettings.data.customGFskin != "default" && !Assets.exists(Paths.getPath('~', TEXT, 'characters/gf/${Settings.engineSettings.data.customGFskin}/Character.hx')))
+		if (Settings.engineSettings.data.customGFskin != "default" && !Assets.exists(Paths.getPath('characters/gf/${Settings.engineSettings.data.customGFskin}/Character.hx', TEXT, '~')))
 			Settings.engineSettings.data.customGFskin = "default";
-		if (Settings.engineSettings.data.customArrowSkin != "default" && (!Assets.exists(Paths.getPath('~', TEXT, '${Settings.engineSettings.data.customArrowSkin}.xml')) || !Assets.exists(Paths.getPath('~', TEXT, '${Settings.engineSettings.data.customArrowSkin}.png'))))
+		if (Settings.engineSettings.data.customArrowSkin != "default" && (!Assets.exists(Paths.getPath('images/${Settings.engineSettings.data.customArrowSkin}.xml', TEXT, '~')) || !Assets.exists(Paths.getPath('images/${Settings.engineSettings.data.customArrowSkin}.png', TEXT, '~'))))
 			Settings.engineSettings.data.customArrowSkin = "default";
 	}
 
