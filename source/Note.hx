@@ -71,6 +71,8 @@ class Note extends FlxSprite
 	public var splash:String = Paths.splashes('splashes', "shared");
 	public var coloredSplash:Null<Bool> = null;
 
+	public var section:Int = -1;
+
 	public static var swagWidth(get, null):Float;
 	public static function get_swagWidth():Float {
 		return _swagWidth * widthRatio;

@@ -76,7 +76,7 @@ class OptionScreen extends MusicBeatSubstate {
         super.update(elapsed);
         time += elapsed;
         FlxG.camera.y = FlxMath.lerp(-FlxG.height, 0, FlxEase.quartOut(FlxMath.bound(time / speedMultiplier, 0, 1)));
-        if (controls.BACK && canSelect) onExit();
+        if ((controls.BACK || (Settings.engineSettings.data.menuMouse && FlxG.mouse.justPressedRight)) && canSelect) onExit();
         if (options.length <= 0) {
             var l = FlxEase.quintOut(FlxMath.bound(time, 0, 1));
             emptyTxt.offset.y = FlxMath.lerp(50, 0, l);
@@ -98,6 +98,8 @@ class OptionScreen extends MusicBeatSubstate {
                 curSelected++;
             if (controls.UP_P)
                 curSelected--;
+            if (Settings.engineSettings.data.menuMouse)
+                curSelected += -FlxG.mouse.wheel;
             if (curSelected != oldCur) {
                 while(curSelected < 0) curSelected += spawnedOptions.length;
                 curSelected %= spawnedOptions.length;
@@ -107,7 +109,7 @@ class OptionScreen extends MusicBeatSubstate {
                 if (spawnedOptions[curSelected].onEnter != null) spawnedOptions[curSelected].onEnter(spawnedOptions[curSelected]);
                 if (spawnedOptions[oldCur].onLeft != null) spawnedOptions[oldCur].onLeft(spawnedOptions[oldCur]);
             }
-            if (controls.ACCEPT) {
+            if (controls.ACCEPT || (Settings.engineSettings.data.menuMouse && FlxG.mouse.justPressed)) {
                 if (spawnedOptions[curSelected] != null) {
                     if (spawnedOptions[curSelected].onSelect != null) spawnedOptions[curSelected].onSelect(spawnedOptions[curSelected]);
                     onSelect(curSelected);

@@ -27,11 +27,11 @@ class Highscore
 	#end
 
 	public static function saveAdvancedScore(mod:String, song:String, score:Int, data:AdvancedSaveData, ?diff:String = "Normal") {
+		diff = diff.toLowerCase();
 		var daSong:String = "advanced/" + formatSong('$mod:$song', diff);
 		#if debug
 			trace(daSong);
 		#end
-		diff = diff.toLowerCase();
 
 		if (Reflect.hasField(FlxG.save.data, daSong))
 		{

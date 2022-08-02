@@ -1611,7 +1611,7 @@ class PlayState extends MusicBeatState
 		var splashes:Array<String> = [];
 
 		var currentStepCrochet = (60 / SONG.bpm) * 1000 / 4;
-		for (section in noteData)
+		for (k=>section in noteData)
 		{
 			if (section == null)
 				continue;
@@ -1662,6 +1662,7 @@ class PlayState extends MusicBeatState
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, gottaHitNote, section.altAnim);
 				swagNote.sustainLength = songNotes[2];
+				swagNote.section = k;
 
 				var susLength:Float = swagNote.sustainLength;
 
@@ -1678,6 +1679,7 @@ class PlayState extends MusicBeatState
 					sustainNote.noteOffset.y -= Note.swagWidth / 2;
 					sustainNote.__renderAlpha *= 0.6;
 					sustainNote.prevSusNote = prevSusNote;
+					sustainNote.section = k;
 					unspawnNotes.push(sustainNote);
 
 					sustainNote.mustPress = gottaHitNote;
@@ -1828,8 +1830,7 @@ class PlayState extends MusicBeatState
 					if (Assets.exists(p = Paths.getPath('characters/${CoolUtil.getLastOfArray(SONG.player1.split(":"))}/NOTE_assets.png', IMAGE, null, false)))
 					{
 						type = 1;
-					}
-					if (engineSettings.customArrowSkin != "default")
+					} else if (engineSettings.customArrowSkin != "default")
 					{
 						type = 2;
 					}
@@ -1839,8 +1840,7 @@ class PlayState extends MusicBeatState
 					if (engineSettings.customArrowSkin != "default")
 					{
 						type = 2;
-					}
-					if (Assets.exists(p = Paths.getPath('characters/${CoolUtil.getLastOfArray(SONG.player2.split(":"))}/NOTE_assets.png', IMAGE, null, false)))
+					} else if (Assets.exists(p = Paths.getPath('characters/${CoolUtil.getLastOfArray(SONG.player2.split(":"))}/NOTE_assets.png', IMAGE, null, false)))
 					{
 						type = 1;
 					}
@@ -2717,12 +2717,7 @@ class PlayState extends MusicBeatState
 
 					scripts.executeFunc("onNoteUpdate", [daNote]);
 
-					if (daNote.tooLate
-						&& (daNote.mustPress || daNote.cpuIgnore)
-						&& (!daNote.isSustainNote
-							|| daNote.prevSusNote == null
-							|| daNote.prevSusNote.isSustainNote
-							|| (!daNote.prevSusNote.isSustainNote && !daNote.prevSusNote.wasGoodHit)))
+					if (daNote.tooLate && daNote.wasGoodHit && (daNote.mustPress || daNote.cpuIgnore))
 					{
 						doNoteMiss(daNote);
 						return;
