@@ -208,7 +208,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         add(events);
 
         followThing = new FlxSprite(0, 0).makeGraphic(GRID_SIZE * 8, 5, 0xFFFFFFFF);
-        FlxG.camera.follow(followThing);
+        FlxG.camera.follow(followThing, 99999999);
         FlxG.camera.targetOffset.y += topView ? ((FlxG.height * 0.25) + GRID_SIZE) : GRID_SIZE;
         FlxG.camera.targetOffset.x += 150;
         insert(members.indexOf(strums[0]), followThing);
@@ -587,6 +587,10 @@ class YoshiCrafterCharter extends MusicBeatState {
         noteTab.add(addNoteTypeButton);
         noteTab.add(typesLabel);
         UI_Menu.addGroup(noteTab);
+    }
+
+    public override function destroy() {
+        if (switchingToPlayState) _song = null; // memory cleaning
     }
 
     public function updateNoteTypes() {
@@ -978,7 +982,6 @@ class YoshiCrafterCharter extends MusicBeatState {
         for(e in [voicesWaveform1, voicesWaveform2, voicesWaveform3]) e.visible = Settings.engineSettings.data.charter_showVoicesWaveform;
 
         for(k=>e in [instWaveform1, instWaveform2, instWaveform3, voicesWaveform1, voicesWaveform2, voicesWaveform3]) {
-            // Settings.engineSettings.data.charter_showVoicesWaveform
             if (e.visible) {
                 e.scale.set(1, zoom);
                 e.updateHitbox();
@@ -1051,16 +1054,17 @@ class YoshiCrafterCharter extends MusicBeatState {
         }
     }
 
+    var switchingToPlayState:Bool = false;
     public function switchToPlayState(time:Float = 0) {
         compile();
         
+        switchingToPlayState = true;
         PlayState._SONG = _song;
         PlayState._SONG.validScore = false;
         PlayState.fromCharter = true;
         PlayState.startTime = time;
         FlxG.sound.music.stop();
         vocals.stop();
-        _song = null; // memory cleaning
         FlxG.switchState(new PlayState());
     }
     public function moveCursor(steps:Float) {
@@ -1126,7 +1130,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         
         
         playbackSpeedLabel.text = 'Playback Speed (${Std.string(FlxG.sound.music.pitch)}x)';
-        copyPasteButtonsContainer.y = (GRID_SIZE * (_song.sectionLength * 4)) * Math.floor(Conductor.songPosition / Conductor.crochet / 4) * zoom;
+        copyPasteButtonsContainer.y = (GRID_SIZE * (_song.sectionLength * 4)) * Math.floor(getStepAtPos(Conductor.songPosition) / 4 / _song.sectionLength) * zoom;
         if (playing) {
             pageSwitchLerpRemaining = 0;
         } else {
@@ -1216,10 +1220,12 @@ class YoshiCrafterCharter extends MusicBeatState {
             if (FlxG.mouse.justReleased) {
                 noteInCreation = null;
             } else {
-                var currentTime = FlxG.mouse.y / zoom / GRID_SIZE * Conductor.stepCrochet;
+                var s = FlxG.mouse.y / zoom / GRID_SIZE;
+                if (!FlxG.keys.pressed.SHIFT)
+                    s = Std.int(s);
+                var currentTime = getTimeforStep(s);
                 var strumTime = noteInCreation.strumTime;
-                var str = Math.max(0, Math.floor((currentTime - strumTime) / Conductor.stepCrochet) * Conductor.stepCrochet);
-                if (str > 0) str += Conductor.stepCrochet;
+                var str = Math.max(0, currentTime - strumTime);
                 if (noteInCreation.sustainLength != str) {
                     noteInCreation.sustainLength = str;
                     noteInCreation.updateSustain();

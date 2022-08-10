@@ -1,9 +1,9 @@
 package;
 
-import haxe.io.Path;
 #if cpp
 import openfl.Lib;
 #end
+import haxe.io.Path;
 import lime.app.Application;
 import flixel.util.FlxColor;
 import openfl.display.BitmapData;
@@ -26,6 +26,14 @@ class CoolUtil
 	* Array for difficulty names
 	*/
 	public static final difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
+
+	public static function updateAntialiasing() {
+		FlxG.forceNoAntialiasing = Settings.engineSettings.data.antialiasing == 5;
+	}
+
+	public static function getTimeNow() {
+		return #if cpp Lib.getTimer() #else haxe.Timer.stamp() * 1000 #end;
+	}
 
 	public static function fixPsychNoteType(noteType:String) {
 		return switch(noteType) {
@@ -52,11 +60,7 @@ class CoolUtil
 	public static function getLastOfArray<T>(a:Array<T>):T {
 		return a[a.length - 1];
 	}
-	
-	public static function getTimeNow() {
-		
-		return #if cpp Lib.getTimer() #else haxe.Timer.stamp() * 1000 #end;
-	}
+
 	public static function wrapInt(e:Int, min:Int, max:Int) {
 		if (min == max) return min;
 		var result = (e - min) % (max - min);

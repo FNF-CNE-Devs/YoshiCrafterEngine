@@ -45,6 +45,13 @@ class DebugMenu extends OptionScreen {
                 onSelect: function(e) {@:privateAccess e.check(ModSupport.forceDevMode = !ModSupport.forceDevMode);}
             },
             {
+                name: "widescreen sweep",
+                desc: "cool stuff hehe, hidden cause not every mods are compatible with it",
+                value: "",
+                onCreate: function(e) {@:privateAccess e.check(Settings.engineSettings.data.secretWidescreenSweep);},
+                onSelect: function(e) {@:privateAccess e.check(Settings.engineSettings.data.secretWidescreenSweep = !Settings.engineSettings.data.secretWidescreenSweep);}
+            },
+            {
                 name: "Crash the engine",
                 desc: "Select this to crash the engine.",
                 value: "",

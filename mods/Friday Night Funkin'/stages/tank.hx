@@ -1,5 +1,3 @@
-import("flixel.group.FlxSpriteGroup");
-
 var tankAngle:Float = FlxG.random.int(-90, 45);
 var tankSpeed:Float = FlxG.random.float(5, 7);
 var tankRolling:FlxSprite = null;

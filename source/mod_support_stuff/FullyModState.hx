@@ -37,6 +37,13 @@ class FullyModState extends MusicBeatState {
         if (FlxControls.justPressed.TAB) openSubState(new SwitchModSubstate());
     }
 
+    public override function destroy() {
+        super.destroy();
+        if (entirelyCustom)
+            script.executeFunc("destroy");
+        else
+            normalDestroy();
+    }
     public override function beatHit() {
         super.beatHit();
         if (entirelyCustom)
@@ -58,4 +65,5 @@ class FullyModState extends MusicBeatState {
     function normalUpdate(elapsed:Float) {}
     function normalBeatHit() {}
     function normalStepHit() {}
+    function normalDestroy() {}
 }

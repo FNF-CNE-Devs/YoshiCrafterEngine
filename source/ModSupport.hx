@@ -1,3 +1,4 @@
+import flixel.addons.display.FlxBackdrop;
 import discord_rpc.DiscordRpc;
 import Discord.DiscordClient;
 import openfl.display.BlendMode;
@@ -426,6 +427,7 @@ class ModSupport {
             }
         }
         script.mod = mod;
+		script.setVariable("this", script);
 		script.setVariable("super", superVar);
 		script.setVariable("mod", mod);
 		script.setVariable("PlayState", PlayState.current);
@@ -475,6 +477,7 @@ class ModSupport {
 		script.setVariable("PlayState_", PlayState);
 		script.setVariable("FlxSprite", FlxSprite);
 		script.setVariable("BitmapData", BitmapData);
+		script.setVariable("FlxBackdrop", FlxBackdrop);
 		script.setVariable("FlxG", FlxG);
 		script.setVariable("Paths", Paths);
 		script.setVariable("Medals", new ModMedals(mod));
@@ -492,6 +495,7 @@ class ModSupport {
 		script.setVariable("FlxSound", FlxSound);
 		script.setVariable("FlxEase", FlxEase);
 		script.setVariable("FlxTween", FlxTween);
+		script.setVariable("FlxPoint", flixel.math.FlxPoint);
 		script.setVariable("FlxColor", FlxColor_Helper);
 		script.setVariable("Boyfriend", Boyfriend);
 		script.setVariable("FlxTypedGroup", FlxTypedGroup);
@@ -503,7 +507,6 @@ class ModSupport {
 		script.setVariable("CoolUtil", CoolUtil);
 		script.setVariable("FlxTypeText", FlxTypeText);
 		script.setVariable("FlxText", FlxText);
-		script.setVariable("FlxAxes", FlxAxes);
 		script.setVariable("BitmapDataPlus", BitmapDataPlus);
 		script.setVariable("Rectangle", Rectangle);
 		script.setVariable("Point", Point);
@@ -515,6 +518,7 @@ class ModSupport {
 		script.setVariable("ModSupport", null);
 		script.setVariable("CustomShader", CustomShader_Helper);
 		script.setVariable("FlxControls", FlxControls);
+		script.setVariable("FlxAxes", FlxAxes);
 		script.setVariable("save", modSaves[mod]);
         script.setVariable("flashingLights", Settings.engineSettings.data.flashingLights == true);
 

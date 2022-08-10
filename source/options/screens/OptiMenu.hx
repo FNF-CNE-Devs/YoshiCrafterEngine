@@ -45,6 +45,7 @@ class OptiMenu extends OptionScreen {
                         Settings.engineSettings.data.antialiasing = 5;
                     else
                         Settings.engineSettings.data.antialiasing = 4;
+                    CoolUtil.updateAntialiasing();
                 }
             },
             {

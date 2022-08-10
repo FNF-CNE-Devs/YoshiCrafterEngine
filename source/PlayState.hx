@@ -1,5 +1,6 @@
 package;
 
+import Script.DummyScript;
 import Note.NoteAppearance;
 import haxe.io.Path;
 import haxe.ds.EnumValueMap;
@@ -243,7 +244,7 @@ class PlayState extends MusicBeatState
 		healthBar.createFilledBar(dadColor, bfColor);
 	}
 
-	public var notes:FlxTypedGroup<Note>;
+	public var notes:NoteGroup;
 	public var events:Array<SongEvent> = [];
 	public var unspawnNotes:Array<Note> = [];
 
@@ -655,7 +656,7 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
-		Main.lastHit = [];
+		FlxG.keys.lastHit = [];
 		Conductor.lastKeyShitTimeStamp = null;
 		Settings.engineSettings.data.selectedMod = songMod;
 		CoolUtil.checkSkins();
@@ -692,6 +693,8 @@ class PlayState extends MusicBeatState
 		if (_SONG == null)
 			_SONG = Song.loadModFromJson('tutorial', 'Friday Night Funkin\'');
 
+		curSong = _SONG.song;
+		
 		checkSong();
 
 		SONG = Reflect.copy(_SONG);
@@ -706,7 +709,7 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			cutscene = new HScript();
+			cutscene = new DummyScript();
 		}
 		if (ModSupport.song_end_cutscene != null)
 		{
@@ -714,12 +717,12 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			end_cutscene = new HScript();
+			end_cutscene = new DummyScript();
 		}
 		if (cutscene == null)
-			cutscene = new HScript();
+			cutscene = new DummyScript();
 		if (end_cutscene == null)
-			end_cutscene = new HScript();
+			end_cutscene = new DummyScript();
 
 		scripts.setVariable("update", function(elapsed:Float)
 		{
@@ -745,7 +748,7 @@ class PlayState extends MusicBeatState
 		var defaultRatings:Array<Dynamic> = [
 			{
 				name: "Sick",
-				image: "Friday Night Funkin':ratings/sick",
+				image: "sick",
 				accuracy: 1,
 				health: 0.035,
 				maxDiff: 125 * 0.30,
@@ -756,7 +759,7 @@ class PlayState extends MusicBeatState
 			},
 			{
 				name: "Good",
-				image: "Friday Night Funkin':ratings/good",
+				image: "good",
 				accuracy: 2 / 3,
 				health: 0.025,
 				maxDiff: 125 * 0.55,
@@ -766,7 +769,7 @@ class PlayState extends MusicBeatState
 			},
 			{
 				name: "Bad",
-				image: "Friday Night Funkin':ratings/bad",
+				image: "bad",
 				accuracy: 1 / 3,
 				health: 0.010,
 				maxDiff: 125 * 0.75,
@@ -775,7 +778,7 @@ class PlayState extends MusicBeatState
 			},
 			{
 				name: "Shit",
-				image: "Friday Night Funkin':ratings/shit",
+				image: "shit",
 				accuracy: 1 / 6,
 				health: 0.0,
 				maxDiff: 99999,
@@ -1571,26 +1574,29 @@ class PlayState extends MusicBeatState
 		scripts.executeFunc("onSongStart");
 	}
 
-	private function generateSong(dataPath:String):Void
+	private function generateSong(dataPath:String, ?from:Float, ?to:Float):Void
 	{
 		var songData = SONG;
 		Conductor.changeBPM(songData.bpm);
 
-		curSong = songData.song;
 
-		if (SONG.needsVoices)
-			vocals = new FlxSound().loadEmbedded(Paths.modVoices(PlayState.SONG.song, songMod,
+		if (inst == null) {
+			inst = new FlxSound().loadEmbedded(Paths.modInst(PlayState.SONG.song, songMod,
 				storyDifficulty.toLowerCase() == "normal" ? "" : storyDifficulty.toLowerCase().replace(" ", "-")));
-		else
-			vocals = new FlxSound();
+			inst.stop();
+		}
 
-		inst = new FlxSound().loadEmbedded(Paths.modInst(PlayState.SONG.song, songMod,
-			storyDifficulty.toLowerCase() == "normal" ? "" : storyDifficulty.toLowerCase().replace(" ", "-")));
-		inst.stop();
+		if (vocals == null) {
+			if (SONG.needsVoices)
+				vocals = new FlxSound().loadEmbedded(Paths.modVoices(PlayState.SONG.song, songMod,
+					storyDifficulty.toLowerCase() == "normal" ? "" : storyDifficulty.toLowerCase().replace(" ", "-")));
+			else
+				vocals = new FlxSound();
+	
+			FlxG.sound.list.add(vocals);
+		}
 
-		FlxG.sound.list.add(vocals);
-
-		notes = new FlxTypedGroup<Note>();
+		notes = new NoteGroup();
 		notes.cameras = [camHUD];
 		add(notes);
 
@@ -1624,6 +1630,10 @@ class PlayState extends MusicBeatState
 			for (songNotes in section.sectionNotes)
 			{
 				if (songNotes[0] < startTime && startTime > 0)
+					continue;
+				if (from != null && songNotes[0] < from)
+					continue;
+				if (to != null && songNotes[0] < to)
 					continue;
 				if (songNotes[1] < 0)
 				{
@@ -1790,7 +1800,7 @@ class PlayState extends MusicBeatState
 			script = Script.create(p);
 		}
 		if (script == null)
-			script = new HScript();
+			script = new DummyScript();
 		script.setVariable("enableRating", true);
 
 		var calculateNote = function()
@@ -2388,8 +2398,12 @@ class PlayState extends MusicBeatState
 
 			super.update(elapsed);
 
-			if (!paused && !inCutscene)
-				scoreTxt.text = ScoreText.generate(this);
+			if (!paused && !inCutscene) {
+				if (engineSettings.botplay)
+					scoreTxt.text = "";
+				else
+					scoreTxt.text = ScoreText.generate(this);
+			}
 			#if desktop
 			var e = "";
 			var pos = timerBar.percent;
@@ -2806,7 +2820,7 @@ class PlayState extends MusicBeatState
 							2))), 0, 1);
 						var swagRect = new FlxRect(0, t * daNote.frameHeight, daNote.frameWidth, daNote.frameHeight);
 
-						daNote.clipRect = swagRect;
+						daNote.setClipRect(swagRect);
 					}
 
 					if (!daNote.mustPress
@@ -3139,9 +3153,9 @@ class PlayState extends MusicBeatState
 			if (i != null && !engineSettings.botplay)
 			{
 				var k = cast(Reflect.field(engineSettings, 'control_' + SONG.keyNumber + '_$i'), FlxKey);
-				if (Conductor.lastKeyShitTimeStamp != null && Main.lastHit[k] != null)
+				if (Conductor.lastKeyShitTimeStamp != null && FlxG.keys.lastHit[k] != null)
 				{
-					t += Main.lastHit[k] - Conductor.lastKeyShitTimeStamp;
+					t += FlxG.keys.lastHit[k] - Conductor.lastKeyShitTimeStamp;
 				}
 			}
 			var noteDiff:Float = Math.abs(strumtime - t);
@@ -3165,8 +3179,6 @@ class PlayState extends MusicBeatState
 			}
 
 			if (daRating == null)
-				return null;
-			if (daRating.bitmap == null)
 				return null;
 			var accShit = FlxMath.wrap(Std.int(noteDiff), 0, Std.int(Conductor.safeZoneOffset)) / Conductor.safeZoneOffset;
 			accuracy += 1 - (accShit * accShit); // easier accuracy

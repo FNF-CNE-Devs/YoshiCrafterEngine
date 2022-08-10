@@ -175,13 +175,18 @@ class BitmapFrontEnd
 	public inline function addGraphic(graphic:FlxGraphic):FlxGraphic
 	{
 		_cache.set(graphic.key, graphic);
-        if (!isClearingCache && graphic != null && lime.utils.Assets.logRequests && !lime.utils.Assets.loggedRequests.contains(graphic.assetsKey)) {
-            lime.utils.Assets.loggedRequests.push(graphic.assetsKey);
-        }
+		if (!isClearingCache
+			&& graphic != null
+			&& lime.utils.Assets.logRequests
+			&& !lime.utils.Assets.loggedRequests.contains(graphic.assetsKey))
+		{
+			lime.utils.Assets.loggedRequests.push(graphic.assetsKey);
+		}
 		return graphic;
 	}
 
 	// public static var doNotRemove:Array<FlxGraphic> = [];
+
 	/**
 	 * Gets FlxGraphic object from this storage by specified key.
 	 * @param	key	Key for FlxGraphic object (its name)
@@ -189,12 +194,14 @@ class BitmapFrontEnd
 	 */
 	public inline function get(key:String):FlxGraphic
 	{
-        var thing = _cache.get(key);
-        // wow!!!
-		if (thing != null) {
+		var thing = _cache.get(key);
+		// wow!!!
+		if (thing != null)
+		{
 			// if (thing.assetsKey == null)
 			// 	doNotRemove.push(thing);
-			if (!isClearingCache && lime.utils.Assets.logRequests && (!lime.utils.Assets.loggedRequests.contains(thing.assetsKey))) {			
+			if (!isClearingCache && lime.utils.Assets.logRequests && (!lime.utils.Assets.loggedRequests.contains(thing.assetsKey)))
+			{
 				lime.utils.Assets.loggedRequests.push(thing.assetsKey);
 			}
 		}
@@ -212,9 +219,9 @@ class BitmapFrontEnd
 		for (key in _cache.keys())
 		{
 			var obj = _cache.get(key);
-			if (obj != null && obj.bitmap == bmd) {
+			if (obj != null && obj.bitmap == bmd)
+			{
 				return key;
-
 			}
 		}
 		return null;
@@ -279,6 +286,7 @@ class BitmapFrontEnd
 	}
 
 	public var spareFromCache:Array<FlxGraphic> = [];
+
 	/**
 	 * Generates key from provided base key and information about tile size and offsets in spritesheet
 	 * and the region of image to use as spritesheet graphics source.
@@ -343,20 +351,23 @@ class BitmapFrontEnd
 			remove(graphic);
 	}
 
-    var isClearingCache:Bool = false;
+	var isClearingCache:Bool = false;
+
 	/**
 	 * Clears image cache (and destroys those images).
 	 * Graphics object will be removed and destroyed only if it shouldn't persist in the cache and its useCount is 0.
 	 */
-	 
 	var total = 0;
+
 	var deleted = 0;
+
 	public function clearCache():Void
 	{
-		if (lime.utils.Assets.logRequests) return;
+		if (lime.utils.Assets.logRequests)
+			return;
 		total = 0;
 		deleted = 0;
-        isClearingCache = true;
+		isClearingCache = true;
 		if (_cache == null)
 		{
 			_cache = new Map();
@@ -367,9 +378,14 @@ class BitmapFrontEnd
 		{
 			total++;
 			var obj = get(key);
-			if ((obj != null && !obj.persist && obj.useCount <= 0 /* && !doNotRemove.contains(obj) */ && (!lime.utils.Assets.loggedRequests.contains(obj.assetsKey) && !spareFromCache.contains(obj)))  || (obj.bitmap == null || !obj.bitmap.readable || obj.shader == null))
+			if ((obj != null
+				&& !obj.persist
+				&& obj.useCount <= 0 /* && !doNotRemove.contains(obj) */
+				&& (!lime.utils.Assets.loggedRequests.contains(obj.assetsKey) && !spareFromCache.contains(obj)))
+				|| (obj.bitmap == null || !obj.bitmap.readable || obj.shader == null))
 			{
-				if (!obj.hasJustBeenAdded) {
+				if (!obj.hasJustBeenAdded)
+				{
 					deleted++;
 					removeKey(key);
 					obj.destroy();
@@ -378,7 +394,7 @@ class BitmapFrontEnd
 			obj.hasJustBeenAdded = false;
 		}
 		trace('${deleted}/${total} removed (${total - deleted} motherfuckers remaining)');
-        isClearingCache = false;
+		isClearingCache = false;
 	}
 
 	inline function removeKey(key:String):Void
