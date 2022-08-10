@@ -1,5 +1,6 @@
 package mod_support_stuff;
 
+import Script.DummyScript;
 import flixel.addons.ui.FlxUITooltip;
 import flixel.addons.ui.interfaces.IFlxUIWidget;
 import flixel.FlxBasic;
@@ -22,7 +23,7 @@ class ModState extends MusicBeatState {
         var path = '${Paths.modsPath}/$_mod/states/$_scriptName';
 
         script = Script.create(path);
-        if (script != null) script = new HScript();
+        if (script == null) script = new DummyScript();
 
         
         script.setVariable("new", function(args) {});
@@ -51,7 +52,7 @@ class ModState extends MusicBeatState {
     }
 
     public override function onDropFile(path:String) {
-        script.executeFunc("onDropFile");
+        script.executeFunc("onDropFile", [path]);
         super.onDropFile(path);
     }
 
@@ -71,7 +72,7 @@ class ModState extends MusicBeatState {
     }
 
     public override function onShowTooltip(t:FlxUITooltip) {
-        script.executeFunc("onShowTooltip");
+        script.executeFunc("onShowTooltip", [t]);
         super.onShowTooltip(t);
     }
 

@@ -1,6 +1,7 @@
 package;
 
 // import sys.io.File;
+import Script.DummyScript;
 import psychstuff.PsychCharacter;
 import dev_toolbox.stage_editor.FlxStageSprite;
 import mod_support_stuff.FlxColor_Helper;
@@ -130,7 +131,7 @@ class Character extends FlxStageSprite
 			characterScript = Script.create(p);
 			if (characterScript == null) {
 				LogsOverlay.error(Paths.getCharacterFolderPath(curCharacter) + "/Character is missing");
-				characterScript = new HScript();
+				characterScript = new DummyScript();
 			}
 			characterScript.setVariable("curCharacter", curCharacter);
 			characterScript.setVariable("character", this);
@@ -191,7 +192,7 @@ class Character extends FlxStageSprite
 		var psychCharPath = Paths.file('characters/${c}.json');
 
 		if (Assets.exists(psychCharPath)) {
-			characterScript = new HScript();
+			characterScript = new DummyScript();
 			var json:PsychCharacter = null;
 			try {
 				json = Json.parse(Assets.getText(psychCharPath));

@@ -1,5 +1,6 @@
 package mod_support_stuff;
 
+import Script.DummyScript;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxCamera;
 import flixel.math.FlxRect;
@@ -32,11 +33,12 @@ class ModSprite extends FlxSprite {
         var path = '${Paths.modsPath}/$_mod/sprites/$_scriptName';
 
         script = Script.create(path);
-        if (script != null) script = new HScript();
+        if (script == null) script = new DummyScript();
         ModSupport.setScriptDefaultVars(script, mod, {});
+        script.setScriptObject(this);
         script.setVariable("sprite", this);
         script.loadFile(path);
-        var a = [x, y];
+        var a:Array<Dynamic> = [x, y];
         for(e in args) a.push(e);
         script.executeFunc("new", a);
         script.executeFunc("create", a);

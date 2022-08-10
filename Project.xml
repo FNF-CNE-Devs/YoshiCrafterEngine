@@ -95,17 +95,14 @@
 	<assets path="assets/fonts" embed='true'/>
 	<!-- _______________________________ Libraries ______________________________ -->
 
-	<haxelib name="flixel" />
 	<haxedev set='webgl' />
+	<haxelib name="hxCodec"/> <!-- new mp4 cutscenes handler yippee!! !-->
 
-	<!--In case you want to use the addons package-->
-	<haxelib name="flixel-addons" />
-	<!-- <haxelib name="hscript" /> -->
+	<!-- yoshicrafter29 flixel comes bundled in with addons and ui as well so dw -->
+	<haxelib name="flixel-yc29" rename="flixel" />
+	
 	<haxelib name="hscript-yoshiengine" />
-	<!-- <haxelib name="profiler" if="profiler"/> -->
 
-	<!--In case you want to use the ui package-->
-	<haxelib name="flixel-ui" />
 	<haxelib name="newgrounds" if="windows"/>
 	<haxelib name="faxe" if='switch'/>
 	<!-- <haxelib name="hxvm-lua"/>
@@ -118,7 +115,6 @@
 	<haxelib name="hxp"/>
 	<!-- <haxelib name="hxssl"/> -->
 	<haxelib name="flixel-textureatlas-yoshiengine"/> <!-- haxelib git flixel-textureatlas-yoshiengine https://github.com/YoshiCrafter29/Flixel-TextureAtlas-YoshiCrafterEngine !-->
-
 
 	<!-- <haxelib name="markdown" /> -->
 	<!-- <haxelib name="HtmlParser" /> -->
@@ -192,12 +188,10 @@
 	<!-- <haxeflag name="dce" value="no" /> -->
 	<haxeflag name="-dce" value="no" />
 	<haxeflag name="-xml" value="yoshicrafterengine/doc.xml" />
-
 	<haxedef name="official" />
 	<!-- <haxedef name="ycebeta"/> -->
 	
 	<haxelib name="hxcpp-debug-server" if="desktop debug"/>
-	<haxelib name="hxCodec"/> <!-- new mp4 cutscenes handler yippee!! !-->
 	
 	<!-- <haxedef name="noHandler" /> -->
 </project>

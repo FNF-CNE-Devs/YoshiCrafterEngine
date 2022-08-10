@@ -59,7 +59,9 @@ class Paths
 		         && library != "~"
 				 && library != "skins"
 				 && Settings.engineSettings != null
-				 &&   (OpenFlAssets.exists(p = getLibraryPathForce(file, 'mods/${Settings.engineSettings.data.selectedMod}'))
+				 &&   (
+					   (PlayState.current != null && OpenFlAssets.exists(p = getLibraryPathForce('songs/${PlayState.current.curSong}/$file', 'mods/${Settings.engineSettings.data.selectedMod}')))
+					|| OpenFlAssets.exists(p = getLibraryPathForce(file, 'mods/${Settings.engineSettings.data.selectedMod}'))
 					|| OpenFlAssets.exists(p = getLibraryPathForce(file, curSelectedMod))
 					|| OpenFlAssets.exists(p = getLibraryPathForce(file, "mods/Friday Night Funkin'")))) { // can use assets from the fnf mod itself
 					return p;

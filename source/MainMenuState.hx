@@ -1,5 +1,6 @@
 package;
 
+import Script.DummyScript;
 import mod_support_stuff.FullyModState;
 import mod_support_stuff.MainMenuJson;
 import haxe.Json;
@@ -155,7 +156,7 @@ class MainMenuState extends FullyModState {
 		var valid = true;
 		if (mainMenuScript == null) {
 			valid = false;
-			mainMenuScript = new HScript();
+			mainMenuScript = new DummyScript();
 		}
 		mainMenuScript.setVariable("create", function() {});
 		mainMenuScript.setVariable("addOption", optionShit.add);
@@ -327,6 +328,10 @@ class MainMenuState extends FullyModState {
 	override function normalStepHit() {
 		super.normalStepHit();
 		mainMenuScript.executeFunc("stepHit", [curStep]);
+	}
+
+	override function normalDestroy() {
+		mainMenuScript.executeFunc("destroy");
 	}
 	override function normalUpdate(elapsed:Float)
 	{

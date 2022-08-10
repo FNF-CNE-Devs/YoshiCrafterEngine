@@ -1,5 +1,6 @@
 package mod_support_stuff;
 
+import Script.DummyScript;
 import Script.HScript;
 
 class ModClass {
@@ -16,7 +17,7 @@ class ModClass {
         var path = '${Paths.modsPath}/$_mod/classes/$_scriptName';
 
         script = Script.create(path);
-        if (script != null) script = new HScript();
+        if (script != null) script = new DummyScript();
         ModSupport.setScriptDefaultVars(script, mod, {});
         script.setVariable("this", this);
         script.loadFile(path);

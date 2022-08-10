@@ -1,5 +1,6 @@
 package;
 
+import Script.DummyScript;
 import flixel.math.FlxMath;
 import flixel.FlxCamera;
 import lime.utils.Assets;
@@ -55,7 +56,7 @@ class PauseSubState extends MusicBeatSubstate
 		script = Script.create('${Paths.modsPath}/${PlayState.songMod}/ui/PauseSubState');
 		if (script == null) {
 			valid = false;
-			script = new HScript();
+			script = new DummyScript();
 		}
 		ModSupport.setScriptDefaultVars(script, PlayState.songMod, {});
 		script.setVariable("preCreate", function() {});

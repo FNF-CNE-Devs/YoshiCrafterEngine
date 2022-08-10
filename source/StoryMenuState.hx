@@ -1,5 +1,6 @@
 package;
 
+import Script.DummyScript;
 import dev_toolbox.week_editor.WeekEditor;
 import WeeksJson.FNFWeek;
 import haxe.io.Path;
@@ -117,7 +118,7 @@ class StoryMenuState extends MusicBeatState
 		menuScript = Script.create('${Paths.getModsPath()}/${Settings.engineSettings.data.selectedMod}/ui/StoryMenuState');
 		var validated = true;
 		if (menuScript == null) {
-			menuScript = new HScript();
+			menuScript = new DummyScript();
 			validated = false;
 		}
 		ModSupport.setScriptDefaultVars(menuScript, '${Settings.engineSettings.data.selectedMod}', {});

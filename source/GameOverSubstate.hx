@@ -1,5 +1,6 @@
 package;
 
+import Script.DummyScript;
 import Script.HScript;
 import openfl.media.Sound;
 import flixel.system.FlxSound;
@@ -75,10 +76,10 @@ class GameOverSubstate extends MusicBeatSubstate
 			path = '${Paths.modsPath}/${scriptParsed[0]}/${scriptParsed[1]}';
 			script = Script.create(path);
 			if (script == null) {
-				script = new HScript();
+				script = new DummyScript();
 			}
 		} else {
-			script = new HScript();
+			script = new DummyScript();
 		}
 
 		ModSupport.setScriptDefaultVars(script, PlayState.songMod, {});
@@ -128,13 +129,14 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		script.executeFunc("update", [elapsed]);
 
-		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.curFrame == 12)
+		if (bf.animation.curAnim.name == 'firstDeath' && (bf.animation.curAnim.curFrame != 12 || bf.animation.curAnim.finished))
 		{
 			FlxG.camera.follow(camFollow, LOCKON, 0.01);
 		}
 
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.finished)
 		{
+			FlxG.camera.follow(camFollow, LOCKON, 0.01);
 			var sfx = gameOverMusic.split(":");
 			if (firstDeathSFX.length == 0) sfx = ["Friday Night Funkin'", "gameOver"];
 			if (sfx.length == 1) sfx.insert(0, PlayState.songMod);

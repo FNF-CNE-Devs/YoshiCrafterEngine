@@ -1,3 +1,4 @@
+import WindowsAPI.ConsoleColor;
 import hscript.*;
 import openfl.ui.Keyboard;
 import openfl.events.KeyboardEvent;
@@ -9,10 +10,15 @@ import openfl.display.Sprite;
 using StringTools;
 
 class LogsOverlay extends Sprite {
+    
+    public static var consoleOpened:Bool = false;
+    public static var consoleVisible:Bool = false;
+
     public static var logsText:TextField;
     public static var titleText:TextField;
     public static var legend:TextField;
     public static var command:TextField;
+    public static var dummyText:TextField;
     public static var commandLabel:TextField;
     public static var hscript:Interp;
     
@@ -23,27 +29,39 @@ class LogsOverlay extends Sprite {
     public static var oldLogsText:String = "";
     public static var lastCommands:Array<String> = [];
 
-    public static function error(thing:Dynamic) {
-        LogsOverlay.trace(thing);
+    public static function error(thing:Dynamic, color:ConsoleColor = RED) {
+        LogsOverlay.trace(thing, color);
         errors++;
     }
-	public static function trace(thing2:Dynamic) {
+	public static function trace(thing2:Dynamic, color:ConsoleColor = WHITE) {
+        if (logsText == null) return;
         var thing = "";
         if (Std.isOfType(thing2, String)) {
             thing = thing2;
         } else {
             thing = Std.string(thing2);
         }
-        for(e in thing.split("\n")) {
-            tracedShit++;
-            logsText.appendText(e + "\n");
-        }
-        var splitShit = logsText.text.split("\n");
-        if (splitShit.length > Settings.engineSettings.data.logLimit) {
-            while(splitShit.length > Settings.engineSettings.data.logLimit) {
-                splitShit.pop();
+        if (consoleOpened && consoleVisible) {
+            logsText.text = "Logs are redirected in detached console.\nPress F8 to reattach the logs to the game.";
+
+            WindowsAPI.setConsoleColors(color, BLACK);
+            var out = Sys.stdout(); // using stdout so that it doesnt show LogsOverlay.hx:43: at the beginning
+            for(e in thing.split("\n")) {
+                tracedShit++;
+                out.writeString('[YCE LOGS] $e\n'); 
             }
-            logsText.text = splitShit.join("\n");
+        } else {
+            for(e in thing.split("\n")) {
+                tracedShit++;
+                logsText.appendText(e + "\n");
+            }
+            var splitShit = logsText.text.split("\n");
+            if (splitShit.length > Settings.engineSettings.data.logLimit) {
+                while(splitShit.length > Settings.engineSettings.data.logLimit) {
+                    splitShit.pop();
+                }
+                logsText.text = splitShit.join("\n");
+            }
         }
 	}
     public function new() {
@@ -75,7 +93,11 @@ class LogsOverlay extends Sprite {
         legend.selectable = false;
         legend.textColor = 0xDDDDDD;
         legend.defaultTextFormat = new TextFormat("Pixel Arial 11 Bold", 12);
-        legend.text = "[F6] Close | [F7] Clear";
+        #if windows
+            legend.text = "[F6] Close | [F7] Clear | [F8] Detach";
+        #else
+            legend.text = "[F6] Close | [F7] Clear";
+        #end
 
         command = new TextField();
         command.selectable = true;
@@ -91,12 +113,21 @@ class LogsOverlay extends Sprite {
         commandLabel.textColor = 0xDDDDDD;
         commandLabel.defaultTextFormat = new TextFormat("Pixel Arial 11 Bold", 6);
         commandLabel.height = 11;
+
+        dummyText = new TextField();
+        dummyText.selectable = true;
+        dummyText.text = "";
+        dummyText.width = 2;
+        dummyText.x = -5000;
+
+        
         // command.ed
         addChild(titleText);
         addChild(logsText);
         addChild(legend);
         addChild(commandLabel);
         addChild(command);
+        addChild(dummyText);
 
         FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, function(e:KeyboardEvent)
             {
@@ -105,9 +136,21 @@ class LogsOverlay extends Sprite {
                         switchState();
                     }
                     if (visible) {
-                        if (e.keyCode == Keyboard.F7) {
-                            logsText.text = "";
-                            tracedShit = lastPos = errors = lastErrors = 0;
+                        switch(e.keyCode) {
+                            case Keyboard.F7:
+                                if (consoleOpened && consoleVisible)
+                                    WindowsAPI.clearScreen();
+                                else
+                                    logsText.text = "";
+                                tracedShit = lastPos = errors = lastErrors = 0;
+                            case Keyboard.F8:
+                                if (consoleOpened) {
+                                    WindowsAPI.showConsole(!consoleVisible);
+                                    logsText.text = consoleVisible ? "Logs are redirected in detached console.\nPress F8 to reattach the logs to the game." : "";
+                                } else {
+                                    WindowsAPI.allocConsole();
+                                }
+                                WindowsAPI.clearScreen();
                         }
                         if (FlxG.stage.focus == command) {
                             if (e.keyCode == Keyboard.ENTER && command.text.trim() != "") { // COMMAND!
@@ -143,7 +186,6 @@ class LogsOverlay extends Sprite {
         FlxG.mouse.useSystemCursor = (visible = !visible);
         FlxG.mouse.enabled = !FlxG.mouse.useSystemCursor;
         FlxG.keys.enabled = true;
-        FlxG.stage.focus = null;
     }
     public override function __enterFrame(deltaTime:Int) {
         super.__enterFrame(deltaTime);
@@ -175,6 +217,8 @@ class LogsOverlay extends Sprite {
             }
             lastPos = tracedShit;
             lastErrors = errors;
+        } else {
+            FlxG.stage.focus = dummyText;
         }
     }
 }

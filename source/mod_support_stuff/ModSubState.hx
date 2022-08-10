@@ -1,5 +1,6 @@
 package mod_support_stuff;
 
+import Script.DummyScript;
 import flixel.addons.ui.FlxUITooltip;
 import flixel.addons.ui.interfaces.IFlxUIWidget;
 import flixel.FlxBasic;
@@ -22,7 +23,7 @@ class ModSubState extends MusicBeatSubstate {
         var path = '${Paths.modsPath}/$_mod/substates/$_scriptName';
 
         script = Script.create(path);
-        if (script != null) script = new HScript();
+        if (script == null) script = new DummyScript();
 
         
         script.setVariable("new", function(args) {});
@@ -89,6 +90,17 @@ class ModSubState extends MusicBeatSubstate {
     public override function update(elapsed:Float) {
         script.executeFunc("update", [elapsed]);
         super.update(elapsed);
+        if (CoolUtil.isDevMode()) {
+            if (FlxG.keys.justPressed.F5 && !FlxG.state.persistentUpdate) {
+                if (FlxG.state is ModState) {
+                    var state:ModState = cast FlxG.state;
+                    FlxG.switchState(new ModState(state._scriptName, state._mod, state.args));
+                } else
+                    FlxG.resetState();
+            } else if (FlxG.keys.justPressed.F4) {
+                close();
+            }
+        }
     }
 
     public override function destroy() {

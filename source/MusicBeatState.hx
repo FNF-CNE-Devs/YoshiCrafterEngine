@@ -28,6 +28,7 @@ typedef FlxSpriteArray = Array<FlxSprite>;
 @:allow(mod_support_stuff.SwitchModSubstate)
 class MusicBeatState extends FlxUIState
 {
+	public static var __firstStateLoaded:Bool = false;
 	public static var medalOverlay:Array<MedalsOverlay> = [];
 	private var reloadModsState:Bool = false;
 
@@ -67,21 +68,18 @@ class MusicBeatState extends FlxUIState
 		LimeAssets.loggedRequests = [];
 
 		if (doCachingShitNextTime) {
-			LimeAssets.logRequests = true;
-			@:privateAccess
-			for(e in FlxG.bitmap._cache) {
-				oldPersistStuff[e] = e.persist;
-				e.persist = true;
-			}
+			if (__firstStateLoaded) {
+				LimeAssets.logRequests = true;
+				@:privateAccess
+				for(e in FlxG.bitmap._cache) {
+					oldPersistStuff[e] = e.persist;
+					e.persist = true;
+				}
+			} else
+				__firstStateLoaded = true;
 		} else {
 			doCachingShitNextTime = true;
 		}
-		#if !android
-			@:privateAccess
-			FlxG.width = 1280;
-			@:privateAccess
-			FlxG.height = 720;
-		#end
 		
 		super(transIn, transOut);
 	}
@@ -119,10 +117,10 @@ class MusicBeatState extends FlxUIState
 	override function create()
 	{
 		if (!Std.isOfType(FlxG.scaleMode, WideScreenScale)) {
-			FlxG.scaleMode = new WideScreenScale();
+			FlxG.scaleMode = new WideScreenScale(); // still here cause resize and shit
 		}
 		var scl:WideScreenScale = cast FlxG.scaleMode;
-        scl.isWidescreen = false;
+        scl.isWidescreen = Settings.engineSettings.data.secretWidescreenSweep;
 
 		var width = 1280;
 		var height = 720;

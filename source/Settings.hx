@@ -209,6 +209,7 @@ import flixel.FlxG;
 	@:keep public static final lastInstalledMods:Array<String> = ["Friday Night Funkin'", "YoshiCrafterEngine"];
 	@:keep public static final logStateChanges:Bool = true;
 	@:keep public static final menuMouse:Bool = true;
+	@:keep public static final secretWidescreenSweep:Bool = false;
 	
 	@:keep public static final charter_showStrums:Bool = true;
 	@:keep public static final charter_hitsoundsEnabled:Bool = false;
@@ -321,5 +322,7 @@ class Settings {
 			}
 		}
 		engineSettings.flush();
+
+		CoolUtil.updateAntialiasing();
     }
 }

@@ -1,3 +1,4 @@
+import haxe.Unserializer;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import linc.Linc;
@@ -62,6 +63,8 @@ class Script {
             }
         }
         switch(ext.toLowerCase()) {
+            case 'hhx':
+                return new HardcodedHScript();
             case 'hx' | 'hscript' | 'hsc':
                 return new HScript();
             #if ENABLE_LUA
@@ -110,10 +113,48 @@ class Script {
     public function setScriptObject(obj:Dynamic) {}
 }
 
+class DummyScript extends Script {
+    var variables:Map<String, Dynamic> = [];
+
+    public function new() {super();}
+
+    public override function _executeFunc(funcName:String, ?args:Array<Any>) {
+        var f = variables[funcName];
+        if (f != null) {
+            try {
+                if (args == null) {
+                    var result = null;
+                    try {
+                        result = f();
+                    } catch(e) {
+                        this.trace('$e', true);
+                    }
+                    return result;
+                } else {
+                    var result = null;
+                    try {
+                        result = Reflect.callMethod(null, f, args);
+                    } catch(e) {
+                        this.trace('$e', true);
+                    }
+                    return result;
+                }
+            } catch(e) {
+                this.trace('${e.toString()}');
+            }
+        }
+        return null;
+    }
+
+    public override function setVariable(name:String, val:Dynamic) {variables.set(name, val);}
+    public override function getVariable(name:String) {return variables.get(name);}
+}
+
 class ScriptPack {
     public var ogScripts:Array<Script> = [];
     public var scripts:Array<Script> = [];
     public var scriptModScripts:Array<ModScript> = [];
+    public var __curScript:Script;
     public function new(scripts:Array<ModScript>) {
         for (s in scripts) {
             addScript(s.path, s.mod);
@@ -128,6 +169,14 @@ class ScriptPack {
         var sc = Script.create('${Paths.modsPath}/${path}');
         if (sc == null) return;
         ModSupport.setScriptDefaultVars(sc, mod, {});
+        sc.setVariable("scriptPack", this);
+        sc.setVariable("setGlobal", function(name:String, value:Dynamic, alsoAffectThis:Bool = false) {
+            for(e in scripts) {
+                if (alsoAffectThis || e != __curScript) {
+                    e.setVariable(name, value);
+                }
+            }
+        });
         sc.setVariable("importScript", function(p:String) {
             if (p == null) return;
             var scriptPath = SongConf.getModScriptFromValue(sc.mod, p);
@@ -140,6 +189,7 @@ class ScriptPack {
     public function loadFiles() {
         for (k=>sc in scripts) {
             var s = scriptModScripts[k];
+            __curScript = sc;
             sc.loadFile('${Paths.modsPath}/${s.path}');
         }
     }
@@ -148,6 +198,7 @@ class ScriptPack {
         var a = args;
         if (a == null) a = [];
         for (script in scripts) {
+            __curScript = script;
             var returnVal = script.executeFunc(funcName, a);
             if (returnVal != defaultReturnVal && defaultReturnVal != null) {
                 return returnVal;
@@ -162,6 +213,7 @@ class ScriptPack {
         if (a == null) a = [];
         if (defaultReturnVal == null) defaultReturnVal = [null];
         for (script in scripts) {
+            __curScript = script;
             var returnVal = script.executeFunc(funcName, a);
             if (!defaultReturnVal.contains(returnVal)) {
                 #if messTest trace("found"); #end
@@ -196,7 +248,7 @@ class HScript extends Script {
     public function new() {
         hscript = new Interp();
         hscript.errorHandler = function(e) {
-            this.trace('$e');
+            this.trace('$e', true);
             if (Settings.engineSettings != null && Settings.engineSettings.data.showErrorsInMessageBoxes && !FlxG.keys.pressed.SHIFT) {
                 var posInfo = hscript.posInfos();
 
@@ -264,6 +316,9 @@ class HScript extends Script {
             this.trace('${e.message}', true);
         }
     }
+    public function bruh(path:String) {
+        super.loadFile(path);
+    }
 
     public override function trace(text:String, error:Bool = false) {
         var posInfo = hscript.posInfos();
@@ -279,14 +334,64 @@ class HScript extends Script {
 
     public override function setVariable(name:String, val:Dynamic) {
         hscript.variables.set(name, val);
+        @:privateAccess
+        hscript.locals.set(name, {r: val, depth: 0});
     }
 
     public override function getVariable(name:String):Dynamic {
-        @:privateAccess
-        return hscript.variables.get(name);
+        if (@:privateAccess hscript.locals.exists(name) && @:privateAccess hscript.locals[name] != null) {
+            @:privateAccess
+            return hscript.locals.get(name).r;
+        } else if (hscript.variables.exists(name))
+            return hscript.variables.get(name);
+
+        return null;
     }
 }
 
+class HardcodedHScript extends HScript {
+    public override function loadFile(path:String) {
+        bruh(path);
+        if (path.trim() == "") return;
+        fileName = Path.withoutDirectory(path);
+        var p = path;
+        trace(p);
+        if (Path.extension(p) == "") {
+            if (FileSystem.exists('$p.hhx')) {
+                p = '$p.hhx';
+                fileName += '.hhx';
+            }
+        }
+        trace(p);
+
+        var code:String = null;
+        var expr = null;
+        var unserializer = null;
+        try {
+            code = sys.io.File.getContent(p);
+            // {code: expr}
+            unserializer = new Unserializer(code);
+            expr = unserializer.unserialize();
+        } catch(e) {
+            this.trace('${e.message}', true);
+            return;
+        }
+
+        if (expr == null)
+            return;
+
+        if (!Reflect.hasField(expr, "code")) {
+            this.trace('Serialized code does not have "code" variable.', true);
+            return;
+        }
+        try {
+            this.hscript.execute(expr.code);
+        } catch(e) {
+            this.trace('${e.message}', true);
+            return;
+        }
+    }
+}
 #if ENABLE_LUA
 typedef LuaObject = {
     var varPath:String;
