@@ -231,6 +231,7 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
                         Reflect.setField(PlayState.current.engineSettings, 'control_' + arrowNumber + '_$i', k);
                     }
                 }
+                KeybindControls.loadControls(arrowNumber); // reloads in the new super fancy input system update that gives you the smallest delay possible!!!
                 CoolUtil.playMenuSFX(1);
                 close();
                 if (callback != null) callback();

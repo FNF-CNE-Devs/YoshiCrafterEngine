@@ -17,6 +17,7 @@ class OptionScreen extends MusicBeatSubstate {
 
     public var emptyTxt:FlxText;
     public var canSelect:Bool = true;
+    public var createBG:Bool = true;
     public var curSelected:Int = 0;
     public var name:String = "";
 
@@ -32,6 +33,7 @@ class OptionScreen extends MusicBeatSubstate {
         super.create();
         CoolUtil.playMenuMusic();
         if (subState != null) subState.close();
+        if (createBG)
         var bg = CoolUtil.addBG(this);
         if (options.length <= 0) {
             emptyTxt = new FlxText(0, 0, 0, "Oops! Seems like this menu is empty.\nPress [Esc] to go back.\n");

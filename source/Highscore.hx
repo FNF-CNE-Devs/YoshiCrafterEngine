@@ -33,17 +33,7 @@ class Highscore
 			trace(daSong);
 		#end
 
-		if (Reflect.hasField(FlxG.save.data, daSong))
-		{
-			if (songScores.exists(daSong)) {
-				if (songScores.get(daSong) < score)
-					Reflect.setField(FlxG.save.data, daSong, data);
-			}
-			else
-				Reflect.setField(FlxG.save.data, daSong, data);
-		}
-		else
-			Reflect.setField(FlxG.save.data, daSong, data);
+		Reflect.setField(FlxG.save.data, daSong, data);
 	}
 
 	public static function saveScore(mod:String, song:String, score:Int = 0, ?diff:String = "Normal"):Bool

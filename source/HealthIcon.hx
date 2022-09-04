@@ -49,7 +49,6 @@ class HealthIcon extends FlxSprite
 
 
 		antialiasing = true;
-		scrollFactor.set();
 
 		changeCharacter(char, mod);
 	}
@@ -99,8 +98,6 @@ class HealthIcon extends FlxSprite
 		} else if (mod != null) {
 			lib = 'mods/$mod';
 		}
-		trace(charName);
-		trace(lib);
 
 		var tex = Paths.getCharacterIcon(charName, lib);
 		var altTex = Paths.image('icons/icon-${charName}', lib);

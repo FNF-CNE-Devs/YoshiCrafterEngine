@@ -1,0 +1,98 @@
+{
+	"arrowColors": [
+		"#CEE4FF",
+		"#D57E00",
+		"#CEE4FF",
+		"#D57E00"
+	],
+	"camOffset": {
+		"x": 0,
+		"y": 0
+	},
+	"globalOffset": {
+		"x": 0,
+		"y": 200
+	},
+	"healthbarColor": "#D57E00",
+	"flipX": false,
+	"anims": [
+		{
+			"indices": [
+				8,
+				10,
+				12,
+				14
+			],
+			"x": 0,
+			"y": 0,
+			"anim": "spooky dance idle",
+			"loop": false,
+			"name": "danceRight",
+			"framerate": 12
+		},
+		{
+			"indices": null,
+			"x": -130,
+			"y": -14,
+			"anim": "spooky sing right",
+			"loop": false,
+			"name": "singRIGHT",
+			"framerate": 24
+		},
+		{
+			"indices": null,
+			"x": -50,
+			"y": -130,
+			"anim": "spooky DOWN note",
+			"loop": false,
+			"name": "singDOWN",
+			"framerate": 24
+		},
+		{
+			"indices": [
+				0,
+				2,
+				6
+			],
+			"x": 0,
+			"y": 0,
+			"anim": "spooky dance idle",
+			"loop": false,
+			"name": "danceLeft",
+			"framerate": 12
+		},
+		{
+			"indices": null,
+			"x": -20,
+			"y": 26,
+			"anim": "spooky UP NOTE",
+			"loop": false,
+			"name": "singUP",
+			"framerate": 24
+		},
+		{
+			"indices": null,
+			"x": 130,
+			"y": -10,
+			"anim": "note sing left",
+			"loop": false,
+			"name": "singLEFT",
+			"framerate": 24
+		}
+	],
+	"danceSteps": [
+		"idle"
+	],
+	"antialiasing": true,
+	"healthIconSteps": [
+		[
+			20,
+			0
+		],
+		[
+			0,
+			1
+		]
+	],
+	"scale": 1
+}

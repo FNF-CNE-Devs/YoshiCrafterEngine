@@ -12,6 +12,10 @@ class DiscordClient
 {
 	public static var clientID:String = null;
 	public static var init:Bool = false;
+	public static var currentButton1Label:String = null;
+	public static var currentButton1Url:String = null;
+	public static var currentButton2Label:String = null;
+	public static var currentButton2Url:String = null;
 	/**
 	* Creates a new Discord Client.
 	*/
@@ -66,7 +70,11 @@ class DiscordClient
 			details: "In the Menus",
 			state: null,
 			largeImageKey: 'icon',
-			largeImageText: "Friday Night Funkin' - YoshiCrafter Engine"
+			largeImageText: "Friday Night Funkin' - YoshiCrafter Engine",
+			button1Label: currentButton1Label,
+			button1Url: currentButton1Url,
+			button2Label: currentButton2Label,
+			button2Url: currentButton2Url
 		});
 	}
 
@@ -109,7 +117,11 @@ class DiscordClient
 			smallImageKey : smallImageKey,
 			// Obtained times are in milliseconds so they are divided so Discord can use it
 			startTimestamp : Std.int(startTimestamp / 1000),
-            endTimestamp : Std.int(endTimestamp / 1000)
+            endTimestamp : Std.int(endTimestamp / 1000),
+			button1Label: currentButton1Label,
+			button1Url: currentButton1Url,
+			button2Label: currentButton2Label,
+			button2Url: currentButton2Url
 		});
 
 		//trace('Discord RPC Updated. Arguments: $details, $state, $smallImageKey, $hasStartTimestamp, $endTimestamp');

@@ -1,0 +1,80 @@
+{
+	"arrowColors": [
+		"#AF66CE",
+		"#AF66CE",
+		"#AF66CE",
+		"#AF66CE"
+	],
+	"camOffset": {
+		"x": 0,
+		"y": 0
+	},
+	"globalOffset": {
+		"x": 0,
+		"y": 0
+	},
+	"healthbarColor": "#AF66CE",
+	"flipX": false,
+	"anims": [
+		{
+			"indices": null,
+			"x": 0,
+			"y": 0,
+			"anim": "Dad idle dance",
+			"loop": false,
+			"name": "idle",
+			"framerate": 24
+		},
+		{
+			"indices": null,
+			"x": 0,
+			"y": -30,
+			"anim": "Dad Sing Note DOWN",
+			"loop": true,
+			"name": "singDOWN",
+			"framerate": 24
+		},
+		{
+			"indices": null,
+			"x": 0,
+			"y": 27,
+			"anim": "Dad Sing Note RIGHT",
+			"loop": true,
+			"name": "singRIGHT",
+			"framerate": 24
+		},
+		{
+			"indices": null,
+			"x": -10,
+			"y": 10,
+			"anim": "Dad Sing Note LEFT",
+			"loop": true,
+			"name": "singLEFT",
+			"framerate": 24
+		},
+		{
+			"indices": null,
+			"x": -6,
+			"y": 50,
+			"anim": "Dad Sing Note UP",
+			"loop": true,
+			"name": "singUP",
+			"framerate": 24
+		}
+	],
+	"danceSteps": [
+		"idle"
+	],
+	"antialiasing": true,
+	"healthIconSteps": [
+		[
+			20,
+			0
+		],
+		[
+			0,
+			1
+		]
+	],
+	"scale": 1
+}

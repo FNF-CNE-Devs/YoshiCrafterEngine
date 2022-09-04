@@ -18,9 +18,9 @@ class Boyfriend extends Character
 	 * @param   char            The character for BF (ex : `bf`, `bf-christmas`, `bf-car`), default is `bf`
 	 * @param   textureOverride Optional, allows you to override the texture. (ex : `bf` as char for Boyfriend's anims and assets, and `blammed` for the Boyfriend blammed appearance)
 	 */
-	public function new(x:Float, y:Float, ?char:String = 'bf', ?textureOverride:String = "")
+	public function new(x:Float, y:Float, ?char:String = 'bf')
 	{
-		super(x, y, char, true, textureOverride);
+		super(x, y, char, true);
 	}
 
 	override function update(elapsed:Float)

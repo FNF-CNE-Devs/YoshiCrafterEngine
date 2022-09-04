@@ -289,7 +289,7 @@ class MainMenuState extends FullyModState {
 		var yoshiCrafterEngineVer = Main.engineVer;
 		var buildVer = Main.buildVer;
 		if (buildVer.trim() != "") buildVer = " " + buildVer.trim();
-		versionShit = new FlxText(5, FlxG.height - (18 * 3), 0, 'YoshiCrafter Engine v$yoshiCrafterEngineVer$buildVer\nFriday Night Funkin\' v$fnfVer\nSelected Mod: ${ModSupport.getModName(Settings.engineSettings.data.selectedMod)} (Press TAB to switch)\n', 12);
+		versionShit = new FlxText(5, FlxG.height - (18 * 2), 0, 'YoshiCrafter Engine v$yoshiCrafterEngineVer$buildVer (FNF v$fnfVer)\nSelected Mod: ${ModSupport.getModName(Settings.engineSettings.data.selectedMod)} (Press TAB to switch)\n', 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);

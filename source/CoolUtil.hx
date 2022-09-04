@@ -1,5 +1,6 @@
 package;
 
+import flixel.tweens.FlxEase;
 #if cpp
 import openfl.Lib;
 #end
@@ -27,6 +28,9 @@ class CoolUtil
 	*/
 	public static final difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 
+	public static function isClass(obj:Dynamic):Bool {
+		return Type.getClass(obj) == null;
+	}
 	public static function updateAntialiasing() {
 		FlxG.forceNoAntialiasing = Settings.engineSettings.data.antialiasing == 5;
 	}
@@ -35,6 +39,71 @@ class CoolUtil
 		return #if cpp Lib.getTimer() #else haxe.Timer.stamp() * 1000 #end;
 	}
 
+	public static function filterNulls<T>(a:Array<Null<T>>):Array<T> {
+		var finalArray:Array<T> = [];
+		for(e in a) if (e != null) finalArray.push(e);
+		return finalArray;
+	}
+
+	
+    public static function getEase(ease:String, ?scriptForCustom:Script):Float->Float {
+        return switch(ease.toLowerCase()) {
+            case "linear" | null:       FlxEase.linear;
+            case "quadin":              FlxEase.quadIn;
+            case "quadout":             FlxEase.quadOut;
+            case "quadinout":           FlxEase.quadInOut;
+            case "cubein":              FlxEase.cubeIn;
+            case "cubeout":             FlxEase.cubeOut;
+            case "cubeinout":           FlxEase.cubeInOut;
+            case "quartin":             FlxEase.quartIn;
+            case "quartout":            FlxEase.quartOut;
+            case "quartinout":          FlxEase.quartInOut;
+            case "quintin":             FlxEase.quintIn;
+            case "quintout":            FlxEase.quintOut;
+            case "quintinout":          FlxEase.quintInOut;
+            case "smoothstepin":        FlxEase.smoothStepIn;
+            case "smoothstepout":       FlxEase.smoothStepOut;
+            case "smoothstepinout":     FlxEase.smoothStepInOut;
+            case "smootherstepin":      FlxEase.smootherStepIn;
+            case "smootherstepout":     FlxEase.smootherStepOut;
+            case "smootherstepinout":   FlxEase.smootherStepInOut;
+            case "sinein":              FlxEase.sineIn;
+            case "sineout":             FlxEase.sineOut;
+            case "sineinout":           FlxEase.sineInOut;
+            case "bouncein":            FlxEase.bounceIn;
+            case "bounceout":           FlxEase.bounceOut;
+            case "bounceinout":         FlxEase.bounceInOut;
+            case "circin":              FlxEase.circIn;
+            case "circout":             FlxEase.circOut;
+            case "circinout":           FlxEase.circInOut;
+            case "expoin":              FlxEase.expoIn;
+            case "expoout":             FlxEase.expoOut;
+            case "expoinout":           FlxEase.expoInOut;
+            case "backin":              FlxEase.backIn;
+            case "backout":             FlxEase.backOut;
+            case "backinout":           FlxEase.backInOut;
+            case "elasticin":           FlxEase.elasticIn;
+            case "elasticout":          FlxEase.elasticOut;
+            case "elasticinout":        FlxEase.elasticInOut;
+            default:
+				if (scriptForCustom != null) {
+					// CUSTOM!!
+					function(v:Float):Float {
+						var finalV:Dynamic = scriptForCustom.executeFunc(ease, [v]);
+						if (finalV == null) return v;
+						switch(Type.typeof(finalV)) {
+							case TInt | TFloat:
+								return cast finalV;
+							default:
+								return v;
+						}
+					}
+				} else {
+					FlxEase.linear;
+				}
+                
+        }
+    }
 	public static function fixPsychNoteType(noteType:String) {
 		return switch(noteType) {
 			case "Alt Animation":
@@ -68,9 +137,13 @@ class CoolUtil
 		return result + min;
 	}
 	public static function isDevMode() {
-		if (ModSupport.forceDevMode)
-			return true;
-		return Settings.engineSettings != null && Settings.engineSettings.data.developerMode && ModSupport.modConfig[Settings.engineSettings.data.selectedMod] != null && !ModSupport.modConfig[Settings.engineSettings.data.selectedMod].locked;
+		try {
+			if (ModSupport.forceDevMode)
+				return true;
+			return Settings.engineSettings != null && Settings.engineSettings.data.developerMode && ModSupport.modConfig[Settings.engineSettings.data.selectedMod] != null && !ModSupport.modConfig[Settings.engineSettings.data.selectedMod].locked;
+		} catch(e) {
+			return false;
+		}		
 	}
 	public static function getSizeLabel(num:UInt):String{
         var size:Float = num;
@@ -96,7 +169,7 @@ class CoolUtil
 
 	public static function loadUIStuff(sprite:FlxSprite, ?anim:String) {
 		sprite.loadGraphic(Paths.image("uiIcons", "preload"), true, 16, 16);
-		var anims = ["up", "refresh", "delete", "copy", "paste", "x", "swap", "folder", "play", "edit", "settings", "song", "add", "trophy", "up", "down"];
+		var anims = ["up", "refresh", "delete", "copy", "paste", "x", "swap", "folder", "play", "edit", "settings", "song", "add", "trophy", "up", "down", "lock"];
 		
 		for(k=>a in anims) {
 			sprite.animation.add(a, [k], 0, false);
@@ -249,6 +322,9 @@ class CoolUtil
 	}
 
 
+	public static function multiplyColors(c1:FlxColor, c2:FlxColor) {
+		return FlxColor.multiply(c1, c2);
+	}
 	public static function addUpdateBG(f:FlxState) {
 		// siivkoi i love your art thanks again
 		var p = Paths.image("YoshiCrafter_Engine_download_screen", "preload");
@@ -473,15 +549,17 @@ class CoolUtil
 		return getCharacterFull(char, mod).join(":");
 	}
 	public static function getCharacterFull(char:String, mod:String):Array<String> {
+		if (mod.startsWith("mods/")) mod = mod.substr(5);
 		var splitChar = char.split(":");
-		if (splitChar.length == 1) {
+		if (splitChar.length <= 1) {
 			for (fileExt in Main.supportedFileTypes) {
-				if (FileSystem.exists('${Paths.modsPath}/$mod/characters/${splitChar[0]}/Character.$fileExt') || Assets.exists(Paths.file('characters/${splitChar[0]}.json'))) {
+				var path = '${Paths.modsPath}/$mod/characters/${splitChar[0]}/Character.$fileExt';
+				if (FileSystem.exists(path) || Assets.exists(Paths.file('characters/${splitChar[0]}.json'))) {
 					splitChar.insert(0, mod);
 					break;
 				}
 			}
-			if (splitChar.length == 1) {
+			if (splitChar.length <= 1) {
 				for (fileExt in Main.supportedFileTypes) {
 					if (FileSystem.exists('${Paths.modsPath}/Friday Night Funkin\'/characters/${splitChar[0]}/Character.$fileExt')) {
 						splitChar.insert(0, "Friday Night Funkin'");
@@ -490,7 +568,7 @@ class CoolUtil
 				}
 			}
 		}
-        if (splitChar.length == 1) splitChar = ["Friday Night Funkin'", "unknown"];
+        if (splitChar.length <= 1) splitChar = ["Friday Night Funkin'", "unknown"];
 
 		
 		return splitChar;

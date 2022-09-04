@@ -1,0 +1,116 @@
+{
+	"arrowColors": [
+		"#AF66CE",
+		"#AF66CE",
+		"#AF66CE",
+		"#AF66CE"
+	],
+	"camOffset": {
+		"x": 0,
+		"y": 0
+	},
+	"globalOffset": {
+		"x": -500,
+		"y": 0
+	},
+	"healthbarColor": "#AF66CE",
+	"flipX": false,
+	"anims": [
+		{
+			"indices": null,
+			"x": -1,
+			"y": -24,
+			"anim": "Parent Right Note Mom",
+			"loop": false,
+			"name": "singRIGHT-alt",
+			"framerate": 24
+		},
+		{
+			"indices": null,
+			"x": -31,
+			"y": -29,
+			"anim": "Parent Down Note Dad",
+			"loop": false,
+			"name": "singDOWN",
+			"framerate": 24
+		},
+		{
+			"indices": null,
+			"x": -30,
+			"y": 15,
+			"anim": "Parent Left Note Mom",
+			"loop": false,
+			"name": "singLEFT-alt",
+			"framerate": 24
+		},
+		{
+			"indices": null,
+			"x": -47,
+			"y": 24,
+			"anim": "Parent Up Note Dad",
+			"loop": false,
+			"name": "singUP",
+			"framerate": 24
+		},
+		{
+			"indices": null,
+			"x": 0,
+			"y": 0,
+			"anim": "Parent Christmas Idle",
+			"loop": false,
+			"name": "idle",
+			"framerate": 24
+		},
+		{
+			"indices": null,
+			"x": -1,
+			"y": -23,
+			"anim": "Parent Right Note Dad",
+			"loop": false,
+			"name": "singRIGHT",
+			"framerate": 24
+		},
+		{
+			"indices": null,
+			"x": -30,
+			"y": -27,
+			"anim": "Parent Down Note Mom",
+			"loop": false,
+			"name": "singDOWN-alt",
+			"framerate": 24
+		},
+		{
+			"indices": null,
+			"x": -30,
+			"y": 16,
+			"anim": "Parent Left Note Dad",
+			"loop": false,
+			"name": "singLEFT",
+			"framerate": 24
+		},
+		{
+			"indices": null,
+			"x": -47,
+			"y": 24,
+			"anim": "Parent Up Note Mom",
+			"loop": false,
+			"name": "singUP-alt",
+			"framerate": 24
+		}
+	],
+	"danceSteps": [
+		"idle"
+	],
+	"antialiasing": true,
+	"healthIconSteps": [
+		[
+			20,
+			0
+		],
+		[
+			0,
+			1
+		]
+	],
+	"scale": 1
+}

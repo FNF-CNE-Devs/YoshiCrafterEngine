@@ -1,6 +1,12 @@
 package;
 
 // import sys.io.File;
+import cpp.vm.Thread;
+import flixel.animation.FlxAnimationController;
+import llua.Lua.Lua_helper;
+import Script.LuaScript;
+import Script.ILuaScriptable;
+import dev_toolbox.CharacterJSON;
 import Script.DummyScript;
 import psychstuff.PsychCharacter;
 import dev_toolbox.stage_editor.FlxStageSprite;
@@ -24,7 +30,7 @@ using StringTools;
 * Main Character class for Characters as BF, GF, Daddy Dearest, Mommy Mearest, etc...
 * Also this is based off FlxStageSprite BUT since it doesn't override anything it won't interfere with anything so we good
 */
-class Character extends FlxStageSprite
+class Character extends FlxStageSprite implements ILuaScriptable
 {
 	/**
 	 * Animation Offsets.
@@ -67,6 +73,9 @@ class Character extends FlxStageSprite
 
 	public var longAnims:Array<String> = [];
 
+	// for async operations like loading and switching characters
+	public var ready:Bool = true;
+
 	/**
 	 * DO NOT USE, always results to null unless loadJSON is called.
 	 */
@@ -78,6 +87,8 @@ class Character extends FlxStageSprite
 	public var psychJson:dev_toolbox.CharacterJSON = null;
 
 	public var healthIcon(default, set):HealthIcon;
+
+	public var danceStep:Int = 0;
 	public function set_healthIcon(h:HealthIcon):HealthIcon {
 		healthIcon = h;
 		if (characterScript != null) characterScript.executeFunc("healthIcon", [h]);
@@ -91,6 +102,9 @@ class Character extends FlxStageSprite
 	 */
 	 public function getCamPos() {
 		var midpoint = getMidpoint();
+		if (!ready) {
+			return midpoint;
+		}
 		var pos:FlxPoint = null;
 		if (isPlayer) {
 			pos = new FlxPoint(midpoint.x - 100 + camOffset.x, midpoint.y - 100 + camOffset.y);
@@ -111,18 +125,29 @@ class Character extends FlxStageSprite
 	 * @param y					Y position of the character
 	 * @param character			Character (ex : `bf`, `gf`, `dad`), not identical as the spritesheet
 	 * @param isPlayer			Whenever the character is the player or not.
-	 * @param textureOverride 	Optional, allows you to override the texture. (ex : `bf` as char for Boyfriend's anims and assets, and `blammed` for the Boyfriend blammed appearance)
 	 */
-	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false, cloneBitmap:Bool = false, ?textureOverride:String = "")
+	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		super(x, y);
 
+		this.isPlayer = isPlayer;
+		curCharacter = character;
+		
+		__loadChar();
+	}
 
+	private function __loadChar() {
+		ready = false;
 		animOffsets = new Map<String, Array<Float>>();
 		cameraOffsets = new Map<String, Array<Float>>();
-		curCharacter = character;
-		this.isPlayer = isPlayer;
-		antialiasing = true;
+		initVars();
+		reset(x - charGlobalOffset.x, y - charGlobalOffset.y);
+		flipX = flipY = false;
+		charGlobalOffset.set();
+		if (characterScript != null) {
+			characterScript.destroy();
+			characterScript = null;
+		}
 
 
 		
@@ -135,7 +160,6 @@ class Character extends FlxStageSprite
 			}
 			characterScript.setVariable("curCharacter", curCharacter);
 			characterScript.setVariable("character", this);
-			characterScript.setVariable("textureOverride", textureOverride);
 			characterScript.setVariable("dance", function() {
 				if (animation.getByName("danceLeft") != null && animation.getByName("danceRight") != null) {
 					playAnim(danced ? "danceLeft" : "danceRight");
@@ -157,7 +181,7 @@ class Character extends FlxStageSprite
 				];
 			});
 			var sName = curCharacter.split(":");
-			ModSupport.setScriptDefaultVars(characterScript, sName.length > 1 ? sName[0] : "Friday Night Funkin'", {"cloneBitmap" : cloneBitmap});
+			ModSupport.setScriptDefaultVars(characterScript, sName.length > 1 ? sName[0] : "Friday Night Funkin'", {"cloneBitmap" : false});
 			try {
 				characterScript.setScriptObject(this);
 				characterScript.loadFile(p);
@@ -183,8 +207,48 @@ class Character extends FlxStageSprite
 		{
 			flipX = !flipX;
 		}
+		ready = true;
 	}
 
+	public function switchCharacter(newCharacter:String, ?mod:String) {
+		if (!ready) return;
+		curCharacter = CoolUtil.getCharacterFullString(newCharacter, mod == null ? Paths.curSelectedMod : mod);
+		__loadChar();
+		if (healthIcon != null) {
+			healthIcon.changeCharacter(curCharacter, null);
+		}
+	}
+
+	public static function preloadCharacter(character:String, ?mod:String) {
+		var full = CoolUtil.getCharacterFull(character, mod == null ? Paths.curSelectedMod : mod);
+		// preload
+		Paths.getCharacter('${full[0]}:${full[1]}');
+		Paths.getCharacterIcon(full[1], full[0]);
+		
+		
+		var jsonPath = Paths.file('characters/${full[0]}/spritesheet.json', TEXT, 'mods/${full[1]}');
+		if (Assets.exists(jsonPath))
+			Assets.getText(jsonPath);
+	}
+
+	public function switchCharacterAsync(newCharacter:String, mod:String, callback:Void->Void) {
+		sys.thread.Thread.create(function() {
+			switchCharacter(newCharacter, mod);
+			callback();
+		});
+	}
+	public static function preloadCharacterAsync(character:String, mod:String, callback:Void->Void) {
+		sys.thread.Thread.create(function() {
+			preloadCharacter(character, mod);
+			callback();
+		});
+	}
+
+	public static function unloadCharacter(character:String) {
+		var full = CoolUtil.getCharacterFull(character, Paths.curSelectedMod);
+		// preload
+		Paths.unloadCharacter(full[1], full[0]);
+	}
 	
 	public function loadPsychJSON(overrideFuncs:Bool = true):Bool {
 		var char = curCharacter.split(":");
@@ -255,6 +319,15 @@ class Character extends FlxStageSprite
 		return false;
 	}
 
+	public override function draw() {
+		if (!ready) return;
+		if (characterScript.executeFunc("draw") != false) {
+			super.draw();
+			characterScript.executeFunc("drawPost");
+		}
+	}
+
+
 	/**
 	 * Get the character's note colors and healthbar animation.
 	 *
@@ -305,30 +378,11 @@ class Character extends FlxStageSprite
 			this.charGlobalOffset.x = json.globalOffset.x;
 			this.charGlobalOffset.y = json.globalOffset.y;
 		}
-		if (overrideFuncs) {
-			var i = 0;
-			if (json.danceSteps != null) {
-				characterScript.setVariable("dance", function() {
-					playAnim(json.danceSteps[i]);
-					i++;
-					i = i % json.danceSteps.length;
-				});
-			}
-			if (json.healthIconSteps != null && (json.healthIconSteps.length != 2 || json.healthIconSteps[0][0] != 20 || json.healthIconSteps[1][0] != 0)) characterScript.setVariable("healthIcon", function(e) {
-				e.frameIndexes = json.healthIconSteps;
-			});
-		}
 		if (healthIcon != null) healthIcon.frameIndexes = json.healthIconSteps != null ? json.healthIconSteps : [[20, 0], [0, 1]];
 		for (anim in json.anims) {
-			if (anim.indices == null || anim.indices.length == 0) {
-				animation.addByPrefix(anim.name, anim.anim, anim.framerate, anim.loop);
-			} else {
-				animation.addByIndices(anim.name, anim.anim, anim.indices, "", anim.framerate, anim.loop);
-			}
-			addOffset(anim.name, anim.x, anim.y);
+			addJsonAnim(anim);
 		}
-		playAnim(json.danceSteps[0]);
-		if (json.scale != 1) setGraphicSize(Std.int(width * json.scale));
+		if (json.scale != 1) scale.set(json.scale, json.scale);
 		if (json.flipX) flipX = !flipX;
 		
 		var healthColor = FlxColor.fromString(json.healthbarColor);
@@ -359,6 +413,30 @@ class Character extends FlxStageSprite
 				}
 			}
 		}
+		if (overrideFuncs) {
+			if (json.danceSteps == null || (json.danceSteps.length <= 1 && (json.danceSteps[0] == "idle" || json.danceSteps[0] == null))) {
+				var danceLeft, danceRight;
+				var idle;
+				danceLeft = animation.getByName("danceLeft");
+				danceRight = animation.getByName("danceRight");
+				idle = animation.getByName("idle");
+				if (idle == null && (danceLeft != null && danceRight != null)) {
+					json.danceSteps = ["danceLeft", "danceRight"];
+				}
+			}
+			
+			if (json.danceSteps != null) {
+				characterScript.setVariable("dance", function() {
+					playAnim(json.danceSteps[danceStep]);
+					danceStep++;
+					danceStep %= json.danceSteps.length;
+				});
+			}
+			if (json.healthIconSteps != null && (json.healthIconSteps.length != 2 || json.healthIconSteps[0][0] != 20 || json.healthIconSteps[1][0] != 0)) characterScript.setVariable("healthIcon", function(e) {
+				e.frameIndexes = json.healthIconSteps;
+			});
+		}
+		playAnim(json.danceSteps[0]);
 		for (e in array) {
 			returnArray.push(e);
 		}
@@ -370,6 +448,14 @@ class Character extends FlxStageSprite
 		scale.set(json.scale, json.scale);
 	}
 
+	public function addJsonAnim(anim:CharacterAnim) {
+		if (anim.indices == null || anim.indices.length == 0) {
+			animation.addByPrefix(anim.name, anim.anim, anim.framerate, anim.loop);
+		} else {
+			animation.addByIndices(anim.name, anim.anim, anim.indices, "", anim.framerate, anim.loop);
+		}
+		addOffset(anim.name, anim.x, anim.y);
+	}
 	public function getColors(altAnim:Bool = false):Array<FlxColor>
 	{
 		var defNoteColors = [
@@ -378,6 +464,10 @@ class Character extends FlxStageSprite
 			Settings.engineSettings.data.arrowColor2,
 			Settings.engineSettings.data.arrowColor3
 		];
+		if (!ready) {
+			defNoteColors.insert(0, -1);
+			return defNoteColors;
+		}
 		var c2:Array<Dynamic> = characterScript.executeFunc("getColors", [altAnim]);
 		if (c2 == null) c2 = [];
 		var c:Array<Int> = [];
@@ -424,6 +514,7 @@ class Character extends FlxStageSprite
 
 	override function update(elapsed:Float)
 	{
+		if (!ready) return;
 		if (!debugMode && animation.curAnim != null) {
 			if (!isPlayer)
 			{
@@ -479,9 +570,11 @@ class Character extends FlxStageSprite
 	 */
 	public function dance(force:Bool = false, left:Bool = false, down:Bool = false, up:Bool = false, right:Bool = false)
 	{
-		if (lastNoteHitTime + 250 > Conductor.songPosition) return; // 250 ms until dad dances
-		var dontDance = ["firstDeath", "deathLoop", "deathConfirm"];
-		if (animation.curAnim != null && !force) if (!animation.curAnim.name.startsWith("sing") &&!animation.curAnim.name.startsWith("dance") && !animation.curAnim.finished) return;
+		if (!ready) return;
+		if (!force) {
+			if (lastNoteHitTime + 250 > Conductor.songPosition) return; // 250 ms until dad dances
+			if (animation.curAnim != null) if (!animation.curAnim.name.startsWith("sing") && !animation.curAnim.name.startsWith("dance") && !animation.curAnim.finished) return;
+		}
 		if (!debugMode)
 			characterScript.executeFunc("dance");		
 	}
@@ -509,7 +602,6 @@ class Character extends FlxStageSprite
 
 		if (blockAnim != true) {
 			// will obviously not play the animation and "pause it", to prevent null exception. it will keep the current frame and not set the offset.
-			animation.play(AnimName, Force, Reversed, Frame);
 			if (animation.getByName(AnimName) == null) {
 				if (!unknownAnimsAlerted.contains(AnimName)) {
 					LogsOverlay.error('Character.playAnim: $AnimName doesn\'t exist on character $curCharacter');
@@ -517,6 +609,8 @@ class Character extends FlxStageSprite
 				}
 				return;
 			}
+			animation.play(AnimName, Force, Reversed, Frame);
+
 			if (isPlayer && AnimName == "singLEFT" && flipX)
 				AnimName = "singRIGHT";
 			else if (isPlayer && AnimName == "singRIGHT" && flipX)
@@ -583,4 +677,31 @@ class Character extends FlxStageSprite
 	public function getAnimName() {
 		return animation.curAnim == null ? "" : animation.curAnim.name;
 	}
+
+	#if ENABLE_LUA
+	public function setSharedLuaVariables(script:LuaScript) {
+		script.setLuaVar('curCharacter', curCharacter);
+		script.setLuaVar('lastNoteHitTime', lastNoteHitTime);
+		script.setLuaVar('lastHit', lastHit);
+		script.setLuaVar('danced', danced);
+		script.setLuaVar('dadVar', dadVar);
+		script.setLuaVar('isPlayer', isPlayer);
+	}
+
+	public function addLuaCallbacks(script:LuaScript) {
+		script.addLuaCallback("getAnimName", getAnimName);
+		script.addLuaCallback("addOffset", addOffset);
+		script.addLuaCallback("addCameraOffset", addCameraOffset);
+		script.addLuaCallback("setGlobalOffset", function(x:Float, y:Float) {
+			charGlobalOffset.set(x, y);
+		});
+		script.addLuaCallback("setFlipX", function(flip:Bool) {
+			flipX = flip;
+		});
+		script.addLuaCallback("loadJSON", loadJSON);
+		script.addLuaCallback("loadFrames", function(?char:String) {
+			frames = Paths.getCharacter(char == null ? curCharacter : char);
+		});
+	}
+	#end
 }

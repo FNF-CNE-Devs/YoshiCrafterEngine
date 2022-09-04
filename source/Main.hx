@@ -1,5 +1,9 @@
 package;
 
+import logging.LogsOverlay;
+import openfl.events.KeyboardEvent;
+import openfl.ui.Keyboard;
+import openfl.events.EventType;
 import WindowsAPI.ConsoleColor;
 import flixel.system.debug.log.LogStyle;
 import flixel.input.keyboard.FlxKey;
@@ -91,7 +95,7 @@ class Main extends Sprite
 		#end
 	}
 	// YOSHI ENGINE STUFF
-	public static var engineVer:String = "2.1.0";
+	public static var engineVer:String = "2.2.0b";
 	public static var buildVer:String = #if ycebeta "BETA" #elseif official "" #else "Custom Build" #end;
 	public static var fps:GameStats;
 
@@ -292,6 +296,12 @@ class Main extends Sprite
 		}
 
 		setupGame();
+
+		addEventListener(KeyboardEvent.KEY_DOWN, function(e:KeyboardEvent) {
+			if (e.keyCode == Keyboard.F11) {
+				FlxG.fullscreen = !FlxG.fullscreen;
+			}
+		});
 	}
 
 	private function setupGame():Void
