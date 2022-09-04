@@ -10,6 +10,7 @@ using StringTools;
 
 typedef SongConfJson = {
     var songs:Array<SongConfSong>;
+    var global:Array<String>;
 }
 
 typedef SongConfSong = {
