@@ -1,5 +1,6 @@
 package;
 
+import flixel.math.FlxRect;
 import NoteShader.ColoredNoteShader;
 import flixel.math.FlxPoint;
 import flixel.FlxSprite;
@@ -264,22 +265,36 @@ class Note extends FlxSprite
 
 					prevNote.scale.y *= stepLength / 100 * 1.5 * (engineSettings.customScrollSpeed ? engineSettings.scrollSpeed : PlayState.SONG.speed);
 					prevNote.updateHitbox();
-					prevNote.isLongSustain = true;
-			
+					prevNote.isLongSustain = true;	
+
 					if (engineSettings.downscroll) {
 						prevNote.offset.y = prevNote.height / 2;
 					}
 				}
 			}
-			offset.y = height / 2;
+			offset.y += height / 4 * (engineSettings.downscroll ? 1 : -1);
 		}
 	}
 
 	override function draw() {
+		if (shader is ColoredNoteShader) {
+			var shader:ColoredNoteShader = cast this.shader;
+			shader.frameOffset.value = [frame.frame.left, frame.frame.top];
+		}
+
 		var oldAlpha = alpha;
 		alpha *= __renderAlpha;
 		super.draw();
 		alpha = oldAlpha;
+	}
+
+	public function setClipRect(rect:FlxRect) {
+		if (shader is ColoredNoteShader) {
+			var shader:ColoredNoteShader = cast this.shader;
+			shader.clipRect.value = [rect.x, rect.y, rect.width, rect.height];
+		} else {
+			clipRect = rect;
+		}
 	}
 
 	override function update(elapsed:Float)
@@ -304,5 +319,6 @@ class Note extends FlxSprite
 			if (alpha > 0.3)
 				alpha = 0.3;
 		}
+		script.executeFunc("updatePost", [elapsed]);
 	}
 }

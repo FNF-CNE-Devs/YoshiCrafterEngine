@@ -25,7 +25,10 @@ class Rating {
 			return path;
 		}
 		var splittedPath = path.split(":");
-		if (splittedPath.length < 2) return path;
+		if (splittedPath.length < 2) {
+			bitmap = Paths.image(path);
+			return path;
+		}
 		var mod = splittedPath[0];
 		var path = splittedPath[1];
 		if(mod.toLowerCase() == "yoshiengine") mod = "YoshiCrafterEngine";

@@ -97,8 +97,11 @@ class ScoreText {
         }
     }
 
-    public static function getRating(accuracy:Float) {
+    public static function getRating(accuracy:Float):String {
         var rating:String = "how are you this bad";
+        var obj:Dynamic;
+        if (PlayState.scripts != null && (obj = PlayState.scripts.executeFunc("calculateRating", [accuracy], null)) != null && Std.isOfType(obj, String))
+            return cast(obj, String);
 
         if (accuracy == 1) rating = "Perfect"
         else if (accuracy >= 0.9) rating = "S"

@@ -40,6 +40,7 @@ class YoshiCrafterCharter extends MusicBeatState {
 
     var grid:FlxSprite;
     var gridOverlay:FlxSprite;
+    var gridOverlayBeats:FlxSprite; // hi gray!!!!!!!!!!!
     var gridLightUp:FlxSprite;
 	public static var GRID_SIZE:Int = 40;
 
@@ -88,6 +89,7 @@ class YoshiCrafterCharter extends MusicBeatState {
     var hitsoundsDadCheckbox:FlxUICheckBox = null;
     var showInstWaveformCheckbox:FlxUICheckBox = null;
     var showVoicesWaveformCheckbox:FlxUICheckBox = null;
+    var showBeatSeparatorCheckbox:FlxUICheckBox = null;
     var noteInCreation:CharterNote = null;
 
     var instBuffer:AudioBuffer;
@@ -208,7 +210,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         add(events);
 
         followThing = new FlxSprite(0, 0).makeGraphic(GRID_SIZE * 8, 5, 0xFFFFFFFF);
-        FlxG.camera.follow(followThing);
+        FlxG.camera.follow(followThing, 99999999);
         FlxG.camera.targetOffset.y += topView ? ((FlxG.height * 0.25) + GRID_SIZE) : GRID_SIZE;
         FlxG.camera.targetOffset.x += 150;
         insert(members.indexOf(strums[0]), followThing);
@@ -333,7 +335,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         ], true);
         UI_Menu.x = FlxG.width - 300;
         UI_Menu.y = 0;
-        UI_Menu.resize(300, Std.int(FlxG.height * 0.65));
+        UI_Menu.resize(300, Std.int(FlxG.height * 0.6));
         UI_Menu.scrollFactor.set(0, 0);
         add(UI_Menu);
 
@@ -344,8 +346,8 @@ class YoshiCrafterCharter extends MusicBeatState {
             }
         ], true);
         UI_Section.x = FlxG.width - 300;
-        UI_Section.y = FlxG.height * 0.65;
-        UI_Section.resize(300, Std.int(FlxG.height * 0.35));
+        UI_Section.y = FlxG.height * 0.6;
+        UI_Section.resize(300, Std.int(FlxG.height * 0.4));
         UI_Section.scrollFactor.set(0, 0);
         add(UI_Section);
 
@@ -362,6 +364,7 @@ class YoshiCrafterCharter extends MusicBeatState {
     var lastEditedSection:SwagSection = null;
     var mustHitSection:FlxUICheckBox = null;
     var duetSection:FlxUICheckBox = null;
+    var altAnimSection:FlxUICheckBox = null;
     var duetCameraSlide:FlxUISliderNew = null;
 
     var changeBPMSection:FlxUICheckBox = null;
@@ -379,7 +382,10 @@ class YoshiCrafterCharter extends MusicBeatState {
         duetSection = new FlxUICheckBox(10, mustHitSection.y + mustHitSection.height + 5, null, null, "Duet Camera", 280, null, function() {
             section.duetCamera = duetSection.checked;
         });
-        var sliderLabel = new FlxUIText(10, duetSection.y + duetSection.height + 10, 280, "Duet Target");
+        altAnimSection = new FlxUICheckBox(10, duetSection.y + duetSection.height + 5, null, null, "Alt Animation", 280, null, function() {
+            section.altAnim = altAnimSection.checked;
+        });
+        var sliderLabel = new FlxUIText(10, altAnimSection.y + altAnimSection.height + 10, 280, "Duet Target");
         duetCameraSlide = new FlxUISliderNew(10, Std.int(sliderLabel.y + sliderLabel.height), 280, 7, section, "duetCameraSlide", 0, 1, "Opponent", "Player");
 
         changeBPMSection = new FlxUICheckBox(10, duetCameraSlide.y + duetCameraSlide.height + 10, null, null, "Change BPM", 100, null, function() {
@@ -416,6 +422,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         sectionTab.add(label);
         sectionTab.add(mustHitSection);
         sectionTab.add(duetSection);
+        sectionTab.add(altAnimSection);
         sectionTab.add(sliderLabel);
         sectionTab.add(duetCameraSlide);
         sectionTab.add(changeBPMSection);
@@ -474,16 +481,18 @@ class YoshiCrafterCharter extends MusicBeatState {
         settingsTab.add(hitsoundsDadCheckbox);
 		y += hitsoundsDadCheckbox.height + 10;
 
-        showInstWaveformCheckbox = new FlxUICheckBox(10, y, null, null, "Show Instrumental Waveform", 250, null, function() {
+        var label = new FlxUIText(10, y + 2, 0, "Show Waveforms");
+        settingsTab.add(label);
+        y += label.height + 2;
+        showInstWaveformCheckbox = new FlxUICheckBox(10, y, null, null, "Instrumental", 155, null, function() {
 			Settings.engineSettings.data.charter_showInstWaveform = showInstWaveformCheckbox.checked;
             regenWaveforms();
         });
         showInstWaveformCheckbox.scrollFactor.set(0, 0);
         showInstWaveformCheckbox.checked = Settings.engineSettings.data.charter_showInstWaveform;
         settingsTab.add(showInstWaveformCheckbox);
-		y += showInstWaveformCheckbox.height + 10;
 
-        showVoicesWaveformCheckbox = new FlxUICheckBox(10, y, null, null, "Show Voices Waveform", 250, null, function() {
+        showVoicesWaveformCheckbox = new FlxUICheckBox(155, y, null, null, "Voices", 155, null, function() {
 			Settings.engineSettings.data.charter_showVoicesWaveform = showVoicesWaveformCheckbox.checked;
             regenWaveforms();
         });
@@ -492,6 +501,14 @@ class YoshiCrafterCharter extends MusicBeatState {
         settingsTab.add(showVoicesWaveformCheckbox);
 		y += showVoicesWaveformCheckbox.height + 10;
 		
+        showBeatSeparatorCheckbox = new FlxUICheckBox(10, y, null, null, "Show separator for beats", 250, null, function() {
+            Settings.engineSettings.data.charter_showBeatSeparator = gridOverlayBeats.visible = showBeatSeparatorCheckbox.checked;
+        });
+        showBeatSeparatorCheckbox.scrollFactor.set();
+        showBeatSeparatorCheckbox.checked = Settings.engineSettings.data.charter_showBeatSeparator;
+        settingsTab.add(showBeatSeparatorCheckbox);
+        y += showBeatSeparatorCheckbox.height + 10;
+
 		var chooseInstWaveColorButton:FlxUIButton = new FlxUIButton(10, y, "Choose Inst Waveform color", function() {
 			persistentUpdate = false;
 			persistentDraw = true;
@@ -587,6 +604,10 @@ class YoshiCrafterCharter extends MusicBeatState {
         noteTab.add(addNoteTypeButton);
         noteTab.add(typesLabel);
         UI_Menu.addGroup(noteTab);
+    }
+
+    public override function destroy() {
+        if (switchingToPlayState) _song = null; // memory cleaning
     }
 
     public function updateNoteTypes() {
@@ -963,14 +984,26 @@ class YoshiCrafterCharter extends MusicBeatState {
     }
 
     public function updateGridOverlay() {
+        gridOverlayBeats.makeGraphic(GRID_SIZE * (_song.keyNumber * 2 + 2), Math.ceil(FlxG.height / (GRID_SIZE * (_song.sectionLength * 4))) * 2 * (GRID_SIZE * (_song.sectionLength * 4)) * 4, 0);
+        gridOverlayBeats.pixels.lock();
+
         gridOverlay.makeGraphic(GRID_SIZE * (_song.keyNumber * 2 + 1), Math.ceil(FlxG.height / (GRID_SIZE * (_song.sectionLength * 4))) * 2 * (GRID_SIZE * (_song.sectionLength * 4)) * 4, 0);
         gridOverlay.pixels.lock();
+
         gridOverlay.pixels.fillRect(new Rectangle(GRID_SIZE - 1, 0, 2, gridOverlay.pixels.height), 0xFFFFFFFF);
         gridOverlay.pixels.fillRect(new Rectangle(GRID_SIZE + (GRID_SIZE * _song.keyNumber) - 1, 0, 2, gridOverlay.pixels.height), 0xFFFFFFFF);
         for(i in 0...Math.floor(gridOverlay.pixels.height / (GRID_SIZE * (_song.sectionLength * 4)))) {
             gridOverlay.pixels.fillRect(new Rectangle(0, (GRID_SIZE * (_song.sectionLength * 4) * (i + 1)) - 2, gridOverlay.pixels.width, 4), 0xAAFFFFFF);
         }
         gridOverlay.pixels.unlock();
+
+        
+        for(i in 0...Math.floor(gridOverlayBeats.pixels.height / (GRID_SIZE))) {
+            if (i % 4 == 3)
+                gridOverlayBeats.pixels.fillRect(new Rectangle(0, (GRID_SIZE * (i + 1)) - 2, gridOverlayBeats.pixels.width, 4), 0xFFFFFFFF);
+            else
+                gridOverlayBeats.pixels.fillRect(new Rectangle(Std.int(GRID_SIZE * 0.5), (GRID_SIZE * (i + 1)) - 1, Std.int(GRID_SIZE * 0.5), 2), 0xFFFFFFFF);
+        }
     }
     public function regenWaveforms(redraw:Bool = true) {
         var curSection = Std.int(getStepAtPos(Conductor.songPosition) / 4 / _song.sectionLength);
@@ -978,7 +1011,6 @@ class YoshiCrafterCharter extends MusicBeatState {
         for(e in [voicesWaveform1, voicesWaveform2, voicesWaveform3]) e.visible = Settings.engineSettings.data.charter_showVoicesWaveform;
 
         for(k=>e in [instWaveform1, instWaveform2, instWaveform3, voicesWaveform1, voicesWaveform2, voicesWaveform3]) {
-            // Settings.engineSettings.data.charter_showVoicesWaveform
             if (e.visible) {
                 e.scale.set(1, zoom);
                 e.updateHitbox();
@@ -1000,11 +1032,14 @@ class YoshiCrafterCharter extends MusicBeatState {
         grid.x = -GRID_SIZE;
 
         gridOverlay = new FlxSprite(-GRID_SIZE, 0);
+        gridOverlayBeats = new FlxSprite(-GRID_SIZE*2, 0);
         updateGridOverlay();
-        gridOverlay.color = Settings.engineSettings.data.charter_separatorColor;
-        gridOverlay.alpha = 1;
+        gridOverlayBeats.color = gridOverlay.color = Settings.engineSettings.data.charter_separatorColor;
+        gridOverlay.alpha = gridOverlayBeats.alpha = 1;
+        gridOverlayBeats.visible = Settings.engineSettings.data.charter_showBeatSeparator;
         add(grid);
         add(gridOverlay);
+        add(gridOverlayBeats);
 
         gridLightUp = new FlxSprite(0, 0).makeGraphic(GRID_SIZE * _song.keyNumber, FlxG.height, 0xFFFFFFFF);
         gridLightUp.alpha = 0.3;
@@ -1051,16 +1086,17 @@ class YoshiCrafterCharter extends MusicBeatState {
         }
     }
 
+    var switchingToPlayState:Bool = false;
     public function switchToPlayState(time:Float = 0) {
         compile();
         
+        switchingToPlayState = true;
         PlayState._SONG = _song;
         PlayState._SONG.validScore = false;
         PlayState.fromCharter = true;
         PlayState.startTime = time;
         FlxG.sound.music.stop();
         vocals.stop();
-        _song = null; // memory cleaning
         FlxG.switchState(new PlayState());
     }
     public function moveCursor(steps:Float) {
@@ -1126,7 +1162,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         
         
         playbackSpeedLabel.text = 'Playback Speed (${Std.string(FlxG.sound.music.pitch)}x)';
-        copyPasteButtonsContainer.y = (GRID_SIZE * (_song.sectionLength * 4)) * Math.floor(Conductor.songPosition / Conductor.crochet / 4) * zoom;
+        copyPasteButtonsContainer.y = (GRID_SIZE * (_song.sectionLength * 4)) * Math.floor(getStepAtPos(Conductor.songPosition) / 4 / _song.sectionLength) * zoom;
         if (playing) {
             pageSwitchLerpRemaining = 0;
         } else {
@@ -1140,9 +1176,10 @@ class YoshiCrafterCharter extends MusicBeatState {
         }
 		
         grid.y = Math.max(0, FlxG.camera.scroll.y - (FlxG.camera.scroll.y % (GRID_SIZE * (_song.sectionLength * 4))));
-        gridOverlay.y = Math.max(0, FlxG.camera.scroll.y - (FlxG.camera.scroll.y % (GRID_SIZE * (_song.sectionLength * 4) * zoom)));
-        gridOverlay.scale.y = zoom;
+        gridOverlay.y = gridOverlayBeats.y = Math.max(0, FlxG.camera.scroll.y - (FlxG.camera.scroll.y % (GRID_SIZE * (_song.sectionLength * 4) * zoom)));
+        gridOverlay.scale.y = gridOverlayBeats.scale.y = zoom;
         gridOverlay.updateHitbox();
+        gridOverlayBeats.updateHitbox();
         gridOverlay.color = Settings.engineSettings.data.charter_separatorColor;
 		
         FlxG.camera.targetOffset.y = FlxMath.lerp(FlxG.camera.targetOffset.y, topView ? ((FlxG.height * 0.25) + GRID_SIZE) : GRID_SIZE, 0.45 * 60 * elapsed);
@@ -1216,10 +1253,12 @@ class YoshiCrafterCharter extends MusicBeatState {
             if (FlxG.mouse.justReleased) {
                 noteInCreation = null;
             } else {
-                var currentTime = FlxG.mouse.y / zoom / GRID_SIZE * Conductor.stepCrochet;
+                var s = FlxG.mouse.y / zoom / GRID_SIZE;
+                if (!FlxG.keys.pressed.SHIFT)
+                    s = Std.int(s);
+                var currentTime = getTimeforStep(s);
                 var strumTime = noteInCreation.strumTime;
-                var str = Math.max(0, Math.floor((currentTime - strumTime) / Conductor.stepCrochet) * Conductor.stepCrochet);
-                if (str > 0) str += Conductor.stepCrochet;
+                var str = Math.max(0, currentTime - strumTime);
                 if (noteInCreation.sustainLength != str) {
                     noteInCreation.sustainLength = str;
                     noteInCreation.updateSustain();
@@ -1274,6 +1313,7 @@ class YoshiCrafterCharter extends MusicBeatState {
             cast(UI_Section._tabs[0], FlxUIButton).label.text = 'Section #$sec Settings';
             mustHitSection.checked = section.mustHitSection;
             duetSection.checked = section.duetCamera == true;
+            altAnimSection.checked = section.altAnim == true;
             if (section.duetCameraSlide == null) section.duetCameraSlide = 0.5;
             duetCameraSlide.object = section;
             duetCameraSlide.bar.value = section.duetCameraSlide;

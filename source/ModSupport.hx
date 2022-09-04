@@ -1,3 +1,5 @@
+import haxe.Exception;
+import flixel.addons.display.FlxBackdrop;
 import discord_rpc.DiscordRpc;
 import Discord.DiscordClient;
 import openfl.display.BlendMode;
@@ -95,6 +97,11 @@ class ModSupport {
         if (Settings.engineSettings != null && ((mod = modConfig[Settings.engineSettings.data.selectedMod]) != null) && mod.discordRpc != null) {
             discordRpc = mod.discordRpc;
         }
+        DiscordClient.currentButton1Label = "Download Mod";
+        DiscordClient.currentButton1Url = (mod.downloadLink == null || mod.downloadLink.trim() == "") ? null : mod.downloadLink;
+        DiscordClient.currentButton2Label = "Download Mod (Alt Link)";
+        DiscordClient.currentButton2Url = (mod.downloadLinkAlt != null && mod.downloadLinkAlt.trim() != "") ? mod.downloadLinkAlt : null;
+        
         DiscordClient.switchRPC(discordRpc);
     }
     public static function getMods():Array<String> {
@@ -142,11 +149,8 @@ class ModSupport {
     }
 
     public static var lastTitlebarMod:String = "Friday Night Funkin'";
-    public static function updateTitleBar() {
-        if (Settings.engineSettings == null) return;
-        var mod = Settings.engineSettings.data.selectedMod;
 
-        if (lastTitlebarMod == mod) return;
+    public static function getModTitleBarTitle(mod:String) {
         var title = getModName(mod);
 
         var modConf = modConfig[mod];
@@ -169,8 +173,15 @@ class ModSupport {
 			if (!fullTitle)
 				title = 'Friday Night Funkin\' - $title';
 		}
+        return title;
+    }
+    public static function updateTitleBar() {
+        if (Settings.engineSettings == null) return;
+        var mod = Settings.engineSettings.data.selectedMod;
 
-		lime.app.Application.current.window.title = title;
+        if (lastTitlebarMod == mod) return;
+        
+		lime.app.Application.current.window.title = getModTitleBarTitle(mod);
         var path = Paths.getPath("icon.png", IMAGE);
         if (!Assets.exists(path)) {
             path = Paths.image("icon");
@@ -365,23 +376,37 @@ class ModSupport {
     }
     #end
     public static function getExpressionFromPath(path:String, critical:Bool = false):hscript.Expr {
+        var ast:Expr = null;
+        try {
+			var cachePath = path.toLowerCase();
+			var fileData = FileSystem.stat(path);
+            var content = sys.io.File.getContent(path);
+            ast = getExpressionFromString(content, critical, path);
+        } catch(ex) {
+            if (!openfl.Lib.application.window.fullscreen && critical) openfl.Lib.application.window.alert('Could not read the file at "$path".');
+            trace('Could not read the file at "$path".');
+        }
+        return ast;
+    }
+    public static function getExpressionFromString(code:String, critical:Bool = false, ?path:String):hscript.Expr {
+        if (code == null) return null;
         var parser = new hscript.Parser();
 		parser.allowTypes = true;
         var ast:Expr = null;
 		try {
-			var cachePath = path.toLowerCase();
-			var fileData = FileSystem.stat(path);
-			#if sys
-			ast = parser.parseString(sys.io.File.getContent(path));
-			#else
-			trace("no sys support");
-			#end
+			ast = parser.parseString(code);
 		} catch(ex) {
 			trace(ex);
             var exThingy = Std.string(ex);
             var line = parser.line;
-            if (!openfl.Lib.application.window.fullscreen) openfl.Lib.application.window.alert('Failed to parse the file located at "$path".\r\n$exThingy at $line');
-            trace('Failed to parse the file located at "$path".\r\n$exThingy at $line');
+            if (path != null) {
+                if (!openfl.Lib.application.window.fullscreen && critical) openfl.Lib.application.window.alert('Failed to parse the file located at "$path".\r\n$exThingy at $line');
+                trace('Failed to parse the file located at "$path".\r\n$exThingy at $line');
+            } else {
+                if (!openfl.Lib.application.window.fullscreen && critical) openfl.Lib.application.window.alert('Failed to parse the given code.\r\n$exThingy at $line');
+                trace('Failed to parse the given code.\r\n$exThingy at $line');
+                if (!critical) throw new Exception('Failed to parse the given code.\r\n$exThingy at $line');
+            }
 		}
         return ast;
     }
@@ -426,6 +451,7 @@ class ModSupport {
             }
         }
         script.mod = mod;
+		script.setVariable("this", script);
 		script.setVariable("super", superVar);
 		script.setVariable("mod", mod);
 		script.setVariable("PlayState", PlayState.current);
@@ -475,6 +501,7 @@ class ModSupport {
 		script.setVariable("PlayState_", PlayState);
 		script.setVariable("FlxSprite", FlxSprite);
 		script.setVariable("BitmapData", BitmapData);
+		script.setVariable("FlxBackdrop", FlxBackdrop);
 		script.setVariable("FlxG", FlxG);
 		script.setVariable("Paths", Paths);
 		script.setVariable("Medals", new ModMedals(mod));
@@ -492,6 +519,7 @@ class ModSupport {
 		script.setVariable("FlxSound", FlxSound);
 		script.setVariable("FlxEase", FlxEase);
 		script.setVariable("FlxTween", FlxTween);
+		script.setVariable("FlxPoint", flixel.math.FlxPoint);
 		script.setVariable("FlxColor", FlxColor_Helper);
 		script.setVariable("Boyfriend", Boyfriend);
 		script.setVariable("FlxTypedGroup", FlxTypedGroup);
@@ -503,7 +531,6 @@ class ModSupport {
 		script.setVariable("CoolUtil", CoolUtil);
 		script.setVariable("FlxTypeText", FlxTypeText);
 		script.setVariable("FlxText", FlxText);
-		script.setVariable("FlxAxes", FlxAxes);
 		script.setVariable("BitmapDataPlus", BitmapDataPlus);
 		script.setVariable("Rectangle", Rectangle);
 		script.setVariable("Point", Point);
@@ -515,6 +542,7 @@ class ModSupport {
 		script.setVariable("ModSupport", null);
 		script.setVariable("CustomShader", CustomShader_Helper);
 		script.setVariable("FlxControls", FlxControls);
+		script.setVariable("FlxAxes", FlxAxes);
 		script.setVariable("save", modSaves[mod]);
         script.setVariable("flashingLights", Settings.engineSettings.data.flashingLights == true);
 

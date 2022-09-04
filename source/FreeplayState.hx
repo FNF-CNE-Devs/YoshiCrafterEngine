@@ -1,5 +1,6 @@
 package;
 
+import Script.DummyScript;
 import mod_support_stuff.FullyModState;
 import Script.HScript;
 import mod_support_stuff.SwitchModSubstate;
@@ -164,7 +165,7 @@ class FreeplayState extends FullyModState
 		freeplayScript = Script.create('${Paths.getModsPath()}/${Settings.engineSettings.data.selectedMod}/ui/FreeplayState');
 		var validated = true;
 		if (freeplayScript == null) {
-			freeplayScript = new HScript();
+			freeplayScript = new DummyScript();
 			validated = false;
 		}
 		freeplayScript.setVariable("state", this);

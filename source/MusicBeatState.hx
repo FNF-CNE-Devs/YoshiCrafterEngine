@@ -1,5 +1,7 @@
 package;
 
+import Script.ILuaScriptable;
+import Script.LuaScript;
 import charter.YoshiCrafterCharter;
 import flixel.graphics.FlxGraphic;
 import flixel.addons.transition.Transition;
@@ -26,9 +28,13 @@ typedef FlxSpriteArray = Array<FlxSprite>;
 
 
 @:allow(mod_support_stuff.SwitchModSubstate)
-class MusicBeatState extends FlxUIState
+class MusicBeatState extends FlxUIState implements ILuaScriptable
 {
+	public static var __firstStateLoaded:Bool = false;
 	public static var medalOverlay:Array<MedalsOverlay> = [];
+
+	public var nextCallbacks:Array<Void->Void> = [];
+
 	private var reloadModsState:Bool = false;
 
 	private static var doCachingShitNextTime:Bool = false;
@@ -39,6 +45,11 @@ class MusicBeatState extends FlxUIState
 	private var curDecStep:Float = 0;
 	private var curBeat:Int = 0;
 	private var curDecBeat:Float = 0;
+	private var songPos(get, null):Float;
+	private function get_songPos() {
+		return Conductor.songPosition;
+	}
+
 	private var controls(get, never):Controls;
 
 	public static var defaultIcon:Image = null;
@@ -67,24 +78,38 @@ class MusicBeatState extends FlxUIState
 		LimeAssets.loggedRequests = [];
 
 		if (doCachingShitNextTime) {
-			LimeAssets.logRequests = true;
-			@:privateAccess
-			for(e in FlxG.bitmap._cache) {
-				oldPersistStuff[e] = e.persist;
-				e.persist = true;
-			}
+			if (__firstStateLoaded) {
+				LimeAssets.logRequests = true;
+				@:privateAccess
+				for(e in FlxG.bitmap._cache) {
+					oldPersistStuff[e] = e.persist;
+					e.persist = true;
+				}
+			} else
+				__firstStateLoaded = true;
 		} else {
 			doCachingShitNextTime = true;
 		}
-		#if !android
-			@:privateAccess
-			FlxG.width = 1280;
-			@:privateAccess
-			FlxG.height = 720;
-		#end
 		
 		super(transIn, transOut);
 	}
+
+	#if ENABLE_LUA
+	public function addLuaCallbacks(script:LuaScript) {
+
+	}
+
+	public function setSharedLuaVariables(script:LuaScript) {
+		script.setLuaVar("curStep", curStep);
+		script.setLuaVar("curDecStep", curDecStep);
+		script.setLuaVar("curBeat", curBeat);
+		script.setLuaVar("curDecBeat", curDecBeat);
+		script.setLuaVar("songPos", songPos);
+		script.setLuaVar("crochet", Conductor.crochet);
+		script.setLuaVar("stepCrochet", Conductor.stepCrochet);
+		script.setLuaVar("bpm", Conductor.bpm);
+	}
+	#end
 
 	override function createPost() {
 		super.createPost();
@@ -119,10 +144,10 @@ class MusicBeatState extends FlxUIState
 	override function create()
 	{
 		if (!Std.isOfType(FlxG.scaleMode, WideScreenScale)) {
-			FlxG.scaleMode = new WideScreenScale();
+			FlxG.scaleMode = new WideScreenScale(); // still here cause resize and shit
 		}
 		var scl:WideScreenScale = cast FlxG.scaleMode;
-        scl.isWidescreen = false;
+        scl.isWidescreen = Settings.engineSettings.data.secretWidescreenSweep;
 
 		var width = 1280;
 		var height = 720;
@@ -174,6 +199,11 @@ class MusicBeatState extends FlxUIState
 				m.update(elapsed);
 			}
 		}
+
+		for(e in nextCallbacks) {
+			e();
+		}
+		nextCallbacks = [];
 	}
 
 	private function updateBeat():Void

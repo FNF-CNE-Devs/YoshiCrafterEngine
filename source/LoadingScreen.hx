@@ -37,6 +37,7 @@ class LoadingScreen extends FlxState {
 
     public override function create() {
         super.create();
+        HeaderCompilationBypass.darkMode(); // can't put this into main cause of conflicting headers shit (thank you hxcpp)
 
         var loadingThingy = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK, true);
         loadingThingy.pixels.lock();
@@ -207,11 +208,12 @@ class LoadingScreen extends FlxState {
             return Reflect.getProperty(obj, name);
         }
         Interp.setRedirects["mod_support_stuff.ModSprite"] = function(obj:Dynamic, name:String, val:Dynamic):Dynamic {
-            var sprFields = Type.getInstanceFields(FlxSprite);
-            if (sprFields.contains(name))
+            var sprFields = Type.getInstanceFields(Type.getClass(obj));
+            if (sprFields.contains(name) || sprFields.contains('set_${name}'))
                 Reflect.setProperty(obj, name, val);
-            else
+            else {
                 cast(obj, ModSprite).set(name, val);
+            }
             return val;
         }
 

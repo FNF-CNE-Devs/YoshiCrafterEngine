@@ -26,6 +26,9 @@ class InfoTab extends ToolboxTab {
     var mod_name:FlxUIInputText;
     var mod_description:FlxUIInputText;
     var titlebarName:FlxUIInputText;
+    var discordRPCField:FlxUIInputText;
+    var downloadLinkField:FlxUIInputText;
+    var downloadLinkAltField:FlxUIInputText;
     var winButtons:FlxSprite;
     var titlebarIcon:FlxSprite;
     var titleBarText:FlxText;
@@ -38,6 +41,12 @@ class InfoTab extends ToolboxTab {
         if (desc == null) desc = "(No description)";
         var title = ModSupport.modConfig[ToolboxHome.selectedMod].titleBarName;
         if (title == null) title = 'Friday Night Funkin\' ${ToolboxHome.selectedMod}';
+        var rpc = ModSupport.modConfig[ToolboxHome.selectedMod].discordRpc;
+        if (rpc == null) rpc = "";
+        var downloadLink = ModSupport.modConfig[ToolboxHome.selectedMod].downloadLink;
+        if (downloadLink == null) downloadLink = "";
+        var downloadLinkAlt = ModSupport.modConfig[ToolboxHome.selectedMod].downloadLinkAlt;
+        if (downloadLinkAlt == null) downloadLinkAlt = "";
         
         var bg = new FlxSprite(0, 0).makeGraphic(320, Std.int(FlxG.height - y), 0xFF8C8C8C);
         bg.pixels.lock();
@@ -62,7 +71,19 @@ class InfoTab extends ToolboxTab {
         OHMYFUCKINGGODITSTHELABELARMY.push(label);
         titlebarName = new FlxUIInputText(10, label.y + label.height, 300, title);
 
-        var modIcon = new FlxUISprite(85, titlebarName.y + titlebarName.height + 10)
+		var label = new FlxUIText(10, titlebarName.y + titlebarName.height + 10, 300, "Discord RPC Client ID (leave empty for none)");
+        OHMYFUCKINGGODITSTHELABELARMY.push(label);
+        discordRPCField = new FlxUIInputText(10, label.y + label.height, 300, rpc);
+        
+		var label = new FlxUIText(10, discordRPCField.y + discordRPCField.height + 10, 300, "Download Link (leave empty for none)");
+        OHMYFUCKINGGODITSTHELABELARMY.push(label);
+        downloadLinkField = new FlxUIInputText(10, label.y + label.height, 300, downloadLink);
+        
+		var label = new FlxUIText(10, downloadLinkField.y + downloadLinkField.height + 10, 300, "Alternative Download Link (leave empty for none)");
+        OHMYFUCKINGGODITSTHELABELARMY.push(label);
+        downloadLinkAltField = new FlxUIInputText(10, label.y + label.height, 300, downloadLinkAlt);
+
+        var modIcon = new FlxUISprite(85, downloadLinkAltField.y + downloadLinkAltField.height + 10)
         .loadGraphic(
             FileSystem.exists('${Paths.modsPath}/${ToolboxHome.selectedMod}/modIcon.png')
             ? BitmapData.fromFile('${Paths.modsPath}/${ToolboxHome.selectedMod}/modIcon.png')
@@ -82,16 +103,48 @@ class InfoTab extends ToolboxTab {
         });
         chooseIconButton.resize(150, 20);
 
-        var saveButton = new FlxUIButton(10, chooseIconButton.y + 30, "Save", function() {
+        function save() {
             var e = ModSupport.modConfig[ToolboxHome.selectedMod];
             e.name = mod_name.text;
             e.description = mod_description.text.replace("/n", "\n");
             e.titleBarName = titlebarName.text;
+            var needRefresh = false;
+
+            // by the laws of programming this works
+            needRefresh = (e.discordRpc != (e.discordRpc = discordRPCField.text.trim() == "" ? null : discordRPCField.text.trim())) || needRefresh;
+            needRefresh = (e.downloadLink != (e.downloadLink = (downloadLinkField.text != null && (downloadLinkField.text = downloadLinkField.text.trim()) != "") ? downloadLinkField.text : null)) || needRefresh;
+            needRefresh = (e.downloadLinkAlt != (e.downloadLinkAlt = (downloadLinkAltField.text != null && (downloadLinkAltField.text = downloadLinkAltField.text.trim()) != "") ? downloadLinkAltField.text : null)) || needRefresh;
+            
+            if (needRefresh) {
+                ModSupport.refreshDiscordRpc();
+            }
             File.saveBytes('${Paths.modsPath}/${ToolboxHome.selectedMod}/modIcon.png', modIcon.pixels.encode(modIcon.pixels.rect, new PNGEncoderOptions(true)));
             ModSupport.saveModData(ToolboxHome.selectedMod);
             card.updateMod(ToolboxHome.selectedMod);
-        });
+        };
+        var saveButton = new FlxUIButton(10, chooseIconButton.y + 30, "Save", save);
         saveButton.resize(145, 20);
+        var lockButton = new FlxUIButton(165, chooseIconButton.y + 30, "Save & Lock", function() {
+            FlxG.state.openSubState(new ToolboxMessage("== READ BEFORE LOCKING ==", "You are going to lock your mod.\nLocking your mod makes it impossible to be edited using the Toolbox, or any editors. Pressing \"Yes\" will send you in the Main Menu, and you won't be able to edit your mod.\n\nAre you sure you want to continue?\nTip: You can unlock your mod if you locked it by accident by setting \"locked\" to false in config.json", [
+                {
+                    label: "Yes",
+                    onClick: function(m) {
+                        ModSupport.modConfig[ToolboxHome.selectedMod].locked = true;
+                        save();
+                        FlxG.switchState(new MainMenuState());
+                    }
+                },
+                {
+                    label: "No",
+                    onClick: function(m) {}
+                }
+            ]));
+        });
+        lockButton.color = 0xFFFF5D44;
+        lockButton.label.color = -1;
+        lockButton.resize(145, 20);
+        var lockIcon = CoolUtil.createUISprite("lock", lockButton);
+        lockIcon.x = lockButton.x + 2;
 
         add(bg);
 
@@ -99,9 +152,14 @@ class InfoTab extends ToolboxTab {
         add(mod_name);
         add(mod_description);
         add(titlebarName);
+        add(discordRPCField);
+        add(downloadLinkField);
+        add(downloadLinkAltField);
         add(modIcon);
         add(chooseIconButton);
         add(saveButton);
+        add(lockButton);
+        add(lockIcon);
         var win10window = new FlxSpriteGroup();
 
         var windowSprite = new FlxSprite().makeGraphic(Std.int(card.width + 60), Std.int(card.height + 91), 0xFFFFFFFF, true);

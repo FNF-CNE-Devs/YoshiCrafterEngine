@@ -219,7 +219,7 @@ class Stage {
 		var sprite = new FlxStageSprite(pos.x, pos.y);
 		sprite.antialiasing = s.antialiasing != null ? s.antialiasing : true;
 
-		sprite.name = s.name;
+		sprite.name = sprite.tag = s.name;
 		sprite.type = "SparrowAtlas";
 
 		var sf = new FlxPoint(1, 1);
@@ -261,7 +261,7 @@ class Stage {
 			if (s.pos.length > 1) pos.y = s.pos[1];
 		}
 		var sprite = new FlxStageSprite(pos.x, pos.y);
-		sprite.name = s.name;
+		sprite.name = sprite.tag = s.name;
 		sprite.type = "Bitmap";
 		sprite.antialiasing = s.antialiasing != null ? s.antialiasing : true;
 

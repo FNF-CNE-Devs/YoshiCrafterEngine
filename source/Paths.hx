@@ -59,7 +59,9 @@ class Paths
 		         && library != "~"
 				 && library != "skins"
 				 && Settings.engineSettings != null
-				 &&   (OpenFlAssets.exists(p = getLibraryPathForce(file, 'mods/${Settings.engineSettings.data.selectedMod}'))
+				 &&   (
+					   (PlayState.current != null && OpenFlAssets.exists(p = getLibraryPathForce('songs/${PlayState.current.curSong}/$file', 'mods/${Settings.engineSettings.data.selectedMod}')))
+					|| OpenFlAssets.exists(p = getLibraryPathForce(file, 'mods/${Settings.engineSettings.data.selectedMod}'))
 					|| OpenFlAssets.exists(p = getLibraryPathForce(file, curSelectedMod))
 					|| OpenFlAssets.exists(p = getLibraryPathForce(file, "mods/Friday Night Funkin'")))) { // can use assets from the fnf mod itself
 					return p;
@@ -261,6 +263,14 @@ class Paths
 			// xml (sparrow)
 			return FlxAtlasFrames.fromSparrow(getPath('characters/${split[split.length - 1]}/spritesheet.png', IMAGE, 'mods/$mod'), file('characters/${split[split.length - 1]}/spritesheet.xml', TEXT, 'mods/$mod'));
 		}
+	}
+
+	public inline static function unloadCharacter(char:String, mod:String) {
+		if (mod == null) mod = curSelectedMod;
+		if (mod == null) mod = Settings.engineSettings.data.selectedMod;
+
+		// literally clears every asset loaded from that folder
+		Assets.cache.clear('mods/${mod}:assets/mods/${mod}/characters/${char}/');
 	}
 
 	inline static public function getCharacterPacker(char:String) {

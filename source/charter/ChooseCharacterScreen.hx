@@ -1,5 +1,6 @@
 package charter;
 
+import haxe.io.Path;
 import flixel.math.FlxMath;
 import dev_toolbox.stage_editor.StageEditor;
 import sys.FileSystem;
@@ -80,7 +81,8 @@ class ChooseCharacterScreen extends MusicBeatSubstate {
             remove(m);
         }
         FileSystem.createDirectory('${Paths.modsPath}/$mod/characters/');
-        for(i=>char in [for(e in FileSystem.readDirectory('${Paths.modsPath}/$mod/characters/')) if (FileSystem.isDirectory('${Paths.modsPath}/$mod/characters/$e')) e]) {
+        var psychChar:Bool = false;
+        for(i=>char in [for(e in FileSystem.readDirectory('${Paths.modsPath}/$mod/characters/')) if ((psychChar = Path.extension(e).toLowerCase() == "json") || FileSystem.isDirectory('${Paths.modsPath}/$mod/characters/$e')) psychChar ? Path.withoutExtension(e) : e]) {
             var button = new FlxUIButton(Std.int(FlxG.width / 2), 0 + ((i + 1) * 50), char, function() {
                 close();
                 if (callback != null) callback(mod, char);

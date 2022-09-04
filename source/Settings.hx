@@ -209,12 +209,14 @@ import flixel.FlxG;
 	@:keep public static final lastInstalledMods:Array<String> = ["Friday Night Funkin'", "YoshiCrafterEngine"];
 	@:keep public static final logStateChanges:Bool = true;
 	@:keep public static final menuMouse:Bool = true;
+	@:keep public static final secretWidescreenSweep:Bool = false;
 	
 	@:keep public static final charter_showStrums:Bool = true;
 	@:keep public static final charter_hitsoundsEnabled:Bool = false;
 	@:keep public static final charter_topView:Bool = false;
 	@:keep public static final charter_showInstWaveform:Bool = false;
 	@:keep public static final charter_showVoicesWaveform:Bool = false;
+	@:keep public static final charter_showBeatSeparator:Bool = false;
 	@:keep public static final charter_instWaveformColor:FlxColor = 0xFF1573FF;
 	@:keep public static final charter_voicesWaveformColor:FlxColor = 0xFF93FF4A;
 	@:keep public static final charter_instVolume:Float = 0.8;
@@ -242,10 +244,14 @@ import flixel.FlxG;
 	@:keep public static final control_3_1:FlxKey = FlxKey.UP;
 	@:keep public static final control_3_2:FlxKey = FlxKey.RIGHT;
 
-	@:keep public static final control_4_0:FlxKey = FlxKey.LEFT;
-	@:keep public static final control_4_1:FlxKey = FlxKey.DOWN;
-	@:keep public static final control_4_2:FlxKey = FlxKey.UP;
-	@:keep public static final control_4_3:FlxKey = FlxKey.RIGHT;
+	@:keep public static final control_4_0:FlxKey = FlxKey.A;
+	@:keep public static final control_4_1:FlxKey = FlxKey.S;
+	@:keep public static final control_4_2:FlxKey = FlxKey.W;
+	@:keep public static final control_4_3:FlxKey = FlxKey.D;
+	@:keep public static final control_4_0_alt:FlxKey = FlxKey.LEFT;
+	@:keep public static final control_4_1_alt:FlxKey = FlxKey.DOWN;
+	@:keep public static final control_4_2_alt:FlxKey = FlxKey.UP;
+	@:keep public static final control_4_3_alt:FlxKey = FlxKey.RIGHT;
 
 	@:keep public static final control_5_0:FlxKey = FlxKey.LEFT;
 	@:keep public static final control_5_1:FlxKey = FlxKey.DOWN;
@@ -321,5 +327,7 @@ class Settings {
 			}
 		}
 		engineSettings.flush();
+
+		CoolUtil.updateAntialiasing();
     }
 }

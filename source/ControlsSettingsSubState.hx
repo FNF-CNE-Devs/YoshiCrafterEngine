@@ -222,7 +222,7 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
             if (strumsGrp.width >= sizeRect.width - size) {
                 strumsGrp.x = FlxMath.lerp(strumsGrp.x, FlxMath.bound(-curSelected * size + (sizeRect.width / 2) - (size * 0.5), -(strumsGrp.width - sizeRect.width) - 100, 100), 0.125 * 60 * elapsed); 
             } else {
-                strumsGrp.x = (sizeRect.width / 2) - (size * 0.5 * arrowNumber);
+                strumsGrp.screenCenter(X); // since widescreen doesnt break shit anymore
             }
             if (controls.BACK) {
                 for(i=>k in currentKeys) {
@@ -231,6 +231,7 @@ class ControlsSettingsSubState extends MusicBeatSubstate {
                         Reflect.setField(PlayState.current.engineSettings, 'control_' + arrowNumber + '_$i', k);
                     }
                 }
+                KeybindControls.loadControls(arrowNumber); // reloads in the new super fancy input system update that gives you the smallest delay possible!!!
                 CoolUtil.playMenuSFX(1);
                 close();
                 if (callback != null) callback();

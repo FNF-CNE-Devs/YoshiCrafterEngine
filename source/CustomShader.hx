@@ -252,10 +252,6 @@ class Shader extends FlxFixedShader {
     }
 }
 class CustomShader extends Shader {
-	
-    public function setCamSize(x:Float, y:Float, width:Float, height:Float) {
-        data._camSize.value = [x, y, width, height];
-    }
 
     public function init(fragCode:String, vertCode:String) {
 

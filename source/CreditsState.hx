@@ -60,7 +60,10 @@ class CreditsState extends MusicBeatState {
         var mFolder = Paths.modsPath;
         var y = 0;
 
-        var mods = [Settings.engineSettings.data.selectedMod, "\\", "Friday Night Funkin'"];
+        var mods = ["\\", "Friday Night Funkin'"];
+        if (Settings.engineSettings.data.selectedMod.toLowerCase() != "friday night funkin'")
+            mods.insert(0, Settings.engineSettings.data.selectedMod);
+        
         for (mod in mods) {
 			var path:String = Paths.getPath('credits.json', TEXT, mod == "\\" ? "preload" : 'mods/$mod', true);
             if (Assets.exists(path)) {

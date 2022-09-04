@@ -1,5 +1,6 @@
 package;
 
+import Script.DummyScript;
 import mod_support_stuff.FullyModState;
 import mod_support_stuff.MainMenuJson;
 import haxe.Json;
@@ -155,7 +156,7 @@ class MainMenuState extends FullyModState {
 		var valid = true;
 		if (mainMenuScript == null) {
 			valid = false;
-			mainMenuScript = new HScript();
+			mainMenuScript = new DummyScript();
 		}
 		mainMenuScript.setVariable("create", function() {});
 		mainMenuScript.setVariable("addOption", optionShit.add);
@@ -288,7 +289,7 @@ class MainMenuState extends FullyModState {
 		var yoshiCrafterEngineVer = Main.engineVer;
 		var buildVer = Main.buildVer;
 		if (buildVer.trim() != "") buildVer = " " + buildVer.trim();
-		versionShit = new FlxText(5, FlxG.height - (18 * 3), 0, 'YoshiCrafter Engine v$yoshiCrafterEngineVer$buildVer\nFriday Night Funkin\' v$fnfVer\nSelected Mod: ${ModSupport.getModName(Settings.engineSettings.data.selectedMod)} (Press TAB to switch)\n', 12);
+		versionShit = new FlxText(5, FlxG.height - (18 * 2), 0, 'YoshiCrafter Engine v$yoshiCrafterEngineVer$buildVer (FNF v$fnfVer)\nSelected Mod: ${ModSupport.getModName(Settings.engineSettings.data.selectedMod)} (Press TAB to switch)\n', 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
@@ -327,6 +328,10 @@ class MainMenuState extends FullyModState {
 	override function normalStepHit() {
 		super.normalStepHit();
 		mainMenuScript.executeFunc("stepHit", [curStep]);
+	}
+
+	override function normalDestroy() {
+		mainMenuScript.executeFunc("destroy");
 	}
 	override function normalUpdate(elapsed:Float)
 	{

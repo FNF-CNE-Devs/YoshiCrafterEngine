@@ -1,5 +1,11 @@
 package;
 
+import logging.LogsOverlay;
+import openfl.events.KeyboardEvent;
+import openfl.ui.Keyboard;
+import openfl.events.EventType;
+import WindowsAPI.ConsoleColor;
+import flixel.system.debug.log.LogStyle;
 import flixel.input.keyboard.FlxKey;
 import haxe.Json;
 import haxe.Http;
@@ -44,7 +50,8 @@ class Main extends Sprite
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
-	public static var lastHit:Map<FlxKey, Float> = [];
+	public static var baseTrace = haxe.Log.trace;
+
 	public static var logsOverlay:LogsOverlay;
 
 	public static function readLine(buff:Input, l:Int):String {
@@ -88,12 +95,13 @@ class Main extends Sprite
 		#end
 	}
 	// YOSHI ENGINE STUFF
-	public static var engineVer:String = "2.0.3";
+	public static var engineVer:String = "2.2.0b";
 	public static var buildVer:String = #if ycebeta "BETA" #elseif official "" #else "Custom Build" #end;
 	public static var fps:GameStats;
 
 	public static var supportedFileTypes = [
 		#if ENABLE_LUA "lua", #end
+		"hhx",
 		"hx",
 		"hscript",
 		"hsc"];
@@ -104,6 +112,27 @@ class Main extends Sprite
 
 	public static function main():Void
 	{
+		flixel.system.frontEnds.LogFrontEnd.onLogs = function(Data, Style, FireOnce) {
+			if (CoolUtil.isDevMode()) {
+				var prefix = "[FLIXEL]";
+				var color:ConsoleColor = WHITE;
+				if (Style == LogStyle.CONSOLE)  {prefix = "> ";					color = WHITE;	}
+				if (Style == LogStyle.ERROR)    {prefix = "[FLIXEL ERROR]";		color = RED;	}
+				if (Style == LogStyle.NORMAL)   {prefix = "[FLIXEL]";			color = WHITE;	}
+				if (Style == LogStyle.NOTICE)   {prefix = "[FLIXEL NOTICE]";	color = GREEN;	}
+				if (Style == LogStyle.WARNING)  {prefix = "[FLIXEL WARNING]";	color = YELLOW;	}
+
+				var d:Dynamic = Data;
+				if (!(d is Array))
+					d = [d];
+				var a:Array<Dynamic> = d;
+				var strs = [for(e in a) Std.string(e)];
+				for(e in strs) {
+					(Style == LogStyle.ERROR ? LogsOverlay.error : LogsOverlay.trace)('$prefix $e', color);
+				}
+			}
+		};
+		
 		var args = [for (arg in Sys.args()) if (arg.startsWith("/")) '-${arg.substr(1)}' else arg];
 		
 		if (!parseArgs(args)) {
@@ -201,9 +230,12 @@ class Main extends Sprite
 			}
 			m += '\r\n ${CallStack.toString(CallStack.exceptionStack())}';
 			var text = "";
+			var autoSend = false;
+			if (Settings.engineSettings != null)
+				autoSend = Settings.engineSettings.data.autoSendCrashes;
 			try {
 				text = (
-					'An error occured !\r\nYoshiCrafter Engine ver. ${engineVer} $buildVer\r\n\r\n${m}\r\n\r\n${Settings.engineSettings.data.autoSendCrashes ? "The error message has automatically been sent to the developers. You can disable this option in settings.\n\n" : ""}The engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !');
+					'An error occured !\r\nYoshiCrafter Engine ver. ${engineVer} $buildVer\r\n\r\n${m}\r\n\r\n${autoSend ? "The error message has automatically been sent to the developers. You can disable this option in settings.\n\n" : ""}The engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !');
 				Application.current.window.alert(text, e.error == null ? Std.string(e) : Std.string(e.error));
 			} catch(e) {
 
@@ -264,6 +296,12 @@ class Main extends Sprite
 		}
 
 		setupGame();
+
+		addEventListener(KeyboardEvent.KEY_DOWN, function(e:KeyboardEvent) {
+			if (e.keyCode == Keyboard.F11) {
+				FlxG.fullscreen = !FlxG.fullscreen;
+			}
+		});
 	}
 
 	private function setupGame():Void
@@ -300,7 +338,7 @@ class Main extends Sprite
 		initialState = AndroidInputTest;
 		#end
 
-		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
+		addChild(new FnfGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
 		
 		#if !mobile

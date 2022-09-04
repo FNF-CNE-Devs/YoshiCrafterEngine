@@ -1,0 +1,80 @@
+{
+	"arrowColors": [
+		"#A7B7F5",
+		"#FF78BF",
+		"#FF78BF",
+		"#A7B7F5"
+	],
+	"camOffset": {
+		"x": -150,
+		"y": -346
+	},
+	"globalOffset": {
+		"x": 100,
+		"y": 430
+	},
+	"healthbarColor": "#FFAA6F",
+	"flipX": false,
+	"anims": [
+		{
+			"indices": null,
+			"x": 0,
+			"y": 0,
+			"anim": "Senpai Idle",
+			"loop": false,
+			"name": "idle",
+			"framerate": 24
+		},
+		{
+			"indices": null,
+			"x": 14,
+			"y": 0,
+			"anim": "SENPAI DOWN NOTE",
+			"loop": false,
+			"name": "singDOWN",
+			"framerate": 24
+		},
+		{
+			"indices": null,
+			"x": 0,
+			"y": 0,
+			"anim": "SENPAI RIGHT NOTE",
+			"loop": false,
+			"name": "singRIGHT",
+			"framerate": 24
+		},
+		{
+			"indices": null,
+			"x": 5,
+			"y": 37,
+			"anim": "SENPAI UP NOTE",
+			"loop": false,
+			"name": "singUP",
+			"framerate": 24
+		},
+		{
+			"indices": null,
+			"x": 40,
+			"y": 0,
+			"anim": "SENPAI LEFT NOTE",
+			"loop": false,
+			"name": "singLEFT",
+			"framerate": 24
+		}
+	],
+	"danceSteps": [
+		"idle"
+	],
+	"antialiasing": false,
+	"healthIconSteps": [
+		[
+			20,
+			0
+		],
+		[
+			0,
+			1
+		]
+	],
+	"scale": 6
+}
