@@ -64,6 +64,8 @@ class SongConf {
                         break;
                     }
                 }
+		if (json.global != null)
+			for (g in json.global) scripts.push(getModScriptFromValue(mod, g));
             }
         } else {
             // classic script method
