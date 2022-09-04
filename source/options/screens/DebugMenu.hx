@@ -1,5 +1,9 @@
 package options.screens;
 
+import flixel.math.FlxMath;
+import flixel.FlxSprite;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import openfl.Assets;
 import flixel.addons.transition.FlxTransitionableState;
 import dev_toolbox.ToolboxMain;
@@ -9,6 +13,8 @@ import flixel.FlxG;
 using StringTools;
 
 class DebugMenu extends OptionScreen {
+    public var selectThing:FlxSprite;
+    public var selectThingShader:MenuItemShader;
     public function new() {
         super("Options > Debug Menu");
     }
@@ -82,7 +88,7 @@ class DebugMenu extends OptionScreen {
                         "anyways",
                         "are you sure?"
                     ];
-                    var nextMessage:Void->Void;
+                    var nextMessage:Void->Void = null;
                     nextMessage = function() {
                         i++;
                         if (i >= messages.length) {
@@ -116,9 +122,62 @@ class DebugMenu extends OptionScreen {
                 }
             }
         ];
+        createBG = false;
+        canSelect = false;
+        selectThing = new FlxSprite(0, 0, Paths.image("options/layout"));
+        selectThing.shader = (selectThingShader = new MenuItemShader());
+        selectThing.antialiasing = true;
+        add(selectThing);
         super.create();
-        var label = new AlphabetOptimized(0, 0, "YoshiCrafter Engine debug settings menu", false, 0.25);
+        var label = new AlphabetOptimized(0, 0, "YoshiCrafter Engine debug settings menu\nThis menu contains some useful options used during YoshiCrafter Engine development along with some UI changes that didnt made it through the normal settings (mainly because people thinks shaders are gpu burners)", false, 0.25);
         label.alpha = 0.5;
         add(label);
+        FlxG.camera.zoom = 10;
+        FlxG.camera.alpha = 0;
+        FlxTween.tween(FlxG.camera, {zoom: 1, alpha: 1}, 2, {ease: FlxEase.quartOut, onComplete:function(t) {
+            canSelect = true;
+        }});
+    }
+
+    var specialTime:Float = 0;
+    public override function update(elapsed:Float) {
+        super.update(elapsed);
+        selectThing.setPosition(FlxMath.lerp(selectThing.x, spawnedOptions[curSelected].x + ((spawnedOptions[curSelected].width - selectThing.width) / 2) + 100, 0.25 * elapsed * 60), FlxMath.lerp(selectThing.y, spawnedOptions[curSelected].y + ((spawnedOptions[curSelected].height - selectThing.height) / 2), 0.25 * elapsed * 60));
+
+        specialTime += elapsed;
+        selectThingShader.setTime(specialTime);
+        FlxG.camera.scroll.y = Math.sin(specialTime / 3) * 15;
+    }
+}
+
+class MenuItemShader extends FlxFixedShader {
+    @:glFragmentSource('#pragma header
+
+    uniform float time = 0;
+
+    float bound(float v1, float v2, float v3) {
+        if (v1 < v2) return v2;
+        if (v1 > v3) return v3;
+        return v1;
+    }
+    void main() {
+        gl_FragColor = flixel_texture2D(bitmap, openfl_TextureCoordv);
+
+        float mul = 3.5 / openfl_TextureSize.x * openfl_TextureSize.y;
+        float d = pow(mod(abs(time - (openfl_TextureCoordv.x + ((openfl_TextureCoordv.y) * mul))), 1.0), 2.0);
+        if (d > 0.5)
+            d = 1.0 - d;
+        float dist = bound(d, 0.0, mul) / mul;
+        // float dist = 0;
+        gl_FragColor *= dist;
+    }')
+
+    public function new() {
+        super();
+        setTime(0);
+    }
+
+    public function setTime(time:Float) {
+        this.time.value = [time];
     }
 }

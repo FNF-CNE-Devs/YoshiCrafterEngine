@@ -9,6 +9,7 @@ import flixel.addons.ui.*;
 import flixel.FlxSprite;
 import flixel.FlxCamera;
 import flixel.util.FlxColor;
+import flixel.addons.ui.FlxUIDropDownMenu.FlxUIDropDownHeader;
 
 using StringTools;
 
@@ -21,25 +22,25 @@ class NewAnimDialogue extends MusicBeatSubstate {
         var UI_Tabs = new FlxUITabMenu(null, 
             [
                 {
-                    name: 'test',
+                    name: 'addAnimNormal',
                     label: "Add an animation"
                 }
             ], true );
         var tab = new FlxUI(null, UI_Tabs);
-        tab.name = "test";
+        tab.name = "addAnimNormal";
         UI_Tabs.resize(320, 400);
         UI_Tabs.scrollFactor.set();
         add(UI_Tabs);
 
         
 
-		var label = new FlxUIText(10, 10, 300, "Anim name (ex : idle, singUP)");
-        var animName = new FlxUIInputText(10, label.y + label.height, 300, "");
+		var label = new FlxUIText(10, 10, 450, "Anim name (ex : idle, singUP)");
+        var animName = new FlxUIInputText(10, label.y + label.height, 430, "");
         tab.add(label);
         tab.add(animName);
         
-		var label = new FlxUIText(10, animName.y + animName.height + 10, 300, "Anim name on spritesheet (ex : \"bf idle dance\", \"bf sing up\")");
-        var animSparrow = new FlxUIInputText(10, label.y + label.height, 240, "");
+		var label = new FlxUIText(10, animName.y + animName.height + 10, 450, "Anim name on spritesheet (ex : \"bf idle dance\", \"bf sing up\")");
+        var animSparrow = new FlxUIInputText(10, label.y + label.height, 390, "");
         tab.add(label);
         tab.add(animSparrow);
         var pasteButton = new FlxUIButton(animSparrow.x + animSparrow.width + 10, animSparrow.y, "Paste", function() {
@@ -51,7 +52,7 @@ class NewAnimDialogue extends MusicBeatSubstate {
         pasteButton.resize(50, 20);
         tab.add(pasteButton);
 
-        var addButton = new FlxUIButton(110, animSparrow.y + animSparrow.height + 10, "Add", function() {
+        var addButton = new FlxUIButton(460, animSparrow.y + animSparrow.height + 10, "Add", function() {
             if (animName.text.trim() == "") {
                 var mes = ToolboxMessage.showMessage("Error", "You must specify an animation name (ex : 'idle' or 'singUP')");
                 mes.cameras = cameras;
@@ -79,9 +80,24 @@ class NewAnimDialogue extends MusicBeatSubstate {
                 return;
             }
         });
+        addButton.x -= addButton.width;
         tab.add(addButton);
+        
+        var label = new FlxUIText(10, addButton.y + (addButton.height / 2), "Pick an anim:");
+        label.y -= label.height / 2;
 
-        UI_Tabs.resize(320, addButton.y + addButton.height + 30);
+        var labels:Array<StrNameLabel> = [new StrNameLabel("", "- None Selected -")];
+        for(a in CharacterEditor.current.availableAnims) {
+            labels.push(new StrNameLabel(a, a));
+        }
+        var dropDown = new FlxUIDropDownMenu(label.x + label.width + 2, addButton.y, labels, function(str) {
+            animSparrow.text = str;
+        }, new FlxUIDropDownHeader(Std.int(450 - (label.x + label.width + 2) - (addButton.width))));
+
+        tab.add(label);
+        tab.add(dropDown);
+
+        UI_Tabs.resize(470, addButton.y + addButton.height + 30);
         UI_Tabs.screenCenter();
 
         var closeButton = new FlxUIButton(UI_Tabs.x + UI_Tabs.width - 23, UI_Tabs.y + 3, "X", function() {

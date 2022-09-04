@@ -350,6 +350,7 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
+			var skipUpdate = FlxG.keys.pressed.SHIFT;
 			script.executeFunc("onPressEnter", []);
 
 			if (titleText != null) titleText.animation.play('press');
@@ -362,15 +363,18 @@ class TitleState extends MusicBeatState
 			var tmr = new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
 				script.executeFunc("onUpdateCheck", []);
-				if (Settings.engineSettings.data.checkForUpdates) {
+				if (Settings.engineSettings.data.checkForUpdates && !skipUpdate) {
 					thrd = Thread.create(function() {
 						try {
 							var data = Http.requestUrl("https://raw.githubusercontent.com/YoshiCrafter29/YC29Engine-Latest/main/_changes/list.txt");
 							
 							onUpdateData(data);
 						} catch(e) {
-							trace(e);
-							FlxG.switchState(new MainMenuState());
+							trace(e.details());
+							trace(e.stack.toString());
+							nextCallbacks.push(function() {
+								FlxG.switchState(new MainMenuState());
+							});
 						}
 					});
 					updateIcon.visible = true;

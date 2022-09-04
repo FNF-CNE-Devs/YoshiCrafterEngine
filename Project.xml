@@ -110,7 +110,7 @@
 	<haxelib name="linc_luajit" /> <!-- https://github.com/nebulazorua/linc_luajit --> 
 	
 	<!-- <haxelib name="flixel-animate"/> -->
-	<haxelib name="discord_rpc" if="desktop"/>
+	<haxelib name="discord_rpc_yce" if="desktop"/> <!-- haxelib git discord_rpc_yce https://github.com/YoshiCrafter29/linc_discord-rpc !-->
 	<haxedef name="enable_updates"/> <!-- DISABLE IF DOING EXE MOD !-->
 	<haxelib name="hxp"/>
 	<!-- <haxelib name="hxssl"/> -->

@@ -265,6 +265,14 @@ class Paths
 		}
 	}
 
+	public inline static function unloadCharacter(char:String, mod:String) {
+		if (mod == null) mod = curSelectedMod;
+		if (mod == null) mod = Settings.engineSettings.data.selectedMod;
+
+		// literally clears every asset loaded from that folder
+		Assets.cache.clear('mods/${mod}:assets/mods/${mod}/characters/${char}/');
+	}
+
 	inline static public function getCharacterPacker(char:String) {
 		return getCharacter(char);
 	}

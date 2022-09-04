@@ -12,7 +12,7 @@ class GameStats extends TextField
 	**/
 	public var currentFPS(default, null):UInt;
 
-    var peak:UInt = 0;
+    public var peak:UInt = 0;
 
 	@:noCompletion private var cacheCount:Int;
 	@:noCompletion private var currentTime:Float;

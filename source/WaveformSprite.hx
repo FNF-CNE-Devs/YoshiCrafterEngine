@@ -31,17 +31,15 @@ class WaveformSprite extends FlxSprite {
             valid = false;
             return;
         }
-        trace(buffer);
-        trace(buffer.data);
-        for(i in 0...Math.floor(buffer.data.length / buffer.bitsPerSample)) {
-            var pos = i * buffer.bitsPerSample;
-            var thing = buffer.data.buffer.get(pos) | (buffer.data.buffer.get(pos + 1) << 8);
-            if (thing > 256 * 128)
-                thing -= 256 * 256;
-            var data = 0;
-            if ((data = thing) > peak) peak = data;
-        }
-        trace(buffer.bitsPerSample);
+        // for(i in 0...Math.floor(buffer.data.length / buffer.bitsPerSample)) {
+        //     var pos = i * buffer.bitsPerSample;
+        //     var thing = buffer.data.buffer.get(pos) | (buffer.data.buffer.get(pos + 1) << 8);
+        //     if (thing > 256 * 128)
+        //         thing -= 256 * 256;
+        //     var data = 0;
+        //     if ((data = thing) > peak) peak = data;
+        // }
+        peak = Math.pow(2, buffer.bitsPerSample-1)-1; // max positive value of a bitsPerSample bits integer
         makeGraphic(w, h, 0x00000000, true); // transparent
     }
 

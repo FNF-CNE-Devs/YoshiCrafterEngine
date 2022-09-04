@@ -5,7 +5,8 @@ import stage.OnBeatTweenSprite;
 import stage.StageAnim;
 import flixel.FlxSprite;
 
-class FlxStageSprite extends FlxSprite {
+class FlxStageSprite extends FlxSprite implements TaggedElement {
+    public var tag:String = null;
     public var name:String = null;
     public var animType:String = "loop";
     public var type:String = "Bitmap";

@@ -17,8 +17,6 @@
 [x] Yoshi Engine events lol
 [x] Custom hscript states
 [x] Custom Menus
-
-OOPSIE!!!
 [x] Custom Discord RPC
 
 ADDITIONAL

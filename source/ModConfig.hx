@@ -16,6 +16,8 @@ typedef ModConfig = {
     @:optional var gameWidth:Null<Int>;
     @:optional var gameHeight:Null<Int>;
     @:optional var discordRpc:String;
+    @:optional var downloadLink:String;
+    @:optional var downloadLinkAlt:String;
     @:optional var hasFlashingLights:Null<Bool>;
 }
 
