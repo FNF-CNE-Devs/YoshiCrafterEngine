@@ -19,6 +19,7 @@ Also, if you're going to mod it, do NOT include the executable with it, only you
 	- Cutscenes
 	- Weeks
 	- Credits
+	- Medals
 - **Customization**
 	- Custom keybinds
 	- Downscroll
