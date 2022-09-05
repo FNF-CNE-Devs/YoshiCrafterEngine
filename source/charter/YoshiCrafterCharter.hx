@@ -800,7 +800,7 @@ class YoshiCrafterCharter extends MusicBeatState {
                 return;
             }
 
-            var songConf:SongConf.SongConfJson = {songs: null};
+            var songConf:SongConf.SongConfJson = {songs: null, global: null};
             try {
                 songConf = Json.parse(Assets.getText(Paths.file('song_conf.json', TEXT, 'mods/${PlayState.songMod}')));
             } catch(e) {
