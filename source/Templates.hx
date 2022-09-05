@@ -48,7 +48,8 @@ function beatHit(curBeat) {
                 end_cutscene: "cutscenes/your-end-cutscene",
                 difficulties: null
             }
-        ]
+        ],
+        global: []
     }
 
     public static var entireFuckingCustomVertexHeader =
