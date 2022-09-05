@@ -504,7 +504,8 @@ class ModSupport {
 		script.setVariable("FlxBackdrop", FlxBackdrop);
 		script.setVariable("FlxG", FlxG);
 		script.setVariable("Paths", Paths);
-		script.setVariable("Medals", new ModMedals(mod));
+		if (mod != "skins")
+			script.setVariable("Medals", new ModMedals(mod));
 		script.setVariable("Paths_", Paths);
 		script.setVariable("Std", Std);
 		script.setVariable("Math", Math);
@@ -543,7 +544,8 @@ class ModSupport {
 		script.setVariable("CustomShader", CustomShader_Helper);
 		script.setVariable("FlxControls", FlxControls);
 		script.setVariable("FlxAxes", FlxAxes);
-		script.setVariable("save", modSaves[mod]);
+	    	if (mod != "skins")
+			script.setVariable("save", modSaves[mod]);
         script.setVariable("flashingLights", Settings.engineSettings.data.flashingLights == true);
 
 		script.setVariable("ModState", ModState);
