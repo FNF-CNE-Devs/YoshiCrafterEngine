@@ -107,6 +107,16 @@ class SongConf {
             }
         }
 
+        if (FileSystem.exists('${Paths.getSkinsPath()}/scripts/') && FileSystem.isDirectory('${Paths.getSkinsPath()}/scripts/')) {
+            try {
+                for(f in FileSystem.readDirectory('${Paths.getSkinsPath()}/scripts/')) {
+                    if (!FileSystem.isDirectory('${Paths.getSkinsPath()}/scripts/$f') && Main.supportedFileTypes.contains(Path.extension(f).toLowerCase())) {
+			    scripts.push({mod: 'skins', path: 'scripts/$f'}); // hopefully nobody named their mod "skins"
+                    }
+                }
+            }
+        }
+
         if (cutscene == null) {
             if (Assets.exists(Paths.video('${song}-cutscene', 'mods/${mod}'))) {
                 cutscene = getModScriptFromValue("YoshiCrafterEngine", "MP4-Cutscene");
