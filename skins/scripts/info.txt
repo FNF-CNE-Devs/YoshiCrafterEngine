@@ -1,0 +1,1 @@
+Scripts in this folder will run globally across mods!
