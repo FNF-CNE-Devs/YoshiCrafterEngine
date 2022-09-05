@@ -169,7 +169,7 @@ class ScriptPack {
     public function addScript(path:String, ?mod:String) {
         if (mod == null) mod = Settings.engineSettings.data.selectedMod;
 
-	var scPath = (mod !+ "skins") ? '${Paths.modsPath}/${path}' : '${Paths.getSkinsPath()}/$path';
+	var scPath = (mod != "skins") ? '${Paths.modsPath}/${path}' : '${Paths.getSkinsPath()}/$path';
         var sc = Script.create(scPath);
         if (sc == null) return;
         ModSupport.setScriptDefaultVars(sc, mod, {});
@@ -194,7 +194,7 @@ class ScriptPack {
         for (k=>sc in scripts) {
             var s = scriptModScripts[k];
             __curScript = sc;
-	    var path = (s.mod !+ "skins") ? '${Paths.modsPath}/${s.path}' : '${Paths.getSkinsPath()}/${s.path}';
+	    var path = (s.mod != "skins") ? '${Paths.modsPath}/${s.path}' : '${Paths.getSkinsPath()}/${s.path}';
             sc.loadFile(path);
         }
     }
