@@ -186,7 +186,6 @@ import flixel.FlxG;
 	@:keep public static final rainbowNotes:Bool = false; //Unused
 	@:keep public static final memoryOptimization:Bool = true;
 	@:keep public static final blammedEffect:Bool = true;
-	@:keep public static final yoshiCrafterEngineCharter:Bool = true;
 	@:keep public static final developerMode:Bool = false;
 	@:keep public static final showAccuracyMode:Bool = false;
 	@:keep public static final lastSelectedSong:String = "Friday Night Funkin':tutorial";
@@ -209,6 +208,7 @@ import flixel.FlxG;
 	@:keep public static final lastInstalledMods:Array<String> = ["Friday Night Funkin'", "YoshiCrafterEngine"];
 	@:keep public static final logStateChanges:Bool = true;
 	@:keep public static final menuMouse:Bool = true;
+	@:keep public static final secretLoadingScreen:Bool = false;
 	@:keep public static final secretWidescreenSweep:Bool = false;
 	
 	@:keep public static final charter_showStrums:Bool = true;

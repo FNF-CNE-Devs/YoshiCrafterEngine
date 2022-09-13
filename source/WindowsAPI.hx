@@ -2,21 +2,62 @@
 @:buildXml('
 <target id="haxe">
     <lib name="dwmapi.lib" if="windows" />
+    <lib name="shell32.lib" if="windows" />
 </target>
 ')
 
 @:headerCode('
+#pragma comment(linker,"/manifestdependency:\\"type=\'win32\' name=\'Microsoft.Windows.Common-Controls\' " "version=\'6.0.0.0\' processorArchitecture=\'*\' publicKeyToken=\'6595b64144ccf1df\' language=\'*\'\\"")
 #include <Windows.h>
 #include <cstdio>
 #include <iostream>
 #include <tchar.h>
 #include <dwmapi.h>
 #include <winuser.h>
+#include <Shlobj.h>
+')
+@:cppFileCode('
+bool transparencyEnabled = false;
 ')
 #end
 class WindowsAPI {
     // i have now learned the power of the windows api, FEAR ME!!!
+    #if windows
+    @:functionCode('
+    HKEY hKey;
+    LPCTSTR data;
 
+    RegCreateKeyEx(HKEY_CURRENT_USER, "SOFTWARE\\\\Classes\\\\YoshiCrafterEngineMod", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL);
+
+    char const *name = "YoshiCrafter Engine Mod";
+    RegSetValueEx(hKey, "", 0, REG_SZ, (BYTE*)name, strlen(name));
+    RegSetValueEx(hKey, "FriendlyTypeName", 0, REG_SZ, (BYTE*)name, strlen(name));
+
+
+    RegCreateKeyEx(HKEY_CURRENT_USER, "SOFTWARE\\\\Classes\\\\YoshiCrafterEngineMod\\\\shell\\\\open\\\\command", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL);
+
+    std::string value;
+    value.append("\\"");
+    value.append(path);
+    value.append("\\" -install-mod \\"%1\\"");
+
+    char const *val = value.c_str();
+    RegSetValueEx(hKey, "", 0, REG_SZ, (BYTE*)val, strlen(val));
+
+    HKEY ycemodKey = nullptr;
+    if (RegOpenKeyEx(HKEY_CURRENT_USER, "SOFTWARE\\\\Classes\\\\.ycemod", 0, KEY_READ, &ycemodKey) != ERROR_SUCCESS) {
+        RegCreateKeyEx(HKEY_CURRENT_USER, "SOFTWARE\\\\Classes\\\\.ycemod", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &ycemodKey, NULL);
+
+        char const *name = "YoshiCrafterEngineMod";
+        RegSetValueEx(ycemodKey, "", 0, REG_SZ, (BYTE*)name, strlen(name));
+        SHChangeNotify(0x08000000, 0x0000, nullptr, nullptr);
+    }
+
+    ')
+    #end
+    public static function addFileAssoc(path:String):Int {
+        return 0;
+    }
     #if windows
     @:functionCode('
     // https://stackoverflow.com/questions/15543571/allocconsole-not-displaying-cout
@@ -81,19 +122,56 @@ class WindowsAPI {
     @:functionCode('
         HWND window = GetActiveWindow();
 
+        if (transparencyEnabled) {
+            SetWindowLong(window, GWL_EXSTYLE, GetWindowLong(window, GWL_EXSTYLE) ^ WS_EX_LAYERED);
+            SetLayeredWindowAttributes(window, RGB(0, 0, 0), 255, LWA_COLORKEY | LWA_ALPHA);
+        }
         // make window layered
-        alpha = SetWindowLong(window, GWL_EXSTYLE, GetWindowLong(window, GWL_EXSTYLE) ^ WS_EX_LAYERED);
-        SetLayeredWindowAttributes(window, RGB(red, green, blue), 0, LWA_COLORKEY);
+        int result = SetWindowLong(window, GWL_EXSTYLE, GetWindowLong(window, GWL_EXSTYLE) | WS_EX_LAYERED);
+        if (alpha > 255) alpha = 255;
+        if (alpha < 0) alpha = 0;
+        SetLayeredWindowAttributes(window, RGB(red, green, blue), alpha, LWA_COLORKEY | LWA_ALPHA);
+        alpha = result;
+        transparencyEnabled = true;
     ')
     #end
-    public static function setWindowTransparencyColor(red:Int, green:Int, blue:Int, alpha:Int) {
+    public static function setWindowTransparencyColor(red:Int, green:Int, blue:Int, alpha:Int = 255) {
         return alpha;
     }
 
+    #if windows
+    @:functionCode('
+        if (!transparencyEnabled) return false;
+        
+        HWND window = GetActiveWindow();
+        SetWindowLong(window, GWL_EXSTYLE, GetWindowLong(window, GWL_EXSTYLE) ^ WS_EX_LAYERED);
+        SetLayeredWindowAttributes(window, RGB(0, 0, 0), 255, LWA_COLORKEY | LWA_ALPHA);
+        transparencyEnabled = false;
+    ')
+    #end
+    public static function disableWindowTransparency(result:Bool = true) {
+        return result;
+    }
+
+    #if windows
+    @:functionCode('
+    HWND window = GetActiveWindow();
+    HICON smallIcon = (HICON) LoadImage(NULL, path, IMAGE_ICON, 16, 16, LR_LOADFROMFILE);
+    HICON icon = (HICON) LoadImage(NULL, path, IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE);
+    SendMessage(window, WM_SETICON, ICON_SMALL, (LPARAM)smallIcon);
+    SendMessage(window, WM_SETICON, ICON_BIG, (LPARAM)icon);
+    ')
+    #end
+    public static function setWindowIcon(path:String) {
+
+    }
+
+    #if windows
     @:functionCode('
         HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE); 
         SetConsoleTextAttribute(console, color);
     ')
+    #end
     public static function __setConsoleColors(color:Int) {
 
     }
@@ -104,12 +182,50 @@ class WindowsAPI {
         __setConsoleColors((bg * 16) + fg);
     }
 
+    #if windows
     @:functionCode('
         system("CLS");
         std::cout<< "" <<std::flush;
     ')
+    #end
     public static function clearScreen() {
 
+    }
+
+    #if windows
+    @:functionCode('
+        return MessageBox(GetActiveWindow(), text, title, icon | MB_SETFOREGROUND);
+    ')
+    #end
+    public static function showMessagePopup(title:String, text:String, icon:MessageBoxIcon):Int {
+        lime.app.Application.current.window.alert(title, text);
+        return 0;
+    }
+
+    #if windows
+    @:functionCode('
+        // https://stackoverflow.com/questions/4308503/how-to-enable-visual-styles-without-a-manifest
+        // dumbass windows
+
+        TCHAR dir[MAX_PATH];
+        ULONG_PTR ulpActivationCookie = FALSE;
+        ACTCTX actCtx =
+        {
+            sizeof(actCtx),
+            ACTCTX_FLAG_RESOURCE_NAME_VALID
+                | ACTCTX_FLAG_SET_PROCESS_DEFAULT
+                | ACTCTX_FLAG_ASSEMBLY_DIRECTORY_VALID,
+            TEXT("shell32.dll"), 0, 0, dir, (LPCTSTR)124
+        };
+        UINT cch = GetSystemDirectory(dir, sizeof(dir) / sizeof(*dir));
+        if (cch >= sizeof(dir) / sizeof(*dir)) { return FALSE; /*shouldn\'t happen*/ }
+        dir[cch] = TEXT(\'\\0\');
+        ActivateActCtx(CreateActCtx(&actCtx), &ulpActivationCookie);
+        return ulpActivationCookie;
+    ')
+    #end
+    public static function enableVisualStyles() {
+        return false;
     }
 
     
@@ -135,6 +251,12 @@ class WindowsAPI {
     }
 }
 
+@:enum abstract MessageBoxIcon(Int) {
+    var MSG_ERROR = 0x00000010;
+    var MSG_QUESTION = 0x00000020;
+    var MSG_WARNING = 0x00000030;
+    var MSG_INFORMATION = 0x00000040;
+}
 @:enum abstract ConsoleColor(Int) {
     var BLACK:ConsoleColor = 0;
     var DARKBLUE:ConsoleColor = 1;

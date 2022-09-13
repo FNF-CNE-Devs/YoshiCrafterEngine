@@ -87,7 +87,7 @@ class MusicBeatSubstate extends FlxSubState
 		
 	}
 
-    function showMessage(title:String, text:String) {
+    function showToolboxMessage(title:String, text:String) {
         var m = ToolboxMessage.showMessage(title, text);
         m.cameras = cameras;
         openSubState(m);

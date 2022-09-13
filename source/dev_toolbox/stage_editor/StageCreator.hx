@@ -34,11 +34,11 @@ class StageCreator extends MusicBeatSubstate {
             var name = stageName.text.trim();
             var path = '${Paths.modsPath}/${ToolboxHome.selectedMod}/stages/${name}';
             if (name == "") {
-                showMessage('Error', 'You need to type a name.');
+                showToolboxMessage('Error', 'You need to type a name.');
                 return;
             }
             if (FileSystem.exists(path)) {
-                showMessage('Error', 'A stage with this name already exists.');
+                showToolboxMessage('Error', 'A stage with this name already exists.');
                 return;
             }
             

@@ -497,6 +497,12 @@ class LuaScript extends Script {
 		Lua.add_callback_function(state, callbackName);
         return true;
     }
+
+    public function addLuaCallbacks(callbackNames:Array<String>, func:Dynamic) {
+        for(e in callbackNames)
+            addLuaCallback(e, func);
+        return true;
+    }
     public function new() {
         super();
         state = LuaL.newstate();
@@ -558,7 +564,7 @@ class LuaScript extends Script {
         var getField = function(cl:String, path:String, varName:String):Dynamic {
             if (path == null && varName == null) {
                 path = cl;
-                cl = null;
+                cl = varName;
                 varName = null;
             }
             
@@ -612,12 +618,13 @@ class LuaScript extends Script {
         };
         for(name in ["getField", "getProperty", "get", "getValue", "getVariable", "getFieldFromClass", "getFromClass", "getGBZEUIGBZIOG", "getVariableAkaFieldFromObjectOrClassUsingHaxesReflectApiWhileMakingSureGettersAreAlsoCalled"]) addLuaCallback(name, getField);
 
-        var setField = function(cl:String, path:String, val:Dynamic) {
+        var setField = function(cl:String, _path:Dynamic, val:Dynamic) {
             if (val == null) {
-                val = path;
-                path = cl;
+                val = _path;
+                _path = cl;
                 cl = null;
             }
+            var path:String = _path;
             var v = parseLuaVar(val);
             var split = [for(e in path.split(".")) e.trim()];
             if (cl != null) {
@@ -688,7 +695,7 @@ class LuaScript extends Script {
             var path:String;
             var args:Array<Dynamic>;
             var resultVar:String;
-            if (_path is Array || _path == null) { // by the power of haxe, this is possible
+            if (_path is Array || _path == null || _args is String) { // by the power of haxe, this is possible
                 resultVar = cast _args;
                 args = cast _path;
                 path = cast _cl;
@@ -716,7 +723,7 @@ class LuaScript extends Script {
                 var v = splitPath.shift();
                 baseObj = variables[v];
                 if (baseObj == null) {
-                    if (scriptObject != null) {
+                    if (scriptObject != null && scriptObjectInstFields.contains(v)) {
                         baseObj = getProperty(scriptObject, v);
                         if (baseObj == null) {
                             this.trace('Variable ${v} is null.', true);
@@ -983,7 +990,7 @@ class LuaScript extends Script {
             return doReturn(retValue, returnValueName, "your HScript code's returned value", false);
             return null;
         });
-        addLuaCallback("addCallbackFromHaxe", function(haxeCallbackName:String, luaCallbackName:String) {
+        addLuaCallbacks(["addCallbackFromHaxe", "addHaxeCallback"], function(haxeCallbackName:String, luaCallbackName:String) {
             if (luaCallbackName == null) luaCallbackName = haxeCallbackName;
             if (haxeCallbackName == null) {
                 this.trace('Callback name cannot be null.');
@@ -1002,10 +1009,9 @@ class LuaScript extends Script {
                 this.trace('Variable named ${haxeCallbackName} is not a function.');
                 return false;
             }
-            addLuaCallback(luaCallbackName, function(...args:Array<Dynamic>) {
+            addLuaCallback(luaCallbackName, function(?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic, ?p6:Dynamic, ?p7:Dynamic, ?p8:Dynamic, ?p9:Dynamic, ?p10:Dynamic) {
                 try {
-                    if (args == null) args = [];
-                    var realArgs:Array<Dynamic> = parseLuaVars(args);
+                    var realArgs:Array<Dynamic> = parseLuaVars([p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]);
                     return doReturn(Reflect.callMethod(null, haxeCallback, realArgs), haxeCallbackName, '(Custom HScript function) $haxeCallbackName', true);
                 } catch(e) {
                     this.trace('Failed to run ${haxeCallbackName} - ${e.details()}', true);
@@ -1024,8 +1030,8 @@ class LuaScript extends Script {
     public function getProperty(obj:Dynamic, property:String):Dynamic {
         var prop = Reflect.getProperty(obj, property);
         if (prop == null) {
-            prop = Reflect.getProperty(obj, property);
-            if (prop == null) return null;
+            prop = Reflect.getProperty(obj, 'get_${property}');
+            if (prop == null || !Reflect.isFunction(prop)) return null;
             return prop();
         }
         return prop;

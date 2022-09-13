@@ -1,0 +1,19 @@
+// YoshiCrafter Engine dev tips for the loading screen
+// These only shows when dev mode is on
+// Empty lines or lines that starts with // (comments) will be ignored
+
+There is multikey support?
+The engine have a stage editor?
+The engine have Lua support?
+The engine have HScript (haxe) support?
+The engine have both Lua and HScript support?
+You can detach the F6 logs into a seperate window?
+Custom Shaders are supported?
+The entirety of the base FNF songs and weeks are softcoded?
+There is a special repository for Yoshi Engine code samples? (YoshiCrafter29/Yoshi-Engine-code-samples)
+You can add a download link to your mod in the Discord RPC via the Mod Info tab?
+You can have your custom Discord RPC on your mod?
+You can customize your mod's titlebar?
+You can add custom states to the engine?
+You can customize the Main, Freeplay and Story Mode menus?
+You can lock your mod in the "Mod Info" tab to prevent it from being modified?

@@ -47,8 +47,8 @@ function update(elapsed) {
         smallCamY = FlxG.camera.scroll.y;
     }
     
-    smallCamX = FlxMath.lerp(smallCamX, PlayState.camFollow.x + FlxG.camera.targetOffset.x - 640, CoolUtil.wrapFloat(0.04 * 60 * elapsed, 0, 1));
-    smallCamY = FlxMath.lerp(smallCamY, PlayState.camFollow.y + FlxG.camera.targetOffset.y - 360, CoolUtil.wrapFloat(0.04 * 60 * elapsed, 0, 1));
+    smallCamX = FlxMath.lerp(smallCamX, PlayState.camFollow.x + FlxG.camera.targetOffset.x - 640, CoolUtil.boundFloat(0.04 * 60 * elapsed, 0, 1));
+    smallCamY = FlxMath.lerp(smallCamY, PlayState.camFollow.y + FlxG.camera.targetOffset.y - 360, CoolUtil.boundFloat(0.04 * 60 * elapsed, 0, 1));
     
     FlxG.camera.zoom = 1;
     if (PlayState.health < 0) { // YOU WILL DIE!!!

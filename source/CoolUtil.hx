@@ -1,5 +1,6 @@
 package;
 
+import sys.io.File;
 import flixel.tweens.FlxEase;
 #if cpp
 import openfl.Lib;
@@ -19,7 +20,11 @@ import lime.utils.Assets;
 
 using StringTools;
 
-
+@:enum
+abstract FunkinCodes(Int) {
+	var OK = 0;
+	var CHART_NOT_FOUND = 1;
+}
 
 class CoolUtil
 {
@@ -29,7 +34,7 @@ class CoolUtil
 	public static final difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 
 	public static function isClass(obj:Dynamic):Bool {
-		return Type.getClass(obj) == null;
+		return Type.getClass(obj) != null;
 	}
 	public static function updateAntialiasing() {
 		FlxG.forceNoAntialiasing = Settings.engineSettings.data.antialiasing == 5;
@@ -40,9 +45,7 @@ class CoolUtil
 	}
 
 	public static function filterNulls<T>(a:Array<Null<T>>):Array<T> {
-		var finalArray:Array<T> = [];
-		for(e in a) if (e != null) finalArray.push(e);
-		return finalArray;
+		return [for(e in a) if (e != null) e];
 	}
 
 	
@@ -106,16 +109,11 @@ class CoolUtil
     }
 	public static function fixPsychNoteType(noteType:String) {
 		return switch(noteType) {
-			case "Alt Animation":
-				"Alt Anim Note";
-			case "Hurt Note":
-				"Hurt Note"; // lol
-			case "GF Sing":
-				"GF Note";
-			case "No Animation":
-				"No Anim Note";
-			case _:
-				noteType;
+			case "Alt Animation":			"Alt Anim Note";
+			case "Hurt Note":				"Hurt Note"; // lol
+			case "GF Sing":					"GF Note";
+			case "No Animation":			"No Anim Note";
+			case _:							noteType;
 		}
 	}
 	public static function getCleanupImagesPath(p:String) {
@@ -167,14 +165,19 @@ class CoolUtil
 		return sprite;
 	}
 
+
 	public static function loadUIStuff(sprite:FlxSprite, ?anim:String) {
 		sprite.loadGraphic(Paths.image("uiIcons", "preload"), true, 16, 16);
-		var anims = ["up", "refresh", "delete", "copy", "paste", "x", "swap", "folder", "play", "edit", "settings", "song", "add", "trophy", "up", "down", "lock"];
+		var anims = ["up", "refresh", "delete", "copy", "paste", "x", "swap", "folder", "play", "edit", "settings", "song", "add", "trophy", "up", "down", "lock", "pack"];
 		
 		for(k=>a in anims) {
 			sprite.animation.add(a, [k], 0, false);
 		}
 		if (anim != null) sprite.animation.play(anim);
+	}
+
+	public static function uncompressZip(p1, p2) {
+		ZipUtils.uncompressZip(p1, p2);
 	}
 
 	public static function loadSong(mod:String, song:String, ?difficulty:String, ?alternativeDifficulties:Array<String>):FunkinCodes {
@@ -310,14 +313,23 @@ class CoolUtil
 			Sys.command('nautilus', [p]);	
 		#end
 	}
+	public static function pointFileInFolder(p:String) {
+		p = p.replace("/", "\\").replace("\\\\", "\\");
+		#if windows
+			Sys.command('explorer /select,"$p"');	
+		#else
+			var e = p.split("\\");
+			e.pop();
+			openFolder(e.join("\\"));
+		#end
+	}
 	public static function addBG(f:FlxState) {
-		var p = Paths.image("menuBGYoshiCrafter", 'mods/${Settings.engineSettings.data.selectedMod}');
-		if (!Assets.exists(p)) p = Paths.image("menuBGYoshiCrafter", "preload");
-		var bg = new FlxSprite(0,0).loadGraphic(p);
+		var bg = new FlxSprite(0,0).loadGraphic(Paths.image("menuBGYoshiCrafter", "preload"));
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
 		bg.screenCenter();
 		bg.antialiasing = true;
 		f.add(bg);
+
 		return bg;
 	}
 
@@ -335,21 +347,26 @@ class CoolUtil
 		f.add(bg);
 		return bg;
 	}
+	public static function addModInstallBG(f:FlxState) {
+		// siivkoi i still love your art so imma thank u again thanks again
+		var p = Paths.image("menuBGModInstall", "preload");
+		var bg = new FlxSprite(0,0).loadGraphic(p);
+		bg.screenCenter();
+		bg.scrollFactor.set(0, 0);
+		bg.antialiasing = true;
+		f.add(bg);
+		return bg;
+	}
 
 	public static function playMenuMusic(fade:Bool = false, force:Bool = false) {
 		if (force || FlxG.sound.music == null || !FlxG.sound.music.playing) {
-			var daFunkyMusicPath = Paths.music('freakyMenu');
-			if (Assets.exists(Paths.music('freakyMenu', 'mods/${Settings.engineSettings.data.selectedMod}')))
-				daFunkyMusicPath = Paths.music('freakyMenu', 'mods/${Settings.engineSettings.data.selectedMod}');
-			FlxG.sound.playMusic(daFunkyMusicPath, fade ? 0 : 1);
+			FlxG.sound.playMusic(Paths.music('freakyMenu'), fade ? 0 : 1);
 			if (fade) FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
 	}
 
 	public static function addWhiteBG(f:FlxState) {
-		var p = Paths.image("menuDesat", 'mods/${Settings.engineSettings.data.selectedMod}');
-		if (!Assets.exists(p)) p = Paths.image("menuDesat", "preload");
-		var bg = new FlxSprite(0,0).loadGraphic(p);
+		var bg = new FlxSprite(0,0).loadGraphic(Paths.image("menuDesat", "preload"));
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
 		bg.screenCenter();
 		bg.scrollFactor.set();
@@ -364,12 +381,6 @@ class CoolUtil
 		
 		fDial.browse(t, null, null, name);
 	}
-	/**
-	* Copies folder. Used to copy default skins to prevent crashes
-	* 
-	* @param path Path of the original folder
-	* @param path Path of the new folder
-	*/
 	public static function deleteFolder(delete:String) {
 		#if sys
 		if (!sys.FileSystem.exists(delete)) return;
@@ -389,6 +400,12 @@ class CoolUtil
 		#end
 	}
 	
+	/**
+	* Copies folder. Used to copy default skins to prevent crashes
+	* 
+	* @param path Path of the original folder
+	* @param path Path of the new folder
+	*/
 	public static function copyFolder(path:String, copyTo:String) {
 		#if sys
 		if (!sys.FileSystem.exists(copyTo)) {
@@ -458,12 +475,8 @@ class CoolUtil
 	public static function coolTextFile(path:String):Array<String>
 	{
 		var daList:Array<String> = Assets.getText(path).trim().split('\n');
-
 		for (i in 0...daList.length)
-		{
 			daList[i] = daList[i].trim();
-		}
-
 		return daList;
 	}
 
@@ -474,12 +487,7 @@ class CoolUtil
 	*/
 	public static function numberArray(max:Int, ?min = 0):Array<Int>
 	{
-		var dumbArray:Array<Int> = [];
-		for (i in min...max)
-		{
-			dumbArray.push(i);
-		}
-		return dumbArray;
+		return [for (i in min...max) i];
 	}
 
 	public static function checkSkins() {
@@ -493,48 +501,53 @@ class CoolUtil
 
 	public static function getAllChartKeys() {
 		var controlKeys:Array<Int> = [4];
-		var it = ModSupport.modConfig.keys();
-		while(it.hasNext()) {
-			var e = it.next();
-			var config = ModSupport.modConfig[e];
-			if (config.keyNumbers != null) {
-				for (k in config.keyNumbers) {
+
+		for(config in ModSupport.modConfig)
+			if (config != null && config.keyNumbers != null)
+				for(k in config.keyNumbers)
 					if (!controlKeys.contains(k)) controlKeys.push(k);
-				}
-			}
-		}
-		haxe.ds.ArraySort.sort(controlKeys, function(x, y) {
-			return x - y;
-		});
+
+		haxe.ds.ArraySort.sort(controlKeys, function(x, y) {return x - y;});
 		return controlKeys;
 	}
 	public static function playMenuSFX(id:Int) {
-		var soundId:String = 'scrollMenu';
-		switch(id) {
-			case 1:
-				soundId = 'confirmMenu';
-			case 2:
-				soundId = 'cancelMenu';
-			case 3:
-				soundId = 'disabledMenu';
-			case 4:
-				soundId = 'medalUnlocked';
-			case 5:
-				soundId = 'warningMenu';
-			case 6:
-				soundId = 'checkboxChecked';
-			case 7:
-				soundId = 'checkboxUnchecked';
-		}
+		var soundId:String = switch(id) {
+			case 1:			'confirmMenu';
+			case 2:			'cancelMenu';
+			case 3:			'disabledMenu';
+			case 4:			'medalUnlocked';
+			case 5:			'warningMenu';
+			case 6:			'checkboxChecked';
+			case 7:			'checkboxUnchecked';
+
+			case _:			'scrollMenu';
+		};
 		FlxG.sound.play(Paths.sound(soundId), 1);
 	}
 	
-	public static function wrapFloat(value:Float, min:Float, max:Float) {
-		if (value < min)
-			return min;
-		if (value > max)
-			return max;
+	public static function boundFloat(value:Float, min:Float, max:Float) {
+		if (value < min) return min;
+		if (value > max) return max;
 		return value;
+	}
+	
+	public static function wrapFloat(value:Float, min:Float, max:Float) {
+		value -= min;
+		value %= (max - min);
+		if (value < 0) value = (max - min) - value;
+		return value + min;
+	}
+
+	public static function repeatStringAlt(v:String, am:Int) {
+		return [for(i in 0...am) v].join("");
+	}
+	public static function repeatString(v:String, am:Int) {
+		if (am <= 0) return "";
+		var fString = v;
+		for(i in 0...am-1) {
+			fString += v;
+		}
+		return fString;
 	}
 	
 	public static function addZeros(v:String, length:Int, end:Bool = false) {

@@ -40,7 +40,7 @@ class CharterNote extends FlxSprite
 	}
 	public static var widthRatio(get, null):Float;
 	static function get_widthRatio():Float {
-		return Math.min(1, 5 / (ChartingState_New._song.keyNumber == null ? 5 : ChartingState_New._song.keyNumber));
+		return Math.min(1, 5 / (YoshiCrafterCharter._song.keyNumber == null ? 5 : YoshiCrafterCharter._song.keyNumber));
 	}
 	public static var _swagWidth:Float = 160 * 0.7;
 	public static var PURP_NOTE:Int = 0;
@@ -60,7 +60,7 @@ class CharterNote extends FlxSprite
 
 	public static var noteNumberScheme(get, null):Array<NoteDirection>;
 	public static function get_noteNumberScheme():Array<NoteDirection> {
-		var noteNumberScheme:Array<NoteDirection> = Note.noteNumberSchemes[ChartingState_New._song.keyNumber];
+		var noteNumberScheme:Array<NoteDirection> = Note.noteNumberSchemes[YoshiCrafterCharter._song.keyNumber];
 		if (noteNumberScheme == null) noteNumberScheme = Note.noteNumberSchemes[4];
 		return noteNumberScheme;
 	}
@@ -108,7 +108,7 @@ class CharterNote extends FlxSprite
 	{
 		super();
 
-		var noteNumberScheme:Array<NoteDirection> = Note.noteNumberSchemes[ChartingState_New._song.keyNumber];
+		var noteNumberScheme:Array<NoteDirection> = Note.noteNumberSchemes[YoshiCrafterCharter._song.keyNumber];
 		if (noteNumberScheme == null) noteNumberScheme = Note.noteNumberSchemes[4];
 
 		this.prevNote = prevNote;
@@ -120,7 +120,7 @@ class CharterNote extends FlxSprite
 
 		this.noteData = noteData;
 
-		this.noteType = Math.floor(noteData / ChartingState_New._song.keyNumber / 2);
+		this.noteType = Math.floor(noteData / YoshiCrafterCharter._song.keyNumber / 2);
 
 		scale.x *= swagWidth / _swagWidth;
 		if (!isSustainNote) {
@@ -189,7 +189,7 @@ class CharterNote extends FlxSprite
 							prevNote.animation.play('redhold');
 					}
 
-					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * (Settings.engineSettings.data.customScrollSpeed ? Settings.engineSettings.data.scrollSpeed : ChartingState_New._song.speed);
+					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * (Settings.engineSettings.data.customScrollSpeed ? Settings.engineSettings.data.scrollSpeed : YoshiCrafterCharter._song.speed);
 					prevNote.updateHitbox();
 			
 					if (Settings.engineSettings.data.downscroll) {

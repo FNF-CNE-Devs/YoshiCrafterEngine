@@ -10,15 +10,13 @@ class MedalsOverlay extends FlxSpriteGroup {
     public var bg:FlxSprite;
     public var t:Float = 0;
 
-    public function new(mod:String, medal:MedalsJSON.Medal) {
+    public function new(mod:String, medal:Medals.Medal) {
         super();
         bg = new FlxSprite(0, 0).makeGraphic(1, 1, 0xAA000000, true);
         bg.scrollFactor.set();
         add(bg);
 
         // prevents asset override
-        var oldMod = Settings.engineSettings.data.selectedMod;
-
         var medalUnlockedText:AlphabetOptimized = new AlphabetOptimized(10, 10, "Medal Unlocked", false, 18 / 60);
         medalUnlockedText.x = ((FlxG.width * 0.3) - medalUnlockedText.width) / 2;
         medalUnlockedText.scrollFactor.set();

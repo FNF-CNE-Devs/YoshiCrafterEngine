@@ -1,0 +1,23 @@
+#ADD_DEV
+// YoshiCrafter Engine tips for the loading screen
+// Empty lines or lines that starts with // (comments) will be ignored
+// You can add #ADD_OG to add original tips along with the ones in your mod,
+// and keep #ADD_DEV for the developer tips (dev mode only, doesnt show on locked mods).
+
+You could force a scroll speed on every song via the engine settings?
+You can disable Ghost Tapping in the settings?
+You can set the splashes opacity?
+You can apply your own Boyfriend/Girlfriend/Notes skin without having to replace any files?
+You can update to the latest YoshiCrafter Engine without having to redownload?
+You can choose to whenever hide/show FPS and Memory in the settings?
+You can change your note colors?
+You can navigate through majority of menus via your mouse?
+You can access the settings directly from the pause menu?
+You can change your keybinds directly from the pause menu?
+You can install mods without having to restart the game?
+There are secret songs in the engine itself?
+Week 6 is actually pixel perfect?
+There is a special effect for Blammed?
+The floor in Week 1 and Tutorial is actually 3D?
+You can disable the loading screen in the options?
+These tips are probably not going to be read since loading can be fast sometimes?
