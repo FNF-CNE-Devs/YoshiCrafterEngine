@@ -1,3 +1,5 @@
+import haxe.crypto.Md5;
+import Medals.MedalsJSON;
 import haxe.Exception;
 import flixel.addons.display.FlxBackdrop;
 import discord_rpc.DiscordRpc;
@@ -88,6 +90,21 @@ class ModSupport {
     public static var mFolder = Paths.modsPath;
 
     public static function refreshDiscordRpc() {
+        // if (!DiscordClient.init) {
+        //     trace("Discord not init yet");
+        //     return;
+        // }
+        // var discordRpc = "915896776869953588";
+        // if (Settings.engineSettings == null) return;
+        // var mod:ModConfig = modConfig[Settings.engineSettings.data.selectedMod];
+        // if (mod == null) return;
+        // if (mod.discordRpc != null) discordRpc = mod.discordRpc;
+        // DiscordClient.currentButton1Label = "Download Mod";
+        // DiscordClient.currentButton1Url = (mod.downloadLink == null || mod.downloadLink.trim() == "") ? null : mod.downloadLink;
+        // DiscordClient.currentButton2Label = "Download Mod (Alt Link)";
+        // DiscordClient.currentButton2Url = (mod.downloadLinkAlt != null && mod.downloadLinkAlt.trim() != "") ? mod.downloadLinkAlt : null;
+        // DiscordClient.switchRPC(discordRpc);
+
         if (!DiscordClient.init) {
             trace("Discord not init yet");
             return;
@@ -118,9 +135,8 @@ class ModSupport {
         for(f in FileSystem.readDirectory('$rootPath$path')) {
             if (FileSystem.isDirectory('$rootPath$path$f')) {
                 // fuck you git
-                if (f.toLowerCase() != ".git") {
+                if (f.toLowerCase() != ".git")
                     getAssetFiles(assets, rootPath, '$path$f/', libraryName);
-                }
             } else {
                 var type = "BINARY";
                 var useExt:Bool = true;
@@ -182,13 +198,30 @@ class ModSupport {
         if (lastTitlebarMod == mod) return;
         
 		lime.app.Application.current.window.title = getModTitleBarTitle(mod);
-        var path = Paths.getPath("icon.png", IMAGE);
-        if (!Assets.exists(path)) {
-            path = Paths.image("icon");
-        }
-        lime.app.Application.current.window.setIcon(lime.utils.Assets.getImage(path));
 
         lastTitlebarMod = mod;
+
+        #if windows
+        var iconPath = '${Paths.modsPath}/${mod}/icon.ico';
+        if (FileSystem.exists(iconPath)) {
+            HeaderCompilationBypass.setWindowIcon(iconPath);
+            return;
+        }
+        #end
+
+        var path = Paths.getPath("icon.png", IMAGE);
+        if (!Assets.exists(path)) {
+            #if windows
+            HeaderCompilationBypass.setWindowIcon("icon.ico");
+            return;
+            #else
+            path = Paths.image("icon");
+            #end
+        }
+        lime.app.Application.current.window.setIcon(lime.utils.Assets.getImage(path));
+        
+
+
     }
     public static function reloadModsConfig(reloadAll:Bool = false, reloadSkins:Bool = true, clearCache:Bool = false, reloadCurrent:Bool = false):Bool {
         if (clearCache) {
@@ -293,7 +326,7 @@ class ModSupport {
     public static function loadMod(mod:String) {
         try {
             var s = new FlxSave();
-            s.bind(mod.replace(" ", "_").replace("'", "_"));
+            s.bind('mod_${Md5.encode(mod.toLowerCase())}');
             s.data.mod = mod;
             modSaves[mod] = s;
         } catch(e) {

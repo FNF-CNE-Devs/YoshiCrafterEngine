@@ -113,17 +113,17 @@ class FileExplorer extends MusicBeatSubstate {
                         case SparrowAtlas:
                             var ext = Path.extension(f).toLowerCase();
                             if (!fileExt.split(";").contains(ext)) {
-                                showMessage("Error", 'You must select a $fileType');
+                                showToolboxMessage("Error", 'You must select a $fileType');
                                 return;
                             }
                             if (ext == "png") {
                                 if (!FileSystem.exists('$p/${Path.withoutExtension(f)}.xml')) {
-                                    showMessage("Error", 'The selected Sparrow Atlas doesn\'t have a corresponding XML file.');
+                                    showToolboxMessage("Error", 'The selected Sparrow Atlas doesn\'t have a corresponding XML file.');
                                     return;
                                 }
                             } else {
                                 if (!FileSystem.exists('$p/${Path.withoutExtension(f)}.png')) {
-                                    showMessage("Error", 'The selected Sparrow Atlas doesn\'t have a corresponding PNG file.');
+                                    showToolboxMessage("Error", 'The selected Sparrow Atlas doesn\'t have a corresponding PNG file.');
                                     return;
                                 }
                             }
@@ -132,7 +132,7 @@ class FileExplorer extends MusicBeatSubstate {
                         
                         default:
                             if (!fileExt.split(";").contains(Path.extension(f).toLowerCase())) {
-                                showMessage("Error", 'You must select a $fileType');
+                                showToolboxMessage("Error", 'You must select a $fileType');
                                 return;
                             }
                             callback('$path/$f');

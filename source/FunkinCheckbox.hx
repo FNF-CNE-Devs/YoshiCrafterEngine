@@ -31,20 +31,15 @@ class FunkinCheckbox extends FlxSprite {
             var o = __offsets[animation.curAnim.name];
             offset.x += o[0] * scale.x;
             offset.y += o[1] * scale.y;
-        } else {
         }
     }
 
     public function set_checked(v:Bool) {
-        if (checked != (checked = v)) {
-            animation.play("checking", true, !checked);
-        }
+        if (checked != (checked = v)) animation.play("checking", true, !checked);
         return checked;
     }
 
     public function check(c:Bool) {
-        if (checked != (checked = c)) {
-            CoolUtil.playMenuSFX(c ? 6 : 7);
-        }
+        if (checked != (checked = c)) CoolUtil.playMenuSFX(c ? 6 : 7);
     }
 }

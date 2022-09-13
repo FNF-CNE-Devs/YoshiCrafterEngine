@@ -134,7 +134,6 @@ class YoshiCrafterCharter extends MusicBeatState {
         }
         PlayState.checkSong();
         _song = PlayState._SONG;
-        ChartingState_New._song = _song;
         Conductor.changeBPM(_song.bpm);
     }
 
@@ -1166,7 +1165,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         if (playing) {
             pageSwitchLerpRemaining = 0;
         } else {
-            var val = CoolUtil.wrapFloat(pageSwitchLerpRemaining * 0.40 * 60 * elapsed, pageSwitchLerpRemaining < 0 ? pageSwitchLerpRemaining : 0, pageSwitchLerpRemaining > 0 ? pageSwitchLerpRemaining : 0);
+            var val = CoolUtil.boundFloat(pageSwitchLerpRemaining * 0.40 * 60 * elapsed, pageSwitchLerpRemaining < 0 ? pageSwitchLerpRemaining : 0, pageSwitchLerpRemaining > 0 ? pageSwitchLerpRemaining : 0);
             vocals.time = FlxG.sound.music.time = (Conductor.songPosition += val) + Settings.engineSettings.data.noteOffset;
             pageSwitchLerpRemaining -= val;
             if (Conductor.songPosition < 0) {
@@ -1283,7 +1282,7 @@ class YoshiCrafterCharter extends MusicBeatState {
                     }
                 }
             } else {
-                pageSwitchLerpRemaining -= FlxG.mouse.wheel * Conductor.stepCrochet * 2;
+                pageSwitchLerpRemaining -= FlxG.mouse.wheel * Conductor.stepCrochet * 2 / zoom;
             }
             if (FlxG.keys.pressed.SHIFT) {
                 if (FlxG.keys.pressed.UP || FlxG.keys.pressed.W) moveCursor(-20 * elapsed);
@@ -1364,7 +1363,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         
         for (n in notes) {
             if (n.active = n.visible = (n.y - FlxG.camera.scroll.y + GRID_SIZE + (n.sustainLength / Conductor.stepCrochet * GRID_SIZE) >= 0 && n.y - FlxG.camera.scroll.y <= FlxG.height)) {
-                if (n.strumTime <= Conductor.songPosition) {
+                if (n.strumTime <= Conductor.songPosition - Settings.engineSettings.data.noteOffset) {
                     if (n.alpha == 1) {
                         var str = strums[Math.floor(n.x / GRID_SIZE) % (_song.keyNumber * 2)];
                         if (str != null && playing) str.lastHit = 0.1 + (Math.max(0, (n.sustainLength - Conductor.stepCrochet) / 1000) / FlxG.sound.music.pitch);

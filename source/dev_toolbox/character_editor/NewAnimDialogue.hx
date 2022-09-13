@@ -34,7 +34,7 @@ class NewAnimDialogue extends MusicBeatSubstate {
 
         
 
-		var label = new FlxUIText(10, 10, 450, "Anim name (ex : idle, singUP)");
+		var label = new FlxUIText(10, 10, 450, "Anim name (ex : idle, danceLeft, danceRight, singUP, singUPmiss)");
         var animName = new FlxUIInputText(10, label.y + label.height, 430, "");
         tab.add(label);
         tab.add(animName);

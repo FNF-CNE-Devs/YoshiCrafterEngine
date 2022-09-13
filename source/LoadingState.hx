@@ -155,6 +155,13 @@ class LoadingState extends MusicBeatState
 		if (!loaded)
 			return new LoadingState(target, stopMusic);
 		#end
+
+		#if YOSHMAN_FLIXEL
+		if (Settings.engineSettings.data.secretLoadingScreen) { // TODO
+			// use loading screen
+			return new FunkinLoadState(target);
+		}
+		#end
 		if (stopMusic && FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 		
