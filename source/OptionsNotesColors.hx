@@ -2,7 +2,6 @@ package;
 
 import options.screens.NotesMenu;
 import openfl.desktop.Clipboard;
-import flixel.addons.display.shapes.FlxShape;
 import haxe.io.Bytes;
 import lime.ui.FileDialogType;
 import lime.ui.FileDialog;
@@ -209,20 +208,20 @@ class OptionsNotesColors extends MusicBeatState {
 				if (FlxG.keys.pressed.RIGHT) {
 					switch(selectedChannel) {
 						case 0:
-							cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).r.value = [CoolUtil.wrapFloat(cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).r.value[0] + (changevalue / 255), 0, 1)];
+							cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).r.value = [CoolUtil.boundFloat(cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).r.value[0] + (changevalue / 255), 0, 1)];
 						case 1:
-							cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).g.value = [CoolUtil.wrapFloat(cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).g.value[0] + (changevalue / 255), 0, 1)];
+							cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).g.value = [CoolUtil.boundFloat(cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).g.value[0] + (changevalue / 255), 0, 1)];
 						case 2:
-							cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).b.value = [CoolUtil.wrapFloat(cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).b.value[0] + (changevalue / 255), 0, 1)];
+							cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).b.value = [CoolUtil.boundFloat(cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).b.value[0] + (changevalue / 255), 0, 1)];
 					}
 				} else if (FlxG.keys.pressed.LEFT) {
 					switch(selectedChannel) {
 						case 0:
-							cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).r.value = [CoolUtil.wrapFloat(cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).r.value[0] - (changevalue / 255), 0, 1)];
+							cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).r.value = [CoolUtil.boundFloat(cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).r.value[0] - (changevalue / 255), 0, 1)];
 						case 1:
-							cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).g.value = [CoolUtil.wrapFloat(cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).g.value[0] - (changevalue / 255), 0, 1)];
+							cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).g.value = [CoolUtil.boundFloat(cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).g.value[0] - (changevalue / 255), 0, 1)];
 						case 2:
-							cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).b.value = [CoolUtil.wrapFloat(cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).b.value[0] - (changevalue / 255), 0, 1)];
+							cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).b.value = [CoolUtil.boundFloat(cast(arrowSprites[selectedArrow].shader, ColoredNoteShader).b.value[0] - (changevalue / 255), 0, 1)];
 					}
 				}
 

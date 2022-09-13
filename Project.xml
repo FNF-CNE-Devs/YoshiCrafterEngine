@@ -42,7 +42,6 @@
 
 	<!--Mobile-specific-->
 	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false" allow-shaders="true" require-shaders="true"/>
-	
 
 	<!--Switch-specific-->
 	<window if="switch" orientation="landscape" fullscreen="true" width="0" height="0" resizable="true" />
@@ -51,7 +50,6 @@
 
 	<set name="BUILD_DIR" value="export/debug" if="debug" />
 	<set name="BUILD_DIR" value="export/release" unless="debug" />
-	<!-- <set name="BUILD_DIR" value="export/32bit" if="32bit" /> -->
 
 	<classpath name="source" />
 
@@ -103,21 +101,12 @@
 	
 	<haxelib name="hscript-yoshiengine" />
 
-	<haxelib name="newgrounds" if="windows"/>
-	<haxelib name="faxe" if='switch'/>
-	<!-- <haxelib name="hxvm-lua"/>
-	<haxelib name="linc_lua"/> -->
 	<haxelib name="linc_luajit" /> <!-- https://github.com/nebulazorua/linc_luajit --> 
 	
-	<!-- <haxelib name="flixel-animate"/> -->
-	<haxelib name="discord_rpc_yce" if="desktop"/> <!-- haxelib git discord_rpc_yce https://github.com/YoshiCrafter29/linc_discord-rpc !-->
-	<haxedef name="enable_updates"/> <!-- DISABLE IF DOING EXE MOD !-->
+	<haxelib name="discord_rpc_yce" if="desktop"/>
+	<haxedef name="enable_updates"/>
 	<haxelib name="hxp"/>
-	<!-- <haxelib name="hxssl"/> -->
-	<haxelib name="flixel-textureatlas-yoshiengine"/> <!-- haxelib git flixel-textureatlas-yoshiengine https://github.com/YoshiCrafter29/Flixel-TextureAtlas-YoshiCrafterEngine !-->
-
-	<!-- <haxelib name="markdown" /> -->
-	<!-- <haxelib name="HtmlParser" /> -->
+	<haxelib name="flixel-textureatlas-yoshiengine"/>
 
 	<!--In case you want to use nape with flixel-->
 	<!--<haxelib name="nape-haxe4" />-->
@@ -159,6 +148,7 @@
 	<!-- <haxedef name="HXCPP_PROFILER" if="profiler"/> -->
 
 	<haxedef name="ENABLE_LUA" /> <!-- LUA -->
+	<haxedef name="USING_NEW_FLIXEL" /> <!-- had to add this cause i forgot to push the flixel patch -->
 	<!-- <haxedef name="secretCharter" /> -->
 
 	<!-- _________________________________ Custom _______________________________ -->
@@ -176,10 +166,6 @@
 	<icon path="art/icons/128.png" size='128'/>
 	<icon path="art/icons/256.png" size='256'/>
 
-
-	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
-	<haxedef name="NG_LOGIN" if="newgrounds" />
-
 	<!-- Android stuff -->
 	<android permission="android.permission.ACCESS_NETWORK_STATE"/>
 	<android permission="android.permission.INTERNET"/>
@@ -188,13 +174,26 @@
 	<android permission="android.permission.READ_EXTERNAL_STORAGE"/>
 	<haxedef name="MOBILE_UI" if="android"/>
 	
-	<!-- <haxeflag name="dce" value="no" /> -->
 	<haxeflag name="-dce" value="no" />
 	<haxeflag name="-xml" value="yoshicrafterengine/doc.xml" />
+
+	<!-- so that everything within flixel gets compiled which means hscript super powaaah -->
+	<haxeflag name="--macro" value="include('flixel')" />
+	<haxeflag name="--macro" value="include('sys')" />
+
+	<!-- HAXE STUFF !-->
+	<haxeflag name="--macro" value="include('DateTools')" />
+	<haxeflag name="--macro" value="include('EReg')" />
+	<haxeflag name="--macro" value="include('Lambda')" />
+	<haxeflag name="--macro" value="include('StringBuf')" />
+	<haxeflag name="--macro" value="include('haxe.crypto')" />
+
+	<haxeflag name="--macro" value="Coconut.getCoconutMD5()" />
+
 	<haxedef name="official" />
 	<!-- <haxedef name="ycebeta"/> -->
 	
-	<haxelib name="hxcpp-debug-server" if="desktop debug"/>
+	<haxelib name="hxcpp-debug-server" if="desktop debug"/> <!-- i barely use this -->
 	
-	<!-- <haxedef name="noHandler" /> -->
+	<!-- <haxedef name="noHandler" /> --> <!-- Disables built-in error handler -->
 </project>

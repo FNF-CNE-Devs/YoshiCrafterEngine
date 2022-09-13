@@ -18,8 +18,7 @@ class BetaWarningState extends FlxState {
         warningAlphabet.screenCenter(X);
         add(warningAlphabet);
 
-        var text = new FlxText(0, warningAlphabet.y + warningAlphabet.height + 20, FlxG.width - 200, "This version of YoshiCrafter Engine is currently in beta. That means that features may be incomplete or subject to change. If you're making a mod in this version, i won't be responsible for errors and bugs for the in-dev features.\nThere is a known bug with the game crashing between states, and we're already working on a fix.\n\nPress [ENTER] to continue.");
-        text.screenCenter(X);
+        var text = new FlxText(100, warningAlphabet.y + warningAlphabet.height + 20, FlxG.width - 200, "This version of YoshiCrafter Engine is currently in beta. That means that features may be incomplete or subject to change. If you're making a mod in this version, i won't be responsible for errors and bugs for the in-dev features.\nThere is a known bug with the game crashing between states, and we're already working on a fix.\n\nPress [ENTER] to continue.");
         text.setFormat(Paths.font("vcr.ttf"), Std.int(24), 0xFFFFFFFF, CENTER, FlxTextBorderStyle.OUTLINE, 0xFF000000);
         text.antialiasing = true;
         add(text);

@@ -1,3 +1,4 @@
+import mod_support_stuff.FullyModState;
 import flixel.util.FlxColor;
 import flixel.text.FlxText;
 import haxe.Json;
@@ -29,15 +30,15 @@ typedef CreditChar = {
     var json:JSONCreditChar;
 }
 
-class CreditsState extends MusicBeatState {
+class CreditsState extends FullyModState {
     var chars:Array<CreditChar> = [];
     var curSelected:Int = 0;
     var curSocial:Int = 0;
     var camFollow:FlxSprite;
     var socialThingy:FlxText;
 
-    public override function create() {
-        super.create();
+    public override function normalCreate() {
+        super.normalCreate();
 
         var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuBGYoshiCrafter'));
 		bg.scrollFactor.x = 0;
@@ -48,7 +49,7 @@ class CreditsState extends MusicBeatState {
 		bg.antialiasing = true;
 		add(bg);
 
-        socialThingy = new FlxText(0, 0, 0, "< Social Network >");
+        socialThingy = new FlxText(0, 0, 0, "< - >");
         socialThingy.setFormat(Paths.font("vcr.ttf"), Std.int(44), FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
         socialThingy.antialiasing = true;
         add(socialThingy);
@@ -71,7 +72,7 @@ class CreditsState extends MusicBeatState {
                 try {
                     json = Json.parse(Assets.getText(Paths.getPath('credits.json', TEXT, mod == "\\" ? "preload" : 'mods/$mod', true)));
                 } catch(e) {
-                    LogsOverlay.trace('Failed to parse credits json for $mod.\n$e');
+                    LogsOverlay.error('Failed to parse credits json for $mod.\n$e');
                 }
 
                 if (json != null) {
@@ -130,12 +131,9 @@ class CreditsState extends MusicBeatState {
         var oldSocial = "";
         try {
             oldSocial = chars[curSelected].json.urls[curSocial].name;
-        } catch(e) {
+        } catch(e) {}
 
-        }
-        curSelected += curChange;
-        if (curSelected < 0) curSelected = chars.length - 1;
-        if (curSelected >= chars.length) curSelected = 0;
+        curSelected = CoolUtil.wrapInt(curSelected + curChange, 0, chars.length);
 
         for(i in 0...chars.length) {
             var e = chars[i];
@@ -164,9 +162,7 @@ class CreditsState extends MusicBeatState {
 
 
         if (exists) {
-            curSocial += curChange;
-            if (curSocial >= chars[curSelected].json.urls.length) curSocial = 0;
-            if (curSocial < 0) curSocial = chars[curSelected].json.urls.length - 1;
+            curSocial = CoolUtil.wrapInt(curSocial + curChange, 0, chars[curSelected].json.urls.length);
 
             var social = chars[curSelected].json.urls[curSocial].name;
             socialThingy.text = '< $social >';
@@ -177,25 +173,17 @@ class CreditsState extends MusicBeatState {
         }
         
     } 
-    public override function update(elapsed) {
-        super.update(elapsed);
-        if (controls.UP_P) {
-            changeSelection(-1);
-        }
-        if (controls.DOWN_P) {
-            changeSelection(1);
-        }
-
-        if (controls.ACCEPT) {
+    public override function normalUpdate(elapsed) {
+        super.normalUpdate(elapsed);
+        if (controls.UP_P)      changeSelection(-1);
+        if (controls.DOWN_P)    changeSelection(1);
+        
+        if (controls.ACCEPT)
             FlxG.openURL(chars[curSelected].json.urls[curSocial].url);
-        }
+        
 
-        if (controls.LEFT_P) {
-            changeSocial(-1);
-        }
-        if (controls.RIGHT_P) {
-            changeSocial(1);
-        }
+        if (controls.LEFT_P)    changeSocial(-1);
+        if (controls.RIGHT_P)   changeSocial(1);
 
         if (controls.BACK) {
 			CoolUtil.playMenuSFX(2);

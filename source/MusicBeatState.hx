@@ -134,13 +134,15 @@ class MusicBeatState extends FlxUIState implements ILuaScriptable
 
 			LimeAssets.loggedRequests = [];
 		}
+		FlxTransitionableState.skipNextTransIn = false;
+		FlxTransitionableState.skipNextTransOut = false;
 	}
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
 	public function doResizeShit() {return true;}
-	
+
 	override function create()
 	{
 		if (!Std.isOfType(FlxG.scaleMode, WideScreenScale)) {

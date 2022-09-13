@@ -24,6 +24,8 @@ typedef SwagSong =
 	var keyNumber:Null<Int>;
 	var noteTypes:Array<String>;
 
+	var stage:String;
+
 	@:optional var sectionLength:Null<Int>;
 	@:optional var scripts:Array<String>;
 	@:optional var gfVersion:String;

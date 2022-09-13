@@ -1,5 +1,8 @@
 package dev_toolbox.toolbox_tabs;
 
+import dev_toolbox.sparrow_optimization.SparrowOptimization;
+import ZipUtils.ZipProgress;
+import openfl.net.FileReference;
 import openfl.utils.Assets;
 import lime.app.Application;
 import flixel.group.FlxSpriteGroup;
@@ -20,6 +23,7 @@ import sys.io.File;
 import flixel.text.FlxText;
 import flixel.FlxSprite;
 import sys.FileSystem;
+import lime.ui.FileDialog;
 
 class InfoTab extends ToolboxTab {
     public var card:ModCard;
@@ -122,6 +126,7 @@ class InfoTab extends ToolboxTab {
             ModSupport.saveModData(ToolboxHome.selectedMod);
             card.updateMod(ToolboxHome.selectedMod);
         };
+        
         var saveButton = new FlxUIButton(10, chooseIconButton.y + 30, "Save", save);
         saveButton.resize(145, 20);
         var lockButton = new FlxUIButton(165, chooseIconButton.y + 30, "Save & Lock", function() {
@@ -146,6 +151,66 @@ class InfoTab extends ToolboxTab {
         var lockIcon = CoolUtil.createUISprite("lock", lockButton);
         lockIcon.x = lockButton.x + 2;
 
+        var packButton = new FlxUIButton(10, saveButton.y + saveButton.height + 10, "Create a release (.ycemod file)", function() {
+            var saveFileDialog = new FileDialogExt();
+            saveFileDialog.openSaveDialog(function(path) {
+                var e = ZipUtils.createZipFile(path);
+                ModSupport.modConfig[ToolboxHome.selectedMod].locked = true;
+                ModSupport.saveModData(ToolboxHome.selectedMod);
+                var prog = ZipUtils.writeFolderToZipAsync(e, './mods/${ToolboxHome.selectedMod}/', '${ToolboxHome.selectedMod}/');
+
+                FlxG.state.openSubState(new ProgressBarWindow(prog, "Creating release", "Please wait while the mod is being packed.\nThe result .ycemod file will automatically be locked.", function() {
+                    e.flush();
+                    e.close();
+                    ModSupport.modConfig[ToolboxHome.selectedMod].locked = false;
+                    ModSupport.saveModData(ToolboxHome.selectedMod);
+                    FlxG.state.openSubState(new ToolboxMessage("Success", "A release .ycemod file for your mod has been created.\nThe mod was automatically locked to prevent players from modifying the content.\n\nYou can click \"OK\", or choose \"Open Folder\" to open the .ycemod's folder.", [
+                        {
+                            label: "Open Folder",
+                            onClick: function(v) {
+                                CoolUtil.pointFileInFolder(path);
+                            }
+                        },
+                        {
+                            label: "OK",
+                            onClick: function(v) {}
+                        }
+                    ]));
+                }));
+                
+            }, 'ycemod', '${ToolboxHome.selectedMod}.ycemod', "Save mod release.");
+        });
+        packButton.resize(300, 20);
+        packButton.color = 0xFF44BB44;
+        packButton.label.color = -1;
+
+        var packIcon = CoolUtil.createUISprite("pack", packButton);
+        packIcon.x = packButton.x + 2;
+
+        var optimizeSparrowsButton = new FlxUIButton(10, packButton.y + packButton.height + 10, "Optimize Sparrow Atlases (BETA)", function() {
+            FlxG.state.openSubState(new ToolboxMessage(
+                "Optimize Sparrow Atlases",
+                "This option will cycle through all sparrow atlases in your mod, and optimize them by removing the unnecessary white spaces added by Adobe Animate upon generation.\nThis operation will take some time. Are you sure you want to continue?",
+                [
+                    {
+                        label: "Yes",
+                        onClick: function(t) {
+                            var prog:ZipProgress = SparrowOptimization.optimizeAsync('${Paths.modsPath}/${ToolboxHome.selectedMod}/');
+                            FlxG.state.openSubState(new ProgressBarWindow(prog, "Optimizing Sparrow Atlases...", "Please wait while the engine optimizes the sparrow atlases.", function() {
+                                FlxG.state.openSubState(ToolboxMessage.showMessage("Success", "All Sparrow Atlases has been optimized."));
+                            }));
+                        }
+                    },
+                    {
+                        label: "No",
+                        onClick: function(t) {
+
+                        }
+                    }
+                ]));
+        });
+        optimizeSparrowsButton.resize(300, 20);
+
         add(bg);
 
         for (l in OHMYFUCKINGGODITSTHELABELARMY) add(l);
@@ -160,6 +225,10 @@ class InfoTab extends ToolboxTab {
         add(saveButton);
         add(lockButton);
         add(lockIcon);
+        add(packButton);
+        add(packIcon);
+        add(optimizeSparrowsButton);
+        
         var win10window = new FlxSpriteGroup();
 
         var windowSprite = new FlxSprite().makeGraphic(Std.int(card.width + 60), Std.int(card.height + 91), 0xFFFFFFFF, true);

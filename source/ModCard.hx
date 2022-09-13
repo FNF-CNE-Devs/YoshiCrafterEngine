@@ -10,13 +10,14 @@ import flixel.addons.ui.*;
 class ModCard extends FlxSpriteGroup {
     var m:ModConfig;
 
-    var mod_name:AlphabetOptimized;
-    var mod_desc:FlxUIText;
-    var mod_icon:FlxUISprite;
+    public var mod_name:AlphabetOptimized;
+    public var mod_desc:FlxUIText;
+    public var mod_icon:FlxUISprite;
 
     public var mod:String;
     public override function new(modFolder:String, mod:ModConfig) {
         super();
+        this.m = mod;
         this.mod = modFolder;
 
         var bg = new FlxSprite(0, 0).loadGraphic(Paths.image('modcardbg', 'preload'));
@@ -27,7 +28,6 @@ class ModCard extends FlxSpriteGroup {
         mod_desc = new FlxUIText(170, mod_name.y + 50, 460, "Mod Description");
         mod_icon = new FlxUISprite(10, mod_name.y + 50);
         mod_icon.makeGraphic(150, 150, 0xFF000000, true);
-        mod_icon.antialiasing = true;
         mod_icon.antialiasing = true;
         add(bg);
         add(mod_name);
@@ -40,7 +40,7 @@ class ModCard extends FlxSpriteGroup {
 
     public function updateMod(mod:String) {
         this.mod = mod;
-        m = ModSupport.modConfig[mod];
+        if (m == null) m = ModSupport.modConfig[mod];
         var mod = m;
         
         mod_name.text = mod.name != null ? mod.name : this.mod;

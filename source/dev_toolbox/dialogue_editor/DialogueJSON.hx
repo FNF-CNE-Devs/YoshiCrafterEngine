@@ -1,3 +1,5 @@
+package dev_toolbox.dialogue_editor;
+
 typedef DialogueJSON = {
     var chars:Array<DialogueChar>;
     var dialogue:Array<DialogueBubble>;

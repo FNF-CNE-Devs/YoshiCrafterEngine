@@ -870,11 +870,9 @@ class StageEditor extends MusicBeatState {
                 switch(s.type) {
                     case "SparrowAtlas":
                         spr = Stage.generateSparrowAtlas(s, ToolboxHome.selectedMod);
-                        trace(spr);
                         add(spr);
                     case "Bitmap":
                         spr = Stage.generateBitmap(s, ToolboxHome.selectedMod);
-                        trace(spr);
                         add(spr);
                     case "BF":
                         if (s.scrollFactor == null) s.scrollFactor = [1, 1];

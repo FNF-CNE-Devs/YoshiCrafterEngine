@@ -16,11 +16,11 @@ using StringTools;
 class AddMedalDialogue extends MusicBeatSubstate {
     var __name:String;
     var __buttonLabel:String;
-    var __callback:MedalsJSON.Medal->Void;
-    var medal:MedalsJSON.Medal;
+    var __callback:Medals.Medal->Void;
+    var medal:Medals.Medal;
     var img:FlxSprite;
     var animField:FlxUIInputText;
-    public override function new(medal:MedalsJSON.Medal, callback:MedalsJSON.Medal->Void, ?windowName:String = "Edit Medal", ?buttonLabel:String = "Edit") {
+    public override function new(medal:Medals.Medal, callback:Medals.Medal->Void, ?windowName:String = "Edit Medal", ?buttonLabel:String = "Edit") {
         __name = windowName;
         __buttonLabel = buttonLabel;
         __callback = callback;
