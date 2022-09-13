@@ -366,6 +366,8 @@ class Window
             trace(message);
             trace("========");
         #else
+		if (message == null) message = "";
+		if (title == null) title = this.title;
 		__backend.alert(message, title);
         #end
 	}

@@ -99,21 +99,21 @@ class StageSpriteCreator extends MusicBeatSubstate {
             
             var path = Path.withoutExtension(bitmapTabField.text.trim());
             if (nameLabel.text.trim() == "") {
-                showMessage("Error", 'Sprite name cannot be empty.');
+                showToolboxMessage("Error", 'Sprite name cannot be empty.');
                 return;
             }
             if (bitmapTabField.text.trim() == "") {
-                showMessage("Error", 'No sprite path was entered/selected. Please select one.');
+                showToolboxMessage("Error", 'No sprite path was entered/selected. Please select one.');
                 return;
             }
             if (!FileSystem.exists('${Paths.modsPath}/${ToolboxHome.selectedMod}/images/${path}.png')) {
-                showMessage("Error", 'The Bitmap at the path "${Paths.modsPath}/${ToolboxHome.selectedMod}/images/${path}.png" does not exist.');
+                showToolboxMessage("Error", 'The Bitmap at the path "${Paths.modsPath}/${ToolboxHome.selectedMod}/images/${path}.png" does not exist.');
                 return;
             }
             for(s in state.stage.sprites) {
                 // CaSe SeNsItIvE
                 if (s.name.trim() == nameTextBox.text.trim()) {
-                    showMessage("Error", 'Another sprite with that name already exists.');
+                    showToolboxMessage("Error", 'Another sprite with that name already exists.');
                     return;
                 }
             }
@@ -186,25 +186,25 @@ class StageSpriteCreator extends MusicBeatSubstate {
         var acceptButton = new FlxUIButton(tabWidth / 2, tabHeight - 50, "Create", function() {
             var path = Path.withoutExtension(bitmapTabField.text.trim());
             if (nameLabel.text.trim() == "") {
-                showMessage("Error", 'Sprite name cannot be empty.');
+                showToolboxMessage("Error", 'Sprite name cannot be empty.');
                 return;
             }
             if (bitmapTabField.text.trim() == "") {
-                showMessage("Error", 'No sprite path was entered/selected. Please select one.');
+                showToolboxMessage("Error", 'No sprite path was entered/selected. Please select one.');
                 return;
             }
             if (!FileSystem.exists('${Paths.modsPath}/${ToolboxHome.selectedMod}/images/$path.png')) {
-                showMessage("Error", 'The Sparrow Atlas PNG at the path "${Paths.modsPath}/${ToolboxHome.selectedMod}/images/$path.png" does not exist.');
+                showToolboxMessage("Error", 'The Sparrow Atlas PNG at the path "${Paths.modsPath}/${ToolboxHome.selectedMod}/images/$path.png" does not exist.');
                 return;
             }
             if (!FileSystem.exists('${Paths.modsPath}/${ToolboxHome.selectedMod}/images/$path.xml')) {
-                showMessage("Error", 'The Sparrow Atlas XML at the path "${Paths.modsPath}/${ToolboxHome.selectedMod}/images/$path.xml" does not exist.');
+                showToolboxMessage("Error", 'The Sparrow Atlas XML at the path "${Paths.modsPath}/${ToolboxHome.selectedMod}/images/$path.xml" does not exist.');
                 return;
             }
             for(s in state.stage.sprites) {
                 // CaSe SeNsItIvE
                 if (s.name.trim() == nameTextBox.text.trim()) {
-                    showMessage("Error", 'Another sprite with that name already exists.');
+                    showToolboxMessage("Error", 'Another sprite with that name already exists.');
                     return;
                 }
             }

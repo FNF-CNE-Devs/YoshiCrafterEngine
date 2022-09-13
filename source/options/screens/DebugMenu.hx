@@ -51,6 +51,13 @@ class DebugMenu extends OptionScreen {
                 onSelect: function(e) {@:privateAccess e.check(ModSupport.forceDevMode = !ModSupport.forceDevMode);}
             },
             {
+                name: "loading screen (unfinished)",
+                desc: "adds an unfinished loading screen.\nscrapped cause it has a 1/1000 chance to break a flxsprite with a sparrow atlas",
+                value: "",
+                onCreate: function(e) {@:privateAccess e.check(Settings.engineSettings.data.secretLoadingScreen);},
+                onSelect: function(e) {@:privateAccess e.check(Settings.engineSettings.data.secretLoadingScreen = !Settings.engineSettings.data.secretLoadingScreen);}
+            },
+            {
                 name: "widescreen sweep",
                 desc: "cool stuff hehe, hidden cause not every mods are compatible with it",
                 value: "",

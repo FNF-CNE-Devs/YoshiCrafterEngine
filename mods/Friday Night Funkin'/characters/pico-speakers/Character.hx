@@ -4,31 +4,11 @@ var danced = false;
 var chart = null;
 
 function create() {
-    character.frames = Paths.getCharacter("pico-speakers");
-
-    character.animation.addByIndices("shoot1", "Pico shoot 1", [for (i in 0...4) i], "", 24, false);
-    character.animation.addByIndices("shoot2", "Pico shoot 2", [for (i in 0...4) i], "", 24, false);
-    character.animation.addByIndices("shoot3", "Pico shoot 3", [for (i in 0...4) i], "", 24, false);
-    character.animation.addByIndices("shoot4", "Pico shoot 4", [for (i in 0...4) i], "", 24, false);
-    character.animation.addByIndices("shoot1-idle", "Pico shoot 1", [for (i in 4...25) i], "", 24, true);
-    character.animation.addByIndices("shoot2-idle", "Pico shoot 2", [for (i in 4...25) i], "", 24, true);
-    character.animation.addByIndices("shoot3-idle", "Pico shoot 3", [for (i in 4...25) i], "", 24, true);
-    character.animation.addByIndices("shoot4-idle", "Pico shoot 4", [for (i in 4...25) i], "", 24, true);
-
-    character.addOffset("shoot1", 0, 0);
-    character.addOffset("shoot2", -1, -128);
-    character.addOffset("shoot3", 412, -64);
-    character.addOffset("shoot4", 439, -19);
-
-    character.addOffset("shoot1-idle", 0, 0);
-    character.addOffset("shoot2-idle", -1, -128);
-    character.addOffset("shoot3-idle", 412, -64);
-    character.addOffset("shoot4-idle", 439, -19);
-
-    character.playAnim("shoot1");
+    frames = Paths.getCharacter(curCharacter);
+    loadJSON(false);
 
     chart = Paths.parseJson("stress/picospeaker");
-
+    playAnim("shoot1");
     for(e in chart.song.notes) {
         e.sectionNotes.sort(function(n1, n2) {
             return FlxSort.byValues(FlxSort.ASCENDING, n1[0], n2[0]);
@@ -93,10 +73,4 @@ function doSpawn() {
     }
 }
 
-function dance() {
-    // character.playAnim("idle");
-}
-
-function onAnim(animName) {
-
-}
+function dance() {}

@@ -84,7 +84,7 @@ class ContextMenu extends MusicBeatSubstate {
                 select();
             }
         }
-        selectorThing.value = FlxMath.lerp(selectorThing.value, selectorThing.max, CoolUtil.wrapFloat(0.5 * 60 * elapsed, 0, 1));
+        selectorThing.value = FlxMath.lerp(selectorThing.value, selectorThing.max, CoolUtil.boundFloat(0.5 * 60 * elapsed, 0, 1));
         super.update(elapsed);
         // prevents event diffusion
         @:privateAccess

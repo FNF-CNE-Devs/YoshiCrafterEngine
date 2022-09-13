@@ -219,7 +219,6 @@ class AlphabetOptimized extends FlxSpriteGroup {
 
         var jsonText = Assets.getText(Paths.getPath("images/alphabet.json", TEXT, "preload"));
 		if (json == null || jsonLength != jsonText.length) {
-			trace("json changed!!");
             try {
                 json = Json.parse(jsonText);
             } catch(e) {
@@ -334,6 +333,9 @@ class AlphabetOptimized extends FlxSpriteGroup {
 
             if ((lastDrawLines > -1 && __cacheWidth > -1) && !inScreen) return; // do not draw when outside range
         }
+
+        var x = x - offset.x;
+        var y = y - offset.y;
 
         letterPos = [];
         if (text == null || text.length <= 0) {

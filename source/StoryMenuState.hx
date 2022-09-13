@@ -1,5 +1,6 @@
 package;
 
+import mod_support_stuff.FullyModState;
 import Script.DummyScript;
 import dev_toolbox.week_editor.WeekEditor;
 import WeeksJson.FNFWeek;
@@ -33,8 +34,9 @@ import lime.net.curl.CURLCode;
 using StringTools;
 
 
-class StoryMenuState extends MusicBeatState
+class StoryMenuState extends FullyModState
 {
+	public override function className() {return "StoryMenuState";}
 	var colorTween:FlxTween;
 	var scoreText:FlxText;
 
@@ -105,7 +107,7 @@ class StoryMenuState extends MusicBeatState
 	}
 
 	var difficultySprites:Map<String, FlxSprite> = [];
-	override function create()
+	override function normalCreate()
 	{
 		FlxG.cameras.reset();
 		reloadModsState = true;
@@ -390,7 +392,7 @@ class StoryMenuState extends MusicBeatState
 			text.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			text.alpha = 0.66;
 			add(text);
-			super.create();
+			super.normalCreate();
 			return;
 		}
 		leftArrow = new FlxSprite(FlxG.width - (FlxG.width - (FlxG.width - 90 - 175 + 48)), grpWeekText.members[0].y + 10);
@@ -430,7 +432,7 @@ class StoryMenuState extends MusicBeatState
 
 		trace("Line 165");
 
-		super.create();
+		super.normalCreate();
 
 		var co = 0xFFF9CF51;
 		if (weekData[0].color != null) {
@@ -441,7 +443,7 @@ class StoryMenuState extends MusicBeatState
 		menuScript.executeFunc("createPost");
 	}
 
-	override function update(elapsed:Float)
+	override function normalUpdate(elapsed:Float)
 	{
 		menuScript.executeFunc("preUpdate", [elapsed]);
 		
@@ -453,7 +455,7 @@ class StoryMenuState extends MusicBeatState
 		
 		if (weekData.length <= 0) {
 			if (controls.BACK) FlxG.switchState(new MainMenuState());
-			super.update(elapsed);
+			super.normalUpdate(elapsed);
 			return;
 		}
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.5 * 60 * elapsed));
@@ -507,7 +509,7 @@ class StoryMenuState extends MusicBeatState
 			FlxG.switchState(new MainMenuState());
 		}
 
-		super.update(elapsed);
+		super.normalUpdate(elapsed);
 
 		grpLocks.forEach(function(lock:FlxSprite)
 		{

@@ -66,11 +66,10 @@ class FlashWarningState extends MusicBeatState {
                 CoolUtil.playMenuSFX(0);
                 checkboxSelected = !checkboxSelected;
             }
-            if (checkboxSelected) {
-                if (FlxG.keys.justPressed.ENTER) {
+            if (checkboxSelected)
+                if (FlxG.keys.justPressed.ENTER)
                     checkbox.check(!checkbox.checked);
-                }
-            } else {
+            else {
                 if ((FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT)) {
                     CoolUtil.playMenuSFX(0);
                     enableSelected = !enableSelected;

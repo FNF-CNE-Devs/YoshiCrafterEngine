@@ -91,8 +91,9 @@ class Stage {
 		}
 		PlayState.current.devStage = splitPath.join(":");
 		var PlayState = PlayState.current;
+		// PlayState.curStage = this;
 		if (json.defaultCamZoom != null) PlayState.defaultCamZoom = json.defaultCamZoom;
-		if (json.bfOffset != null) {
+		if (json.bfOffset != null && PlayState.boyfriend != null) {
 			if (json.bfOffset.length > 0) {
 				PlayState.boyfriend.x += json.bfOffset[0];
 			}
@@ -100,7 +101,7 @@ class Stage {
 				PlayState.boyfriend.y += json.bfOffset[1];
 			}
 		}
-		if (json.dadOffset != null) {
+		if (json.dadOffset != null && PlayState.dad != null) {
 			if (json.dadOffset.length > 0) {
 				PlayState.dad.x += json.dadOffset[0];
 			}
@@ -108,7 +109,7 @@ class Stage {
 				PlayState.dad.y += json.dadOffset[1];
 			}
 		}
-		if (json.gfOffset != null) {
+		if (json.gfOffset != null && PlayState.gf != null) {
 			if (json.gfOffset.length > 0) {
 				PlayState.gf.x += json.gfOffset[0];
 			}
@@ -147,14 +148,20 @@ class Stage {
 						PlayState.add(bmap);
 						resultSprite = bmap;
 					case "BF":
-						doTheChar(PlayState.boyfriend, s, mod);
-						PlayState.add(PlayState.boyfriend);
+						if (PlayState.boyfriend != null) {
+							doTheChar(PlayState.boyfriend, s, mod);
+							PlayState.add(PlayState.boyfriend);
+						}
 					case "GF":
-						doTheChar(PlayState.gf, s, mod);
-						PlayState.add(PlayState.gf);
+						if (PlayState.gf != null) {
+							doTheChar(PlayState.gf, s, mod);
+							PlayState.add(PlayState.gf);
+						}
 					case "Dad":
-						doTheChar(PlayState.dad, s, mod);
-						PlayState.add(PlayState.dad);
+						if (PlayState.dad != null) {
+							doTheChar(PlayState.dad, s, mod);
+							PlayState.add(PlayState.dad);
+						}
 				}
 				if (resultSprite != null) {
 					if (s.beatTween != null && ((s.beatTween.x != 0 && s.beatTween.x != null) || (s.beatTween.y != 0 && s.beatTween.y != null))) {

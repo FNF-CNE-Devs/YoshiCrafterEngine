@@ -79,14 +79,6 @@ class MiscMenu extends OptionScreen {
                 value: "",
                 onCreate: function(e) {e.check(Settings.engineSettings.data.fps_showMemoryPeak);},
                 onSelect: function(e) {e.check(Settings.engineSettings.data.fps_showMemoryPeak = !Settings.engineSettings.data.fps_showMemoryPeak);},
-            },
-            {
-                name: "Use legacy charter",
-                desc: "If enabled, will use the old charter instead of the new one (no longer supported).",
-                value: "",
-                additional: true,
-                onCreate: function(e) {e.check(!Settings.engineSettings.data.yoshiCrafterEngineCharter);},
-                onSelect: function(e) {e.check(!(Settings.engineSettings.data.yoshiCrafterEngineCharter = !Settings.engineSettings.data.yoshiCrafterEngineCharter));},
             }
         ];
         super.create();

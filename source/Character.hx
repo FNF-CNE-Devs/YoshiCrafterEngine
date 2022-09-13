@@ -40,7 +40,7 @@ class Character extends FlxStageSprite implements ILuaScriptable
 	/**
      * Camera Offsets
 	 */
-	public var cameraOffsets:Map<String, Array<Float>>;
+	public var cameraOffsets:Map<String, Array<Float>> = [];
 	
 	/**
 	 * If true, character's animations will be disabled, preventing the game from crashing and allowing debugging of the sprite
@@ -139,7 +139,6 @@ class Character extends FlxStageSprite implements ILuaScriptable
 	private function __loadChar() {
 		ready = false;
 		animOffsets = new Map<String, Array<Float>>();
-		cameraOffsets = new Map<String, Array<Float>>();
 		initVars();
 		reset(x - charGlobalOffset.x, y - charGlobalOffset.y);
 		flipX = flipY = false;
@@ -198,7 +197,9 @@ class Character extends FlxStageSprite implements ILuaScriptable
 			this.animation.add("", [0], 24, true);
 		} 
 
+		ready = true;
 		dance();
+		ready = false;
 
 		this.x += charGlobalOffset.x;
 		this.y += charGlobalOffset.y;
@@ -213,22 +214,19 @@ class Character extends FlxStageSprite implements ILuaScriptable
 	public function switchCharacter(newCharacter:String, ?mod:String) {
 		if (!ready) return;
 		curCharacter = CoolUtil.getCharacterFullString(newCharacter, mod == null ? Paths.curSelectedMod : mod);
-		__loadChar();
-		if (healthIcon != null) {
+		if (healthIcon != null)
 			healthIcon.changeCharacter(curCharacter, null);
-		}
+		__loadChar();
+		if (healthIcon != null)	healthIcon = healthIcon;
 	}
 
 	public static function preloadCharacter(character:String, ?mod:String) {
 		var full = CoolUtil.getCharacterFull(character, mod == null ? Paths.curSelectedMod : mod);
 		// preload
-		Paths.getCharacter('${full[0]}:${full[1]}');
+		var data = Paths.getCharacterAssetsPath('${full[0]}:${full[1]}');
+		Assets.getBitmapData(data.imagePath);
+		Assets.getText(data.dataPath);
 		Paths.getCharacterIcon(full[1], full[0]);
-		
-		
-		var jsonPath = Paths.file('characters/${full[0]}/spritesheet.json', TEXT, 'mods/${full[1]}');
-		if (Assets.exists(jsonPath))
-			Assets.getText(jsonPath);
 	}
 
 	public function switchCharacterAsync(newCharacter:String, mod:String, callback:Void->Void) {
@@ -446,6 +444,7 @@ class Character extends FlxStageSprite implements ILuaScriptable
 			});
 		}
 		scale.set(json.scale, json.scale);
+		updateHitbox();
 	}
 
 	public function addJsonAnim(anim:CharacterAnim) {

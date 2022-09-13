@@ -258,7 +258,7 @@ class GUIMenu extends OptionScreen {
                 msScoreLabel.offset.y = msScoreLabel.height / 3;
             }
         }
-        msScoreLabel.offset.y = FlxMath.lerp(msScoreLabel.offset.y, 0, CoolUtil.wrapFloat(0.25 * 60 * elapsed, 0, 1));
+        msScoreLabel.offset.y = FlxMath.lerp(msScoreLabel.offset.y, 0, CoolUtil.boundFloat(0.25 * 60 * elapsed, 0, 1));
 
 
         strums.alpha = FlxMath.lerp(strums.alpha, showStrums.contains(curSelected) ? 1 : 0, l * 2);

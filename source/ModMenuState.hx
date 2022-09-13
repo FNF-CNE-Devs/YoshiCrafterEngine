@@ -1,3 +1,4 @@
+import mod_support_stuff.InstallModScreen;
 import haxe.io.Path;
 import sys.io.File;
 import sys.FileSystem;
@@ -49,16 +50,24 @@ class ModMenuState extends MusicBeatState {
     public override function onDropFile(path:String) {
         super.onDropFile(path);
         trace(path);
-        if (FileSystem.exists(path) && FileSystem.isDirectory(path)) {
-            if (FileSystem.exists('$path/config.json')) {
-                if (FileSystem.exists('./mods/${Path.withoutDirectory(path)}/')) {
-                    trace("mod already exists");    
-                    return;
+        if (FileSystem.exists(path)) {
+            if (FileSystem.isDirectory(path)) {
+                if (FileSystem.exists('$path/config.json')) {
+                    if (FileSystem.exists('./mods/${Path.withoutDirectory(path)}/')) {
+                        trace("mod already exists");    
+                        return;
+                    }
+                    CoolUtil.copyFolder(path, './mods/${Path.withoutDirectory(path)}/');
+                    FlxG.resetState();
+                } else {
+                    trace("not a yoshi engine mod");
                 }
-                CoolUtil.copyFolder(path, './mods/${Path.withoutDirectory(path)}/');
-                FlxG.resetState();
             } else {
-                trace("not a yoshi engine mod");
+                if (Path.extension(path).toLowerCase() == "ycemod") {
+                    InstallModScreen.path = path;
+                    InstallModScreen.backState = ModMenuState;
+                    FlxG.switchState(new InstallModScreen());
+                }
             }
         } else {
             trace("not a folder or doesnt exists");
