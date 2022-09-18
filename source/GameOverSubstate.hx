@@ -101,7 +101,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if (path != null)  {
 			script.setScriptObject(this);
-			script.loadFile(path);
+			script.loadFile();
 		}
 		script.executeFunc("create");
 	}

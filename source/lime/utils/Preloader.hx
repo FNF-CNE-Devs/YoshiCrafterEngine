@@ -56,9 +56,6 @@ class Preloader #if flash extends Sprite #end
 		super();
 		#end
 
-        #if cpp
-        Main.fixWorkingDirectory();
-        #end
 
 		bytesLoaded = 0;
 		bytesTotal = 0;

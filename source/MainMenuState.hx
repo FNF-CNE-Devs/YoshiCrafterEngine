@@ -205,7 +205,7 @@ class MainMenuState extends FullyModState {
 		ModSupport.setScriptDefaultVars(mainMenuScript, Settings.engineSettings.data.selectedMod, {});
 		if (valid) {
 			mainMenuScript.setScriptObject(this);
-			mainMenuScript.loadFile('${Paths.modsPath}/${Settings.engineSettings.data.selectedMod}/ui/MainMenuState');
+			mainMenuScript.loadFile();
 		}
 		mainMenuScript.executeFunc("create");
 

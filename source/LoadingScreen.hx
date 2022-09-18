@@ -217,7 +217,7 @@ class LoadingScreen extends FlxState {
         var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
         diamond.persist = true;
         diamond.destroyOnNoUse = false;
-        FlxG.bitmap.spareFromCache.push(diamond);
+        // FlxG.bitmap.spareFromCache.push(diamond);
 
         FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 0.5, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
             new FlxRect(0, 0, FlxG.width, FlxG.height));

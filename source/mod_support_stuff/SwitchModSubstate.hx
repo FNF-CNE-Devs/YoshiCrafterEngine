@@ -107,9 +107,6 @@ class SwitchModSubstate extends MusicBeatSubstate {
         CoolUtil.playMenuSFX(1);
         Settings.engineSettings.data.selectedMod = mod;
         ModSupport.reloadModsConfig(true, true, true);
-        lime.utils.Assets.loggedRequests = [];
-        MusicBeatState.doCachingShitNextTime = false;
-        FlxG.bitmap.clearCache();
         FlxG.resetState();
     }
     public function changeSelection(am:Int) {

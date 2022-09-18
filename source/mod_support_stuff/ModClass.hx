@@ -20,7 +20,7 @@ class ModClass {
         if (script != null) script = new DummyScript();
         ModSupport.setScriptDefaultVars(script, mod, {});
         script.setVariable("this", this);
-        script.loadFile(path);
+        script.loadFile();
         script.executeFunc("new", args);
         script.executeFunc("create", args);
     }

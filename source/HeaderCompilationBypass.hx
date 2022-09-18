@@ -16,4 +16,7 @@ class HeaderCompilationBypass {
     public static function showMessagePopup(title:String, text:String, icon:MessageBoxIcon) {
         WindowsAPI.showMessagePopup(text, title, icon);
     }
+    public static function showErrorHandler(_caption:String, _silly:String, _exception:String, _stack:String) {
+        WindowsAPI.showErrorHandler(_caption, _silly, _exception, _stack);
+    }
 }

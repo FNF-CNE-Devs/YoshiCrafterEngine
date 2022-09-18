@@ -149,7 +149,7 @@ class DebugMenu extends OptionScreen {
     var specialTime:Float = 0;
     public override function update(elapsed:Float) {
         super.update(elapsed);
-        selectThing.setPosition(FlxMath.lerp(selectThing.x, spawnedOptions[curSelected].x + ((spawnedOptions[curSelected].width - selectThing.width) / 2) + 100, 0.25 * elapsed * 60), FlxMath.lerp(selectThing.y, spawnedOptions[curSelected].y + ((spawnedOptions[curSelected].height - selectThing.height) / 2), 0.25 * elapsed * 60));
+        selectThing.setPosition(FlxMath.lerp(selectThing.x, spawnedOptions[curSelected].x + ((spawnedOptions[curSelected].width - selectThing.width) / 2) + 100, getLerpRatio(0.25)), FlxMath.lerp(selectThing.y, spawnedOptions[curSelected].y + ((spawnedOptions[curSelected].height - selectThing.height) / 2), getLerpRatio(0.25)));
 
         specialTime += elapsed;
         selectThingShader.setTime(specialTime);
