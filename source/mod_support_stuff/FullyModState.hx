@@ -18,7 +18,7 @@ class FullyModState extends MusicBeatState {
         if (entirelyCustom = (script != null)) {
             ModSupport.setScriptDefaultVars(script, Settings.engineSettings.data.selectedMod, {});
             script.setScriptObject(this);
-            script.loadFile(path);
+            script.loadFile();
             script.executeFunc("create");
         } else {
             normalCreate();

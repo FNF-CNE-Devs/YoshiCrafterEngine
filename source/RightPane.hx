@@ -50,7 +50,7 @@ class RightPane extends MusicBeatSubstate {
 
     public override function update(elapsed:Float) {
         super.update(elapsed);
-        offset = FlxMath.lerp(offset, 0, 0.25 * elapsed * 60);
+        offset = FlxMath.lerp(offset, 0, getLerpRatio(0.25));
         var shrex:Float = titleSprite.width;
         for(e in options)
             shrex = Math.max(e.width, shrex);
@@ -64,7 +64,7 @@ class RightPane extends MusicBeatSubstate {
         bg.alpha = (1 - offset) * 0.33;
         for(k=>e in options) {
             var o = offsets[k];
-            offsets[k] = FlxMath.lerp(o, k == curSelected ? 20 : 0, 0.125 * elapsed * 60);
+            offsets[k] = FlxMath.lerp(o, k == curSelected ? 20 : 0, getLerpRatio(0.125));
             e.x = blackBG.x + 10 + (offsets[k]);
         }
 

@@ -1,5 +1,8 @@
+#if !macro
 import dev_toolbox.ProgressBarWindow.IProgressObject;
-import flixel.addons.ui.StrNameLabel;
+import openfl.display.BitmapData;
+#end
+
 import haxe.Exception;
 import haxe.Json;
 import haxe.crypto.Crc32;
@@ -9,7 +12,6 @@ import haxe.zip.Entry;
 import haxe.zip.Uncompress;
 import haxe.zip.Reader;
 import haxe.zip.Compress;
-import openfl.display.BitmapData;
 import sys.FileSystem;
 import sys.io.File;
 import sys.thread.Thread;
@@ -20,7 +22,7 @@ using StringTools;
 // import ZipUtils; var e = ZipUtils.createZipFile("gjnsdghs.ycemod"); ZipUtils.writeFolderToZip(e, "./mods/Friday Night Funkin'/", "Friday Night Funkin'/"); e.flush(); e.close();
 
 class ZipUtils {
-    public static var bannedNames:Array<String> = [".git", ".gitignore", ".github", ".vscode", ".gitattributes"];
+    public static var bannedNames:Array<String> = [".git", ".gitignore", ".github", ".vscode", ".gitattributes", "readme.txt"];
 
 	/**
 	 * [Description] Uncompresses `zip` into the `destFolder` folder
@@ -73,6 +75,7 @@ class ZipUtils {
         return prog;
 	}
 
+    #if !macro
     public static function uncompressZipAsync(zip:Reader, destFolder:String, ?prog:ZipProgress, ?prefix:String):ZipProgress {
         if (prog == null)
             prog = new ZipProgress();
@@ -81,6 +84,7 @@ class ZipUtils {
         });
         return prog;
     }
+    #end
 
     /**
      * [Description] Returns a `zip.Reader` instance from path.
@@ -91,6 +95,7 @@ class ZipUtils {
         return new ZipReader(File.read(zipPath));
     }
 
+    #if !macro
     /**
      * [Description] Gets all mods from zip file (also works for .ycemod files)
      * @param zip Zip file
@@ -145,6 +150,7 @@ class ZipUtils {
         for(field in zip.read())
             trace('${field.fileName} - Size: ${CoolUtil.getSizeLabel(field.fileSize)} - Compressed: ${field.compressed} - Data Size: ${CoolUtil.getSizeLabel(field.dataSize)}');
     }
+    #end
 
     /**
      * [Description] Copy of haxe's Zip unzip function cause lime replaced it.
@@ -181,14 +187,15 @@ class ZipUtils {
         @param path Folder path
         @param prefix (Additional) allows you to set a prefix in the zip itself.
     **/
-    public static function writeFolderToZip(zip:ZipWriter, path:String, ?prefix:String, ?prog:ZipProgress):ZipProgress {
+    public static function writeFolderToZip(zip:ZipWriter, path:String, ?prefix:String, ?prog:ZipProgress, ?whitelist:Array<String>):ZipProgress {
         if (prefix == null) prefix = "";
+        if (whitelist == null) whitelist = [];
         if (prog == null) prog = new ZipProgress();
 
         try {
             var curPath:Array<String> = ['$path'];
             var destPath:Array<String> = [];
-            if (prefix != null) {
+            if (prefix != "") {
                 prefix = prefix.replace("\\", "/");
                 while(prefix.charAt(0) == "/") prefix = prefix.substr(1);
                 while(prefix.charAt(prefix.length-1) == "/") prefix = prefix.substr(0, prefix.length-1);
@@ -202,7 +209,7 @@ class ZipUtils {
                 var path = curPath.join("/");
                 var zipPath = destPath.join("/");
                 for(e in FileSystem.readDirectory(path)) {
-                    if (bannedNames.contains(e.toLowerCase())) continue;
+                    if (bannedNames.contains(e.toLowerCase()) && !whitelist.contains(e.toLowerCase())) continue;
                     if (FileSystem.isDirectory('$path/$e')) {
                         // is directory, so loop into that function again
                         for(p in [curPath, destPath]) p.push(e);
@@ -210,7 +217,9 @@ class ZipUtils {
                         for(p in [curPath, destPath]) p.pop();
                     } else {
                         // is file, put it in the list
-                        files.push(new StrNameLabel('$path/$e', '$zipPath/$e'));
+                        var zipPath = '$zipPath/$e';
+                        while(zipPath.charAt(0) == "/") zipPath = zipPath.substr(1);
+                        files.push(new StrNameLabel('$path/$e', zipPath));
                     }
                 }
             })();
@@ -261,13 +270,16 @@ class ZipUtils {
     }
 }
 
+#if !macro
 typedef ZipMod = {
     var name:String;
     var config:ModConfig;
     var icon:BitmapData;
 }
-
 class ZipProgress implements IProgressObject {
+#else
+class ZipProgress {
+#end
     public var error:Exception = null;
     
     public var curFile:Int = 0;
@@ -308,5 +320,15 @@ class ZipWriter extends Writer {
 
     public function close() {
         o.close();
+    }
+}
+
+class StrNameLabel {
+    public var name:String;
+    public var label:String;
+
+    public function new(name:String, label:String) {
+        this.name = name;
+        this.label = label;
     }
 }

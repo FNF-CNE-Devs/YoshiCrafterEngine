@@ -37,6 +37,7 @@ class MedalsState extends MusicBeatState {
         for(k=>e in medals.medals) {
             var mSprite = new MedalSprite(Settings.engineSettings.data.selectedMod, e);
             mSprite.y = ((Math.floor(k / multiple)) * 125) + 25;
+            mSprite.title.outline = true;
             sprites.add(mSprite);
             if (!mSprite.locked) unlockedMedals++;
         }
@@ -79,7 +80,7 @@ class MedalsState extends MusicBeatState {
             desc.alpha = 0;
             desc.offset.y = 25;
         }
-        var descLerpRatio = 0.25 * elapsed * 60;
+        var descLerpRatio = getLerpRatio(0.25);
         desc.offset.y = FlxMath.lerp(desc.offset.y, 0, descLerpRatio);
         desc.alpha = FlxMath.lerp(desc.alpha, 1, descLerpRatio);
 

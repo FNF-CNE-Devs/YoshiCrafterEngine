@@ -1,5 +1,6 @@
 package;
 
+import charter.YoshiCrafterCharter;
 import Script.DummyScript;
 import flixel.math.FlxMath;
 import flixel.FlxCamera;
@@ -29,6 +30,7 @@ class PauseSubState extends MusicBeatSubstate
 	function set_items(i) {return grpMenuShit = i;}
 
 	public var menuItems:Array<String> = ['Resume', 'Restart Song', 'Change Difficulty', 'Change Keybinds', 'Options', 'Exit to menu'];
+	public var minMenuItems:Array<String> = ['Resume', 'Return to Charter', 'Change Keybinds', 'Exit Chart Testing'];
 	public var curSelected:Int = 0;
 
 	public var pauseMusic:FlxSound;
@@ -53,7 +55,7 @@ class PauseSubState extends MusicBeatSubstate
 		cam.bgColor = 0;
 		FlxG.cameras.add(cam);
 		var valid = true;
-		script = Script.create('${Paths.modsPath}/${PlayState.songMod}/ui/PauseSubState');
+		if (!PlayState.chartTestMode) script = Script.create('${Paths.modsPath}/${PlayState.songMod}/ui/PauseSubState');
 		if (script == null) {
 			valid = false;
 			script = new DummyScript();
@@ -70,7 +72,7 @@ class PauseSubState extends MusicBeatSubstate
 		script.setVariable("state", this); // return false to cancel default
 		if (valid) {
 			script.setScriptObject(this);
-			script.loadFile('${Paths.modsPath}/${PlayState.songMod}/ui/PauseSubState');
+			script.loadFile();
 		}
 		script.executeFunc("preCreate");
 		
@@ -99,7 +101,13 @@ class PauseSubState extends MusicBeatSubstate
 		add(levelDifficulty);
 
 		blueballAmount = new FlxText(20, 15 + 64, 0, "", 32);
-		blueballAmount.text += 'Blueballed: ${PlayState.blueballAmount}';
+		if (PlayState.chartTestMode) {
+			blueballAmount.text += 'CHART TESTING MODE';
+			menuItems = minMenuItems;
+		}
+		else
+			blueballAmount.text += 'Blueballed: ${PlayState.blueballAmount}';
+		
 		blueballAmount.scrollFactor.set();
 		blueballAmount.setFormat(Paths.font('vcr.ttf'), 32);
 		blueballAmount.updateHitbox();
@@ -122,6 +130,7 @@ class PauseSubState extends MusicBeatSubstate
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
 
+		
 		for (i in 0...menuItems.length)
 		{
 			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
@@ -144,7 +153,7 @@ class PauseSubState extends MusicBeatSubstate
 		levelDifficulty.x = FlxG.width - (levelDifficulty.width + 20);
 		blueballAmount.x = FlxG.width - (blueballAmount.width + 20);
 
-		alpha = FlxMath.lerp(alpha, 0.6, 0.125 * elapsed * 60);
+		alpha = FlxMath.lerp(alpha, 0.6, getLerpRatio(0.125));
 
 		cam.bgColor = FlxColor.fromRGBFloat(0, 0, 0, alpha);
 		script.executeFunc("preUpdate", [elapsed]);
@@ -178,7 +187,12 @@ class PauseSubState extends MusicBeatSubstate
 				{
 					case "Resume":
 						close();
+					case "Return to Charter":
+						FlxG.switchState(new YoshiCrafterCharter());
 					case "Restart Song":
+						FlxG.resetState();
+					case "Exit Chart Testing":
+						PlayState.chartTestMode = false;
 						FlxG.resetState();
 					case "Change Keybinds":
 						var s = new ControlsSettingsSubState(PlayState.SONG.keyNumber, cam);
@@ -199,7 +213,6 @@ class PauseSubState extends MusicBeatSubstate
 						var pane = new RightPane("Difficulties", controlsList);
 						pane.cameras = cameras;
 						openSubState(pane);
-
 					case "Developer Options":
 						var controlsList:Array<{label:String, callback:RightPane->Void}> = [];
 						var devMenuItems:Array<String> = ['Skip Song', 'Logs', 'Edit Opponent', 'Edit Player', 'Edit Stage'];

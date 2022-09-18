@@ -127,7 +127,7 @@ class StoryMenuState extends FullyModState
 		menuScript.setVariable("state", this);
 		if (validated) {
 			menuScript.setScriptObject(this);
-			menuScript.loadFile('${Paths.getModsPath()}/${Settings.engineSettings.data.selectedMod}/ui/StoryMenuState');
+			menuScript.loadFile();
 		}
 		
 		

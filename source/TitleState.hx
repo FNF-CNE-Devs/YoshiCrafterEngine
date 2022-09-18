@@ -97,10 +97,6 @@ class TitleState extends MusicBeatState
 		
 		trace("Highscore.load");
 		Highscore.load();
-		#if web
-			trace("Loading characters library");
-			Assets.loadLibrary("characters");
-		#end
 
 		#if FREEPLAY
 		FlxG.switchState(new FreeplayState());
@@ -186,7 +182,7 @@ class TitleState extends MusicBeatState
 			script.setVariable("add", titleSpriteGrp.add);
 			ModSupport.setScriptDefaultVars(script, mod, {});
 			script.setScriptObject(this);
-			script.loadFile('$path/titlescreen');
+			script.loadFile();
 			script.executeFunc("create");
 			add(titleSpriteGrp);
 		}

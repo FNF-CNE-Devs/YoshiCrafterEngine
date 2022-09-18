@@ -786,7 +786,7 @@ class CharacterEditor extends MusicBeatState {
             }
         }, true);
 
-        camHUD.alpha = FlxMath.lerp(camHUD.alpha, (movingCam || movingOffset) ? 0.5 : 1, 0.25 * elapsed * 60);
+        camHUD.alpha = FlxMath.lerp(camHUD.alpha, (movingCam || movingOffset) ? 0.5 : 1, getLerpRatio(0.25));
         if (movingOffset) {
             var pos = FlxG.mouse.getScreenPosition();
             offsetX.value = movingOffsetDefaultPosOffset.x + ((movingOffsetDefaultPos.x - pos.x) / camGame.zoom);

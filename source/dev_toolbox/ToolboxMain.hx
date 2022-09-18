@@ -166,7 +166,7 @@ class ToolboxMain extends MusicBeatState {
         if (modButtons.height < FlxG.height) {
             modButtons.screenCenter(Y);
         } else {
-            modButtons.y = FlxMath.lerp(modButtons.y, scrollY, 0.25 * elapsed * 60);
+            modButtons.y = FlxMath.lerp(modButtons.y, scrollY, getLerpRatio(0.25));
         }
         deleteButton.alpha = editModButton.alpha = (deleteButton.active = editModButton.active = (selectedMod != null)) ? 1 : 0.5;
         emptyCardBG.visible = !(card.visible = selectedMod != null);

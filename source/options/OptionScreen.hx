@@ -87,9 +87,9 @@ class OptionScreen extends MusicBeatSubstate {
         }
         for(k=>o in spawnedOptions) {
             var i = k - curSelected;
-            o.x = FlxMath.lerp(o.x, 0 + (i * 15), 0.125 * elapsed * 60);
-            o.y = FlxMath.lerp(o.y, ((FlxG.height / 2) - 50) + (i * 150), 0.125 * elapsed * 60);
-            o.alpha = FlxMath.lerp(o.alpha, k == curSelected ? 1 : 0.3, 0.125 * elapsed * 60);
+            o.x = FlxMath.lerp(o.x, 0 + (i * 15), getLerpRatio(0.125));
+            o.y = FlxMath.lerp(o.y, ((FlxG.height / 2) - 50) + (i * 150), getLerpRatio(0.125));
+            o.alpha = FlxMath.lerp(o.alpha, k == curSelected ? 1 : 0.3, getLerpRatio(0.125));
         }
         if (spawnedOptions[curSelected] != null) {
             if (spawnedOptions[curSelected].onUpdate != null) spawnedOptions[curSelected].onUpdate(spawnedOptions[curSelected]);

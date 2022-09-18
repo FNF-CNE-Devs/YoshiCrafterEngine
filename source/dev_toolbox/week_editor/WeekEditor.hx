@@ -585,7 +585,7 @@ class WeekEditor extends MusicBeatState {
         week.selectSFX = sfxBox.text;
         if (moving) {
             UI.active = false;
-            UI.alpha = FlxMath.lerp(UI.alpha, 0.5, 0.25 * elapsed * 60);
+            UI.alpha = FlxMath.lerp(UI.alpha, 0.5, getLerpRatio(0.25));
 
             if (FlxG.mouse.justReleased) {
                 moving = false;
@@ -628,7 +628,7 @@ class WeekEditor extends MusicBeatState {
                 yellowBG.color = c;
             }));
         } else {
-            var alpha = UI.alpha = FlxMath.lerp(UI.alpha, 1, 0.25 * elapsed * 60);
+            var alpha = UI.alpha = FlxMath.lerp(UI.alpha, 1, getLerpRatio(0.25));
             UI.forEach(function(e) {
                 if (Std.isOfType(e, FlxSprite)) {
                     cast(e, FlxSprite).alpha = alpha;
@@ -759,7 +759,7 @@ class WeekEditor extends MusicBeatState {
                 dest = 0.10;
             }
             var c:FlxColor = e.backgroundColor;
-            c.redFloat = c.greenFloat = c.blueFloat = FlxMath.lerp(c.redFloat, dest, 0.25 * elapsed * 60);
+            c.redFloat = c.greenFloat = c.blueFloat = FlxMath.lerp(c.redFloat, dest, getLerpRatio(0.25));
             e.backgroundColor = c;
         }
     }

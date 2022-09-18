@@ -108,12 +108,6 @@ import flixel.FlxG;
 	// Note offset
 	@:keep public static final noteOffset:Float = 0;
 
-	// Enable Motion Blur on notes.
-	@:keep public static final noteMotionBlurEnabled:Bool = false;
-
-	// Note motion blur multiplier
-	@:keep public static final noteMotionBlurMultiplier:Float = 1;
-
 	// Center the strums instead of keeping them like the original game.
 	@:keep public static final centerStrums:Bool = true;
 

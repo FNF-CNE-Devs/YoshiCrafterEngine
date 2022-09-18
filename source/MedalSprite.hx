@@ -11,7 +11,6 @@ class MedalSprite extends FlxSpriteGroup {
         super();
         title = new AlphabetOptimized(110, 35, medal.name, false, 0.5);
         title.textColor = 0xFFFFFFFF;
-        title.outline = true;
         add(title);
 
         img = new FlxSprite(0, 0);

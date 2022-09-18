@@ -183,7 +183,7 @@ class Character extends FlxStageSprite implements ILuaScriptable
 			ModSupport.setScriptDefaultVars(characterScript, sName.length > 1 ? sName[0] : "Friday Night Funkin'", {"cloneBitmap" : false});
 			try {
 				characterScript.setScriptObject(this);
-				characterScript.loadFile(p);
+				characterScript.loadFile();
 			} catch(e) {
 				return;
 			}

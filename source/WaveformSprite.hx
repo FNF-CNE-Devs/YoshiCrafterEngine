@@ -6,12 +6,19 @@ import flixel.system.FlxSound;
 import lime.media.AudioBuffer;
 import flixel.FlxSprite;
 
-@:keep
 class WaveformSprite extends FlxSprite {
     var buffer:AudioBuffer;
     var sound:Sound;
     var peak:Float = 0;
     var valid:Bool = true;
+
+    public override function destroy() {
+        super.destroy();
+        if (buffer != null) {
+            buffer.data.buffer = null;
+            buffer.dispose();
+        }
+    }
     public function new(x:Float, y:Float, buffer:Dynamic, w:Int, h:Int) {
         super(x,y);
         this.buffer = null;
@@ -31,14 +38,6 @@ class WaveformSprite extends FlxSprite {
             valid = false;
             return;
         }
-        // for(i in 0...Math.floor(buffer.data.length / buffer.bitsPerSample)) {
-        //     var pos = i * buffer.bitsPerSample;
-        //     var thing = buffer.data.buffer.get(pos) | (buffer.data.buffer.get(pos + 1) << 8);
-        //     if (thing > 256 * 128)
-        //         thing -= 256 * 256;
-        //     var data = 0;
-        //     if ((data = thing) > peak) peak = data;
-        // }
         peak = Math.pow(2, buffer.bitsPerSample-1)-1; // max positive value of a bitsPerSample bits integer
         makeGraphic(w, h, 0x00000000, true); // transparent
     }

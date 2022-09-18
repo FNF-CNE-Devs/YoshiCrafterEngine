@@ -173,7 +173,7 @@ class FreeplayState extends FullyModState
 		ModSupport.setScriptDefaultVars(freeplayScript, '${Settings.engineSettings.data.selectedMod}', {});
 		if (validated) {
 			freeplayScript.setScriptObject(this);
-			freeplayScript.loadFile('${Paths.getModsPath()}/${Settings.engineSettings.data.selectedMod}/ui/FreeplayState');
+			freeplayScript.loadFile();
 		}
 
 		CoolUtil.playMenuMusic();

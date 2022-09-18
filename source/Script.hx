@@ -33,10 +33,15 @@ import llua.State;
 import llua.Convert;
 #end
 
+/**
+    BASE CLASSES
+**/
 class Script implements IFlxDestroyable {
     public var fileName:String = "";
     public var mod:String = null;
+    public var filePath:String = null;
     public var metadata:Dynamic = {};
+
     public function new() {
 
     }
@@ -44,7 +49,7 @@ class Script implements IFlxDestroyable {
     public static function fromPath(path:String):Script {
         var script = create(path);
         if (script != null) {
-            script.loadFile(path);
+            script.loadFile();
             return script;
         } else {
             return null;
@@ -56,7 +61,7 @@ class Script implements IFlxDestroyable {
         var ext = Path.extension(p);
 
         var scriptExts = Main.supportedFileTypes;
-        if (ext == "") {
+        if (ext.trim() == "") {
             for (e in scriptExts) {
                 if (FileSystem.exists('$p.$e')) {
                     p = '$p.$e';
@@ -65,17 +70,17 @@ class Script implements IFlxDestroyable {
                 }
             }
         }
-        switch(ext.toLowerCase()) {
-            case 'hhx':
-                return new HardcodedHScript();
-            case 'hx' | 'hscript' | 'hsc':
-                return new HScript();
-            #if ENABLE_LUA
-            case 'lua':
-                return new LuaScript();
-            #end
+        var script = switch(ext.toLowerCase()) {
+            case 'hhx':                     new HardcodedHScript();
+            case 'hx' | 'hscript' | 'hsc':  new HScript();
+            #if ENABLE_LUA case 'lua':      new LuaScript(); #end
+            default:                        null;
+            
         }
-        return null;
+        if (script == null) return null;
+        script.filePath = p;
+        script.fileName = CoolUtil.getLastOfArray(path.replace("\\", "/").split("/"));
+        return script;
     }
 
 
@@ -105,7 +110,7 @@ class Script implements IFlxDestroyable {
         }
     }
 
-    public function loadFile(path:String) {
+    public function loadFile() {
         Paths.curSelectedMod = 'mods/${mod}';
     }
 
@@ -153,6 +158,9 @@ class DummyScript extends Script {
     public override function getVariable(name:String) {return variables.get(name);}
 }
 
+/**
+    SCRIPT PACK
+**/
 class ScriptPack {
     public var ogScripts:Array<Script> = [];
     public var scripts:Array<Script> = [];
@@ -193,7 +201,7 @@ class ScriptPack {
         for (k=>sc in scripts) {
             var s = scriptModScripts[k];
             __curScript = sc;
-            sc.loadFile('${Paths.modsPath}/${s.path}');
+            sc.loadFile();
         }
     }
 
@@ -246,6 +254,9 @@ class ScriptPack {
     }
 }
 
+/**
+    HSCRIPT
+**/
 class HScript extends Script {
     public var hscript:Interp;
     public function new() {
@@ -285,29 +296,17 @@ class HScript extends Script {
         return null;
     }
 
-    public override function loadFile(path:String) {
-        super.loadFile(path);
-        if (path.trim() == "") return;
-        fileName = Path.withoutDirectory(path);
-        var p = path;
-        if (Path.extension(p) == "") {
-            var exts = ["hx", "hsc", "hscript"];
-            for (e in exts) {
-                if (FileSystem.exists('$p.$e')) {
-                    p = '$p.$e';
-                    fileName += '.$e';
-                    break;
-                }
-            }
-        }
+    public override function loadFile() {
+        super.loadFile();
+        if (filePath == null || filePath.trim() == "") return;
         try {
-            hscript.execute(ModSupport.getExpressionFromPath(p, true));
+            hscript.execute(ModSupport.getExpressionFromPath(filePath, true));
         } catch(e) {
             this.trace('${e.message}', true);
         }
     }
-    public function bruh(path:String) {
-        super.loadFile(path);
+    public function bruh() {
+        super.loadFile();
     }
 
     public override function trace(text:String, error:Bool = false) {
@@ -340,25 +339,14 @@ class HScript extends Script {
 }
 
 class HardcodedHScript extends HScript {
-    public override function loadFile(path:String) {
-        bruh(path);
-        if (path.trim() == "") return;
-        fileName = Path.withoutDirectory(path);
-        var p = path;
-        trace(p);
-        if (Path.extension(p) == "") {
-            if (FileSystem.exists('$p.hhx')) {
-                p = '$p.hhx';
-                fileName += '.hhx';
-            }
-        }
-        trace(p);
+    public override function loadFile() {
+        bruh();
 
         var code:String = null;
         var expr = null;
         var unserializer = null;
         try {
-            code = sys.io.File.getContent(p);
+            code = sys.io.File.getContent(filePath);
             // {code: expr}
             unserializer = new Unserializer(code);
             expr = unserializer.unserialize();
@@ -382,6 +370,10 @@ class HardcodedHScript extends HScript {
         }
     }
 }
+
+/**
+    LUA
+**/
 #if ENABLE_LUA
 class LuaScript extends Script {
     public var state:llua.State;
@@ -496,6 +488,12 @@ class LuaScript extends Script {
         return true;
     }
 
+    static inline function print_function(s:String) : Int { // you can use custom
+		if (currentExecutingScript != null)
+            currentExecutingScript.trace(s);
+		return 0;
+	}
+
     public function addLuaCallbacks(callbackNames:Array<String>, func:Dynamic) {
         for(e in callbackNames)
             addLuaCallback(e, func);
@@ -506,7 +504,8 @@ class LuaScript extends Script {
         state = LuaL.newstate();
         Lua.set_callbacks_function(cpp.Callable.fromStaticFunction(callback_handler));
         LuaL.openlibs(state);
-        Lua_helper.register_hxtrace(state);
+		Lua.register_hxtrace_func(cpp.Callable.fromStaticFunction(print_function));
+		Lua.register_hxtrace_lib(state);
 
         hscript = new Interp();
         hscript.errorHandler = function(error) {
@@ -530,9 +529,6 @@ class LuaScript extends Script {
         /**
             BASIC LUA FUNCTIONS
         **/
-        addLuaCallback("print", function(el:Dynamic) {
-            this.trace(el);
-        });
         addLuaCallback("refVar", function(val:String) {
             if (val.startsWith(zws)) {
                 return val;
@@ -1062,22 +1058,18 @@ class LuaScript extends Script {
         }
     }
 
-    public override function loadFile(path:String) {
-        super.loadFile(path);
+    public override function loadFile() {
+        super.loadFile();
         var oldExec = currentExecutingScript;
         currentExecutingScript = this;
-        var p = path;
-        if (Path.extension(p) == "") {
-            p = p + ".lua";
-        }
-        fileName = Path.withoutDirectory(p);
-        if (FileSystem.exists(p)) {
-            if (LuaL.dostring(state, File.getContent(p)) != 0) {
+        
+        if (FileSystem.exists(filePath)) {
+            if (LuaL.dostring(state, File.getContent(filePath)) != 0) {
                 var err = Lua.tostring(state, -1);
                 this.trace('$err');
             }
         } else {
-            this.trace("Lua script does not exist.");
+            this.trace("Lua script does not exist.", true);
         }
         currentExecutingScript = oldExec;
     }
