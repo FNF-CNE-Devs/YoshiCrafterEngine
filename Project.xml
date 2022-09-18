@@ -185,12 +185,15 @@
 	<haxeflag name="--macro" value="include('StringBuf')" />
 	<haxeflag name="--macro" value="include('haxe.crypto')" />
 
-	<haxeflag name="--macro" value="Coconut.getCoconutMD5()" />
+	<haxeflag name="--macro" value="macros.Coconut.getCoconutMD5()" />
+	<haxeflag name="--macro" value="macros.TemplateMod.zipDefaultMod()" />
 
 	<haxedef name="official" />
 	<!-- <haxedef name="ycebeta"/> -->
 	
 	<haxelib name="hxcpp-debug-server" if="desktop debug"/> <!-- i barely use this -->
+	<haxedef name="HXCPP_GC_BIG_BLOCKS" />
+
 	
 	<!-- <haxedef name="noHandler" /> --> <!-- Disables built-in error handler -->
 </project>

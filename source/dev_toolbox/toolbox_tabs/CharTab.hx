@@ -165,7 +165,7 @@ class CharTab extends ToolboxTab {
     public override function tabUpdate(elapsed:Float) {
         scrollY += FlxG.mouse.wheel * 50;
         scrollY = FlxMath.bound(scrollY, Math.min(-(charSprites.height - 645), 0), 50);
-        charSprites.y = FlxMath.lerp(charSprites.y, scrollY, 0.25 * elapsed * 60);
+        charSprites.y = FlxMath.lerp(charSprites.y, scrollY, CoolUtil.getLerpRatio(0.25));
         var clip:FlxSprite->Void;
         clip = function(m) {
             var y = FlxMath.bound(m.y + ((m.height - m.frameHeight) / 3 * m.scale.y), 0, m.height);

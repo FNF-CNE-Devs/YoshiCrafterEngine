@@ -13,6 +13,7 @@ import lime.ui.FileDialogType;
 import lime.ui.FileDialog;
 import flixel.FlxState;
 import flixel.FlxSprite;
+import flixel.math.FlxMath;
 import sys.FileSystem;
 import flixel.FlxG;
 import haxe.DynamicAccess;
@@ -48,6 +49,9 @@ class CoolUtil
 		return [for(e in a) if (e != null) e];
 	}
 
+	public static function getLerpRatio(t:Float) {
+		return FlxMath.bound(t * 60 * FlxG.elapsed, 0, 1);
+	}
 	
     public static function getEase(ease:String, ?scriptForCustom:Script):Float->Float {
         return switch(ease.toLowerCase()) {
@@ -380,6 +384,14 @@ class CoolUtil
 		fDial.onSelect.add(callback);
 		
 		fDial.browse(t, null, null, name);
+	}
+
+	public static function charterZoom(nb:Int, pow:Int) {
+		var result:Float = 1;
+		if (pow < 0) for(i in 0...-pow) result /= nb;
+		else 		 for(i in 0...pow) result *= nb;
+
+		return result;
 	}
 	public static function deleteFolder(delete:String) {
 		#if sys

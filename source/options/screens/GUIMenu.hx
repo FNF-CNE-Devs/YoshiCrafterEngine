@@ -221,7 +221,7 @@ class GUIMenu extends OptionScreen {
 
     public override function update(elapsed:Float) {
         super.update(elapsed);
-        var l = 0.125 * elapsed * 60;
+        var l = getLerpRatio(0.125);
         var h = FlxG.height;
 
         var showStrums = [1, 2];

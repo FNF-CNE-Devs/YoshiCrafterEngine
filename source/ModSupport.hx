@@ -69,11 +69,6 @@ typedef CacheExpr = {
 @:allow(CoolUtil)
 @:allow(Main)
 class ModSupport {
-    public static var song_config_parser:hscript.Interp;
-    public static var song_modchart_path:String = "";
-    public static var song_stage_path:String = "";
-    public static var song_cutscene_path:String = "";
-
     public static var song_cutscene:ModScript = null;
     public static var song_end_cutscene:ModScript = null;
     public static var currentMod:String = "Friday Night Funkin'";

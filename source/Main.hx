@@ -4,35 +4,20 @@ import mod_support_stuff.InstallModScreen;
 import logging.LogsOverlay;
 import openfl.events.KeyboardEvent;
 import openfl.ui.Keyboard;
-import openfl.events.EventType;
 import WindowsAPI.ConsoleColor;
 import flixel.system.debug.log.LogStyle;
-import flixel.input.keyboard.FlxKey;
-import haxe.Json;
-import haxe.Http;
 import haxe.io.Input;
-import haxe.io.Eof;
 import haxe.io.BytesBuffer;
 import openfl.text.TextFormat;
-import lime.ui.Window;
 import sys.io.Process;
 import lime.system.System;
 import sys.io.File;
 import sys.FileSystem;
 import flixel.FlxG;
-import lime.utils.Log;
-import haxe.CallStack;
-import openfl.events.ErrorEvent;
 import haxe.Exception;
-import openfl.errors.Error;
-import lime.app.Application;
-import openfl.events.UncaughtErrorEvent;
-import flixel.FlxGame;
 import flixel.FlxState;
-import openfl.Assets;
 import openfl.Lib;
 import openfl.display.Sprite;
-import openfl.display.FPS;
 import openfl.events.Event;
 
 using StringTools;
@@ -93,7 +78,7 @@ class Main extends Sprite
 		#end
 	}
 	// YOSHI ENGINE STUFF
-	public static var engineVer:String = "2.3.0";
+	public static var engineVer:String = "2.3.1";
 	public static var buildVer:String = #if ycebeta "BETA" #elseif official "" #else "Custom Build" #end;
 	public static var fps:GameStats;
 
@@ -113,7 +98,6 @@ class Main extends Sprite
 		#if !YOSHMAN_FLIXEL
 		#error "You need to use YoshiCrafter29's flixel fork in order to build this project.\nRun config.bat or type this in cmd -> haxelib git flixel-yc29 https://github.com/YoshiCrafter29/flixel.\nIf it's installed and this error still appears, please update it."
 		#end
-		HeaderCompilationBypass.enableVisualStyles();
 		flixel.system.frontEnds.LogFrontEnd.onLogs = function(Data, Style, FireOnce) {
 			if (CoolUtil.isDevMode()) {
 				var prefix = "[FLIXEL]";
@@ -178,7 +162,6 @@ class Main extends Sprite
 
 		#if cpp
 		trace("main");
-		fixWorkingDirectory();
 		Lib.current.addChild(new Main());
 		#else
 		Lib.current.addChild(new Main());
@@ -191,6 +174,8 @@ class Main extends Sprite
 		var p = execPath.replace("\\", "/").split("/");
 		var execName = p.pop(); // interesting
 		Sys.setCwd(p.join("\\") + "\\");
+
+		HeaderCompilationBypass.enableVisualStyles();
 	}
 
 	public static final commandPromptArgs:Array<String> = [
@@ -217,7 +202,7 @@ class Main extends Sprite
 				case "-?" | "-help":
 					trace(commandPromptArgs.join("\n"));
 					return false;
-				case "-forcedevmode":
+				case "-forcedevmode" | "-livereload": // livereload cause its the argument sent after compilation
 					ModSupport.forceDevMode = true;
 				default:
 					trace('Unknown arg: ${a}');
@@ -232,40 +217,7 @@ class Main extends Sprite
 		super();
 
 		#if !noHandler
-		lime.utils.Log.throwErrors = false;
-		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, function(e:UncaughtErrorEvent) {
-			var m:String = e.error;
-			if (Std.isOfType(e.error, Error)) {
-				var err = cast(e.error, Error);
-				m = '${err.message}';
-			} else if (Std.isOfType(e.error, ErrorEvent)) {
-				var err = cast(e.error, ErrorEvent);
-				m = '${err.text}';
-			}
-			m += '\r\n ${CallStack.toString(CallStack.exceptionStack())}';
-			var text = "";
-			var autoSend = false;
-			if (Settings.engineSettings != null)
-				autoSend = Settings.engineSettings.data.autoSendCrashes;
-			try {
-				text = (
-					'An fatal error occured !\r\nYoshiCrafter Engine ver. ${engineVer} $buildVer\r\n\r\n${m}\r\n\r\n${autoSend ? "The error message has automatically been sent to the developers. You can disable this option in settings.\n\n" : ""}The engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !');
-				HeaderCompilationBypass.showMessagePopup(text, e.error == null ? Std.string(e) : Std.string(e.error), MSG_ERROR);
-			} catch(e) {
-
-			}
-			trace(text);
-				
-			
- 			
-			e.preventDefault();
-			e.stopPropagation();
-			e.stopImmediatePropagation();
-
-			File.saveContent('crash.txt', text);
-			 
-			System.exit(1);
-		});
+		ErrorHandler.assignErrorHandler();
 		#end
 
 		if (stage != null)

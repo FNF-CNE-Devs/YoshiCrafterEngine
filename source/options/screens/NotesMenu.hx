@@ -63,44 +63,6 @@ class NotesMenu extends OptionScreen
 				}
 			},
 			{
-				name: "Enable Note Motion Blur",
-				desc: "If enabled, a blur effect will be applied to scrolling notes, making them seem smoother, at cost of performance.",
-				value: "",
-				additional: true,
-				onCreate: function(e)
-				{
-					e.check(Settings.engineSettings.data.noteMotionBlurEnabled);
-				},
-				onSelect: function(e)
-				{
-					e.check(Settings.engineSettings.data.noteMotionBlurEnabled = !Settings.engineSettings.data.noteMotionBlurEnabled);
-				}
-			},
-			{
-				name: "Blur Multiplier",
-				desc: "How blurry the notes should be. Defaults to 1.",
-				value: "",
-				additional: true,
-				onCreate: function(e)
-				{
-					e.value = '${Settings.engineSettings.data.noteMotionBlurMultiplier}';
-				},
-				onLeft: function(e)
-				{
-					e.value = '${Settings.engineSettings.data.noteMotionBlurMultiplier}';
-				},
-				onUpdate: function(e)
-				{
-					if (controls.LEFT_P)
-						Settings.engineSettings.data.noteMotionBlurMultiplier -= 0.1;
-					if (controls.RIGHT_P)
-						Settings.engineSettings.data.noteMotionBlurMultiplier += 0.1;
-					Settings.engineSettings.data.noteMotionBlurMultiplier = FlxMath.bound(FlxMath.roundDecimal(Settings.engineSettings.data.noteMotionBlurMultiplier,
-						1), 0.1, 10);
-					e.value = '< ${Settings.engineSettings.data.noteMotionBlurMultiplier} >';
-				}
-			},
-			{
 				name: "Enable Splashes",
 				desc: "If enabled, will show splashes everytime you hit a Sick! rating, like in Week 7.",
 				value: "",

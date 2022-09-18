@@ -36,8 +36,6 @@ import haxe.Json;
 @:access(lime.utils.AssetLibrary)
 class Assets
 {
-    public static var loggedRequests:Array<String> = [];
-    public static var logRequests:Bool = true;
 	public static var cache:AssetCache = new AssetCache();
 	public static var onChange = new Event<Void->Void>();
 
@@ -72,9 +70,6 @@ class Assets
 	 */
 	public static function getAsset(id:String, type:AssetType, useCache:Bool):Dynamic
 	{
-        if (logRequests && !loggedRequests.contains(id)) {
-            loggedRequests.push(id);
-        }
 		#if (tools && !display)
 		if (useCache && cache.enabled)
 		{

@@ -37,7 +37,7 @@ class ModSprite extends FlxSprite {
         ModSupport.setScriptDefaultVars(script, mod, {});
         script.setScriptObject(this);
         script.setVariable("sprite", this);
-        script.loadFile(path);
+        script.loadFile();
         var a:Array<Dynamic> = [x, y];
         for(e in args) a.push(e);
         script.executeFunc("new", a);

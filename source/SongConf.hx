@@ -77,7 +77,7 @@ class SongConf {
                 interp.setVariable("end_cutscene", "");
                 interp.setVariable("modchart", "");
                 interp.setVariable("scripts", []);
-                interp.loadFile('${Paths.modsPath}/$mod/song_conf');
+                interp.loadFile();
 
                 var stage:String = interp.getVariable("stage");
                 var modchart:String = interp.getVariable("modchart");
@@ -105,30 +105,44 @@ class SongConf {
         }
 
         if (cutscene == null) {
-            if (Assets.exists(Paths.video('${song}-cutscene', 'mods/${mod}'))) {
+            if (Assets.exists(Paths.video('${song}-cutscene', 'mods/${mod}')))
                 cutscene = getModScriptFromValue("YoshiCrafterEngine", "MP4-Cutscene");
-            } else if (Assets.exists(Paths.json('${PlayState.SONG.song}/dialogue-yce'))) {
+            else if (Assets.exists(Paths.json('${PlayState.SONG.song}/dialogue-yce')))
                 cutscene = getModScriptFromValue("YoshiCrafterEngine", "Dialogue");
-            }
+            
         }
 
-        if (end_cutscene == null && Assets.exists(Paths.video('${song}-end-cutscene', 'mods/${mod}'))) {
+        if (end_cutscene == null && Assets.exists(Paths.video('${song}-end-cutscene', 'mods/${mod}')))
             end_cutscene = getModScriptFromValue("YoshiCrafterEngine", "MP4-End-Cutscene");
+
+
+        if (FileSystem.exists('${Paths.modsPath}/$mod/global_scripts/') && FileSystem.isDirectory('${Paths.modsPath}/$mod/global_scripts/')) {
+            try {
+                for(f in FileSystem.readDirectory('${Paths.modsPath}/${mod}/global_scripts/')) {
+                    if (!FileSystem.isDirectory('${Paths.modsPath}/${mod}/global_scripts/$f') && Main.supportedFileTypes.contains(Path.extension(f).toLowerCase())) {
+                        scripts.push(getModScriptFromValue(mod, '$mod:global_scripts/$f'));
+                    }
+                }
+            }
         }
 
         if (chart != null) {
-            if (chart.scripts != null) {
-                for(s in chart.scripts) scripts.push(getModScriptFromValue(mod, s));
-            }
-        }
+            if (chart.scripts != null) 
+                for(s in chart.scripts)
+                    scripts.push(getModScriptFromValue(mod, s));
 
-        if (scripts.length == 0) {
-            scripts = [
-                {
-                    path : "Friday Night Funkin'/stages/default_stage",
-                    mod : "Friday Night Funkin'"
+            if (chart.stage != null && chart.stage.trim() != "") {
+                var modScript = getModScriptFromValue(mod, 'stages/${chart.stage}');
+                var valid = true;
+                for(e in scripts) {
+                    if (e.path == modScript.path || e.path.substr(e.mod.length + 1).toLowerCase().startsWith("stages/")) {
+                        valid = false;
+                        break;
+                    }
                 }
-            ];
+                if (valid)
+                    scripts.insert(0, modScript);
+            }
         }
 
         return {
@@ -182,6 +196,7 @@ class SongConf {
 
         var m = splitValue[0];
         var path = splitValue[1];
+        while(path.charAt(0) == "/") path = path.substr(1);
         return {
             mod : m,
             path : '$m/$path'

@@ -157,7 +157,8 @@ class SongCreator extends MusicBeatSubstate {
                     speed: 1,
                     validScore: true,
                     keyNumber: 4,
-                    noteTypes : ["Friday Night Funkin':Default Note"]
+                    noteTypes : ["Friday Night Funkin':Default Note"],
+                    stage: "default_stage"
                 }
 			};
 

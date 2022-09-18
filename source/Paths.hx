@@ -194,17 +194,6 @@ class Paths
 		}
 		return voices.toLowerCase();
 	}
-
-	inline static public function stageSound(file:String)
-	{
-		var p = ModSupport.song_stage_path + #if web '/$file.mp3' #else '/$file.ogg' #end;
-		if (Settings.engineSettings.data.developerMode) {
-			if (!FileSystem.exists(p)) {
-				LogsOverlay.error('Paths : Sound at "$p" does not exist.');
-			}
-		}
-		return Sound.fromFile(p);
-	}
 	
 	inline static public function getSkinsPath() {
 		#if android
