@@ -57,3 +57,19 @@ abstract MedalState(Int) {
     var LOCKED = 0;
     var UNLOCKED = 1;
 }
+
+typedef MedalsJSON = {
+    var medals:Array<Medal>;
+}
+
+typedef Medal = {
+    var name:String;
+    var desc:String;
+    var img:MedalImg;
+}
+
+typedef MedalImg = {
+    var src:String;
+    var anim:String;
+    var fps:Null<Int>;
+}

@@ -19,6 +19,8 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
 
+import sys.thread.Thread;
+
 using StringTools;
 
 class Paths
@@ -53,8 +55,7 @@ class Paths
 		if (!forceLibrary) {
 			try {
 				var p = "";
-				if (library == null
-				 && !library.toLowerCase().startsWith("mods")
+				if (!library.toLowerCase().startsWith("mods")
 		         && library != "mods/~"
 		         && library != "~"
 				 && library != "skins"
@@ -193,17 +194,6 @@ class Paths
 		}
 		return voices.toLowerCase();
 	}
-
-	inline static public function stageSound(file:String)
-	{
-		var p = ModSupport.song_stage_path + #if web '/$file.mp3' #else '/$file.ogg' #end;
-		if (Settings.engineSettings.data.developerMode) {
-			if (!FileSystem.exists(p)) {
-				LogsOverlay.error('Paths : Sound at "$p" does not exist.');
-			}
-		}
-		return Sound.fromFile(p);
-	}
 	
 	inline static public function getSkinsPath() {
 		#if android
@@ -241,9 +231,13 @@ class Paths
 			return FlxAtlasFrames.fromSparrow(file('$key.png', library), file('$key.xml', library));
 	}
 
+	public static function fromSparrow(imageKey:String, xmlKey:String) {
+		// return FlxAtlasFrames.fromSparrow(imageKey, xmlKey);
+	}
+
 	
-	inline static public function getCharacter(char:String)
-	{
+	inline static public function getCharacterAssetsPath(char:String):CharAssetPath {
+
 		var split = char.split(":");
 
 		var mod = "Friday Night Funkin'";
@@ -251,18 +245,33 @@ class Paths
 		if (split.length > 1)
 			mod = split[0];
 
+		var p:CharAssetPath = {
+			imagePath: getPath('characters/${split[split.length - 1]}/spritesheet.png', IMAGE, 'mods/$mod'),
+			dataPath: file('characters/${split[split.length - 1]}/spritesheet.xml', TEXT, 'mods/$mod'),
+			type: SPARROW
+		}
 		var jsonPath = file('characters/${split[split.length - 1]}/spritesheet.json', TEXT, 'mods/$mod');
 		var txtPath = file('characters/${split[split.length - 1]}/spritesheet.txt', TEXT, 'mods/$mod');
 		if (Assets.exists(txtPath)) {
-			// json (packer)
-			return FlxAtlasFrames.fromSpriteSheetPacker(getPath('characters/${split[split.length - 1]}/spritesheet.png', IMAGE, 'mods/$mod'), txtPath);
+			p.dataPath = txtPath;
+			p.type = SPRITESHEET_PACKER;
 		} else if (Assets.exists(jsonPath)) {
-			// json (packer)
-			return FlxAtlasFrames.fromTexturePackerJson(getPath('characters/${split[split.length - 1]}/spritesheet.png', IMAGE, 'mods/$mod'), jsonPath);
-		} else {
-			// xml (sparrow)
-			return FlxAtlasFrames.fromSparrow(getPath('characters/${split[split.length - 1]}/spritesheet.png', IMAGE, 'mods/$mod'), file('characters/${split[split.length - 1]}/spritesheet.xml', TEXT, 'mods/$mod'));
+			p.dataPath = jsonPath;
+			p.type = TEXTURE_PACKER;
 		}
+		return p;
+	}
+	inline static public function getCharacter(char:String)
+	{
+		var data = getCharacterAssetsPath(char);
+		return switch(data.type) {
+			case SPRITESHEET_PACKER:
+				return FlxAtlasFrames.fromSpriteSheetPacker(data.imagePath, data.dataPath);
+			case TEXTURE_PACKER:
+				return FlxAtlasFrames.fromTexturePackerJson(data.imagePath, data.dataPath);
+			case _:
+				return FlxAtlasFrames.fromSparrow(data.imagePath, data.dataPath);
+		};
 	}
 
 	public inline static function unloadCharacter(char:String, mod:String) {
@@ -357,4 +366,17 @@ class Paths
 	{
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
 	}
+}
+
+typedef CharAssetPath = {
+	var imagePath:String;
+	var dataPath:String;
+	var type:CharAssetType;
+}
+
+@:enum
+abstract CharAssetType(Int) {
+	var SPARROW = 0;
+	var TEXTURE_PACKER = 1;
+	var SPRITESHEET_PACKER = 2;
 }

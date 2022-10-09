@@ -57,14 +57,12 @@ class FlxUISliderNew extends FlxUIGroup {
         if (__isBeingMoved) {
             var cursorX = FlxG.mouse.getScreenPosition(camera).x - bar.x;
             if (object != null && variable != null) {
-                if (step != 0) {
-                    Reflect.setProperty(object, variable, CoolUtil.wrapFloat(min + (Math.floor(max / bar.width * cursorX / step) * step), min, max));
-                } else {
-                    Reflect.setProperty(object, variable, CoolUtil.wrapFloat(min + (max / bar.width * cursorX), min, max));
-                }
-            } else {
-                trace("object is null");
-            }
+                if (step != 0)
+                    Reflect.setProperty(object, variable, CoolUtil.boundFloat(min + (Math.floor((max-min) / bar.width * cursorX / step) * step), min, max));
+                else
+                    Reflect.setProperty(object, variable, CoolUtil.boundFloat(min + ((max-min) / bar.width * cursorX), min, max));
+            } else
+                  trace("object is null");
         }
 
         if (object != null && variable != null) bar.value = Reflect.getProperty(object, variable);

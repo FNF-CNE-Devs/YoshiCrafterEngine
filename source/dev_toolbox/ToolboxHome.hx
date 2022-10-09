@@ -68,12 +68,6 @@ class ToolboxHome extends MusicBeatState {
     public override function create() {
         super.create();
         var mod = selectedMod;
-        FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/');
-        FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/data/');
-        FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/images/');
-        FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/songs/');
-        FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/sounds/');
-        FileSystem.createDirectory('${Paths.modsPath}/${ToolboxHome.selectedMod}/music/');
         #if desktop
             DiscordClient.changePresence("In the Toolbox", null, "Toolbox Icon");
         #end

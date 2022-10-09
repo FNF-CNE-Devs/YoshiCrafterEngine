@@ -36,12 +36,15 @@ enum abstract NoteAppearance(Int) {
 	var Square = 6;
 	var Plus = 7;
 }
+
+@:allow(PlayState)
 class Note extends FlxSprite
 {
-	@:allow(PlayState)
-	private var __renderAlpha:Float = 1;
 	public var strumTime:Float = 0;
 
+	public var noteScale:Null<Float> = null;
+	private var __renderAlpha:Float = 1;
+	private var __noteScale:Float = 1;
 	public var mustPress:Bool = false;
 	public var noteData:Int = 0;
 	public var canBeHit:Bool = false;
@@ -282,10 +285,14 @@ class Note extends FlxSprite
 			shader.frameOffset.value = [frame.frame.left, frame.frame.top];
 		}
 
+		var oldScale = [scale.x, scale.y];
 		var oldAlpha = alpha;
 		alpha *= __renderAlpha;
+		scale.x *= __noteScale;
+		if (!isSustainNote) scale.y *= noteScale == null ? __noteScale : noteScale;
 		super.draw();
 		alpha = oldAlpha;
+		scale.set(oldScale[0], oldScale[1]);
 	}
 
 	public function setClipRect(rect:FlxRect) {

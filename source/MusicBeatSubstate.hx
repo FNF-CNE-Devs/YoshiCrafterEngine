@@ -1,5 +1,6 @@
 package;
 
+import flixel.math.FlxMath;
 import dev_toolbox.ToolboxMessage;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
@@ -21,6 +22,10 @@ class MusicBeatSubstate extends FlxSubState
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
+
+	public function getLerpRatio(t:Float) {
+		return CoolUtil.getLerpRatio(t);
+	}
 
 	override function update(elapsed:Float)
 	{
@@ -87,7 +92,7 @@ class MusicBeatSubstate extends FlxSubState
 		
 	}
 
-    function showMessage(title:String, text:String) {
+    function showToolboxMessage(title:String, text:String) {
         var m = ToolboxMessage.showMessage(title, text);
         m.cameras = cameras;
         openSubState(m);

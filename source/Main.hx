@@ -1,37 +1,23 @@
 package;
 
+import mod_support_stuff.InstallModScreen;
 import logging.LogsOverlay;
 import openfl.events.KeyboardEvent;
 import openfl.ui.Keyboard;
-import openfl.events.EventType;
 import WindowsAPI.ConsoleColor;
 import flixel.system.debug.log.LogStyle;
-import flixel.input.keyboard.FlxKey;
-import haxe.Json;
-import haxe.Http;
 import haxe.io.Input;
-import haxe.io.Eof;
 import haxe.io.BytesBuffer;
 import openfl.text.TextFormat;
-import lime.ui.Window;
 import sys.io.Process;
 import lime.system.System;
 import sys.io.File;
 import sys.FileSystem;
 import flixel.FlxG;
-import lime.utils.Log;
-import haxe.CallStack;
-import openfl.events.ErrorEvent;
 import haxe.Exception;
-import openfl.errors.Error;
-import lime.app.Application;
-import openfl.events.UncaughtErrorEvent;
-import flixel.FlxGame;
 import flixel.FlxState;
-import openfl.Assets;
 import openfl.Lib;
 import openfl.display.Sprite;
-import openfl.display.FPS;
 import openfl.events.Event;
 
 using StringTools;
@@ -87,15 +73,12 @@ class Main extends Sprite
 			} catch(e) {
 				return Math.pow(2, 32);
 			}
-			
-			
-
 		#else 
 			return Math.pow(2, 32); // 4gb
 		#end
 	}
 	// YOSHI ENGINE STUFF
-	public static var engineVer:String = "2.2.0b";
+	public static var engineVer:String = "2.3.1";
 	public static var buildVer:String = #if ycebeta "BETA" #elseif official "" #else "Custom Build" #end;
 	public static var fps:GameStats;
 
@@ -112,6 +95,9 @@ class Main extends Sprite
 
 	public static function main():Void
 	{
+		#if !YOSHMAN_FLIXEL
+		#error "You need to use YoshiCrafter29's flixel fork in order to build this project.\nRun config.bat or type this in cmd -> haxelib git flixel-yc29 https://github.com/YoshiCrafter29/flixel.\nIf it's installed and this error still appears, please update it."
+		#end
 		flixel.system.frontEnds.LogFrontEnd.onLogs = function(Data, Style, FireOnce) {
 			if (CoolUtil.isDevMode()) {
 				var prefix = "[FLIXEL]";
@@ -138,10 +124,10 @@ class Main extends Sprite
 		if (!parseArgs(args)) {
 			System.exit(0);
 			return;
-		};
+		}
 
+		// UPDATE PROCESS
 		if (args.contains('update')) {
-			// copy
 			var copyFolder:String->String->Void = null;
 			copyFolder = function(path, destPath) {
 				FileSystem.createDirectory(path);
@@ -153,7 +139,7 @@ class Main extends Sprite
 						try {
 							File.copy('$path/$f', '$destPath/$f');
 						} catch(e) {
-							Application.current.window.alert('Could not copy $path/$f, press OK to skip.', 'Error');
+							HeaderCompilationBypass.showMessagePopup('Could not copy $path/$f, press OK to skip.', 'Error', MSG_ERROR);
 						}
 					}
 				}
@@ -163,27 +149,33 @@ class Main extends Sprite
 			FileSystem.deleteDirectory('./_cache/');
 			new Process('start /B YoshiCrafterEngine.exe', null);
 			System.exit(0);
-		} else {
-			try {
-				// in case to prevent crashes
-				if (FileSystem.exists("temp.exe")) FileSystem.deleteFile('temp.exe');
-			} catch(e) {
-
-			}
-			try {
-				// in case to prevent crashes
-				if (FileSystem.exists("YoshiEngine.exe")) FileSystem.deleteFile('YoshiEngine.exe');
-			} catch(e) {
-
-			}
-			#if cpp
-			cpp.Lib.print("main");
-			Lib.current.addChild(new Main());
-			#else
-			trace("main");
-			Lib.current.addChild(new Main());
-			#end
+			return;
 		}
+		
+		try {
+			// in case to prevent crashes
+			if (FileSystem.exists("temp.exe")) FileSystem.deleteFile('temp.exe');
+		} catch(e) {}
+		try {
+			if (FileSystem.exists("YoshiEngine.exe")) FileSystem.deleteFile('YoshiEngine.exe');
+		} catch(e) {}
+
+		#if cpp
+		trace("main");
+		Lib.current.addChild(new Main());
+		#else
+		Lib.current.addChild(new Main());
+		#end
+	}
+
+	public static function fixWorkingDirectory() {
+		var curDir = Sys.getCwd();
+		var execPath = Sys.programPath();
+		var p = execPath.replace("\\", "/").split("/");
+		var execName = p.pop(); // interesting
+		Sys.setCwd(p.join("\\") + "\\");
+
+		HeaderCompilationBypass.enableVisualStyles();
 	}
 
 	public static final commandPromptArgs:Array<String> = [
@@ -192,6 +184,7 @@ class Main extends Sprite
 		"",
 		"-help / -? - Show this help",
 		"-mod <mod> - Start the engine with a specific mod",
+		"-install-mod <path> - Opens the \"Install Mod\" wizard and installs the mod(s) at the selected path (.ycemod file, must be absolute)",
 		"-forcedevmode - Forces developer mode, even if the mod is locked"
 	];
 
@@ -203,11 +196,16 @@ class Main extends Sprite
 				case "-mod":
 					i++;
 					TitleState.startMod = args[i];
+				case "-install-mod":
+					i++;
+					InstallModScreen.path = args[i];
 				case "-?" | "-help":
 					trace(commandPromptArgs.join("\n"));
 					return false;
-				case "-forcedevmode":
+				case "-forcedevmode" | "-livereload": // livereload cause its the argument sent after compilation
 					ModSupport.forceDevMode = true;
+				default:
+					trace('Unknown arg: ${a}');
 			}
 			i++;
 		}
@@ -219,39 +217,7 @@ class Main extends Sprite
 		super();
 
 		#if !noHandler
-		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, function(e:UncaughtErrorEvent) {
-			var m:String = e.error;
-			if (Std.isOfType(e.error, Error)) {
-				var err = cast(e.error, Error);
-				m = '${err.message}';
-			} else if (Std.isOfType(e.error, ErrorEvent)) {
-				var err = cast(e.error, ErrorEvent);
-				m = '${err.text}';
-			}
-			m += '\r\n ${CallStack.toString(CallStack.exceptionStack())}';
-			var text = "";
-			var autoSend = false;
-			if (Settings.engineSettings != null)
-				autoSend = Settings.engineSettings.data.autoSendCrashes;
-			try {
-				text = (
-					'An error occured !\r\nYoshiCrafter Engine ver. ${engineVer} $buildVer\r\n\r\n${m}\r\n\r\n${autoSend ? "The error message has automatically been sent to the developers. You can disable this option in settings.\n\n" : ""}The engine is still in it\'s early stages, so if you want to report that bug, go ahead and create an Issue on the GitHub page !');
-				Application.current.window.alert(text, e.error == null ? Std.string(e) : Std.string(e.error));
-			} catch(e) {
-
-			}
-			trace(text);
-				
-			
- 			
-			e.preventDefault();
-			e.stopPropagation();
-			e.stopImmediatePropagation();
-
-			File.saveContent('crash.txt', text);
-			 
-			System.exit(1);
-		});
+		ErrorHandler.assignErrorHandler();
 		#end
 
 		if (stage != null)
@@ -266,40 +232,31 @@ class Main extends Sprite
 
 	private function init(?E:Event):Void
 	{
-		lime.utils.Log.throwErrors = false;
 		stage.window.onDropFile.add(function(path:String) {
 			if (Std.isOfType(FlxG.state, MusicBeatState)) {
 				var checkSubstate:FlxState->Void = function(state) {
 					if (Std.isOfType(state, MusicBeatState)) {
 						var state = cast(state, MusicBeatState);
-						if (Std.isOfType(state.subState, MusicBeatSubstate)) {
-		
-						} else {
+						if (!Std.isOfType(state.subState, MusicBeatSubstate))
 							state.onDropFile(path);
-						}
 					} else if (Std.isOfType(state, MusicBeatSubstate)) {
 						var state = cast(state, MusicBeatSubstate);
-						if (Std.isOfType(state.subState, MusicBeatSubstate)) {
-		
-						} else {
+						if (!Std.isOfType(state.subState, MusicBeatSubstate))
 							state.onDropFile(path);
-						}
 					}
 				};
 				var state = cast(FlxG.state, MusicBeatState);
 				checkSubstate(state);
 			}
 		});
-		if (hasEventListener(Event.ADDED_TO_STAGE))
-		{
-			removeEventListener(Event.ADDED_TO_STAGE, init);
-		}
+		if (hasEventListener(Event.ADDED_TO_STAGE)) removeEventListener(Event.ADDED_TO_STAGE, init);
 
 		setupGame();
 
 		addEventListener(KeyboardEvent.KEY_DOWN, function(e:KeyboardEvent) {
-			if (e.keyCode == Keyboard.F11) {
-				FlxG.fullscreen = !FlxG.fullscreen;
+			switch(e.keyCode) {
+				case Keyboard.F11:
+					FlxG.fullscreen = !FlxG.fullscreen;
 			}
 		});
 	}
@@ -341,13 +298,11 @@ class Main extends Sprite
 		addChild(new FnfGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
 		
-		#if !mobile
 		fps = new GameStats(10, 3, 0xFFFFFF);
 
 		logsOverlay = new LogsOverlay();
 
 		addChild(fps);
 		addChild(logsOverlay);
-		#end
 	}
 }

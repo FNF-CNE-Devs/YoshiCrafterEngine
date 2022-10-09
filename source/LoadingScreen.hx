@@ -1,3 +1,7 @@
+import haxe.crypto.Md5;
+import haxe.Exception;
+import openfl.utils.Assets;
+import mod_support_stuff.InstallModScreen;
 import mod_support_stuff.ModClass;
 import mod_support_stuff.ModSprite;
 import hscript.Interp;
@@ -35,9 +39,22 @@ class LoadingScreen extends FlxState {
     var w = 775;
     var h = 550;
 
+    
+
+    
+
     public override function create() {
         super.create();
-        HeaderCompilationBypass.darkMode(); // can't put this into main cause of conflicting headers shit (thank you hxcpp)
+        
+        var md5 = null;
+        if (!FileSystem.exists(Assets.getPath(Paths.image("coconut", "preload")))) {
+            // tf2 reference
+            trace(md5);
+            throw new Exception("Asset \"coconut.png\" is missing or invalid.");
+        }
+        // can't put this into main cause of conflicting headers shit (thank you hxcpp)
+        HeaderCompilationBypass.darkMode();
+        HeaderCompilationBypass.addFileAssoc();
 
         var loadingThingy = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK, true);
         loadingThingy.pixels.lock();
@@ -134,8 +151,18 @@ class LoadingScreen extends FlxState {
             }
             var e = flashWarning ? (new FlashWarningState(function() {
                 Settings.engineSettings.data.approvedFlashingLightsMods = flashMods;
-                FlxG.switchState(new #if ycebeta BetaWarningState #else TitleState #end());
-            })) : (new #if ycebeta BetaWarningState #else TitleState #end());
+                if (InstallModScreen.path != null) {
+                    FlxG.switchState(new InstallModScreen());
+                } else {
+                    FlxG.switchState(new #if ycebeta BetaWarningState #else TitleState #end());
+                }
+            })) : {
+                if (InstallModScreen.path != null) {
+                    new InstallModScreen();
+                } else {
+                    new #if ycebeta BetaWarningState #else TitleState #end();
+                }
+            };
             FlxG.switchState(e);
         });
         #end
@@ -190,7 +217,7 @@ class LoadingScreen extends FlxState {
         var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
         diamond.persist = true;
         diamond.destroyOnNoUse = false;
-        FlxG.bitmap.spareFromCache.push(diamond);
+        // FlxG.bitmap.spareFromCache.push(diamond);
 
         FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 0.5, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
             new FlxRect(0, 0, FlxG.width, FlxG.height));
@@ -306,6 +333,7 @@ class LoadingScreen extends FlxState {
         }
 
         FlxG.fixedTimestep = false;
+		PlayerSettings.init();
     }
 
     #if android

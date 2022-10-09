@@ -195,6 +195,7 @@ class CharacterEditor extends MusicBeatState {
         
         var folder = '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$c';
         if (ToolboxHome.selectedMod == "~") folder = '${Paths.getSkinsPath()}/$c';
+        FileSystem.createDirectory('$folder/');
         File.saveContent('$folder/Character.json', Json.stringify(json, "\t"));
         if (canBeBFSkinned.checked) {
             if (!ModSupport.modConfig[ToolboxHome.selectedMod].skinnableBFs.contains(c)) {
@@ -400,7 +401,7 @@ class CharacterEditor extends MusicBeatState {
                         label : "Yes",
                         onClick : function(e) {
                             var p = '${Paths.modsPath}/${ToolboxHome.selectedMod}/characters/$c';
-                            sys.io.File.copy('$p/Character.hx', '$p/Character-old.hx');
+                            if (FileSystem.exists('$p/Character.hx')) sys.io.File.copy('$p/Character.hx', '$p/Character-old.hx');
                             sys.io.File.saveContent('$p/Character.hx', 'function create() {\r\n\tcharacter.frames = Paths.getCharacter(character.curCharacter);\r\n\tcharacter.loadJSON(true); // Setting to true will override getColors() and dance().\r\n}');
                             FlxG.switchState(new CharacterEditor(this.c));
                         }
@@ -785,7 +786,7 @@ class CharacterEditor extends MusicBeatState {
             }
         }, true);
 
-        camHUD.alpha = FlxMath.lerp(camHUD.alpha, (movingCam || movingOffset) ? 0.5 : 1, 0.25 * elapsed * 60);
+        camHUD.alpha = FlxMath.lerp(camHUD.alpha, (movingCam || movingOffset) ? 0.5 : 1, getLerpRatio(0.25));
         if (movingOffset) {
             var pos = FlxG.mouse.getScreenPosition();
             offsetX.value = movingOffsetDefaultPosOffset.x + ((movingOffsetDefaultPos.x - pos.x) / camGame.zoom);

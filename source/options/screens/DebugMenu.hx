@@ -51,6 +51,13 @@ class DebugMenu extends OptionScreen {
                 onSelect: function(e) {@:privateAccess e.check(ModSupport.forceDevMode = !ModSupport.forceDevMode);}
             },
             {
+                name: "loading screen (unfinished)",
+                desc: "adds an unfinished loading screen.\nscrapped cause it has a 1/1000 chance to break a flxsprite with a sparrow atlas",
+                value: "",
+                onCreate: function(e) {@:privateAccess e.check(Settings.engineSettings.data.secretLoadingScreen);},
+                onSelect: function(e) {@:privateAccess e.check(Settings.engineSettings.data.secretLoadingScreen = !Settings.engineSettings.data.secretLoadingScreen);}
+            },
+            {
                 name: "widescreen sweep",
                 desc: "cool stuff hehe, hidden cause not every mods are compatible with it",
                 value: "",
@@ -142,7 +149,7 @@ class DebugMenu extends OptionScreen {
     var specialTime:Float = 0;
     public override function update(elapsed:Float) {
         super.update(elapsed);
-        selectThing.setPosition(FlxMath.lerp(selectThing.x, spawnedOptions[curSelected].x + ((spawnedOptions[curSelected].width - selectThing.width) / 2) + 100, 0.25 * elapsed * 60), FlxMath.lerp(selectThing.y, spawnedOptions[curSelected].y + ((spawnedOptions[curSelected].height - selectThing.height) / 2), 0.25 * elapsed * 60));
+        selectThing.setPosition(FlxMath.lerp(selectThing.x, spawnedOptions[curSelected].x + ((spawnedOptions[curSelected].width - selectThing.width) / 2) + 100, getLerpRatio(0.25)), FlxMath.lerp(selectThing.y, spawnedOptions[curSelected].y + ((spawnedOptions[curSelected].height - selectThing.height) / 2), getLerpRatio(0.25)));
 
         specialTime += elapsed;
         selectThingShader.setTime(specialTime);

@@ -58,7 +58,7 @@ class FlxControls {
             var id = keys.next();
             var name = map[id];
 			if (!Reflect.hasField(list, map[id])) {
-				Reflect.setField(list, name, FlxG.keys.anyJustPressed([id]));
+				Reflect.setField(list, name, FlxG.keys.checkStatus(id, JUST_PRESSED));
 			}
 			
         }
@@ -90,7 +90,7 @@ class FlxControls {
             var id = keys.next();
             var name = map[id];
 			if (!Reflect.hasField(list, map[id])) {
-				Reflect.setField(list, name, FlxG.keys.anyJustReleased([id]));
+				Reflect.setField(list, name, FlxG.keys.checkStatus(id, JUST_RELEASED));
 			}
 			
         }

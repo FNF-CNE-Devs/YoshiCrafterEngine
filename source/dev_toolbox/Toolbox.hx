@@ -23,18 +23,17 @@ class Toolbox {
     }
 
     public static function createMod(config:ModConfig, folderName:String, ?modIcon:BitmapData, ?titlebarIcon:BitmapData) {
-        FileSystem.createDirectory('${Paths.modsPath}/$folderName');
-        File.saveContent('${Paths.modsPath}/$folderName/config.json', Json.stringify(config, "\t"));
-        File.saveContent('${Paths.modsPath}/$folderName/song_conf.json', Json.stringify(Templates.songConfTemplate, "\t"));
-        for (dir in ["characters", "data"]) {
-            FileSystem.createDirectory('${Paths.modsPath}/$folderName/$dir');
-        }
-        if (modIcon != null) {
-            sys.io.File.saveBytes('${Paths.modsPath}/$folderName/modIcon.png', modIcon.encode(modIcon.rect, new PNGEncoderOptions(true)));
-        }
-        if (titlebarIcon != null) {
-            sys.io.File.saveBytes('${Paths.modsPath}/$folderName/icon.png', titlebarIcon.encode(titlebarIcon.rect, new PNGEncoderOptions(true)));
-        }
+        var modFolder = '${Paths.modsPath}/$folderName';
+        FileSystem.createDirectory(modFolder);
+        File.saveContent('$modFolder/config.json', Json.stringify(config, "\t"));
+        File.saveContent('$modFolder/song_conf.json', Json.stringify(Templates.songConfTemplate, "\t"));
+        
+        var reader = ZipUtils.openZip("./assets/misc/template_mod.zip");
+        ZipUtils.uncompressZip(reader, '$modFolder/');
+        
+        if (modIcon != null)        sys.io.File.saveBytes('$modFolder/modIcon.png', modIcon.encode(modIcon.rect, new PNGEncoderOptions(true)));
+        if (titlebarIcon != null)   sys.io.File.saveBytes('$modFolder/icon.png', titlebarIcon.encode(titlebarIcon.rect, new PNGEncoderOptions(true)));
+        
         ModSupport.reloadModsConfig();
         ModSupport.modConfig[folderName] = config;
     }

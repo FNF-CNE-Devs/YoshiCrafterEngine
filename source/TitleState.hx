@@ -33,9 +33,6 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-#if newgrounds
-import io.newgrounds.NG;
-#end
 import lime.app.Application;
 import openfl.Assets;
 
@@ -82,17 +79,14 @@ class TitleState extends MusicBeatState
 	}
 	override public function create():Void
 	{
-		if (!initialized) FlxTransitionableState.skipNextTransIn = true;
+		FlxTransitionableState.skipNextTransIn = true;
 		reloadModsState = true;
 		
 		Application.current.onExit.add (function (exitCode) {
 			Settings.engineSettings.data.volume = FlxG.sound.volume;
 			Settings.engineSettings.flush();
 		});
-
-		trace("PlayerSettings");
-		PlayerSettings.init();
-
+		
 		trace("curWacky");
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
@@ -103,15 +97,9 @@ class TitleState extends MusicBeatState
 		
 		trace("Highscore.load");
 		Highscore.load();
-		#if web
-			trace("Loading characters library");
-			Assets.loadLibrary("characters");
-		#end
 
 		#if FREEPLAY
 		FlxG.switchState(new FreeplayState());
-		#elseif CHARTING
-		FlxG.switchState(new ChartingState_New());
 		#else
 		startIntro();
 		#end
@@ -194,7 +182,7 @@ class TitleState extends MusicBeatState
 			script.setVariable("add", titleSpriteGrp.add);
 			ModSupport.setScriptDefaultVars(script, mod, {});
 			script.setScriptObject(this);
-			script.loadFile('$path/titlescreen');
+			script.loadFile();
 			script.executeFunc("create");
 			add(titleSpriteGrp);
 		}
@@ -305,7 +293,6 @@ class TitleState extends MusicBeatState
 		#if secretCharter
 			if (FlxG.keys.justPressed.F2) {
 				CoolUtil.loadSong("Friday Night Funkin'", "MILF", "Hard");
-				charter.ChartingState_New._song = PlayState._SONG;
 				FlxG.switchState(new charter.YoshiCrafterCharter());
 			}
 		#end

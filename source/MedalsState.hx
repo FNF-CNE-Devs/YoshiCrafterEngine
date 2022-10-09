@@ -1,3 +1,4 @@
+import Medals.MedalsJSON;
 import flixel.text.FlxText.FlxTextBorderStyle;
 import flixel.util.FlxColor;
 import flixel.addons.ui.FlxUIText;
@@ -6,15 +7,16 @@ import haxe.Json;
 import openfl.utils.Assets;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.group.FlxSpriteGroup;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 class MedalsState extends MusicBeatState {
     var bg:FlxSprite;
     var medals:MedalsJSON;
-    var sprites:FlxSpriteGroup = new FlxSpriteGroup();
+    var sprites:FlxTypedSpriteGroup<MedalSprite> = new FlxTypedSpriteGroup<MedalSprite>();
     var curSelected:Int = 0;
     var unlockedMedals:Int = 0;
     var desc:FlxUIText;
+    var unlockedCaption:AlphabetOptimized;
 
     final multiple = 1;
 
@@ -34,8 +36,8 @@ class MedalsState extends MusicBeatState {
         if (medals.medals == null) medals.medals = [];
         for(k=>e in medals.medals) {
             var mSprite = new MedalSprite(Settings.engineSettings.data.selectedMod, e);
-            mSprite.x = (k % multiple) * ((FlxG.width - 120) / multiple) + 120 + (Math.floor(k / multiple) * 20);
             mSprite.y = ((Math.floor(k / multiple)) * 125) + 25;
+            mSprite.title.outline = true;
             sprites.add(mSprite);
             if (!mSprite.locked) unlockedMedals++;
         }
@@ -48,12 +50,13 @@ class MedalsState extends MusicBeatState {
         title.x -= title.width / 2;
         add(title);
 
-        var unlockedCaption = new AlphabetOptimized(FlxG.width - 10, 20, '$unlockedMedals/${medals.medals.length}', false, 0.5);
-        unlockedCaption.x -= unlockedCaption.width;
+        unlockedCaption = new AlphabetOptimized(FlxG.width - 10, 20, '$unlockedMedals/${medals.medals.length}', false, 0.5);
+        unlockedCaption.outline = true;
         add(unlockedCaption);
 
-        desc = new FlxUIText(0, FlxG.height * 0.9, FlxG.width, "");
-        desc.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+        desc = new FlxUIText(0, FlxG.height * 0.9, "");
+        desc.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+        desc.antialiasing = true;
         add(desc);
 
         bg.scrollFactor.set();
@@ -74,17 +77,27 @@ class MedalsState extends MusicBeatState {
         curSelected = CoolUtil.wrapInt(curSelected, 0, sprites.length);
         if (curSelected != oldSelected) {
             CoolUtil.playMenuSFX(0);
+            desc.alpha = 0;
+            desc.offset.y = 25;
         }
+        var descLerpRatio = getLerpRatio(0.25);
+        desc.offset.y = FlxMath.lerp(desc.offset.y, 0, descLerpRatio);
+        desc.alpha = FlxMath.lerp(desc.alpha, 1, descLerpRatio);
 
         var l = elapsed * 0.25 * 60;
+
+        sprites.y = FlxMath.lerp(sprites.y, -125 * (Math.floor(curSelected / multiple) + 0.5) + (FlxG.height / 2), l);
+
         for(k=>e in sprites.members) {
             e.alpha = FlxMath.lerp(e.alpha, (k == curSelected) ? 1 : 0.3, l);
             if (k == curSelected) {
                 desc.text = medals.medals[k].desc;
+                desc.x = e.img.x + e.img.width + 5;
+                desc.y = e.img.y + (e.img.height * 0.5) + 5;
             }
+            e.title.offset.y = FlxMath.lerp(e.title.offset.y, (k == curSelected) ? e.title.height / 2 + 10 : 0, descLerpRatio);
+            e.x = (1 - (1 - Math.pow(Math.sin(FlxMath.bound((e.y + (e.height / 2)) / FlxG.height * Math.PI, 0, Math.PI)), 1.5))) * 75;
         }
-        sprites.x = FlxMath.lerp(sprites.x, -20 * Math.floor(curSelected / multiple), l);
-        sprites.y = FlxMath.lerp(sprites.y, -125 * (Math.floor(curSelected / multiple) + 0.5) + (FlxG.height / 2), l);
-
+        unlockedCaption.x = FlxG.width - 10 - unlockedCaption.width;
     }
 }

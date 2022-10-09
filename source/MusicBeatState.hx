@@ -1,5 +1,6 @@
 package;
 
+import flixel.math.FlxMath;
 import Script.ILuaScriptable;
 import Script.LuaScript;
 import charter.YoshiCrafterCharter;
@@ -66,30 +67,17 @@ class MusicBeatState extends FlxUIState implements ILuaScriptable
 	public override function destroy() {
 		super.destroy();
 	}
+	
+	public function getLerpRatio(t:Float) {
+		return CoolUtil.getLerpRatio(t);
+	}
 
-	var oldPersistStuff:Map<FlxGraphic, Bool> = [];
 	public function new(?transIn:TransitionData, ?transOut:TransitionData) {
 		ModSupport.updateTitleBar();
 		ModSupport.refreshDiscordRpc();
 		ModSupport.updateCursor();
 		ModSupport.reloadModsConfig(false, true, false, CoolUtil.isDevMode());
 		Settings.engineSettings.flush();
-
-		LimeAssets.loggedRequests = [];
-
-		if (doCachingShitNextTime) {
-			if (__firstStateLoaded) {
-				LimeAssets.logRequests = true;
-				@:privateAccess
-				for(e in FlxG.bitmap._cache) {
-					oldPersistStuff[e] = e.persist;
-					e.persist = true;
-				}
-			} else
-				__firstStateLoaded = true;
-		} else {
-			doCachingShitNextTime = true;
-		}
 		
 		super(transIn, transOut);
 	}
@@ -113,34 +101,16 @@ class MusicBeatState extends FlxUIState implements ILuaScriptable
 
 	override function createPost() {
 		super.createPost();
-		if (LimeAssets.logRequests) {
-			
-			LimeAssets.logRequests = false;
-
-			for(k=>e in oldPersistStuff) {
-				k.persist = e;
-			}
-			
-			FlxG.bitmap.clearCache();
-
-			try {
-				Assets.cache.clearExceptArray(LimeAssets.loggedRequests);
-			} catch(e) {
-				trace(e);
-			}
-			
-
-			oldPersistStuff = [];
-
-			LimeAssets.loggedRequests = [];
-		}
+		
+		FlxTransitionableState.skipNextTransIn = false;
+		FlxTransitionableState.skipNextTransOut = false;
 	}
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
 	public function doResizeShit() {return true;}
-	
+
 	override function create()
 	{
 		if (!Std.isOfType(FlxG.scaleMode, WideScreenScale)) {

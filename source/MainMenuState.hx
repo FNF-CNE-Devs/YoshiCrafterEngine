@@ -27,12 +27,10 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-#if newgrounds
-import io.newgrounds.NG;
-import io.newgrounds.components.MedalComponent;
-#end
 import flixel.math.FlxPoint;
 import lime.app.Application;
+import flixel.FlxBasic;
+import flixel.FlxCamera;
 
 import lime.utils.Assets as LimeAssets;
 
@@ -207,7 +205,7 @@ class MainMenuState extends FullyModState {
 		ModSupport.setScriptDefaultVars(mainMenuScript, Settings.engineSettings.data.selectedMod, {});
 		if (valid) {
 			mainMenuScript.setScriptObject(this);
-			mainMenuScript.loadFile('${Paths.modsPath}/${Settings.engineSettings.data.selectedMod}/ui/MainMenuState');
+			mainMenuScript.loadFile();
 		}
 		mainMenuScript.executeFunc("create");
 
@@ -331,6 +329,7 @@ class MainMenuState extends FullyModState {
 	}
 
 	override function normalDestroy() {
+		super.normalDestroy();
 		mainMenuScript.executeFunc("destroy");
 	}
 	override function normalUpdate(elapsed:Float)
@@ -479,4 +478,50 @@ class MainMenuState extends FullyModState {
 			spr.updateHitbox();
 		});
 	}
+}
+
+class MainMenuItem extends FlxSprite {
+    public var autoPos:Bool = true;
+    public var autoScale:Bool = true;
+}
+
+
+class MainMenuOptions extends FlxTypedGroup<MainMenuItem> {
+    public var curSelected:Int = -1;
+    override public function draw():Void
+    {
+        var i:Int = 0;
+        var basic:FlxBasic = null;
+
+        @:privateAccess
+        var oldDefaultCameras = FlxCamera._defaultCameras;
+        if (cameras != null)
+        {
+            @:privateAccess
+            FlxCamera._defaultCameras = cameras;
+        }
+
+        while (i < length)
+        {
+            if (i == curSelected) {
+                i++;
+                continue;
+            }
+            basic = members[i++];
+            if (basic != null && basic.exists && basic.visible)
+            {
+                basic.draw();
+            }
+        }
+
+        if ((basic = members[curSelected]) != null) {
+            
+            if (basic != null && basic.exists && basic.visible)
+            {
+                basic.draw(); // will draw the selected one on top of every other one
+            }
+        }
+        @:privateAccess
+        FlxCamera._defaultCameras = oldDefaultCameras;
+    }
 }

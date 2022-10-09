@@ -1,5 +1,10 @@
 package charter;
 
+import flixel.tweens.FlxEase;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.tweens.FlxTween;
+import openfl.system.System;
+import haxe.io.Path;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import sys.io.File;
 import sys.FileSystem;
@@ -24,6 +29,7 @@ import flixel.system.FlxSound;
 import Song.SwagSong;
 import flixel.*;
 import flixel.addons.ui.*;
+import flixel.addons.ui.FlxUIDropDownMenu.FlxUIDropDownHeader;
 
 using StringTools;
 
@@ -90,10 +96,12 @@ class YoshiCrafterCharter extends MusicBeatState {
     var showInstWaveformCheckbox:FlxUICheckBox = null;
     var showVoicesWaveformCheckbox:FlxUICheckBox = null;
     var showBeatSeparatorCheckbox:FlxUICheckBox = null;
+    var stageDropdown:FlxUIDropDownMenu = null;
+
     var noteInCreation:CharterNote = null;
 
-    var instBuffer:AudioBuffer;
-    var voicesBuffer:AudioBuffer;
+    var instBuffer:AudioBuffer = null;
+    var voicesBuffer:AudioBuffer = null;
 
     var pageSwitchLerpRemaining:Float = 0;
 
@@ -119,22 +127,44 @@ class YoshiCrafterCharter extends MusicBeatState {
     var voicesWaveform2:WaveformSprite;
     var voicesWaveform3:WaveformSprite;
 
+    var charterSelector:CharterSelector;
+
     var noteTypesObjs:Array<FlxSprite> = [];
     var noteTypesX:Float = 0;
     var noteTypesY:Float = 0;
 
     var copyPasteButtonsContainer = new FlxSpriteGroup(0, 0);
-    public var zoom:Float = 1;
+
+    /**
+        ZOOMING AND SNAPPING
+    **/
+    public var zoom(get, null):Float;
+    public var _zoom:Int = 0;
+    private function get_zoom() {
+        return CoolUtil.charterZoom(2, _zoom);
+    }
+
+    public var snap(get, null):Float;
+    public var _snap:Int = 0;
+    private function get_snap() {
+        return CoolUtil.charterZoom(2, _snap);
+    }
+
+
+
     public function new() {
         super();
         if (PlayState._SONG == null) {
+            trace(CoolUtil.getSizeLabel(System.totalMemory));
             PlayState.songMod = "Friday Night Funkin'";
+            trace(CoolUtil.getSizeLabel(System.totalMemory));
             PlayState.storyDifficulty = "hard";
+            trace(CoolUtil.getSizeLabel(System.totalMemory));
             CoolUtil.loadSong("Friday Night Funkin'", "MILF", "Hard");
+            trace(CoolUtil.getSizeLabel(System.totalMemory));
         }
         PlayState.checkSong();
         _song = PlayState._SONG;
-        ChartingState_New._song = _song;
         Conductor.changeBPM(_song.bpm);
     }
 
@@ -177,21 +207,19 @@ class YoshiCrafterCharter extends MusicBeatState {
             });
         }
     }
-
+    var bg:FlxSprite;
     public override function create() {
-        Conductor.songPosition = 0;
-        Conductor.songPositionOld = 0;
+        var startingPos = PlayState.startTime;
         
-		Assets.loadLibrary("shared");
-        
-        var bg = CoolUtil.addBG(this);
+        bg = CoolUtil.addBG(this);
         bg.scrollFactor.set(0, 0);
+        bgScale = bg.scale.x;
 
         var instPath = Paths.modInst(_song.song, PlayState.songMod, PlayState.storyDifficulty);
         FlxG.sound.playMusic(instPath);
+        FlxG.sound.music.pause();
         @:privateAccess
         instBuffer = AudioBuffer.fromFile(Assets.getPath(instPath));
-        FlxG.sound.music.pause();
         FlxG.sound.music.looped = false;
         FlxG.sound.music.onComplete = function() {
             playing = false;
@@ -205,6 +233,9 @@ class YoshiCrafterCharter extends MusicBeatState {
 
         updateGrid();
         generateNotes();
+
+        charterSelector = new CharterSelector();
+        add(charterSelector);
 
         add(notes);
         add(events);
@@ -232,10 +263,11 @@ class YoshiCrafterCharter extends MusicBeatState {
 
         hitsound = new FlxSound().loadEmbedded(Paths.sound('hitsound', 'shared')); // it's the osu hitsound in case you're wondering
         //hitsound.persist = true;
-        hitsound.autoDestroy = false;
+        // hitsound.autoDestroy = false;
 
         
         super.create();
+        Conductor.songPosition = Conductor.songPositionOld = FlxG.sound.music.time = vocals.time = startingPos;
     }
 
     public function create_ui() {
@@ -247,6 +279,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         var deleteSectionButton = new FlxUIButton(-GRID_SIZE - 5, 0, "", function() {
             var min = Math.floor(Conductor.songPosition / Conductor.crochet / 4) * Conductor.crochet * _song.sectionLength;
             var max = Math.ceil(Conductor.songPosition / Conductor.crochet / 4) * Conductor.crochet * _song.sectionLength;
+            if (max == min) max++;
             var notesToRemove:Array<CharterNote> = [];
             for(n in notes) {
                 if (n.strumTime >= min && n.strumTime < max) {
@@ -276,11 +309,9 @@ class YoshiCrafterCharter extends MusicBeatState {
                 var min = getTimeforStep(copiedSection * 4 * _song.sectionLength);
                 var max = getTimeforStep((copiedSection + 1) * 4 * _song.sectionLength);
                 var notesToCopy:Array<CharterNote> = [];
-                for(n in notes) {
-                    if (n.strumTime >= min && n.strumTime < max) {
+                for(n in notes)
+                    if (n.strumTime >= min && n.strumTime < max)
                         notesToCopy.push(n);
-                    }
-                }
 
                 for(n in notesToCopy) {
                     addNote(n.strumTime - min + newMin, Math.floor(n.x / GRID_SIZE) + (n.noteType * _song.keyNumber * 2), false, n.sustainLength);
@@ -335,9 +366,8 @@ class YoshiCrafterCharter extends MusicBeatState {
         ], true);
         UI_Menu.x = FlxG.width - 300;
         UI_Menu.y = 0;
-        UI_Menu.resize(300, Std.int(FlxG.height * 0.6));
+        UI_Menu.resize(300, Std.int(FlxG.height - 225));
         UI_Menu.scrollFactor.set(0, 0);
-        add(UI_Menu);
 
         UI_Section = new FlxUITabMenu(null, [
             {
@@ -346,10 +376,11 @@ class YoshiCrafterCharter extends MusicBeatState {
             }
         ], true);
         UI_Section.x = FlxG.width - 300;
-        UI_Section.y = FlxG.height * 0.6;
-        UI_Section.resize(300, Std.int(FlxG.height * 0.4));
+        UI_Section.y = FlxG.height - 225;
+        UI_Section.resize(300, 225);
         UI_Section.scrollFactor.set(0, 0);
         add(UI_Section);
+        add(UI_Menu);
 
         addNoteTab();
         addSongTab();
@@ -366,6 +397,10 @@ class YoshiCrafterCharter extends MusicBeatState {
     var duetSection:FlxUICheckBox = null;
     var altAnimSection:FlxUICheckBox = null;
     var duetCameraSlide:FlxUISliderNew = null;
+    var zoomSliderLabel:FlxUIText = null;
+    var snapSliderLabel:FlxUIText = null;
+    var zoomSlider:FlxUISliderNew = null;
+    var snapSlider:FlxUISliderNew = null;
 
     var changeBPMSection:FlxUICheckBox = null;
     var changeBPMSection_bpm:FlxUINumericStepper = null;
@@ -374,12 +409,10 @@ class YoshiCrafterCharter extends MusicBeatState {
         var sectionTab = new FlxUI(null, UI_Menu);
         sectionTab.name = "section";
 
-        var label = new FlxUIText(10, 10, 280, "== Section Settings ==");
-        label.alignment = CENTER;
-        mustHitSection = new FlxUICheckBox(10, label.y + label.height + 10, null, null, "Must Hit Section", 280, null, function() {
+        mustHitSection = new FlxUICheckBox(10, 10, null, null, "Must Hit Section", 155, null, function() {
             section.mustHitSection = mustHitSection.checked;
         });
-        duetSection = new FlxUICheckBox(10, mustHitSection.y + mustHitSection.height + 5, null, null, "Duet Camera", 280, null, function() {
+        duetSection = new FlxUICheckBox(155, mustHitSection.y, null, null, "Duet Camera", 155, null, function() {
             section.duetCamera = duetSection.checked;
         });
         altAnimSection = new FlxUICheckBox(10, duetSection.y + duetSection.height + 5, null, null, "Alt Animation", 280, null, function() {
@@ -419,7 +452,6 @@ class YoshiCrafterCharter extends MusicBeatState {
         copyLastSectionsButton.resize(120, 20);
         copyLastSectionsNumeric = new FlxUINumericStepper(copyLastSectionsButton.x + copyLastSectionsButton.width + 10, copyLastSectionsButton.y, 1, 1, 1, 16, 0);
 
-        sectionTab.add(label);
         sectionTab.add(mustHitSection);
         sectionTab.add(duetSection);
         sectionTab.add(altAnimSection);
@@ -432,6 +464,9 @@ class YoshiCrafterCharter extends MusicBeatState {
         sectionTab.add(copyLastSectionsNumeric);
         UI_Section.addGroup(sectionTab);
     }
+
+    var seperateZoomFromSnap:FlxUICheckBox;
+
 	public function addCharterSettingsTab() {
 		var settingsTab = new FlxUI(null, UI_Menu);
 		settingsTab.name = "settings";
@@ -439,47 +474,13 @@ class YoshiCrafterCharter extends MusicBeatState {
 		
 
 		var y:Float = 10;
-        topViewCheckbox = new FlxUICheckBox(10, y, null, null, "Vertically center charter", 250, null, function() {
+        topViewCheckbox = new FlxUICheckBox(10, y, null, null, "Center charter", 250, null, function() {
             topView = Settings.engineSettings.data.charter_topView = !topViewCheckbox.checked;
         });
         topViewCheckbox.scrollFactor.set(0, 0);
         topViewCheckbox.checked = !topView;
 		y += topViewCheckbox.height + 10;
         settingsTab.add(topViewCheckbox);
-
-        showStrumsCheckbox = new FlxUICheckBox(10, y, null, null, "Show strums", 250, null, function() {
-            for(s in strums) s.visible = showStrums = Settings.engineSettings.data.charter_showStrums = showStrumsCheckbox.checked;
-        });
-        showStrumsCheckbox.scrollFactor.set(0, 0);
-        showStrumsCheckbox.checked = showStrums;
-		y += showStrumsCheckbox.height + 10;
-        settingsTab.add(showStrumsCheckbox);
-
-        hitsoundsEnabledCheckbox = new FlxUICheckBox(10, y, null, null, "Enable hitsounds", 250, null, function() {
-            hitsoundsBFEnabled = hitsoundsDadEnabled = Settings.engineSettings.data.charter_hitsoundsEnabledBF = Settings.engineSettings.data.charter_hitsoundsEnabledGF = hitsoundsEnabledCheckbox.checked;
-            hitsoundsBFCheckbox.checked = hitsoundsDadCheckbox.checked = hitsoundsEnabledCheckbox.checked;
-        });
-        hitsoundsEnabledCheckbox.scrollFactor.set(0, 0);
-        hitsoundsEnabledCheckbox.checked = hitsoundsBFEnabled && hitsoundsDadEnabled;
-		y += hitsoundsEnabledCheckbox.height;
-        settingsTab.add(hitsoundsEnabledCheckbox);
-
-        hitsoundsBFCheckbox = new FlxUICheckBox(10 + (hitsoundsEnabledCheckbox.width / 2), y, null, null, "For the Player", 105, null, function() {
-            Settings.engineSettings.data.charter_hitsoundsEnabledBF = hitsoundsBFEnabled = hitsoundsBFCheckbox.checked;
-            hitsoundsEnabledCheckbox.checked = hitsoundsBFEnabled && hitsoundsDadEnabled;
-        });
-        hitsoundsBFCheckbox.scrollFactor.set(0, 0);
-        hitsoundsBFCheckbox.checked = hitsoundsBFEnabled;
-        settingsTab.add(hitsoundsBFCheckbox);
-
-        hitsoundsDadCheckbox = new FlxUICheckBox(10, y, null, null, "For the Opponent", 105, null, function() {
-            Settings.engineSettings.data.charter_hitsoundsEnabledGF = hitsoundsDadEnabled = hitsoundsDadCheckbox.checked;
-            hitsoundsEnabledCheckbox.checked = hitsoundsBFEnabled && hitsoundsDadEnabled;
-        });
-        hitsoundsDadCheckbox.scrollFactor.set(0, 0);
-        hitsoundsDadCheckbox.checked = hitsoundsDadEnabled;
-        settingsTab.add(hitsoundsDadCheckbox);
-		y += hitsoundsDadCheckbox.height + 10;
 
         var label = new FlxUIText(10, y + 2, 0, "Show Waveforms");
         settingsTab.add(label);
@@ -555,31 +556,50 @@ class YoshiCrafterCharter extends MusicBeatState {
 
         y += voicesVolumeLabel.height + voicesVolume.height;
         y = Std.int(y) + 10;
-
-        var opponentHitsoundVolumeLabel = new FlxUIText(10, y, 135, "Opponent Hit Volume");
-        var opponentHitsoundVolume = new FlxUISliderNew(10, y + opponentHitsoundVolumeLabel.height, 135, 7, Settings.engineSettings.data, "charter_opponentHitsoundVolume", 0, 1, "0%", "100%");
-
-        var playerHitsoundVolumeLabel = new FlxUIText(155, y, 135, "Player Hit Volume");
-        var playerHitsoundVolume = new FlxUISliderNew(155, y + voicesVolumeLabel.height, 135, 7, Settings.engineSettings.data, "charter_playerHitsoundVolume", 0, 1, "0%", "100%");
-        y += playerHitsoundVolumeLabel.height + playerHitsoundVolume.height + 10;
-        y = Std.int(y);
         
         playbackSpeedLabel = new FlxUIText(10, y, 280, 'Playback Speed (1.00x)');
         var playbackSpeedSlider = new FlxUISliderNew(10, y + playbackSpeedLabel.height, 280, 7, FlxG.sound.music, "pitch", 0.25, 5, "0.25x", "5.00x");
         playbackSpeedSlider.step = 0.25;
+        y += playbackSpeedLabel.height;
+        y += playbackSpeedSlider.height + 4;
+
+        seperateZoomFromSnap = new FlxUICheckBox(10, y, null, null, 'Seperate zoom from note snapping', 250, null, function() {
+            if (seperateZoomFromSnap.checked)
+                _snap = _zoom;
+        });
+
+        y = Std.int(y + seperateZoomFromSnap.height);
+
+        
+
+        zoomSliderLabel = new FlxUIText(10, y, 280, "Zoom (1 steps/tile)");
+        y += zoomSliderLabel.height;
+        zoomSlider = new FlxUISliderNew(10, y, 280, 7, this, "_zoom", -4, 4, "16 steps", "0.065 steps");
+        zoomSlider.step = 1;
+        y = Std.int(y + zoomSlider.height + 10);
+
+        snapSliderLabel = new FlxUIText(10, y, 280, "Snap (1 steps/tile)");
+        y += snapSliderLabel.height;
+
+        snapSlider = new FlxUISliderNew(10, y, 280, 7, this, "_snap", -4, 4, "16 steps", "0.065 steps");
+        snapSlider.step = 1;
+        y = Std.int(y + snapSlider.height);
 
         settingsTab.add(instVolumeLabel);
         settingsTab.add(instVolume);
         settingsTab.add(voicesVolumeLabel);
         settingsTab.add(voicesVolume);
-        settingsTab.add(opponentHitsoundVolumeLabel);
-        settingsTab.add(opponentHitsoundVolume);
-        settingsTab.add(playerHitsoundVolumeLabel);
-        settingsTab.add(playerHitsoundVolume);
         settingsTab.add(playbackSpeedLabel);
         settingsTab.add(playbackSpeedSlider);
+        settingsTab.add(seperateZoomFromSnap);
+        settingsTab.add(zoomSliderLabel);
+        settingsTab.add(zoomSlider);
+        settingsTab.add(snapSliderLabel);
+        settingsTab.add(snapSlider);
 		
 		UI_Menu.addGroup(settingsTab);
+
+        snapSlider.visible = snapSliderLabel.visible = false;
 	}
 
     var noteTab:FlxUI;
@@ -588,16 +608,74 @@ class YoshiCrafterCharter extends MusicBeatState {
         noteTab = new FlxUI(null, UI_Menu);
         noteTab.name = "note";
 
-        var typesLabel = new FlxUIText(10, 10, 280, "== Note Types ==");
-        var addNoteTypeButton = new FlxUIButton(10, typesLabel.y + typesLabel.height + 10, "Add Note Type", function() {
+        var y:Float = 10;
+        
+        var behaviorLabel = new FlxUIText(10, y, 280, "== Note Behavior ==");
+        behaviorLabel.alignment = CENTER;
+        y += behaviorLabel.height + 4;
+        noteTab.add(behaviorLabel);
+
+        showStrumsCheckbox = new FlxUICheckBox(10, y, null, null, "Show strums", 250, null, function() {
+            for(s in strums) s.visible = showStrums = Settings.engineSettings.data.charter_showStrums = showStrumsCheckbox.checked;
+        });
+        showStrumsCheckbox.scrollFactor.set(0, 0);
+        showStrumsCheckbox.checked = showStrums;
+		y += showStrumsCheckbox.height + 10;
+        noteTab.add(showStrumsCheckbox);
+
+        hitsoundsEnabledCheckbox = new FlxUICheckBox(10, y, null, null, "Enable hitsounds", 250, null, function() {
+            hitsoundsBFEnabled = hitsoundsDadEnabled = Settings.engineSettings.data.charter_hitsoundsEnabledBF = Settings.engineSettings.data.charter_hitsoundsEnabledGF = hitsoundsEnabledCheckbox.checked;
+            hitsoundsBFCheckbox.checked = hitsoundsDadCheckbox.checked = hitsoundsEnabledCheckbox.checked;
+        });
+        hitsoundsEnabledCheckbox.scrollFactor.set(0, 0);
+        hitsoundsEnabledCheckbox.checked = hitsoundsBFEnabled && hitsoundsDadEnabled;
+		y += hitsoundsEnabledCheckbox.height;
+        noteTab.add(hitsoundsEnabledCheckbox);
+
+        hitsoundsBFCheckbox = new FlxUICheckBox(10 + (hitsoundsEnabledCheckbox.width / 2), y, null, null, "For the Player", 105, null, function() {
+            Settings.engineSettings.data.charter_hitsoundsEnabledBF = hitsoundsBFEnabled = hitsoundsBFCheckbox.checked;
+            hitsoundsEnabledCheckbox.checked = hitsoundsBFEnabled && hitsoundsDadEnabled;
+        });
+        hitsoundsBFCheckbox.scrollFactor.set(0, 0);
+        hitsoundsBFCheckbox.checked = hitsoundsBFEnabled;
+        noteTab.add(hitsoundsBFCheckbox);
+
+        hitsoundsDadCheckbox = new FlxUICheckBox(10, y, null, null, "For the Opponent", 105, null, function() {
+            Settings.engineSettings.data.charter_hitsoundsEnabledGF = hitsoundsDadEnabled = hitsoundsDadCheckbox.checked;
+            hitsoundsEnabledCheckbox.checked = hitsoundsBFEnabled && hitsoundsDadEnabled;
+        });
+        hitsoundsDadCheckbox.scrollFactor.set(0, 0);
+        hitsoundsDadCheckbox.checked = hitsoundsDadEnabled;
+        noteTab.add(hitsoundsDadCheckbox);
+		y += hitsoundsDadCheckbox.height + 10;
+        
+        
+
+        var opponentHitsoundVolumeLabel = new FlxUIText(10, y, 135, "Opponent Hit Volume");
+        var opponentHitsoundVolume = new FlxUISliderNew(10, y + opponentHitsoundVolumeLabel.height, 135, 7, Settings.engineSettings.data, "charter_opponentHitsoundVolume", 0, 1, "0%", "100%");
+
+        var playerHitsoundVolumeLabel = new FlxUIText(155, y, 135, "Player Hit Volume");
+        var playerHitsoundVolume = new FlxUISliderNew(155, y + playerHitsoundVolumeLabel.height, 135, 7, Settings.engineSettings.data, "charter_playerHitsoundVolume", 0, 1, "0%", "100%");
+        y += playerHitsoundVolumeLabel.height + playerHitsoundVolume.height + 10;
+        y = Std.int(y);
+
+        var typesLabel = new FlxUIText(10, y, 280, "== Note Types ==");
+        typesLabel.alignment = CENTER;
+        y += typesLabel.height + 4;
+        var addNoteTypeButton = new FlxUIButton(10, y, "Add Note Type", function() {
             openSubState(new NoteTypeSelector(function(mod:String, type:String) {
                 _song.noteTypes.push('$mod:$type');
                 updateNoteTypes();
                 updateNoteColors();
             }));
         });
+        y += addNoteTypeButton.height + 10;
+        noteTab.add(opponentHitsoundVolumeLabel);
+        noteTab.add(opponentHitsoundVolume);
+        noteTab.add(playerHitsoundVolumeLabel);
+        noteTab.add(playerHitsoundVolume);
         noteTypesX = typesLabel.x;
-        noteTypesY = typesLabel.y + typesLabel.height + 10;
+        noteTypesY = Std.int(y);
 
 
         updateNoteTypes();
@@ -608,6 +686,7 @@ class YoshiCrafterCharter extends MusicBeatState {
 
     public override function destroy() {
         if (switchingToPlayState) _song = null; // memory cleaning
+        super.destroy();
     }
 
     public function updateNoteTypes() {
@@ -619,12 +698,12 @@ class YoshiCrafterCharter extends MusicBeatState {
         noteTypesObjs = [];
         if (currentNoteType >= _song.noteTypes.length) currentNoteType = 0;
         for(k=>e in _song.noteTypes) {
-            var b = new FlxUIButton(10, (k * 20) + 65, currentNoteType == k ? '> $e <' : e, function() {
+            var b = new FlxUIButton(10, (k * 20) + noteTypesY, currentNoteType == k ? '> $e <' : e, function() {
                 currentNoteType = k;
                 updateNoteTypes();
             });
             b.resize(260, 20);
-            var deleteButton = new FlxUIButton(270, (k * 20) + 65, "", function() {
+            var deleteButton = new FlxUIButton(270, b.y, "", function() {
                 _song.noteTypes.remove(e);
                 if (_song.noteTypes.length <= 0)  _song.noteTypes.push("Default Note");
                 updateNoteTypes();
@@ -632,7 +711,7 @@ class YoshiCrafterCharter extends MusicBeatState {
             deleteButton.resize(20, 20);
             deleteButton.color = 0xFFFF4444;
 
-            var deleteButtonIcon = new FlxSprite(270 + 2, (k * 20) + 67);
+            var deleteButtonIcon = new FlxSprite(270 + 2, b.y + 2);
             CoolUtil.loadUIStuff(deleteButtonIcon, "delete");
 
             if (k > 0) {
@@ -742,6 +821,7 @@ class YoshiCrafterCharter extends MusicBeatState {
             _song = null;
             FlxG.resetState();
         });
+        refreshButton.resize(62, 20);
         
         var saveButton = new FlxUIButton(refreshButton.x + refreshButton.width + 10, refreshButton.y, "Save", function() {
             compile();
@@ -783,6 +863,7 @@ class YoshiCrafterCharter extends MusicBeatState {
             _song.noteTypes = oldArray;
         });
         saveButton.color = 0xFF44FF44;
+        saveButton.resize(62, 20);
         
         saveButton.label.setFormat(null, 8, 0xFFFFFFFF, CENTER, OUTLINE, 0xFF268F26);
 
@@ -794,7 +875,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         });
         editScriptsButton.resize(135, 20);
 
-        var editSongConfButton = new FlxUIButton(155, editScriptsButton.y, "Edit Song Scripts", function() {
+        var editSongConfButton = new FlxUIButton(10, editScriptsButton.y + editScriptsButton.height + 10, "Edit Song Scripts", function() {
             if (!Assets.exists(Paths.file('song_conf.json', TEXT, 'mods/${PlayState.songMod}'))) {
                 openSubState(ToolboxMessage.showMessage('Error', 'This mod does not have a JSON song configuration (song_conf.json)'));
                 return;
@@ -828,6 +909,50 @@ class YoshiCrafterCharter extends MusicBeatState {
             persistentUpdate = false;
             openSubState(new RemoveNotesSubstate());
         });
+        difficultyScaleButton.resize(135, 20);
+
+        var stages:Array<StrNameLabel> = [
+            new StrNameLabel("", "== NONE ==")
+        ];
+        var defaultStages:Array<StrNameLabel> = [
+            new StrNameLabel("\\",              "===="), // invalid
+            new StrNameLabel("default_stage",   "(W1) Default Stage"),
+            new StrNameLabel("halloween",       "(W2) Halloween"),
+            new StrNameLabel("philly",          "(W3) Philly"),
+            new StrNameLabel("limo",            "(W4) Limo"),
+            new StrNameLabel("mall",            "(W5) Mall"),
+            new StrNameLabel("mall-evil",       "(W5) Mall (Monster)"),
+            new StrNameLabel("school",          "(W6) School"),
+            new StrNameLabel("school-evil",     "(W6) School (Thorns)"),
+            new StrNameLabel("tank",            "(W7) Military Zone"),
+        ];
+        if (FileSystem.exists('${Paths.modsPath}/${Settings.engineSettings.data.selectedMod}/stages/')) {
+            for(e in FileSystem.readDirectory('${Paths.modsPath}/${Settings.engineSettings.data.selectedMod}/stages/')) {
+                var file = Path.withoutExtension(e);
+                var valid = true;
+                for(e in stages) {
+                    if (e.name == file.toLowerCase()) {
+                        valid = false;
+                        break;
+                    }
+                }
+                if (valid) stages.push(new StrNameLabel(file.toLowerCase(), file));
+            }
+        }
+        for(e in defaultStages)
+            stages.push(e);
+
+        
+        var stageLabel:FlxUIText = new FlxUIText(155, changePlayer1Button.y + changePlayer1Button.height + 10, 135, '\nStage');
+        stageLabel.alignment = CENTER;
+
+        stageDropdown = new FlxUIDropDownMenu(155, changeGFButton.y, stages, function(name:String) {
+            if (name == "\\")
+                stageDropdown.selectedId = _song.stage.toLowerCase();
+            else
+                _song.stage = name;
+        }, new FlxUIDropDownHeader(135));
+        stageDropdown.selectedId = _song.stage;
 
 
         songTab.add(titleLabel);
@@ -850,6 +975,8 @@ class YoshiCrafterCharter extends MusicBeatState {
         songTab.add(editScriptsButton);
         songTab.add(editSongConfButton);
         songTab.add(difficultyScaleButton);
+        songTab.add(stageLabel);
+        songTab.add(stageDropdown);
         UI_Menu.addGroup(songTab);
     }
 
@@ -1087,10 +1214,11 @@ class YoshiCrafterCharter extends MusicBeatState {
     }
 
     var switchingToPlayState:Bool = false;
-    public function switchToPlayState(time:Float = 0) {
+    public function switchToPlayState(time:Float = 0, chartTestMode:Bool = false) {
         compile();
         
         switchingToPlayState = true;
+        PlayState.chartTestMode = chartTestMode;
         PlayState._SONG = _song;
         PlayState._SONG.validScore = false;
         PlayState.fromCharter = true;
@@ -1125,10 +1253,15 @@ class YoshiCrafterCharter extends MusicBeatState {
         }
         return curBpm;
     }
-    public override function update(elapsed:Float) {
 
+    var dontUpdate = false;
+    var bgScale:Float = 0;
+    public override function update(elapsed:Float) {
+        var oldZoom = _zoom;
+        var oldSnap = _snap;
         super.update(elapsed);
-        if (_song == null) return;
+        bg.scale.set(bgScale / FlxG.camera.zoom, bgScale / FlxG.camera.zoom);
+        if (_song == null || dontUpdate) return;
         
         if (_song.bpm != (_song.bpm = Std.int(bpmThing.value))) {
             instWaveformSection = voicesWaveformSection = -10;
@@ -1166,7 +1299,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         if (playing) {
             pageSwitchLerpRemaining = 0;
         } else {
-            var val = CoolUtil.wrapFloat(pageSwitchLerpRemaining * 0.40 * 60 * elapsed, pageSwitchLerpRemaining < 0 ? pageSwitchLerpRemaining : 0, pageSwitchLerpRemaining > 0 ? pageSwitchLerpRemaining : 0);
+            var val = CoolUtil.boundFloat(pageSwitchLerpRemaining * 0.40 * 60 * elapsed, pageSwitchLerpRemaining < 0 ? pageSwitchLerpRemaining : 0, pageSwitchLerpRemaining > 0 ? pageSwitchLerpRemaining : 0);
             vocals.time = FlxG.sound.music.time = (Conductor.songPosition += val) + Settings.engineSettings.data.noteOffset;
             pageSwitchLerpRemaining -= val;
             if (Conductor.songPosition < 0) {
@@ -1183,6 +1316,8 @@ class YoshiCrafterCharter extends MusicBeatState {
         gridOverlay.color = Settings.engineSettings.data.charter_separatorColor;
 		
         FlxG.camera.targetOffset.y = FlxMath.lerp(FlxG.camera.targetOffset.y, topView ? ((FlxG.height * 0.25) + GRID_SIZE) : GRID_SIZE, 0.45 * 60 * elapsed);
+        var overlapsGrid = FlxG.mouse.overlaps(grid);
+
         if (FlxG.mouse.justPressed && FlxG.mouse.getScreenPosition().x < FlxG.width - 300) {
             
             var overlaps = false;
@@ -1203,12 +1338,15 @@ class YoshiCrafterCharter extends MusicBeatState {
                     break;
                 }
             }
-            if (!overlaps && FlxG.mouse.overlaps(grid)) {
+            if (!overlaps && overlapsGrid) {
                 var step = FlxG.mouse.y / GRID_SIZE;
+                if (seperateZoomFromSnap.checked)
+                    step = step / zoom * snap;
+
                 if (!FlxG.keys.pressed.SHIFT) {
                     step = Math.floor(step);
                 }
-                step /= zoom;
+                step /= seperateZoomFromSnap.checked ? snap : zoom;
                 var strumT = getTimeforStep(step);
 				var section = getSectionFor(strumT * Conductor.stepCrochet);
 				var mustHit = section != null ? section.mustHitSection : true;
@@ -1225,6 +1363,14 @@ class YoshiCrafterCharter extends MusicBeatState {
                     noteInCreation = addNote(strumT, noteData + (currentNoteType * _song.keyNumber * 2), mustHit);
                 }
             }
+        }
+        if (charterSelector.visible = overlapsGrid) {
+            var ratio = getLerpRatio(0.5);
+            charterSelector.x = (Std.int(FlxG.mouse.x / GRID_SIZE) - (FlxG.mouse.x < 0 ? 1 : 0)) * GRID_SIZE;
+            if (seperateZoomFromSnap.checked)
+                charterSelector.y = Std.int(FlxG.mouse.y / (GRID_SIZE * zoom / snap)) * (GRID_SIZE * zoom / snap);
+            else
+                charterSelector.y = Std.int(FlxG.mouse.y / GRID_SIZE) * GRID_SIZE;
         }
 
         
@@ -1253,9 +1399,13 @@ class YoshiCrafterCharter extends MusicBeatState {
             if (FlxG.mouse.justReleased) {
                 noteInCreation = null;
             } else {
-                var s = FlxG.mouse.y / zoom / GRID_SIZE;
+                var s = FlxG.mouse.y / GRID_SIZE;
+                if (seperateZoomFromSnap.checked)
+                    s = s / zoom * snap;
                 if (!FlxG.keys.pressed.SHIFT)
-                    s = Std.int(s);
+                    s = Math.floor(s);
+                s /= seperateZoomFromSnap.checked ? snap : zoom;
+
                 var currentTime = getTimeforStep(s);
                 var strumTime = noteInCreation.strumTime;
                 var str = Math.max(0, currentTime - strumTime);
@@ -1269,21 +1419,11 @@ class YoshiCrafterCharter extends MusicBeatState {
             if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A) pageSwitchLerpRemaining -= Conductor.crochet * _song.sectionLength * (FlxG.keys.pressed.SHIFT ? 4 : 1);
             if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D) pageSwitchLerpRemaining += Conductor.crochet * _song.sectionLength * (FlxG.keys.pressed.SHIFT ? 4 : 1);
             if (FlxG.keys.pressed.CONTROL) {
-                if (FlxG.mouse.wheel != 0) {
-                    var oldZoom = zoom;
-                    if (FlxG.mouse.wheel > 0) {
-                        for(i in 0...FlxG.mouse.wheel) zoom *= 2;
-                    } else {
-                        for(i in 0...-FlxG.mouse.wheel) zoom /= 2;
-                    }
-                    zoom = FlxMath.bound(zoom, 0.0625, 8);
-                    if (oldZoom != zoom) {
-                        regenWaveforms(false);
-                        updateNotesY();
-                    }
-                }
+                if (FlxG.mouse.wheel != 0)
+                    _zoom = Std.int(FlxMath.bound(_zoom + FlxG.mouse.wheel, -4, 4));
+                
             } else {
-                pageSwitchLerpRemaining -= FlxG.mouse.wheel * Conductor.stepCrochet * 2;
+                pageSwitchLerpRemaining -= FlxG.mouse.wheel * Conductor.stepCrochet * 2 / zoom;
             }
             if (FlxG.keys.pressed.SHIFT) {
                 if (FlxG.keys.pressed.UP || FlxG.keys.pressed.W) moveCursor(-20 * elapsed);
@@ -1296,6 +1436,23 @@ class YoshiCrafterCharter extends MusicBeatState {
                 switchToPlayState();
                 return;
             }
+            if (FlxG.keys.justPressed.ESCAPE) {
+                
+                dontUpdate = true;
+                forEach(function(e) {
+                    if (e != bg && e is FlxSprite)
+                        FlxTween.tween(e, {alpha: 0}, 0.25, {ease: FlxEase.cubeOut});
+                }, true);
+
+                FlxTween.tween(UI_Section, {y: FlxG.height}, 0.25, {ease: FlxEase.cubeOut});
+                FlxTween.tween(UI_Menu, {y: -UI_Menu.height}, 0.25, {ease: FlxEase.cubeOut});
+                FlxTween.tween(FlxG.camera.scroll, {x: FlxG.camera.scroll.x + FlxG.width}, 0.25, {ease: FlxEase.cubeOut, onComplete: function(t) {
+                    FlxTransitionableState.skipNextTransOut = true;
+                    PlayState.chartTestOpponent = FlxG.keys.pressed.SHIFT;
+                    switchToPlayState(Conductor.songPosition, true);
+                }});
+                return;
+            }
             if (FlxG.keys.pressed.A) {
                 followThing.x -= GRID_SIZE * 12 * elapsed * (FlxG.keys.pressed.SHIFT ? 1.5 : 1);
             }
@@ -1305,6 +1462,7 @@ class YoshiCrafterCharter extends MusicBeatState {
             followThing.x = FlxMath.bound(followThing.x, 0, grid.width - followThing.width - GRID_SIZE);
         }
         
+        UI_Section.active = !stageDropdown.dropPanel.visible; // TODO
 
         var sec = Math.floor(getStepAtPos(Conductor.songPosition) / 4 / _song.sectionLength);
         if (section != lastEditedSection) {
@@ -1364,7 +1522,7 @@ class YoshiCrafterCharter extends MusicBeatState {
         
         for (n in notes) {
             if (n.active = n.visible = (n.y - FlxG.camera.scroll.y + GRID_SIZE + (n.sustainLength / Conductor.stepCrochet * GRID_SIZE) >= 0 && n.y - FlxG.camera.scroll.y <= FlxG.height)) {
-                if (n.strumTime <= Conductor.songPosition) {
+                if (n.strumTime <= Conductor.songPosition - Settings.engineSettings.data.noteOffset) {
                     if (n.alpha == 1) {
                         var str = strums[Math.floor(n.x / GRID_SIZE) % (_song.keyNumber * 2)];
                         if (str != null && playing) str.lastHit = 0.1 + (Math.max(0, (n.sustainLength - Conductor.stepCrochet) / 1000) / FlxG.sound.music.pitch);
@@ -1419,7 +1577,14 @@ class YoshiCrafterCharter extends MusicBeatState {
 
         statusText.text = '${m}:${s} - ${mt}:${st}\nPlayback Speed: ${pitchThing} (R|T)\nSection: ${Math.floor(curBeat / 4)}\nBeat: ${curBeat}\nStep: ${curStep}\nZoom: ${1 / zoom} steps/tile';
         
-
+        if (oldZoom != _zoom) {
+            zoomSliderLabel.text = 'Zoom (${1/zoom} steps/tile)';
+            regenWaveforms(false);
+            updateNotesY();
+        }
+        if ((snapSlider.visible = snapSliderLabel.visible = seperateZoomFromSnap.checked) && oldSnap != _snap) {
+            snapSliderLabel.text = 'Snap (${1/snap} steps/tile)';
+        }
     }
 
     public override function onFocusLost() {

@@ -7,7 +7,7 @@ class MedalSprite extends FlxSpriteGroup {
     public var img:FlxSprite;
     public var locked:Bool = false;
 
-    public function new(mod:String, medal:MedalsJSON.Medal, ?showAsUnlocked:Bool = false) {
+    public function new(mod:String, medal:Medals.Medal, ?showAsUnlocked:Bool = false) {
         super();
         title = new AlphabetOptimized(110, 35, medal.name, false, 0.5);
         title.textColor = 0xFFFFFFFF;

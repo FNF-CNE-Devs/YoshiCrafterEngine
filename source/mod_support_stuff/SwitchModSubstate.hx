@@ -71,9 +71,9 @@ class SwitchModSubstate extends MusicBeatSubstate {
     public override function update(elapsed) {
         super.update(elapsed);
         for(k=>m in mods) {
-            m.x = FlxMath.lerp(m.x, 175 + (k - selected) * 25, CoolUtil.wrapFloat(0.16 * 60 * elapsed, 0, 1));
-            m.y = FlxMath.lerp(m.y, ((FlxG.height / 2) + (k - selected) * 185) - 75, CoolUtil.wrapFloat(0.16 * 60 * elapsed, 0, 1));
-            m.alpha = FlxMath.lerp(m.alpha, ((k == selected) ? 1 : 0.4), CoolUtil.wrapFloat(0.16 * 60 * elapsed, 0, 1));
+            m.x = FlxMath.lerp(m.x, 175 + (k - selected) * 25, CoolUtil.boundFloat(0.16 * 60 * elapsed, 0, 1));
+            m.y = FlxMath.lerp(m.y, ((FlxG.height / 2) + (k - selected) * 185) - 75, CoolUtil.boundFloat(0.16 * 60 * elapsed, 0, 1));
+            m.alpha = FlxMath.lerp(m.alpha, ((k == selected) ? 1 : 0.4), CoolUtil.boundFloat(0.16 * 60 * elapsed, 0, 1));
             
         }
         if (controls.UP_P) changeSelection(-1);
@@ -107,9 +107,6 @@ class SwitchModSubstate extends MusicBeatSubstate {
         CoolUtil.playMenuSFX(1);
         Settings.engineSettings.data.selectedMod = mod;
         ModSupport.reloadModsConfig(true, true, true);
-        lime.utils.Assets.loggedRequests = [];
-        MusicBeatState.doCachingShitNextTime = false;
-        FlxG.bitmap.clearCache();
         FlxG.resetState();
     }
     public function changeSelection(am:Int) {
