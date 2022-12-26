@@ -2,6 +2,8 @@
 ## Use [Codename Engine](https://www.github.com/YoshiCrafter29/CodenameEngine) instead.
 A year ago, it was presented as a "new moddable engine". However, as the community standards changes, the engine is now outdated, and has been replaced by the currently work in progress, [Codename Engine](https://www.github.com/YoshiCrafter29/CodenameEngine).
 
+This project is over a year old, the code is HORRIBLE and the optimisation is HORRIBLE.
+
 Using YoshiCrafter Engine in its current state would leave you with a lot of problems, including, but not limiting to:
 - **Memory Leaks**: Playing it for too long would simply make the memory goes up more and more. Literally, don't try to fix it.
 - **Bad Source**: It's really bad, don't even start digging into it.
