@@ -1,4 +1,4 @@
-# THIS ENGINE IS OUTDATED
+# ⚠⚠ THIS ENGINE IS OUTDATED ⚠⚠
 ## Use [Codename Engine](https://www.github.com/YoshiCrafter29/CodenameEngine) instead.
 A year ago, it was presented as a "new moddable engine". However, as the community standards changes, the engine is now outdated, and has been replaced by the currently work in progress, [Codename Engine](https://www.github.com/YoshiCrafter29/CodenameEngine).
 
@@ -8,7 +8,18 @@ Using YoshiCrafter Engine in its current state would leave you with a lot of pro
 - **Bad Organisation**: The files aren't sorted out into packages, unlike Codename Engine.
 - **Bad Optimisation**: The engine runs poorly on lower end computers, and is obsolete. Codename highly improves on this point.
 - **Bad modding support**: You can edit one state but not another? Why? Codename also improved on this.
-- **Spaghetti Code**: Literally, theres some parts in this that doesn't make sense. New code with over a year old code that barely works? Nah.
+- **Literally every engine combined**: Literally if you took Psych, Kade and Modding+ and combined them together. There's goods, but also bads. A lot of bads.
+- **No source support**: Wanna mod in source? Go fuck yourself! The engine was never intended to be modded in source, unlike Codename which has source support and multiple defines to customise the engine the way you want for your mod.
+
+### I made Codename to fix all of those issues that prevented modders from actually achieving something good. Use it instead, or use YCE at your own risk.
+
+** **
+
+** **
+
+** **
+
+---
 
 # Friday Night Funkin' - YoshiCrafter Engine
 ![YoshiCrafter Engine logo](art/banner_new.png)
