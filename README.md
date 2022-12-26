@@ -1,3 +1,15 @@
+# THIS ENGINE IS OUTDATED
+## Use [Codename Engine](https://www.github.com/YoshiCrafter29/CodenameEngine) instead.
+A year ago, it was presented as a "new moddable engine". However, as the community standards changes, the engine is now outdated, and has been replaced by the currently work in progress, [Codename Engine](https://www.github.com/YoshiCrafter29/CodenameEngine).
+
+Using YoshiCrafter Engine in its current state would leave you with a lot of problems, including, but not limiting to:
+- **Memory Leaks**: Playing it for too long would simply make the memory goes up more and more. Literally, don't try to fix it.
+- **Bad Source**: It's really bad, don't even start digging into it.
+- **Bad Organisation**: The files aren't sorted out into packages, unlike Codename Engine.
+- **Bad Optimisation**: The engine runs poorly on lower end computers, and is obsolete. Codename highly improves on this point.
+- **Bad modding support**: You can edit one state but not another? Why? Codename also improved on this.
+- **Spaghetti Code**: Literally, theres some parts in this that doesn't make sense. New code with over a year old code that barely works? Nah.
+
 # Friday Night Funkin' - YoshiCrafter Engine
 ![YoshiCrafter Engine logo](art/banner_new.png)
 
